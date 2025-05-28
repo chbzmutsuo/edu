@@ -1,0 +1,125 @@
+import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {Fields} from '@class/Fields/Fields'
+import {Button} from '@components/styles/common-components/Button'
+import {R_Stack} from '@components/styles/common-components/common-components'
+
+import {useGlobalModalForm} from '@components/utils/modal/useGlobalModalForm'
+import useGlobal from '@hooks/globalHooks/useGlobal'
+import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
+import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import {atomTypes} from '@hooks/useJotai'
+import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {toastByResult} from '@lib/ui/notifications'
+import {Prisma} from '@prisma/client'
+import {toast} from 'react-toastify'
+
+import {P_GenbaTask} from 'scripts/generatedTypes'
+import {chain_sohken_genbaDayUpdateChain} from 'src/non-common/(chains)/getGenbaScheduleStatus/chain_sohken_genbaDayUpdateChain'
+
+export const useGenbaDayCardEditorModalGMF = () => {
+  return useGlobalModalForm<atomTypes[`GenbaDayCardEditorModalGMF`]>(`GenbaDayCardEditorModalGMF`, null, {
+    mainJsx: props => {
+      const close = props.close
+      const {router, toggleLoad} = useGlobal()
+
+      const {taskMidTable, genbaId, genbaDayId} = props.GMF_OPEN
+      const {data: GenbaTask = []} = useDoStandardPrisma(`genbaTask`, `findMany`, {
+        where: {genbaId: genbaId ?? 0},
+        orderBy: [{sortOrder: 'asc'}, {id: 'asc'}],
+      })
+
+      const {BasicForm, latestFormData} = useBasicFormProps({
+        formData: {
+          genbaTaskId: Number(taskMidTable?.genbaTaskId),
+          requiredNinku: Number(taskMidTable?.GenbaTask?.requiredNinku),
+        },
+        columns: new Fields([
+          {
+            id: 'genbaTaskId',
+            label: 'タスク',
+            form: {...defaultRegister},
+            forSelect: {
+              optionsOrOptionFetcher: GenbaTask.map((d: P_GenbaTask) => {
+                return {value: d.name, id: d.id, color: d.color}
+              }),
+            },
+          },
+          {
+            id: 'requiredNinku',
+            label: '人工',
+            type: `number`,
+            inputProps: {step: 0.1},
+
+            form: {},
+          },
+        ]).transposeColumns(),
+      })
+
+      const onSubmit = async data => {
+        const genbaTaskId = Number(data.genbaTaskId)
+        const args: Prisma.GenbaDayTaskMidTableUpsertArgs = {
+          where: {id: taskMidTable?.id ?? 0},
+          create: {genbaTaskId, genbaDayId},
+          update: {
+            genbaTaskId,
+            genbaDayId,
+          },
+        }
+        const {result: theTask} = await doStandardPrisma(`genbaTask`, `findUnique`, {where: {id: genbaTaskId}})
+
+        if (
+          data.requiredNinku !== theTask.requiredNinku &&
+          !confirm(`既存の「${theTask.name}」の人工と異なる人工が設定されています。上書きしてもよろしいですか？`)
+        ) {
+          toast.warn(`処理を中止しました。`)
+          return
+        }
+        toggleLoad(async () => {
+          const res = await doStandardPrisma(`genbaDayTaskMidTable`, `upsert`, args)
+
+          await doStandardPrisma(`genbaTask`, `update`, {
+            where: {id: genbaTaskId},
+            data: {
+              requiredNinku: Number(data.requiredNinku),
+            },
+          })
+
+          await chain_sohken_genbaDayUpdateChain({genbaId})
+          toastByResult(res)
+
+          router.refresh()
+          close()
+        })
+      }
+      return (
+        <div>
+          <BasicForm {...{onSubmit, latestFormData}}>
+            <R_Stack className={` justify-between gap-4 `}>
+              <Button
+                color={`red`}
+                type={`button`}
+                onClick={async () => {
+                  if (!confirm('削除しますか？')) return
+
+                  toggleLoad(async () => {
+                    await doStandardPrisma(`genbaDayTaskMidTable`, `delete`, {
+                      where: {
+                        id: taskMidTable.id,
+                      },
+                    })
+
+                    await chain_sohken_genbaDayUpdateChain({genbaId})
+                  })
+                  close()
+                }}
+              >
+                削除
+              </Button>
+              <Button>確定</Button>
+            </R_Stack>
+          </BasicForm>
+        </div>
+      )
+    },
+  })
+}

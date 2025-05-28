@@ -1,0 +1,378 @@
+// 一回の購入
+model AqSaleCart {
+ id Int @id @default(autoincrement())
+
+ baseOrderId   String?   @unique
+ createdAt     DateTime  @default(now())
+ updatedAt     DateTime? @default(now()) @updatedAt()
+ sortOrder     Float     @default(0)
+ date          DateTime
+ paymentMethod String
+
+ User         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId       Int?
+ AqCustomer   AqCustomer     @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId Int
+ AqSaleRecord AqSaleRecord[]
+}
+
+// 購入商品の1迷彩
+model AqSaleRecord {
+ baseSaleRecordId String?   @unique
+ id               Int       @id @default(autoincrement())
+ createdAt        DateTime  @default(now())
+ updatedAt        DateTime? @default(now()) @updatedAt()
+ sortOrder        Float     @default(0)
+
+ date       DateTime
+ quantity   Int
+ price      Float
+ taxRate    Float? // 税率
+ taxedPrice Float? // 税込価格
+ remarks    String?
+
+ User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int?
+
+ AqCustomer   AqCustomer @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId Int
+
+ AqProduct   AqProduct @relation(fields: [aqProductId], references: [id], onDelete: Cascade)
+ aqProductId Int
+
+ AqPriceOption   AqPriceOption? @relation(fields: [aqPriceOptionId], references: [id], onDelete: Cascade)
+ aqPriceOptionId Int?
+
+ AqSaleCart   AqSaleCart @relation(fields: [aqSaleCartId], references: [id], onDelete: Cascade)
+ aqSaleCartId Int
+
+ AqCustomerSubscription AqCustomerSubscription? @relation(fields: [aqCustomerSubscriptionId], references: [id])
+
+ aqCustomerSubscriptionId Int?
+
+ subscriptionYearMonth DateTime?
+
+ @@unique([aqCustomerId, aqProductId, subscriptionYearMonth, aqCustomerSubscriptionId], name: "unique_aqCustomerId_aqProductId_subscriptionYearMonth_aqCustomerSubscriptionId")
+}
+
+// 商品
+model AqProduct {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ productCode               String?
+ name                      String                   @unique
+ AqProductCategoryMaster   AqProductCategoryMaster? @relation(fields: [aqProductCategoryMasterId], references: [id], onDelete: Cascade)
+ aqProductCategoryMasterId Int?
+
+ fromBase Boolean? @default(false)
+
+ cost                  Float   @default(0)
+ // price                 Float   @default(0)
+ // sku                   String?
+ // taxType               String?
+ taxRate               Float   @default(10)
+ stock                 Int     @default(0)
+ inInventoryManagement Boolean @default(true)
+
+ AqPriceOption AqPriceOption[]
+ AqSaleRecord  AqSaleRecord[]
+
+ AqCustomerPriceOption  AqCustomerPriceOption[]
+ AqInventoryRegister    AqInventoryRegister[]
+ AqCustomerSubscription AqCustomerSubscription[]
+
+ AqDefaultShiireAqCustomer   AqCustomer? @relation(fields: [aqDefaultShiireAqCustomerId], references: [id])
+ aqDefaultShiireAqCustomerId Int?
+
+ AqInventoryByMonth AqInventoryByMonth[]
+}
+
+// 商品価格
+model AqPriceOption {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+ name      String
+ price     Float?
+
+ AqProduct   AqProduct? @relation(fields: [aqProductId], references: [id], onDelete: Cascade)
+ aqProductId Int?
+
+ AqCustomerPriceOption AqCustomerPriceOption[]
+ AqSaleRecord          AqSaleRecord[]
+}
+
+model AqCustomer {
+ id             Int       @id @default(autoincrement())
+ createdAt      DateTime  @default(now())
+ updatedAt      DateTime? @default(now()) @updatedAt()
+ sortOrder      Float     @default(0)
+ email          String?   @unique
+ customerNumber String?   @unique
+
+ fromBase Boolean? @default(false)
+
+ companyName          String?
+ jobTitle             String?
+ name                 String? @unique
+ defaultPaymentMethod String?
+ furikomisakiCD       String?
+
+ tel           String?
+ tel2          String?
+ fax           String?
+ invoiceNumber String?
+ status        String? @default("継続")
+
+ domestic Boolean @default(true)
+ postal   String?
+ state    String?
+ city     String?
+ street   String?
+ building String?
+ remarks  String?
+
+ firstVisitDate DateTime?
+ lastVisitDate  DateTime?
+
+ maintananceYear  Int?
+ maintananceMonth Int?
+
+ AqSaleCart                     AqSaleCart[]
+ AqCustomerRecord               AqCustomerRecord[]
+ AqCustomerPriceOption          AqCustomerPriceOption[]
+ AqCustomerSupportGroupMidTable AqCustomerSupportGroupMidTable[]
+ AqCustomerDealerMidTable       AqCustomerDealerMidTable[]
+ AqCustomerDeviceMidTable       AqCustomerDeviceMidTable[]
+ AqCustomerServiceTypeMidTable  AqCustomerServiceTypeMidTable[]
+ AqSaleRecord                   AqSaleRecord[]
+ User                           User?                            @relation(fields: [userId], references: [id])
+ userId                         Int?
+ AqInventoryRegister            AqInventoryRegister[]
+ AqCustomerSubscription         AqCustomerSubscription[]
+
+ AqProduct AqProduct[]
+}
+
+model AqCustomerSubscription {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ active Boolean @default(true)
+
+ maintananceYear  Int
+ maintananceMonth Int
+
+ AqCustomer       AqCustomer     @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId     Int
+ AqDeviceMaster   aqDeviceMaster @relation(fields: [aqDeviceMasterId], references: [id])
+ aqDeviceMasterId Int
+
+ AqProduct   AqProduct @relation(fields: [aqProductId], references: [id])
+ aqProductId Int
+
+ remarks      String?
+ AqSaleRecord AqSaleRecord[]
+}
+
+model AqCustomerPriceOption {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ AqCustomer   AqCustomer @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId Int
+
+ AqProduct AqProduct @relation(fields: [aqProductId], references: [id], onDelete: Cascade)
+
+ aqProductId Int
+
+ AqPriceOption   AqPriceOption @relation(fields: [aqPriceOptionId], references: [id], onDelete: Cascade)
+ aqPriceOptionId Int
+
+ @@unique([aqCustomerId, aqProductId], name: "unique_aqCustomerId_aqProductId")
+}
+
+model AqCustomerRecord {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date    DateTime?
+ status  String?
+ type    String?
+ content String?
+ remarks String?
+
+ AqCustomerRecordAttachment AqCustomerRecordAttachment[]
+
+ AqCustomer   AqCustomer @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId Int
+ User         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId       Int
+}
+
+model AqCustomerRecordAttachment {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ title String?
+ url   String?
+
+ AqCustomerRecord   AqCustomerRecord? @relation(fields: [aqCustomerRecordId], references: [id], onDelete: Cascade)
+ aqCustomerRecordId Int?
+}
+
+model AqSupportGroupMaster {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name                           String                           @unique
+ color                          String?
+ AqCustomerSupportGroupMidTable AqCustomerSupportGroupMidTable[]
+}
+
+model AqProductCategoryMaster {
+ id        Int         @id @default(autoincrement())
+ createdAt DateTime    @default(now())
+ updatedAt DateTime?   @default(now()) @updatedAt()
+ sortOrder Float       @default(0)
+ name      String      @unique
+ color     String?
+ AqProduct AqProduct[]
+}
+
+model AqServiecTypeMaster {
+ id                            Int                             @id @default(autoincrement())
+ createdAt                     DateTime                        @default(now())
+ updatedAt                     DateTime?                       @default(now()) @updatedAt()
+ sortOrder                     Float                           @default(0)
+ name                          String                          @unique
+ color                         String?
+ AqCustomerServiceTypeMidTable AqCustomerServiceTypeMidTable[]
+}
+
+model AqDealerMaster {
+ id                       Int                        @id @default(autoincrement())
+ createdAt                DateTime                   @default(now())
+ updatedAt                DateTime?                  @default(now()) @updatedAt()
+ sortOrder                Float                      @default(0)
+ name                     String                     @unique
+ color                    String?
+ AqCustomerDealerMidTable AqCustomerDealerMidTable[]
+}
+
+model aqDeviceMaster {
+ id                       Int                        @id @default(autoincrement())
+ createdAt                DateTime                   @default(now())
+ updatedAt                DateTime?                  @default(now()) @updatedAt()
+ sortOrder                Float                      @default(0)
+ name                     String                     @unique
+ color                    String?
+ AqCustomerDeviceMidTable AqCustomerDeviceMidTable[]
+ AqCustomerSubscription   AqCustomerSubscription[]
+}
+
+model AqCustomerDealerMidTable {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ AqCustomer       AqCustomer     @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId     Int
+ AqDealerMaster   AqDealerMaster @relation(fields: [aqDealerMasterId], references: [id], onDelete: Cascade)
+ aqDealerMasterId Int
+
+ @@unique([aqCustomerId, aqDealerMasterId], name: "unique_aqCustomerId_aqDealerMasterId")
+}
+
+model AqCustomerServiceTypeMidTable {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ AqCustomer   AqCustomer @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId Int
+
+ AqServiecTypeMaster   AqServiecTypeMaster? @relation(fields: [aqServiecTypeMasterId], references: [id], onDelete: Cascade)
+ aqServiecTypeMasterId Int?
+
+ @@unique([aqCustomerId, aqServiecTypeMasterId], name: "unique_aqCustomerId_aqServiecTypeMasterId")
+}
+
+model AqCustomerDeviceMidTable {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ AqCustomer   AqCustomer @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId Int
+
+ AqDeviceMaster   aqDeviceMaster @relation(fields: [aqDeviceMasterId], references: [id], onDelete: Cascade)
+ aqDeviceMasterId Int
+
+ @@unique([aqCustomerId, aqDeviceMasterId], name: "unique_aqCustomerId_aqDeviceMasterId")
+}
+
+model AqCustomerSupportGroupMidTable {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ from                   DateTime
+ to                     DateTime?
+ AqSupportGroupMaster   AqSupportGroupMaster? @relation(fields: [aqSupportGroupMasterId], references: [id], onDelete: Cascade)
+ aqSupportGroupMasterId Int?
+ AqCustomer             AqCustomer            @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+ aqCustomerId           Int
+
+ @@unique([aqCustomerId, aqSupportGroupMasterId], name: "unique_aqCustomerId_aqSupportGroupMasterId")
+}
+
+model AqInventoryRegister {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ aqProductId  Int
+ aqCustomerId Int
+ date         DateTime
+ quantity     Int
+ remarks      String?
+
+ AqProduct  AqProduct  @relation(fields: [aqProductId], references: [id], onDelete: Cascade)
+ AqCustomer AqCustomer @relation(fields: [aqCustomerId], references: [id], onDelete: Cascade)
+}
+
+model AqInventoryByMonth {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ count Int @default(0)
+
+ yearMonth DateTime
+
+ AqProduct   AqProduct @relation(fields: [aqProductId], references: [id])
+ aqProductId Int
+
+ @@unique([aqProductId, yearMonth], name: "unique_aqProductId_yearMonth")
+}

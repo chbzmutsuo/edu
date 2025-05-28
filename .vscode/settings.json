@@ -1,0 +1,149 @@
+{
+  "files.watcherExclude": {
+    "/.git/objects/": true,
+    "/.git/subtree-cache/": true,
+    "/node_modules/": true,
+    "/.next/": true,
+    "/.cache/": true,
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.histroy/**": true,
+    "**/.ipynb_checkpoints/**": true,
+    "**/node_modules/**": true,
+    "**/out/**": true
+  },
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.autoSave": "onFocusChange",
+  "editor.wordWrap": "on",
+  "workbench.editorAssociations": {
+    "*.sqlite3": "default",
+    "*.dump": "default"
+  },
+  "liveServer.settings.donotShowInfoMsg": true,
+  "emmet.excludeLanguages": [
+    "markdown"
+  ],
+  "emmet.variables": {
+    "lang": "ja"
+  },
+  "editor.renderControlCharacters": true,
+  "editor.renderWhitespace": "all",
+  "html.format.indentInnerHtml": true,
+  "explorer.confirmDragAndDrop": false,
+  "explorer.confirmDelete": false,
+  "liveServer.settings.donotVerifyTags": true,
+  "intelephense.diagnostics.undefinedFunctions": false,
+  "workbench.activityBar.iconClickBehavior": "focus",
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.js": "javascript",
+    "*.tsx": "typescriptreact",
+    "*.prisma": "prisma",
+    ".vercelignore": "ignore",
+    "*.sql": "sql"
+  },
+  "editor.tabSize": 1,
+  "editor.fontSize": 10,
+  "workbench.iconTheme": "vscode-icons",
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
+  },
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "[dockercompose]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "editor.unicodeHighlight.invisibleCharacters": false,
+  "editor.unicodeHighlight.ambiguousCharacters": false,
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "[css]": {
+    "editor.defaultFormatter": "aeschli.vscode-css-formatter"
+  },
+  "material-ui-snippets.showNotesOnStartup": false,
+  "window.commandCenter": true,
+  "debug.javascript.unmapMissingSources": true,
+  "workbench.startupEditor": "none",
+  "git.openRepositoryInParentFolders": "never",
+  "[log]": {},
+  "turboConsoleLog.includeFileNameAndLineNum": false,
+  "turboConsoleLog.insertEnclosingClass": false,
+  "turboConsoleLog.insertEnclosingFunction": false,
+  "editor.inlineSuggest.enabled": true,
+  "editor.inlineSuggest.showToolbar": "always",
+  "genieai.enableConversationHistory": true,
+  "security.workspace.trust.untrustedFiles": "open",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.largeFileOptimizations": false,
+  "[typescript]": {
+    "editor.autoIndent": "full",
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.minimap.enabled": false,
+  "workbench.colorTheme": "Default Dark+",
+  "vsicons.dontShowNewVersionMessage": true,
+  "editor.accessibilitySupport": "off",
+  "cursor.cpp.disabledLanguages": [
+    "plaintext",
+    "markdown",
+    "scminput"
+  ],
+  "window.zoomLevel": 1,
+  "window.confirmSaveUntitledWorkspace": false,
+  "prisma.showPrismaDataPlatformNotification": false,
+  "github.copilot.editor.enableAutoCompletions": true,
+  "[prisma]": {},
+  "search.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/common-layout/**": true,
+    "**/introspected/**": true,
+    "**/souken/**": true,
+    "**/hanamaru/**": true,
+    "**/InspectionPicture/**": true,
+    "**/QRBP/**": true,
+    "**/delivery/**": true,
+    "**/oktpas/**": true,
+    "**/shinren/**": true,
+    "**/ucar/**": true,
+    "**/ucarSearch/**": true,
+    "**/family/**": true,
+    "**/hobby/**": true,
+    "**/roken/**": true,
+    "**/gpt/**": true,
+    "**/あｐ/**": true,
+    "**/cueNote/**": true,
+    "**/Approvement/**": true,
+    "**/appLog/**": true,
+    "**/demo/**": true,
+    "**/estimate/**": true,
+    "**/kumaru/**": true,
+    "**/layout-mapping/**": true,
+    "**/layoutMapping/**": true,
+    "**/masterkey/**": true,
+    "**/sankosha/**": true,
+    "**/yoshinari/**": true
+  },
+  "typescript.preferences.autoImportFileExcludePatterns": [],
+  "editor.stickyScroll.enabled": false,
+  "workbench.activityBar.location": "default",
+  "database-client.autoSync": true
+}

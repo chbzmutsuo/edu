@@ -1,0 +1,161 @@
+'use client'
+
+import {
+  jquants_getStockList,
+  upsertStockHistory,
+  updateAlgorithm,
+} from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
+import {Days} from '@class/Days/Days'
+import {toUtc} from '@class/Days/date-utils/calculations'
+import {formatDate} from '@class/Days/date-utils/formatters'
+
+import {Button} from '@components/styles/common-components/Button'
+import useGlobal from '@hooks/globalHooks/useGlobal'
+
+import {createUpdate} from '@lib/methods/createUpdate'
+import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
+import Redirector from '@components/utils/Redirector'
+import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {twMerge} from 'tailwind-merge'
+import {C_Stack} from '@components/styles/common-components/common-components'
+
+import {HREF} from '@lib/methods/urls'
+
+export default function TemplateBottomButton() {
+  const {toggleLoad, PC, pathname, query} = useGlobal()
+
+  const theDate = toUtc(query.from ?? new Date())
+
+  if (!query.from) {
+    return <Redirector {...{redirectPath: HREF(pathname, {from: formatDate(theDate), ...query}, query)}} />
+  }
+
+  return (
+    <div>
+      <div className={` fixed bottom-16 center-x z-[100] container `}>
+        <C_Stack className={twMerge(`  items-center `, ` gap-4 mx-auto p-4  t-paper  justify-center w-fit bg-blue-50 `)}>
+          <NewDateSwitcher />
+
+          <Button
+            className={``}
+            onClick={async () => {
+              toggleLoad(async () => {
+                const list = await jquants_getStockList({})
+
+                const res = await doTransaction({
+                  transactionQueryList: list.map(data => {
+                    const Date = toUtc(data.Date)
+                    return {
+                      model: `stock`,
+                      method: `upsert`,
+                      queryObject: {
+                        where: {Code: data.Code},
+                        ...createUpdate({...data, Date}),
+                      },
+                    }
+                  }),
+                })
+              })
+            }}
+          >
+            ①銘柄一覧
+          </Button>
+
+          {/* <Button
+              className={``}
+              onClick={async () => {
+                toggleLoad(async () => {
+                  // await doStandardPrisma(`stock`, `updateMany`, {
+                  //   data: {favorite: 0, heldCount: 0, averageBuyPrice: 0},
+                  // })
+                  await doTransaction({
+                    transactionQueryList: seedData.map(data => {
+                      const {Code, HeldCount, AverageBuyPrice} = data
+
+                      return {
+                        model: `stock`,
+                        method: `update`,
+                        queryObject: {
+                          where: {Code: `${Code}0`},
+                          data: {
+                            favorite: 1,
+                            heldCount: HeldCount,
+                            averageBuyPrice: AverageBuyPrice,
+                          },
+                        },
+                      }
+                    }),
+                  })
+                })
+              }}
+            >
+              ①Fav反映
+            </Button> */}
+
+          <Button
+            className={``}
+            onClick={async () => {
+              toggleLoad(async () => {
+                await upsertStockHistory({date: theDate})
+              })
+            }}
+          >
+            ②当日
+          </Button>
+
+          <Button
+            className={``}
+            onClick={async () => {
+              toggleLoad(async () => {
+                await updateAlgorithm({date: theDate})
+              })
+            }}
+          >
+            ③バロメータ
+          </Button>
+
+          {PC && (
+            <Button
+              className={``}
+              onClick={async () => {
+                toggleLoad(async () => {
+                  const days = Days.day.getDaysBetweenDates(theDate, new Date())
+
+                  days.forEach(async date => {
+                    await updateFunc({date})
+                  })
+
+                  return
+                })
+              }}
+            >
+              一括処理（複数）
+            </Button>
+          )}
+          {PC && (
+            <Button
+              className={``}
+              onClick={async () => {
+                toggleLoad(async () => {
+                  if (confirm('履歴を削除しますか？')) {
+                    await doStandardPrisma(`stockHistory`, `deleteMany`, {where: {id: {gte: 0}}})
+                  }
+                })
+              }}
+            >
+              履歴削除
+            </Button>
+          )}
+        </C_Stack>
+      </div>
+    </div>
+  )
+
+  return null
+}
+
+const updateFunc = async ({date}) => {
+  await upsertStockHistory({date})
+  // await updateAlgorithm({date})
+}

@@ -1,0 +1,429 @@
+model TbmBase {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ code String? @unique
+ name String  @unique
+
+ User                User[]
+ TbmVehicle          TbmVehicle[]
+ TbmRouteGroup       TbmRouteGroup[]
+ TbmDriveSchedule    TbmDriveSchedule[]
+ TbmProduct          TbmProduct[]
+ TbmCustomer         TbmCustomer[]
+ TbmBase_MonthConfig TbmBase_MonthConfig[]
+}
+
+model TbmRouteGroupCalendar {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date        DateTime
+ holidayType String?  @default("")
+ remark      String?
+
+ TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+ tbmRouteGroupId Int
+
+ @@unique([tbmRouteGroupId, date], name: "unique_tbmRouteGroupId_date")
+}
+
+model TbmBase_MonthConfig {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ code      String?
+ yearMonth DateTime
+
+ gasolinePerLiter Float?
+ keiyuPerLiter    Float?
+
+ TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId Int
+
+ @@unique([tbmBaseId, yearMonth], name: "unique_tbmBaseId_yearMonth")
+}
+
+model TbmVehicle {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ code String @unique
+
+ frameNo       String? @unique
+ vehicleNumber String  @unique
+ type          String?
+ shape         String?
+ airSuspension String?
+ oilTireParts  String?
+ maintenance   String?
+ insurance     String?
+
+ shodoTorokubi DateTime?
+ sakenManryobi DateTime?
+ hokenManryobi DateTime?
+
+ sankagetsuTenkenbi DateTime?
+ sokoKyori          Float?
+
+ // 保険情報
+ jibaisekiHokenCompany String? // 自賠責保険会社
+ jibaisekiManryobi     DateTime? // 自賠責満期日
+
+ jidoshaHokenCompany String? // 自動車保険会社（対人、対物）
+ jidoshaManryobi     DateTime? // 自動車保険満期日
+
+ kamotsuHokenCompany String? // 貨物保険会社
+ kamotsuManryobi     DateTime? // 貨物保険満期日
+
+ sharyoHokenCompany String? // 車両保険会社
+ sharyoManryobi     DateTime? // 車両保険満期日
+
+ // ETCカード情報
+ etcCardNumber     String? // ETCカード番号
+ etcCardExpiration DateTime? // ETCカード有効期限
+
+ TbmFuelCard TbmFuelCard[]
+
+ TbmRefuelHistory  TbmRefuelHistory[]
+ TbmBase           TbmBase             @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId         Int
+ TbmDriveSchedule  TbmDriveSchedule[]
+ OdometerInput     OdometerInput[]
+ TbmCarWashHistory TbmCarWashHistory[]
+
+ User   User? @relation(fields: [userId], references: [id])
+ userId Int?  @unique
+
+ TbmVehicleMaintenanceRecord TbmVehicleMaintenanceRecord[]
+ TbmEtcMeisai                TbmEtcMeisai[]
+
+ @@unique([tbmBaseId, vehicleNumber], name: "unique_tbmBaseId_vehicleNumber")
+}
+
+model TbmFuelCard {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name         String
+ date         DateTime
+ TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id])
+ tbmVehicleId Int?
+}
+
+model TbmVehicleMaintenanceRecord {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date   DateTime
+ title  String
+ price  Float
+ remark String?
+ type   String? // 3ヶ月点検・車検・その他
+
+ TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id])
+ tbmVehicleId Int?
+}
+
+model TbmRouteGroup {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ code      String  @unique
+ name      String
+ routeName String?
+
+ pickupTime  String? //接車時間
+ vehicleType String? //車z種
+
+ seikyuKbn String? @default("01")
+
+ TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId Int
+
+ TbmDriveSchedule TbmDriveSchedule[]
+
+ TbmMonthlyConfigForRouteGroup TbmMonthlyConfigForRouteGroup[]
+ Mid_TbmRouteGroup_TbmProduct  Mid_TbmRouteGroup_TbmProduct?
+ Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer?
+ TbmRouteGroupCalendar         TbmRouteGroupCalendar[]
+
+ TbmRouteGroupFee TbmRouteGroupFee[]
+
+ @@unique([tbmBaseId, code], name: "unique_tbmBaseId_code")
+}
+
+model TbmRouteGroupFee {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ startDate DateTime
+
+ driverFee Int?
+ futaiFee  Int?
+
+ TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+ tbmRouteGroupId Int
+}
+
+model TbmMonthlyConfigForRouteGroup {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ yearMonth DateTime
+
+ generalFee         Int? //通行量（一般）[]
+ tsukoryoSeikyuGaku Int? //通行料請求額
+ seikyuKaisu        Int? //請求回数
+
+ numberOfTrips   Int?
+ TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+ tbmRouteGroupId Int
+
+ @@unique([yearMonth, tbmRouteGroupId], name: "unique_yearMonth_tbmRouteGroupId")
+}
+
+model TbmProduct {
+ id                           Int                            @id @default(autoincrement())
+ createdAt                    DateTime                       @default(now())
+ updatedAt                    DateTime?                      @default(now()) @updatedAt()
+ sortOrder                    Float                          @default(0)
+ code                         String                         @unique
+ name                         String                         @unique
+ Mid_TbmRouteGroup_TbmProduct Mid_TbmRouteGroup_TbmProduct[]
+ TbmBase                      TbmBase                        @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId                    Int
+
+ @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
+}
+
+model Mid_TbmRouteGroup_TbmProduct {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+ tbmRouteGroupId Int           @unique
+
+ TbmProduct   TbmProduct @relation(fields: [tbmProductId], references: [id], onDelete: Cascade)
+ tbmProductId Int
+
+ @@unique([tbmRouteGroupId, tbmProductId], name: "unique_tbmRouteGroupId_tbmProductId")
+}
+
+model Mid_TbmRouteGroup_TbmCustomer {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+ tbmRouteGroupId Int           @unique
+
+ TbmCustomer   TbmCustomer @relation(fields: [tbmCustomerId], references: [id], onDelete: Cascade)
+ tbmCustomerId Int
+
+ @@unique([tbmRouteGroupId, tbmCustomerId], name: "unique_tbmRouteGroupId_tbmCustomerId")
+}
+
+model TbmBillingAddress {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name String
+}
+
+model TbmInvoiceDetail {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ numberOfTrips   Int
+ fare            Float
+ toll            Float
+ specialAddition Float? // 特別付加金
+}
+
+model TbmCustomer {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ code                          String?                         @unique
+ name                          String                          @unique
+ address                       String?
+ phoneNumber                   String?
+ faxNumber                     String?
+ bankInformation               String?
+ Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer[]
+
+ TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId Int
+
+ @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
+}
+
+model TbmRefuelHistory {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date     DateTime
+ amount   Float
+ odometer Float
+ type     String
+
+ // TbmOperationGroup TbmOperationGroup? @relation(fields: [tbmOperationGroupId], references: [id], onDelete: Cascade)
+ // tbmOperationGroupId Int?
+
+ TbmVehicle   TbmVehicle @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)
+ tbmVehicleId Int
+
+ User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int
+}
+
+model TbmCarWashHistory {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date  DateTime
+ price Float
+
+ TbmVehicle   TbmVehicle @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)
+ tbmVehicleId Int
+
+ User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int
+}
+
+model TbmDriveSchedule {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date                DateTime
+ O_postalHighwayFee  Int? //高速(郵便)
+ Q_generalHighwayFee Int? //高速（一般）
+
+ User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int?
+
+ TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)
+ tbmVehicleId Int?
+
+ TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+ tbmRouteGroupId Int
+
+ finished  Boolean? @default(false)
+ confirmed Boolean? @default(false)
+ approved  Boolean? @default(true)
+
+ TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId Int
+
+ TbmEtcMeisai TbmEtcMeisai?
+}
+
+model TbmEtcMeisai {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ groupIndex Int
+ month      DateTime
+
+ info Json[]
+
+ sum Float
+
+ TbmVehicle         TbmVehicle?       @relation(fields: [tbmVehicleId], references: [id])
+ tbmVehicleId       Int?
+ TbmDriveSchedule   TbmDriveSchedule? @relation(fields: [tbmDriveScheduleId], references: [id])
+ tbmDriveScheduleId Int?              @unique
+
+ @@unique([tbmVehicleId, groupIndex, month], name: "unique_tbmVehicleId_groupIndex_month")
+ @@index([tbmVehicleId])
+}
+
+model OdometerInput {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ odometerStart Float
+ odometerEnd   Float
+ date          DateTime
+
+ TbmVehicle   TbmVehicle @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)
+ tbmVehicleId Int
+
+ User   User @relation(fields: [userId], references: [id])
+ userId Int
+
+ @@unique([tbmVehicleId, date], name: "unique_tbmVehicleId_date")
+}
+
+model UserWorkStatus {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date       DateTime
+ workStatus String?
+ remark     String?
+
+ User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int
+
+ @@unique([userId, date], name: "unique_userId_date")
+}
+
+model KyuyoTableRecord {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ other1      Float?
+ other2      Float?
+ shokuhi     Float?
+ maebaraikin Float?
+ rate        Float? @default(0.5)
+
+ yearMonth DateTime
+ User      User     @relation(fields: [userId], references: [id])
+ userId    Int
+
+ @@unique([userId, yearMonth], name: "unique_userId_yearMonth")
+}

@@ -1,0 +1,46 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+
+
+# next.js
+/.next/
+/out/
+
+# /public/data/production*
+｀
+# production
+/build
+
+.env
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+*.dump
+
+# prisma
+/prisma/generated
+
+# PWA files
+**/public/sw.js
+**/public/workbox-*.js
+**/public/worker-*.js
+**/public/sw.js.map
+**/public/workbox-*.js.map
+**/public/worker-*.js.map
+
+
+# styled-systemのフォルダは不要
+/styled-system/
+
+
+.env*.local
+
+# dumpfileは送らないようにしたい
+*.dump
+
