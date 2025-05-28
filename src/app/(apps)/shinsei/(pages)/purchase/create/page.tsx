@@ -41,15 +41,6 @@ export default function PurchaseRequestPage() {
       label: `商品`,
       form: {defaultValue: isDev ? 1 : undefined},
       forSelect: {
-        // allowCreateOptions: {
-        //   creator: () => {
-        //     return {
-        //       getCreatFormProps: (props: ControlContextType & {searchFormData}) => {
-        //         return {columns: ColBuilder.product({useGlobalProps}), formData: {}}
-        //       },
-        //     }
-        //   },
-        // },
         option: {style: {width: 400, padding: 6}},
         config: {
           select: {
