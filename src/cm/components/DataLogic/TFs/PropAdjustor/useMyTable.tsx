@@ -1,18 +1,16 @@
 import {Fields} from '@class/Fields/Fields'
 import {MyTableType} from '@cm/types/types'
 import {colType} from '@cm/types/types'
+import {useMemo} from 'react'
 
-export default function useMyTable({displayStyle, columns, myTable}) {
-  const showHeader = checkShowHeader({myTable, columns})
-
-  return {
-    ...myTable,
-    style: {...displayStyle, ...myTable?.style},
-    showHeader,
-  }
+// 型定義を追加
+interface UseMyTableProps {
+  displayStyle: any
+  columns: colType[][]
+  myTable: MyTableType
 }
 
-export const checkShowHeader = (props: {myTable: MyTableType; columns: colType[][]}) => {
+export const checkShowHeader = (props: {myTable: MyTableType; columns: colType[][]}): boolean => {
   const {myTable, columns} = props
 
   const noColHasLabel = columns?.flat()?.every(col => {
@@ -20,7 +18,20 @@ export const checkShowHeader = (props: {myTable: MyTableType; columns: colType[]
     return !showLabel
   })
 
-  const showHeader = myTable?.header ?? noColHasLabel
+  return !!(myTable?.header ?? noColHasLabel)
+}
 
-  return showHeader
+export default function useMyTable({displayStyle, columns, myTable}: UseMyTableProps) {
+  // ✅ 重い計算処理（配列操作）なのでメモ化有効
+  const showHeader = useMemo(() => checkShowHeader({myTable, columns}), [myTable, columns])
+
+  // ✅ オブジェクト作成なのでメモ化有効
+  return useMemo(
+    () => ({
+      ...myTable,
+      style: {...displayStyle, ...myTable?.style},
+      showHeader,
+    }),
+    [myTable, displayStyle, showHeader]
+  )
 }

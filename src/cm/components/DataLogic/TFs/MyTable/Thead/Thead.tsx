@@ -1,91 +1,95 @@
 import {Kado, ThDisplayJSX} from 'src/cm/components/DataLogic/TFs/MyTable/Thead/thead-methods'
-
 import {funcOrVar} from 'src/cm/lib/methods/common'
-import React, {CSSProperties} from 'react'
+import React, {CSSProperties, useMemo} from 'react'
 import {colType, MyTableType} from '@cm/types/types'
 import {TableConfigPropsType} from 'src/cm/components/DataLogic/TFs/MyTable/TableConfig'
-
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 import {COLORS} from '@lib/constants/constants'
 
-type TheadPropsType = {
+// 型定義を改善
+interface TheadPropsType {
   myTable: MyTableType
   columns: colType[][]
   useGlobalProps: useGlobalPropType
 }
 
-const Thead = React.memo((props: {ClientProps2; TableConfigProps: TableConfigPropsType; TheadProps: TheadPropsType}) => {
-  const {TableConfigProps, TheadProps, ClientProps2} = props
+interface TheadProps {
+  ClientProps2: any
+  TableConfigProps: TableConfigPropsType
+  TheadProps: TheadPropsType
+}
 
-  const {myTable, columns} = TheadProps
-  const RowSpanForSingleData = columns?.length
-  const tableColumns = columns?.filter(cols => {
-    const hasTd = cols.reduce((prev, col) => prev || !col?.td?.hidden, false)
-    return hasTd
+// thStyleを定数として分離
+const TH_STYLE: CSSProperties = {
+  background: COLORS.table.thead,
+  height: 'fit-content',
+  verticalAlign: 'top',
+}
+
+// テーブルカラムのフィルタリング処理を分離
+const filterVisibleColumns = (columns: colType[][]): colType[][] => {
+  return columns?.filter(cols => {
+    return cols.reduce((prev, col) => prev || !col?.td?.hidden, false)
   })
+}
 
-  const {useGlobalProps} = TheadProps
-  const {width, addQuery} = useGlobalProps
+// ヘッダーカラムのフィルタリング処理を分離
+const filterHeaderColumns = (tableColumns: colType[][]): colType[] => {
+  return tableColumns.flat().filter(col => !col?.td?.withLabel)
+}
 
-  const headerCols = tableColumns.flat().filter(col => !col?.td?.withLabel)
+const Thead = React.memo<TheadProps>(props => {
+  const {TableConfigProps, TheadProps, ClientProps2} = props
+  const {myTable, columns, useGlobalProps} = TheadProps
+  const {width} = useGlobalProps
 
+  const tableColumns = useMemo(() => filterVisibleColumns(columns), [columns])
+
+  const headerCols = useMemo(() => filterHeaderColumns(tableColumns), [tableColumns])
+
+  const RowSpanForSingleData = columns?.length
+
+  // 早期リターン
   if (headerCols.length === 0) {
-    return <></>
+    return null
   }
 
   return (
-    <>
-      <thead>
-        {tableColumns.map((cols, rowIdx) => {
-          const thStyle: CSSProperties = {
-            background: COLORS.table.thead,
-            height: 'fit-content',
-            verticalAlign: 'top',
-          }
+    <thead>
+      {tableColumns.map((cols, rowIdx) => (
+        <tr key={rowIdx}>
+          {rowIdx === 0 && (
+            <Kado style={TH_STYLE} rowSpan={RowSpanForSingleData} colSpan={1}>
+              <></>
+            </Kado>
+          )}
 
-          return (
-            <tr key={rowIdx}>
-              {rowIdx === 0 && (
-                <Kado
-                  {...{
-                    style: thStyle,
-                    rowSpan: RowSpanForSingleData,
-                    colSpan: 1,
-                  }}
-                >
-                  <></>
-                </Kado>
-              )}
+          {cols
+            ?.filter(col => !col?.td?.hidden)
+            .map((col, columnIdx: number) => {
+              const rowSpan = col?.td?.rowSpan
+              const colSpan = col?.td?.colSpan
 
-              {cols
-                ?.filter(col => !col?.td?.hidden)
-                .map((col, columnIdx: number) => {
-                  const rowSpan = col?.td?.rowSpan
-                  const colSpan = col?.td?.colSpan
+              const thStyle = useMemo(
+                () => ({
+                  ...TH_STYLE,
+                  ...funcOrVar(col?.th?.style),
+                }),
+                [col?.th?.style]
+              )
 
-                  return (
-                    <th
-                      key={`${col?.id}_${columnIdx}`}
-                      {...{
-                        rowSpan,
-                        colSpan,
-                        style: {
-                          ...thStyle,
-                          // ...funcOrVar(col.td?.style),
-                          ...funcOrVar(col?.th?.style),
-                        },
-                      }}
-                    >
-                      <ThDisplayJSX {...{width, col}} />
-                    </th>
-                  )
-                })}
-            </tr>
-          )
-        })}
-      </thead>
-    </>
+              return (
+                <th key={`${col?.id}_${columnIdx}`} rowSpan={rowSpan} colSpan={colSpan} style={thStyle}>
+                  <ThDisplayJSX width={width} col={col} />
+                </th>
+              )
+            })}
+        </tr>
+      ))}
+    </thead>
   )
 })
+
+Thead.displayName = 'Thead'
 
 export default Thead

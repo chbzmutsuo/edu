@@ -19,6 +19,7 @@ import BasicTabs from '@components/utils/tabs/BasicTabs'
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
 
 import {HREF} from '@lib/methods/urls'
+import {Prisma} from '@prisma/client'
 
 export class PageBuilder {
   static roleMaster: DataModelBuilder = roleMaster
@@ -159,7 +160,11 @@ export class PageBuilder {
                 useGlobalProps: props.useGlobalProps,
                 additional: {
                   include: QueryBuilder.getInclude({})?.aqCustomerSubscription?.include,
-                  orderBy: [{date: `desc`}],
+                  orderBy: [
+                    {
+                      AqProduct: {productCode: `asc`},
+                    },
+                  ] as Prisma.AqCustomerSubscriptionOrderByWithRelationInput[],
                 },
               }}
             />

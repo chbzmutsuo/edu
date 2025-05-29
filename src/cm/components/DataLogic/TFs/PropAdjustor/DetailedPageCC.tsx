@@ -1,18 +1,23 @@
 'use client'
 
 import {cl} from 'src/cm/lib/methods/common'
-
-import {useEffect, useState} from 'react'
+import {useEffect, useState, useMemo} from 'react'
 import MyForm from 'src/cm/components/DataLogic/TFs/MyForm/MyForm'
-
 import {ClientPropsType2} from 'src/cm/components/DataLogic/TFs/PropAdjustor/PropAdjustor'
 
-const DetailedPageCC = (props: {modelData: any; ClientProps2: ClientPropsType2}) => {
-  const {modelData, ClientProps2} = props
+// 型定義を追加
+interface DetailedPageCCProps {
+  modelData: any
+  ClientProps2: ClientPropsType2
+}
 
+const DetailedPageCC = ({modelData, ClientProps2}: DetailedPageCCProps) => {
   const {myForm, EditForm, dataModelName} = ClientProps2
 
-  if (!modelData) return <div>このページは存在しません</div>
+  // 早期リターン
+  if (!modelData) {
+    return <div>このページは存在しません</div>
+  }
 
   const [formData, setformData] = useState(modelData)
 
@@ -22,20 +27,36 @@ const DetailedPageCC = (props: {modelData: any; ClientProps2: ClientPropsType2})
     }
   }, [modelData])
 
-  ClientProps2.formData = modelData
-  ClientProps2.setformData = setformData
+  // ✅ オブジェクト作成なのでメモ化有効
+  const enhancedClientProps2 = useMemo(
+    () => ({
+      ...ClientProps2,
+      formData: modelData,
+      setformData: setformData,
+    }),
+    [ClientProps2, modelData, setformData]
+  )
+
+  // ✅ 条件分岐のあるJSX要素なのでメモ化有効
+  const formComponent = useMemo(
+    () => (EditForm ? <EditForm {...enhancedClientProps2} /> : <MyForm {...enhancedClientProps2} />),
+    [EditForm, enhancedClientProps2]
+  )
+
+  // ❌ 文字列結合は軽いのでメモ化不要
+  const formId = `${dataModelName}-formMemo-${EditForm ? 'Custom' : 'Normal'}`
 
   return (
-    <div className={cl(`mx-auto w-fit p-1.5`)}>
+    <div className={cl('mx-auto w-fit p-1.5')}>
       {/* //paperはつけない */}
-      <>
-        <div className={`p-0.5`} id={`${dataModelName}-formMemo-${EditForm ? 'Custom' : 'Normal'}`}>
-          {myForm?.caption}
-          {EditForm ? <EditForm {...{...ClientProps2}} /> : <MyForm {...{...ClientProps2}} />}
-        </div>
-      </>
+      <div className="p-0.5" id={formId}>
+        {myForm?.caption}
+        {formComponent}
+      </div>
     </div>
   )
 }
+
+DetailedPageCC.displayName = 'DetailedPageCC'
 
 export default DetailedPageCC

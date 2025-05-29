@@ -17,7 +17,7 @@ const kingOfTimeRequest = async (endpoint: string, options: RequestInit = {}) =>
   const token = getAccessToken()
 
   const url = `${KING_OF_TIME_API_BASE_URL}${endpoint}`
-  console.log(url) //logs
+
   const response = await fetch(url, {
     ...options,
     headers: {

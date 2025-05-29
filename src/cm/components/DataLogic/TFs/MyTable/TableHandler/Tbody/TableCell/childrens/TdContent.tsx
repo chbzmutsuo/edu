@@ -7,19 +7,11 @@ import dynamic from 'next/dynamic'
 const EditableForm = dynamic(
   () => import(`src/cm/components/DataLogic/TFs/MyTable/TableHandler/Tbody/TableCell/childrens/RawForm`)
 )
-const DisplayedState = dynamic(
-  () =>
-    import(`src/cm/components/DataLogic/TFs/MyTable/TableHandler/Tbody/TableCell/childrens/DisplayedState`).then(mod => ({
-      default: mod.DisplayedState,
-    })),
-  {
-    ssr: false,
-  }
-)
 
 import {Fields} from '@class/Fields/Fields'
 import {DH__switchColType} from '@class/DataHandler/type-converter'
 import {colType} from '@cm/types/types'
+import {DisplayedState} from '@components/DataLogic/TFs/MyTable/TableHandler/Tbody/TableCell/childrens/DisplayedState'
 // import {DisplayedState} from '@components/DataLogic/TFs/MyTable/TableHandler/Tbody/TableCell/childrens/DisplayedState'
 
 const TdContent = React.memo((props: {dataModelName: string; col: colType; record: any; value: any; mutateRecords: any}) => {

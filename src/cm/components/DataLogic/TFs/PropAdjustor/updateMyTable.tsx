@@ -1,23 +1,13 @@
 import {Fields} from '@class/Fields/Fields'
-import {colType, MyTableType} from '@cm/types/types'
+import {ClientPropsType, colType, MyTableType} from '@cm/types/types'
 
-export function updateMyTable({ClientProps, columns}) {
-  const {displayStyle} = ClientProps
-  const showHeader = checkShowHeader({myTable: ClientProps.myTable, columns})
-
-  const myTable = {
-    ...ClientProps.myTable,
-    style: {
-      ...displayStyle,
-      ...ClientProps.myTable?.style,
-    },
-    showHeader,
-  }
-  ClientProps.myTable = myTable
-  return myTable
+// 型定義を追加
+interface UpdateMyTableProps {
+  ClientProps: ClientPropsType
+  columns: colType[][]
 }
 
-export const checkShowHeader = (props: {myTable: MyTableType; columns: colType[][]}) => {
+export const checkShowHeader = (props: {myTable: MyTableType; columns: colType[][]}): boolean => {
   const {myTable, columns} = props
 
   const noColHasLabel = columns?.flat()?.every(col => {
@@ -25,7 +15,23 @@ export const checkShowHeader = (props: {myTable: MyTableType; columns: colType[]
     return !showLabel
   })
 
-  const showHeader = myTable?.header ?? noColHasLabel
+  return !!(myTable?.header ?? noColHasLabel)
+}
 
-  return showHeader
+export function updateMyTable({ClientProps, columns}: UpdateMyTableProps): MyTableType {
+  const {displayStyle} = ClientProps
+  const showHeader = checkShowHeader({myTable: ClientProps.myTable, columns})
+
+  const myTable: MyTableType = {
+    ...ClientProps.myTable,
+    style: {
+      ...displayStyle,
+      ...ClientProps.myTable?.style,
+    },
+    showHeader,
+  }
+
+  // 副作用を明示的に記述
+  ClientProps.myTable = myTable
+  return myTable
 }

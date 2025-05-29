@@ -22,7 +22,6 @@ import {serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getIni
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {getQueryArgs} from '@components/DataLogic/TFs/Server/fetchers/getQueryArgs'
 import EasySearcher from '@components/DataLogic/TFs/MyTable/EasySearcher/EasySearcher'
-import useLogOnRender from '@hooks/useLogOnRender'
 
 export type ChildCreatorProps = dataMinimumCommonType &
   form_table_modal_config & {

@@ -1,5 +1,5 @@
 'use client'
-import React, {useId, useMemo} from 'react'
+import React, {useId, useMemo, useCallback} from 'react'
 import {DetailPagePropType} from '@cm/types/types'
 import FormHeader from 'src/cm/components/DataLogic/TFs/MyForm/FormHeader'
 import {myFormDefault} from 'src/cm/constants/defaults'
@@ -10,10 +10,15 @@ import {UseFormReturn} from 'react-hook-form'
 import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
 import {useFormSubmit} from './hooks/useFormSubmit'
 
-const MyForm = React.memo((props: DetailPagePropType) => {
+// 型定義を追加
+interface MyFormProps extends DetailPagePropType {
+  prismaDataExtractionQuery?: prismaDataExtractionQueryType
+}
+
+const MyForm = React.memo<MyFormProps>(props => {
   const prismaDataExtractionQuery = props?.prismaDataExtractionQuery as prismaDataExtractionQueryType
 
-  // プロパティをメモ化
+  // プロパティをメモ化（依存関係を細分化）
   const memoizedProps = useMemo(
     () => ({
       ...props,
@@ -26,59 +31,89 @@ const MyForm = React.memo((props: DetailPagePropType) => {
   const {session} = memoizedProps.useGlobalProps
   const formId = useId()
 
-  // onFormItemBlurをメモ化
+  // onFormItemBlurをメモ化（より効率的に）
   const onFormItemBlur = useMemo(() => {
-    return columns.flat().find(col => col?.onFormItemBlur)?.onFormItemBlur
+    const flatColumns = columns.flat()
+    return flatColumns.find(col => col?.onFormItemBlur)?.onFormItemBlur
   }, [columns])
 
-  // BasicFormPropsをメモ化
-  const {BasicForm, ReactHookForm, extraFormState, latestFormData} = useBasicFormProps({
-    columns: memoizedProps?.columns,
-    formData: formData ?? {},
-    values: formData ?? {},
-    autoApplyProps: {},
-    onFormItemBlur: onFormItemBlur,
-  })
+  // BasicFormPropsの引数をメモ化
+  const basicFormPropsArgs = useMemo(
+    () => ({
+      columns: memoizedProps?.columns,
+      formData: formData ?? {},
+      values: formData ?? {},
+      autoApplyProps: {},
+      onFormItemBlur: onFormItemBlur,
+    }),
+    [memoizedProps?.columns, formData, onFormItemBlur]
+  )
 
-  // フォーム送信フックを使用
-  const {uploading, handleOnSubmit} = useFormSubmit({
-    prismaDataExtractionQuery,
-    myForm,
-    dataModelName,
-    additional,
-    formData,
-    columns,
-    mutateRecords,
-    setformData,
-    editType,
-  })
+  const {BasicForm, ReactHookForm, extraFormState, latestFormData} = useBasicFormProps(basicFormPropsArgs)
 
-  // 送信ハンドラーをラップ
-  const wrappedHandleOnSubmit = async () => {
+  // フォーム送信フックの引数をメモ化
+  const formSubmitArgs = useMemo(
+    () => ({
+      prismaDataExtractionQuery,
+      myForm,
+      dataModelName,
+      additional,
+      formData,
+      columns,
+      mutateRecords,
+      setformData,
+      editType,
+    }),
+    [prismaDataExtractionQuery, myForm, dataModelName, additional, formData, columns, mutateRecords, setformData, editType]
+  )
+
+  const {uploading, handleOnSubmit} = useFormSubmit(formSubmitArgs)
+
+  // 送信ハンドラーをメモ化
+  const wrappedHandleOnSubmit = useCallback(async () => {
     return handleOnSubmit(latestFormData, extraFormState)
-  }
+  }, [handleOnSubmit, latestFormData, extraFormState])
 
-  const updateMode = formData?.id
+  // 計算値をメモ化
+  const updateMode = !!formData?.id
+  const formElementId = useMemo(() => `myform-${formId}`, [formId])
+  const buttonText = updateMode ? '更新' : '新規作成'
+  const buttonColor = useMemo(() => (updateMode ? 'blue' : 'primary'), [updateMode])
 
-  const loggerId = `myform-${dataModelName}`
+  // customActionsの引数をメモ化
+  const customActionsArgs = useMemo(
+    () => ({
+      ...memoizedProps,
+      ReactHookForm,
+    }),
+    [memoizedProps, ReactHookForm]
+  )
+
+  // スタイルをメモ化
+  const containerStyle = useMemo(
+    () => ({
+      ...myForm?.style,
+      maxHeight: undefined,
+    }),
+    [myForm?.style]
+  )
 
   return (
-    <div id={`myform-${formId}`} style={{...myForm?.style, maxHeight: undefined}} className="m-0.5">
+    <div id={formElementId} style={containerStyle} className="m-0.5">
       <section>
         <FormHeader myForm={myForm} formData={formData} />
-        <div>{myForm?.customActions && myForm.customActions({...memoizedProps, ReactHookForm})}</div>
+        <div>{myForm?.customActions && myForm.customActions(customActionsArgs)}</div>
       </section>
 
       <section className="mx-auto w-fit">
         <BasicForm
           latestFormData={latestFormData}
           onSubmit={wrappedHandleOnSubmit}
-          // className={myForm?.basicFormClassName}
           ControlOptions={myForm?.basicFormControlOptions}
         >
           <div className="sticky bottom-0 w-full pt-2 text-center">
-            <Button disabled={uploading} className="w-[200px] max-w-[80vw] p-1" color={updateMode ? 'blue' : 'primary'}>
-              {updateMode ? '更新' : '新規作成'}
+            <Button disabled={uploading} className="w-[200px] max-w-[80vw] p-1" color={buttonColor} type="submit">
+              {buttonText}
             </Button>
           </div>
         </BasicForm>
@@ -91,17 +126,17 @@ MyForm.displayName = 'MyForm'
 
 export default MyForm
 
+// liftUpNewValueOnChange関数も最適化
 export const liftUpNewValueOnChange: liftUpNewValueOnChangeType = (props: {
   id: string
   newValue: any
   ReactHookForm: UseFormReturn
 }) => {
   const {id, newValue, ReactHookForm} = props
-  const before = ReactHookForm.getValues()[id]
 
   try {
     ReactHookForm.setValue(id, newValue)
-  } catch (error) {
-    console.error(error.stack) //////////
+  } catch (error: any) {
+    console.error(`Failed to set form value for field "${id}":`, error?.message || error)
   }
 }

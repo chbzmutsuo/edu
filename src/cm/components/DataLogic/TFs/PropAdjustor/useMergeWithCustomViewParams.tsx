@@ -1,6 +1,6 @@
 import {ViewParamBuilderProps} from '@components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
 
-export default function useMergeWithCustomViewParams(ClientProps) {
+export const useMergeWithCustomViewParams = ClientProps => {
   const {dataModelName, ViewParamBuilder} = ClientProps ?? {}
   const CustomViewParamsMethod: ViewParamBuilderProps = ViewParamBuilder?.[dataModelName]
 

@@ -15,21 +15,11 @@ const usePropAdjustorProps = (props: {
   useGlobalProps: useGlobalPropType
   prismaData: prismaDataType
   prismaDataExtractionQuery
-  // easySearchObject
-  // easySearchWhereAnd
+
   columns
   HK_USE_RECORDS
 }) => {
-  const {
-    ClientProps,
-    useGlobalProps,
-    prismaData,
-    prismaDataExtractionQuery,
-    // easySearchObject,
-    // easySearchWhereAnd,
-    columns,
-    HK_USE_RECORDS,
-  } = props
+  const {ClientProps, useGlobalProps, prismaData, prismaDataExtractionQuery, columns, HK_USE_RECORDS} = props
 
   const {formData, setformData} = useInitFormState(null, prismaData?.records)
   const {records, setrecords, mutateRecords, deleteRecord, totalCount} = HK_USE_RECORDS

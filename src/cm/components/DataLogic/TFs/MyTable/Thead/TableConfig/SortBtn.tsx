@@ -1,26 +1,42 @@
 import {colType} from '@cm/types/types'
 import {TableConfigPropsType} from 'src/cm/components/DataLogic/TFs/MyTable/TableConfig'
-
-import React from 'react'
+import React, {useMemo} from 'react'
 import SortHandler from 'src/cm/components/DataLogic/TFs/MyTable/TableHandler/SortHandler/SortHandler'
 
-export default function SortBtn(props: {TableConfigProps: TableConfigPropsType}) {
-  const {columns, myTable, columnCount, useGlobalProps, dataModelName} = props.TableConfigProps
-  const sortableCols = columns.flat().filter((col: colType) => col.sort)
-  return (
-    <>
-      {myTable?.['sort'] !== false && sortableCols.length > 0 && (
-        <SortHandler
-          {...{
-            sortableCols,
-            columns,
-            className: '',
-            columnCount,
-            useGlobalProps,
-            dataModelName,
-          }}
-        />
-      )}
-    </>
-  )
+// 型定義を追加
+interface SortBtnProps {
+  TableConfigProps: TableConfigPropsType
 }
+
+const SortBtn = React.memo<SortBtnProps>(props => {
+  const {columns, myTable, columnCount, useGlobalProps, dataModelName} = props.TableConfigProps
+
+  const sortableCols = useMemo(() => columns.flat().filter((col: colType) => col.sort), [columns])
+
+  const shouldShowSort = useMemo(
+    () => myTable?.['sort'] !== false && sortableCols.length > 0,
+    [myTable?.['sort'], sortableCols.length]
+  )
+
+  const sortHandlerProps = useMemo(
+    () => ({
+      sortableCols,
+      columns,
+      className: '',
+      columnCount,
+      useGlobalProps,
+      dataModelName,
+    }),
+    [sortableCols, columns, columnCount, useGlobalProps, dataModelName]
+  )
+
+  if (!shouldShowSort) {
+    return null
+  }
+
+  return <SortHandler {...sortHandlerProps} />
+})
+
+SortBtn.displayName = 'SortBtn'
+
+export default SortBtn

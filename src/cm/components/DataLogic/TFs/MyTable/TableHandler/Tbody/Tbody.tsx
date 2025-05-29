@@ -7,6 +7,7 @@ import {DnDTableRowPropsType} from 'src/cm/components/DataLogic/TFs/MyTable/DndT
 
 import dynamic from 'next/dynamic'
 import {obj__filterObject} from '@class/ObjHandler/transformers'
+import {PlainObject} from '@class/ObjHandler/types'
 
 const DnDTableRow = dynamic(() => import(`src/cm/components/DataLogic/TFs/MyTable/DndTableRow`), {ssr: false})
 
@@ -22,7 +23,13 @@ const Tbody = React.memo((props: {rows: any[][]; ClientProps2: ClientPropsType2;
 
   const stableDnDTableRowCallbackProps = useMemo(
     () => ({
-      ...(obj__filterObject(ClientProps2, [`myTable`, `useGlobalProps`, `formData`, `dataModelName`, `mutateRecords`]) as any),
+      ...(obj__filterObject(ClientProps2 as unknown as PlainObject, [
+        `myTable`,
+        `useGlobalProps`,
+        `formData`,
+        `dataModelName`,
+        `mutateRecords`,
+      ]) as any),
       SP: ClientProps2.useGlobalProps.device.SP,
       tbodyRowParams,
     }),

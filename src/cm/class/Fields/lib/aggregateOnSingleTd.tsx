@@ -62,9 +62,9 @@ export const aggregateOnSingleTd = (
 
   const {C_StackClassName = `items-start justify-start w-full  `} = mainTd
 
-  const stackClassName = useMemo(() => cl(`h-full justify-start gap-0 leading-[20px]`, C_StackClassName), [C_StackClassName])
+  const stackClassName = twMerge(`h-full justify-start gap-0 leading-[20px]`, C_StackClassName)
 
-  const thStackClassName = useMemo(() => cl(`mx-auto items-start justify-start gap-0 leading-4`), [])
+  const thStackClassName = `mx-auto items-start justify-start gap-0 leading-4`
 
   // // 初期化
   const mainCol = {

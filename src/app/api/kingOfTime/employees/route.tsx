@@ -29,7 +29,6 @@ const kingOfTimeRequest = async (endpoint: string, options: RequestInit = {}) =>
   }
 
   const data = await response.json()
-  console.log(data) //logs
   return data
 }
 

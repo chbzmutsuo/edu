@@ -1,12 +1,36 @@
 import {NestHandler} from '@class/NestHandler'
+import {useMemo} from 'react'
 
-export default function useEditForm({PageBuilderGetter, PageBuilder, dataModelName}) {
-  PageBuilderGetter = PageBuilderGetter ?? {class: PageBuilder, getter: `${dataModelName}.form`}
+// 型定義を追加
+interface UseEditFormProps {
+  PageBuilderGetter?: {
+    class: any
+    getter: string
+  }
+  PageBuilder?: any
+  dataModelName: string
+}
 
-  // if (PageBuilderGetter) {
-  const {getter} = PageBuilderGetter
-  const EditForm = NestHandler.GetNestedValue(getter, PageBuilderGetter['class'])
-  return EditForm
+// PageBuilderGetter作成を分離
+const createPageBuilderGetter = (
+  PageBuilderGetter: UseEditFormProps['PageBuilderGetter'],
+  PageBuilder: any,
+  dataModelName: string
+) => {
+  return (
+    PageBuilderGetter ?? {
+      class: PageBuilder,
+      getter: `${dataModelName}.form`,
+    }
+  )
+}
 
-  // }
+export default function useEditForm({PageBuilderGetter, PageBuilder, dataModelName}: UseEditFormProps) {
+  // ✅ NestHandler.GetNestedValueは重い処理なのでメモ化有効
+  return useMemo(() => {
+    const builderGetter = createPageBuilderGetter(PageBuilderGetter, PageBuilder, dataModelName)
+    const {getter} = builderGetter
+
+    return NestHandler.GetNestedValue(getter, builderGetter['class'])
+  }, [PageBuilderGetter, PageBuilder, dataModelName])
 }

@@ -1,7 +1,7 @@
 'use client'
 import React, {useRef, useMemo, useCallback} from 'react'
 
-import useMyTableParams from 'src/cm/components/DataLogic/TFs/MyTable/useMyTableParams'
+import useMyTableParams, {getPaginationPropsType} from 'src/cm/components/DataLogic/TFs/MyTable/useMyTableParams'
 
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import {DndContext, closestCenter} from '@dnd-kit/core'
@@ -26,19 +26,55 @@ import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import Thead from '@components/DataLogic/TFs/MyTable/Thead/Thead'
 import {useSearchHandler} from '@components/DataLogic/TFs/MyTable/TableHandler/SearchHandler/useSearchHandler/useSearchHandler'
 import {TableSkelton} from '@components/utils/loader/TableSkelton'
+import {colType, MyTableType} from '@cm/types/types'
 
-const MyTable = React.memo((props: {ClientProps2: ClientPropsType2}) => {
-  let ClientProps2 = props.ClientProps2
+// 型定義を改善
+interface MyTableProps {
+  ClientProps2: ClientPropsType2
+}
 
-  ClientProps2 = {
-    ...ClientProps2,
-    myTable: {...getMyTableDefault(), ...ClientProps2.myTable},
-    useGlobalProps: ClientProps2?.useGlobalProps,
-  }
+interface MainTableProps {
+  myTable: MyTableType
+  columns: colType[][]
+  elementRef: any
+  tableStyleRef: any
+  tableStyle: React.CSSProperties
+  sensors: any
+  handleDragEndMemo: any
+  items: any
+  showHeader: boolean | undefined
+  TableConfigProps: TableConfigPropsType
+  useGlobalProps: any
+  ClientProps2: ClientPropsType2
+  rows: colType[][]
+  getPaginationProps: getPaginationPropsType
+  RowActionButtonComponent: any
+}
 
-  const {editType} = ClientProps2
+const MyTable = React.memo<MyTableProps>(props => {
+  const ClientProps2 = useMemo(
+    () => ({
+      ...props.ClientProps2,
+      myTable: {...getMyTableDefault(), ...props.ClientProps2.myTable},
+      useGlobalProps: props.ClientProps2?.useGlobalProps,
+    }),
+    [props.ClientProps2]
+  )
 
-  const {columns, dataModelName, setformData, myTable, formData, useGlobalProps, records, setrecords, deleteRecord} = ClientProps2
+  const {editType, columns, dataModelName, setformData, myTable, formData, useGlobalProps, records, setrecords, deleteRecord} =
+    ClientProps2
+
+  const myTableParamsArgs = useMemo(
+    () => ({
+      columns,
+      dataModelName,
+      useGlobalProps,
+      myTable,
+      records,
+      setrecords,
+    }),
+    [columns, dataModelName, useGlobalProps, myTable, records, setrecords]
+  )
 
   const {
     columnCount,
@@ -46,25 +82,44 @@ const MyTable = React.memo((props: {ClientProps2: ClientPropsType2}) => {
     tableStyle,
     methods: {getPaginationProps, handleDragEndMemo},
     dndProps: {items, sensors},
-  } = useMyTableParams({columns, dataModelName, useGlobalProps, myTable, records, setrecords})
+  } = useMyTableParams(myTableParamsArgs)
 
-  const {RowActionButtonComponent} = useTrActions({
-    ...{records, setrecords, deleteRecord, setformData},
-    ...{columns, editType, myTable, dataModelName, useGlobalProps},
-  })
+  const trActionsArgs = useMemo(
+    () => ({
+      records,
+      setrecords,
+      deleteRecord,
+      setformData,
+      columns,
+      editType,
+      myTable,
+      dataModelName,
+      useGlobalProps,
+    }),
+    [records, setrecords, deleteRecord, setformData, columns, editType, myTable, dataModelName, useGlobalProps]
+  )
+
+  const {RowActionButtonComponent} = useTrActions(trActionsArgs)
+
+  // ❌ 削除：軽い計算なのでメモ化不要
   const recordCount = records?.length ?? 0
+  const {configPosition = 'top', showHeader} = myTable ?? {}
 
-  const {configPosition = `top`} = myTable ?? {}
+  const TableConfigProps: TableConfigPropsType = useMemo(
+    () => ({
+      columns,
+      myTable,
+      dataModelName,
+      useGlobalProps,
+      records,
+      setformData,
+      configPosition,
+      getPaginationProps,
+      columnCount,
+    }),
+    [columns, myTable, dataModelName, useGlobalProps, records, setformData, configPosition, getPaginationProps, columnCount]
+  )
 
-  const TableConfigProps: TableConfigPropsType = {
-    ...{columns, myTable, dataModelName, useGlobalProps},
-    ...{records, setformData},
-    ...{configPosition, getPaginationProps, columnCount},
-  }
-
-  const {showHeader} = myTable ?? {}
-
-  // rows計算を最適化（メモ化）
   const rows = useMemo(() => {
     return ClientProps2.columns
       .filter(cols => {
@@ -78,25 +133,26 @@ const MyTable = React.memo((props: {ClientProps2: ClientPropsType2}) => {
       })
   }, [ClientProps2.columns, showHeader])
 
-  // tableIdを安定化
-  const tableId = useMemo(() => ['table', dataModelName, myTable?.tableId].join(`_`), [dataModelName, myTable?.tableId])
+  const tableId = useMemo(() => ['table', dataModelName, myTable?.tableId].join('_'), [dataModelName, myTable?.tableId])
 
   const elementRef = useRef<HTMLDivElement>(null)
 
-  // テーブルのスクロール位置を保存
   useElementScrollPosition({
     elementRef,
     scrollKey: tableId,
   })
 
-  // SearchingStatusMemoを最適化
-  const {SearchingStatusMemo} = useSearchHandler({
-    columns: ClientProps2.columns,
-    dataModelName: ClientProps2.dataModelName,
-    useGlobalProps: ClientProps2.useGlobalProps,
-  })
+  const searchHandlerArgs = useMemo(
+    () => ({
+      columns: ClientProps2.columns,
+      dataModelName: ClientProps2.dataModelName,
+      useGlobalProps: ClientProps2.useGlobalProps,
+    }),
+    [ClientProps2.columns, ClientProps2.dataModelName, ClientProps2.useGlobalProps]
+  )
 
-  // MainTablePropsを安定化
+  const {SearchingStatusMemo} = useSearchHandler(searchHandlerArgs)
+
   const mainTableProps = useMemo(
     () => ({
       myTable,
@@ -134,7 +190,6 @@ const MyTable = React.memo((props: {ClientProps2: ClientPropsType2}) => {
     ]
   )
 
-  // MyPaginationPropsを安定化
   const paginationProps = useMemo(
     () => ({
       totalCount: ClientProps2.totalCount,
@@ -147,40 +202,41 @@ const MyTable = React.memo((props: {ClientProps2: ClientPropsType2}) => {
     [ClientProps2.totalCount, recordCount, myTable, getPaginationProps, useGlobalProps, records]
   )
 
+  const emptyDataStyle = useMemo(
+    () => ({
+      width: myTable?.style?.width,
+      minWidth: myTable?.style?.minWidth,
+      margin: 'auto',
+    }),
+    [myTable?.style?.width, myTable?.style?.minWidth]
+  )
+
+  const sectionStyle = {
+    maxWidth: '80%',
+    zIndex: Z_INDEX.thead,
+  }
+
   return (
     <div>
       <div>
         {records === null ? (
-          <div className={`max-w-[90%] w-[300px] h-fit overflow-hidden`}>
+          <div className="max-w-[90%] w-[300px] h-fit overflow-hidden">
             <TableSkelton />
           </div>
         ) : records.length === 0 ? (
-          <div
-            style={{
-              width: myTable?.style?.width,
-              minWidth: myTable?.style?.minWidth,
-              margin: 'auto',
-            }}
-          >
+          <div style={emptyDataStyle}>
             <PlaceHolder>データが見つかりません</PlaceHolder>
           </div>
         ) : (
           <MainTable {...mainTableProps} />
         )}
 
-        <section
-          className={`sticky bottom-2 mx-auto mt-4   px-1 pb-2   md:scale-[1.25]`}
-          style={{
-            maxWidth: `80%`,
-            zIndex: Z_INDEX.thead,
-          }}
-        >
-          <div className={cl(`rounded-sm bg-white/70`, ` mx-auto  w-fit   px-1.5  py-1  `)}>
-            <C_Stack className={` items-start`}>
+        <section className="sticky bottom-2 mx-auto mt-4 px-1 pb-2 md:scale-[1.25]" style={sectionStyle}>
+          <div className={cl('rounded-sm bg-white/70', 'mx-auto w-fit px-1.5 py-1')}>
+            <C_Stack className="items-start">
               {SearchingStatusMemo && <div>{SearchingStatusMemo}</div>}
-              <R_Stack className={`  w-fit  justify-center gap-y-0`}>
-                <TableConfig {...{TableConfigProps, ClientProps2}} />
-
+              <R_Stack className="w-fit justify-center gap-y-0">
+                <TableConfig TableConfigProps={TableConfigProps} ClientProps2={ClientProps2} />
                 {myTable?.pagination && recordCount > 0 && <MyPagination {...paginationProps} />}
               </R_Stack>
             </C_Stack>
@@ -191,96 +247,89 @@ const MyTable = React.memo((props: {ClientProps2: ClientPropsType2}) => {
   )
 })
 
-export default MyTable
+MyTable.displayName = 'MyTable'
 
-// MainTableコンポーネントも最適化
-const MainTable = React.memo(
-  (props: {
-    myTable: any
-    columns: any
-    elementRef: any
-    tableStyleRef: any
-    tableStyle: any
-    sensors: any
-    handleDragEndMemo: any
-    items: any
-    showHeader: any
-    TableConfigProps: any
-    useGlobalProps: any
-    ClientProps2: any
-    rows: any
-    getPaginationProps: any
-    RowActionButtonComponent: any
-  }) => {
-    const {
-      myTable,
-      columns,
-      elementRef,
-      tableStyleRef,
-      tableStyle,
-      sensors,
-      handleDragEndMemo,
-      items,
-      showHeader,
-      TableConfigProps,
-      useGlobalProps,
-      ClientProps2,
-      rows,
-      getPaginationProps,
-      RowActionButtonComponent,
-    } = props
+// MainTableコンポーネントを最適化
+const MainTable = React.memo<MainTableProps>(props => {
+  const {
+    myTable,
+    columns,
+    elementRef,
+    tableStyleRef,
+    tableStyle,
+    sensors,
+    handleDragEndMemo,
+    items,
+    showHeader,
+    TableConfigProps,
+    useGlobalProps,
+    ClientProps2,
+    rows,
+    getPaginationProps,
+    RowActionButtonComponent,
+  } = props
 
-    // TableWrapperCardを安定化
-    const TableWrapperCard = useCallback(
-      ({children}) => {
-        if (myTable?.useWrapperCard === false) {
-          return children
-        } else {
-          return <div className={` t-paper  ${myTable?.showHeader ? 'p-0!' : `p-2!`} relative  `}>{children}</div>
-        }
-      },
-      [myTable?.useWrapperCard, myTable?.showHeader]
-    )
+  const TableWrapperCard = useCallback(
+    ({children}: {children: React.ReactNode}) => {
+      if (myTable?.useWrapperCard === false) {
+        return <>{children}</>
+      } else {
+        return <div className={`t-paper ${myTable?.showHeader ? 'p-0!' : 'p-2!'} relative`}>{children}</div>
+      }
+    },
+    [myTable?.useWrapperCard, myTable?.showHeader]
+  )
 
-    // tableStyleを安定化
-    const tableStyleMemo = useMemo(
-      () => ({
-        borderCollapse: `separate` as const,
-        borderSpacing: showHeader ? `0px` : `0px  6px`,
-      }),
-      [showHeader]
-    )
+  const tableStyleMemo = useMemo(
+    () => ({
+      borderCollapse: 'separate' as const,
+      borderSpacing: showHeader ? '0px' : '0px 6px',
+    }),
+    [showHeader]
+  )
 
-    return (
-      <>
-        {typeof myTable?.header === 'function' && myTable?.header()}
-        <section className={` bg-error-man  bg-inherit  `}>
-          <TableWrapperCard>
-            <TableWrapper ref={elementRef} style={{...tableStyle}}>
-              {myTable?.caption && <div>{myTable?.caption}</div>}
-              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndMemo}>
-                <SortableContext items={items} strategy={verticalListSortingStrategy}>
-                  <div>
-                    <table style={tableStyleMemo} ref={tableStyleRef} className={cl(myTable?.className)}>
-                      {myTable?.showHeader && (
-                        <Thead {...{TableConfigProps, TheadProps: {myTable, columns, useGlobalProps}, ClientProps2}} />
-                      )}
+  const combinedTableStyle = useMemo(
+    () => ({
+      ...tableStyle,
+      ...tableStyleMemo,
+    }),
+    [tableStyle, tableStyleMemo]
+  )
 
-                      <Tbody
-                        {...{
-                          ClientProps2,
-                          rows,
-                          tbodyRowParams: {getPaginationProps, RowActionButtonComponent},
-                        }}
+  return (
+    <>
+      {typeof myTable?.header === 'function' && myTable?.header()}
+      <section className="bg-error-man bg-inherit">
+        <TableWrapperCard>
+          <TableWrapper ref={elementRef} style={tableStyle}>
+            {myTable?.caption && <div>{myTable?.caption}</div>}
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndMemo}>
+              <SortableContext items={items} strategy={verticalListSortingStrategy}>
+                <div>
+                  <table style={combinedTableStyle} ref={tableStyleRef} className={cl(myTable?.className)}>
+                    {myTable?.showHeader && (
+                      <Thead
+                        TableConfigProps={TableConfigProps}
+                        TheadProps={{myTable, columns, useGlobalProps}}
+                        ClientProps2={ClientProps2}
                       />
-                    </table>
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </TableWrapper>
-          </TableWrapperCard>
-        </section>
-      </>
-    )
-  }
-)
+                    )}
+                    <Tbody
+                      ClientProps2={ClientProps2}
+                      rows={rows}
+                      tbodyRowParams={{getPaginationProps, RowActionButtonComponent}}
+                    />
+                  </table>
+                </div>
+              </SortableContext>
+            </DndContext>
+          </TableWrapper>
+        </TableWrapperCard>
+      </section>
+    </>
+  )
+})
+
+MainTable.displayName = 'MainTable'
+
+export default MyTable

@@ -1,10 +1,7 @@
 import React, {JSX} from 'react'
 import {PageBuilderGetterType} from '@cm/types/types'
 
-import dynamic from 'next/dynamic'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-
-const AdminClient = dynamic(() => import('@components/layout/Admin/AdminClient'), {loading: () => <PlaceHolder />})
+import AdminClient from '@components/layout/Admin/AdminClient'
 
 export type adminProps = {
   AppName: string | JSX.Element

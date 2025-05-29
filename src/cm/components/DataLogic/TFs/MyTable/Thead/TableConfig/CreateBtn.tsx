@@ -1,42 +1,49 @@
 import {TableConfigPropsType} from 'src/cm/components/DataLogic/TFs/MyTable/TableConfig'
-import React from 'react'
+import React, {useCallback, useMemo} from 'react'
 import {Button} from '@components/styles/common-components/Button'
 
-export default function CreateBtn(props: {TableConfigProps: TableConfigPropsType}) {
+// 型定義を追加
+interface CreateBtnProps {
+  TableConfigProps: TableConfigPropsType
+}
+
+// クリックハンドラーを分離
+const createClickHandler = (myTable: any, setformData: (data: any) => void) => async () => {
+  const allowNextProcess = myTable?.create?.onClick ? await myTable?.create?.onClick?.() : true
+
+  if (allowNextProcess) {
+    setformData({id: 0})
+  }
+}
+
+const CreateBtn = React.memo<CreateBtnProps>(props => {
   const {setformData, myTable} = props.TableConfigProps
 
-  if (myTable?.create?.label) {
+  // ✅ 非同期処理を含む関数なのでメモ化有効
+  const handleClick = useCallback(createClickHandler(myTable, setformData), [myTable?.create?.onClick, setformData])
+
+  // ✅ 条件分岐の判定をメモ化
+  const hasCustomLabel = useMemo(() => !!myTable?.create?.label, [myTable?.create?.label])
+
+  const shouldShowDefaultButton = useMemo(() => myTable?.['create'] !== false, [myTable?.['create']])
+
+  // カスタムラベルがある場合
+  if (hasCustomLabel) {
+    return <div onClick={handleClick}>{myTable?.create?.label}</div>
+  }
+
+  // デフォルトボタン
+  if (shouldShowDefaultButton) {
     return (
-      <div
-        onClick={async e => {
-          const allowNextProcess = myTable?.create?.onClick ? await myTable?.create?.onClick?.() : true
-          if (allowNextProcess) {
-            setformData({id: 0})
-          }
-        }}
-      >
-        {myTable?.create?.label ? myTable?.create?.label : <></>}
-      </div>
+      <Button size="sm" type="button" onClick={handleClick}>
+        新規
+      </Button>
     )
   }
-  return (
-    <>
-      {myTable?.['create'] !== false && (
-        <Button
-          {...{
-            size: `sm`,
-            type: `button`,
-            onClick: async e => {
-              const allowNextProcess = myTable?.create?.onClick ? await myTable?.create?.onClick?.() : true
-              if (allowNextProcess) {
-                setformData({id: 0})
-              }
-            },
-          }}
-        >
-          新規
-        </Button>
-      )}
-    </>
-  )
-}
+
+  return null
+})
+
+CreateBtn.displayName = 'CreateBtn'
+
+export default CreateBtn
