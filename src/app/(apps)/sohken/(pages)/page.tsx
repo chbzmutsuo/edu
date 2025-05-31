@@ -23,27 +23,27 @@ const Top = async props => {
     const tomorrow = Days.day.add(getMidnight(), 1)
     return <Redirector {...{redirectPath: `?from=${formatDate(tomorrow)}`}} />
   }
-  if (isDev) {
-    return (
-      <Redirector
-        {...{
-          redirectPath:
-            '/sohken/calendar/' +
-            addQuerySentence({
-              g_userId: '159',
-              from: formatDate(Days.day.add(getMidnight(), 1)),
-              myPage: true,
-            }),
-        }}
-      />
-    )
-  }
+  // if (isDev) {
+  //   return (
+  //     <Redirector
+  //       {...{
+  //         redirectPath:
+  //           '/sohken/calendar/' +
+  //           addQuerySentence({
+  //             g_userId: '159',
+  //             from: formatDate(Days.day.add(getMidnight(), 1)),
+  //             myPage: true,
+  //           }),
+  //       }}
+  //     />
+  //   )
+  // }
 
-  return (
-    <Redirector
-      {...{redirectPath: '/sohken/genbaDay' + addQuerySentence({from: formatDate(Days.day.add(getMidnight(), 1)), myPage: true})}}
-    />
-  )
+  // return (
+  //   <Redirector
+  //     {...{redirectPath: '/sohken/genbaDay' + addQuerySentence({from: formatDate(Days.day.add(getMidnight(), 1)), myPage: true})}}
+  //   />
+  // )
 
   const dayRemarks = await prisma.dayRemarks.findMany({
     where: {date: date},
@@ -63,7 +63,7 @@ const Top = async props => {
           const isVideo = DayRemarksFile.some(file => file.url.includes(`video`))
 
           return (
-            <Paper key={data.id} className={`p-4 max-w-xl mx-auto`}>
+            <Paper key={data.id} className={`p-3 max-w-xl mx-auto min-w-[280px]`}>
               <C_Stack className={`gap-8`}>
                 <div>
                   <Head2>連絡事項</Head2>

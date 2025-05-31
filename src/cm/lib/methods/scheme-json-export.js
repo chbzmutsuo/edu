@@ -1317,7 +1317,6 @@ model GenbaDay {
  date    DateTime
  subTask String?
  remarks String?
- Genba   Genba?   @relation(fields: [genbaId], references: [id], onDelete: Cascade)
  ninku   Float?
 
  finished Boolean? @default(false)
@@ -1331,7 +1330,8 @@ model GenbaDay {
  allAssignedNinkuTillThisDay Int?
  allRequiredNinku            Int?
 
- genbaId       Int?
+ Genba         Genba           @relation(fields: [genbaId], references: [id], onDelete: Cascade)
+ genbaId       Int
  GenbaDayShift GenbaDayShift[]
 
  GenbaDaySoukenCar GenbaDaySoukenCar[]
@@ -1339,6 +1339,7 @@ model GenbaDay {
  GenbaDayTaskMidTable GenbaDayTaskMidTable[]
 
  @@unique([date, genbaId], name: "unique_date_genbaId")
+ @@index([date])
 }
 
 model GenbaTask {
@@ -1362,6 +1363,8 @@ model GenbaTask {
  GenbaDayTaskMidTable GenbaDayTaskMidTable[]
 
  @@unique([name, genbaId], name: "unique_name_genbaId")
+ @@index([from])
+ @@index([to])
 }
 
 model GenbaDayTaskMidTable {

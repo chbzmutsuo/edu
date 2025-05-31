@@ -19,6 +19,7 @@ type getScopeOptionsProps = {query?: anyObject; roles?: any[]}
 
 export const getScopes = (session: anyObject, options: getScopeOptionsProps) => {
   const {query, roles} = options ?? {}
+
   const roleNames = (roles ?? []).map(d => d.name)
   const login = session?.id ? true : false
   const {admin, getGlobalUserId} = judgeIsAdmin(session, query)

@@ -14,7 +14,7 @@ import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
 import {ViewParamBuilder} from '@app/(apps)/sohken/class/ViewParamBuilder'
 
 import {Days} from '@class/Days/Days'
-import { toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@class/Days/date-utils/calculations'
 export default async function DynamicMasterPage(props) {
   const query = await props.searchParams
   const params = await props.params

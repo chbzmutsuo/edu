@@ -23,9 +23,9 @@ export const useSearchHandler = (props: SearchHandler) => {
   const {dataModelName, useGlobalProps} = props
   const SearchCols = props.columns.flat().filter((col: colType) => col.search)
   const {toggleLoad, query, shallowAddQuery, device} = useGlobalProps
+  const [modalOpen, setmodalOpen] = useState(false)
   const addQuery = shallowAddQuery
   const {SP} = device
-  const [modalOpen, setmodalOpen] = useState(false)
 
   const columns = Sub.makeSearchColumns({columns: props.columns, dataModelName, SP})
 

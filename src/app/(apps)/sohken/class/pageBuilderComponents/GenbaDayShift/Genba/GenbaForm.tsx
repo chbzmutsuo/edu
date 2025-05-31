@@ -177,7 +177,7 @@ const TaskAndSchedule = ({genba, allTasks}) => {
                     myTable: {
                       update: false,
                       customActions: clientProps => <UnUsedScheduleDeleteBtn {...{genba, router}} />,
-                      pagination: {countPerPage: 50},
+                      pagination: {countPerPage: 100},
                       delete: {requiredUserConfirmation: false},
                       // style: {maxHeight: 1000},
                     },

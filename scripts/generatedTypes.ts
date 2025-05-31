@@ -978,7 +978,6 @@ export interface P_GenbaDay {
   sortOrder: number;
   date: Date;
   remarks: string;
-  Genba: P_Genba;
   ninku: number;
   finished: boolean;
   active: boolean;
@@ -988,9 +987,9 @@ export interface P_GenbaDay {
   isLastFullfilledDay: boolean;
   allAssignedNinkuTillThisDay: number;
   allRequiredNinku: number;
+  Genba: P_Genba;
   genbaId: number;
-  GenbaDayShift: P_GenbaDayShift[];
-  GenbaDayTaskMidTable: P_GenbaDayTaskMidTable[];
+  GenbaDaySoukenCar: P_GenbaDaySoukenCar[];
 }
 
 export interface P_GenbaTask {

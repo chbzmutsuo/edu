@@ -61,7 +61,13 @@ export class QueryBuilder {
         },
       },
     }
-    const genba: Prisma.GenbaFindManyArgs = {include: {GenbaTask: {}, PrefCity: {}}}
+    const genba: Prisma.GenbaFindManyArgs = {
+      include: {
+        GenbaDay: {select: {id: true}},
+        GenbaTask: {},
+        PrefCity: {},
+      },
+    }
     // const userRole: Prisma.UserRoleFindManyArgs = {include: {RoleMaster: {}}}
 
     const include = {genbaDay, user, sohkenCar, genba}

@@ -23,7 +23,6 @@ export const useColumns = ({
   ColBuilder,
   ColBuilderExtraProps,
 }: UseColumnsProps): colType[][] => {
-  // ✅ 重い計算処理なのでメモ化有効
   const columnGetMethod = getColumnGetMethod(ColBuilder, dataModelName)
 
   return columnGetMethod({

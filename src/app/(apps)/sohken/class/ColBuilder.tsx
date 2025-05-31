@@ -21,6 +21,7 @@ import GenbaDaySummary from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary
 import {SOHKEN_CONST} from '@app/(apps)/sohken/(constants)/SOHKEN_CONST'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {isDev} from '@lib/methods/common'
 
 const register = {required: `必須です`}
 export class ColBuilder {
@@ -42,7 +43,7 @@ export class ColBuilder {
         label: 'ファイルURL',
         type: `file`,
 
-        td: {style: {minWidth: 200, height: 160}},
+        td: {style: {minWidth: 160, height: 120}},
         form: {
           ...defaultRegister,
           file: {
@@ -338,6 +339,15 @@ export class ColBuilder {
           label: '現場名',
           form: {register},
           search: {},
+          format: (value, row) => {
+            return (
+              <div>
+                {isDev && <span>({row?.GenbaDay?.length})</span>}
+                <span>{value}</span>
+              </div>
+            )
+          },
+          td: {style: {minWidth: 150}},
         },
       ]).buildFormGroup({groupName: `基本情報`}).plain,
 

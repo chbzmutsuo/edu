@@ -153,7 +153,7 @@
     "**/stock/**": true,
     "**/tbm/**": true,
     "**/tmp/**": true,
-    "**/sohken/**": true
+    "**/aquapot/**": true
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
     "Advantage",
@@ -161,11 +161,11 @@
     "Grouping",
     "KM",
     "achievement",
+    "aquapot",
     "cruzdan",
     "kickswrap",
     "page",
     "shinsei",
-    "sohken",
     "stock",
     "tbm",
     "tmp"

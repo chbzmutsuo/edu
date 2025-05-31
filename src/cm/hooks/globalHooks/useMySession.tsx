@@ -7,13 +7,15 @@ import {FakeOrKeepSession} from 'src/non-common/scope-lib/FakeOrKeepSession'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {judgeIsAdmin} from 'src/non-common/scope-lib/judgeIsAdmin'
 import {UserCl} from '@class/UserCl'
+import {User} from '@prisma/client'
+import {useMemo} from 'react'
 
 export type customeSessionType = anyObject
 export default function useCustomSession() {
   const {query} = useMyNavigation()
 
   const {data: getSessoin, status} = useSession()
-  const realSession = status === 'loading' ? undefined : getSessoin?.user
+  const realSession = status === 'loading' ? undefined : (getSessoin?.user as User)
 
   const {globalUserId} = judgeIsAdmin(realSession, query)
 
@@ -25,14 +27,16 @@ export default function useCustomSession() {
 
   const {roles, roleIsLoading} = useUserRole({session: fakeSession})
 
-  const accessScopes = () => getScopes(fakeSession, {query, roles})
+  const userData = useMemo(() => ({...fakeSession, role: realSession?.role}), [fakeSession, realSession])
+
+  const accessScopes = () => getScopes(userData, {query, roles})
 
   const User = new UserCl({
-    user: fakeSession,
+    user: userData,
     roles,
     scopes: getScopes(fakeSession, {query, roles}),
   })
-  const session = User.data
+  const session = {...User.data}
 
   const sessionLoading = fakeSession === undefined || status === 'loading' || roleIsLoading
   return {

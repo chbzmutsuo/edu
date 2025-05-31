@@ -44,7 +44,7 @@ export default function template({children}) {
       <GenbaDetailModal_HK.Modal />
       <GenbaSearchModal_HK.Modal />
       {children}
-      {admin && (
+      {/* {admin && (
         <R_Stack className={` sticky bottom-1 px-2`}>
           <CalenderRefresher />
           {admin && (
@@ -74,7 +74,7 @@ export default function template({children}) {
             </Button>
           )}
         </R_Stack>
-      )}
+      )} */}
     </div>
   )
 }

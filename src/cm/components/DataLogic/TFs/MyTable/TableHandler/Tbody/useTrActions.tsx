@@ -53,36 +53,36 @@ const useTrActions = props => {
     }
 
     if (deleteConfirmed) {
-      toggleLoad(async () => {
-        const deleteImageUrls = columns
-          .flat()
-          .filter(col => col?.type === 'file')
-          .map(col => {
-            const {id} = col
-            const backetKey = col?.form?.file?.backetKey
+      // toggleLoad(async () => {
+      const deleteImageUrls = columns
+        .flat()
+        .filter(col => col?.type === 'file')
+        .map(col => {
+          const {id} = col
+          const backetKey = col?.form?.file?.backetKey
 
-            return {id, backetKey, deleteImageUrl: record[col.id]}
+          return {id, backetKey, deleteImageUrl: record[col.id]}
+        })
+
+      await Promise.all(
+        deleteImageUrls.map(async obj => {
+          const {id, deleteImageUrl, backetKey} = obj
+          await FileHandler.sendFileToS3({
+            file: null,
+            formDataObj: {
+              backetKey: `${backetKey}/${id}`,
+              deleteImageUrl,
+            },
           })
+        })
+      )
 
-        await Promise.all(
-          deleteImageUrls.map(async obj => {
-            const {id, deleteImageUrl, backetKey} = obj
-            await FileHandler.sendFileToS3({
-              file: null,
-              formDataObj: {
-                backetKey: `${backetKey}/${id}`,
-                deleteImageUrl,
-              },
-            })
-          })
-        )
-
-        const res = await generalDoStandardPrisma(dataModelName, 'delete', {where: {id: record?.id}})
-        toastByResult(res)
-        if (res.success) {
-          deleteRecord({record})
-        }
-      })
+      const res = await generalDoStandardPrisma(dataModelName, 'delete', {where: {id: record?.id}})
+      toastByResult(res)
+      if (res.success) {
+        deleteRecord({record})
+      }
+      // })
     } else {
       alert('キャンセルしました')
     }

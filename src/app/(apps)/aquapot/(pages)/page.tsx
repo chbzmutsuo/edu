@@ -10,7 +10,6 @@ import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
 export default async function Page(props) {
   const query = await props.searchParams
-  const params = await props.params
   const {session, scopes} = await initServerComopnent({query})
   const {aqCustomerId, isUser} = scopes.getAquepotScopes()
 

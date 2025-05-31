@@ -7,7 +7,7 @@ import {ClientPropsType, prismaDataType} from '@cm/types/types'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 import useInitFormState from 'src/cm/hooks/useInitFormState'
 import {ClientPropsType2} from 'src/cm/components/DataLogic/TFs/PropAdjustor/PropAdjustor'
-import useRecords from 'src/cm/components/DataLogic/TFs/PropAdjustor/useRecords'
+import useRecords from '@components/DataLogic/TFs/PropAdjustor/(useRecords)/useRecords'
 import {updateMyTable} from '@components/DataLogic/TFs/PropAdjustor/updateMyTable'
 
 const usePropAdjustorProps = (props: {

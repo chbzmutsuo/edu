@@ -11,12 +11,12 @@ import {
 
 import {C_Stack, NoData} from 'src/cm/components/styles/common-components/common-components'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import React, {JSX} from 'react'
+import React, {JSX, useMemo} from 'react'
 import TableForm from 'src/cm/components/DataLogic/TFs/PropAdjustor/TableForm'
 import {useParams} from 'next/navigation'
 import {StrHandler} from '@class/StrHandler'
 import {checkShowHeader} from '@components/DataLogic/TFs/PropAdjustor/useMyTable'
-import useRecords from '@components/DataLogic/TFs/PropAdjustor/useRecords'
+import useRecords from '@components/DataLogic/TFs/PropAdjustor/(useRecords)/useRecords'
 import useInitFormState from '@hooks/useInitFormState'
 import {serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import useGlobal from '@hooks/globalHooks/useGlobal'
@@ -43,67 +43,130 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
   const {parentModelIdStr, childrenModelIdStr} = getModelData(models)
   const columns = convertColumns(props)
 
-  const orderBy = [
-    ...(props.myTable?.drag ? [{sortOrder: 'asc'}] : []),
-    ...(additional?.orderBy ?? [{sortOrder: 'asc'}, {id: 'asc'}]),
-  ]
+  const orderBy = useMemo(
+    () => [...(props.myTable?.drag ? [{sortOrder: 'asc'}] : []), ...(additional?.orderBy ?? [{sortOrder: 'asc'}, {id: 'asc'}])],
+    [props.myTable?.drag, additional?.orderBy]
+  )
 
-  const tunedAdditional: additionalPropsType = {
-    ...additional,
-    payload: {...additional?.payload, [parentModelIdStr]: ParentData?.id},
-    where: {...additional?.where, [parentModelIdStr]: ParentData?.id},
+  const tunedAdditional: additionalPropsType = useMemo(
+    () => ({
+      ...additional,
+      payload: {...additional?.payload, [parentModelIdStr]: ParentData?.id},
+      where: {...additional?.where, [parentModelIdStr]: ParentData?.id},
+      orderBy,
+    }),
+    [additional, parentModelIdStr, ParentData?.id, orderBy]
+  )
 
-    orderBy,
-  }
+  const childTableProps = useMemo(
+    () => ({
+      myTable: {
+        showHeader: checkShowHeader({myTable: props.myTable, columns}),
+        ...{sort: false, drag: false},
+        ...props.myTable,
+      } as MyTableType,
+      myForm: {...props.myForm},
+    }),
+    [props.myTable, props.myForm, columns]
+  )
 
-  const childTableProps = {
-    myTable: {
-      showHeader: checkShowHeader({myTable: props.myTable, columns}),
-      ...{sort: false, drag: false},
-      ...props.myTable,
-    } as MyTableType,
-
-    myForm: {...props.myForm},
-  }
-
-  const myTable = {...childTableProps.myTable}
-
+  const myTable = childTableProps.myTable
   const myForm = childTableProps.myForm
-
   const dataModelName = models.children
 
-  const {prismaDataExtractionQuery} = getQueryArgs({
-    dataModelName,
-    query,
-    additional: tunedAdditional,
-    myTable,
-    DetailePageId: null,
-    include: tunedAdditional?.include ? tunedAdditional?.include : undefined,
-    easySearchObject: null,
+  const prismaDataExtractionQuery = useMemo(() => {
+    const {prismaDataExtractionQuery} = getQueryArgs({
+      dataModelName,
+      query,
+      additional: tunedAdditional,
+      myTable,
+      DetailePageId: null,
+      include: tunedAdditional?.include ? tunedAdditional?.include : undefined,
+      easySearchObject: null,
+    })
+    return prismaDataExtractionQuery
+  }, [dataModelName, query, tunedAdditional, myTable])
+
+  const serverFetchProps: serverFetchProps = useMemo(
+    () => ({
+      prismaDataExtractionQuery,
+      DetailePageId: null,
+      dataModelName: models.children,
+      additional: tunedAdditional,
+      myTable,
+      include: tunedAdditional?.include ? tunedAdditional?.include : undefined,
+      session: null,
+      easySearchExtraProps: props.easySearchExtraProps ?? null,
+    }),
+    [prismaDataExtractionQuery, models.children, tunedAdditional, myTable, props.easySearchExtraProps]
+  )
+
+  const HK_USE_RECORDS = useRecords({
+    serverFetchProps,
+    initialModelRecords: undefined,
+    fetchTime: undefined,
   })
 
-  const serverFetchProps: serverFetchProps = {
-    prismaDataExtractionQuery,
-    DetailePageId: null,
-    dataModelName: models.children,
-    additional: tunedAdditional,
-    myTable,
-    include: tunedAdditional?.include ? tunedAdditional?.include : undefined,
-    session: null,
-    easySearchExtraProps: props.easySearchExtraProps ?? null,
-  }
-
-  // const hasEasySearch = Object.keys(easySearchPrismaDataOnServer?.availableEasySearchObj || {}).length > 0
-
-  const HK_USE_RECORDS = useRecords({serverFetchProps})
   const {records, setrecords, mutateRecords, deleteRecord, totalCount, easySearchPrismaDataOnServer} = HK_USE_RECORDS
 
-  const hasEasySearch = Object.keys(easySearchPrismaDataOnServer?.availableEasySearchObj || {}).length > 0
+  const hasEasySearch = useMemo(
+    () => Object.keys(easySearchPrismaDataOnServer?.availableEasySearchObj || {}).length > 0,
+    [easySearchPrismaDataOnServer?.availableEasySearchObj]
+  )
 
   const {formData, setformData} = useInitFormState(null, [])
 
-  const defaultToggleLoadFunc = async cb => await cb()
-  const toggleLoadFunc = props.additional?.toggleLoadFunc ?? defaultToggleLoadFunc
+  const toggleLoadFunc = useMemo(
+    () => props.additional?.toggleLoadFunc ?? (async cb => await cb()),
+    [props.additional?.toggleLoadFunc]
+  )
+
+  const tableFormProps = useMemo(
+    () => ({
+      params: params as any,
+      easySearchPrismaDataOnServer: easySearchPrismaDataOnServer,
+      prismaDataExtractionQuery,
+      dataModelName,
+      columns,
+
+      formData,
+      setformData,
+      records,
+      setrecords,
+      mutateRecords,
+      deleteRecord,
+      totalCount,
+      myTable,
+      myForm,
+      additional: {...tunedAdditional, toggleLoadFunc},
+      EditForm,
+      editType,
+      useGlobalProps,
+      HK_USE_RECORDS,
+    }),
+    [
+      params,
+      easySearchPrismaDataOnServer,
+      prismaDataExtractionQuery,
+      dataModelName,
+      columns,
+      formData,
+      setformData,
+      records,
+      setrecords,
+      mutateRecords,
+      deleteRecord,
+      totalCount,
+      myTable,
+      myForm,
+      tunedAdditional,
+      toggleLoadFunc,
+      EditForm,
+      editType,
+      useGlobalProps,
+      HK_USE_RECORDS,
+    ]
+  )
 
   return (
     <div className={`w-fit`}>
@@ -114,33 +177,14 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
           {hasEasySearch && (
             <div>
               <EasySearcher
-                {...{
-                  dataModelName: dataModelName,
-                  easySearchPrismaDataOnServer,
-                  useGlobalProps,
-                  HK_USE_RECORDS,
-                }}
+                dataModelName={dataModelName}
+                easySearchPrismaDataOnServer={easySearchPrismaDataOnServer}
+                useGlobalProps={useGlobalProps}
+                HK_USE_RECORDS={HK_USE_RECORDS}
               />
             </div>
           )}
-          <TableForm
-            {...{
-              params: params as any,
-              easySearchPrismaDataOnServer: easySearchPrismaDataOnServer,
-              prismaDataExtractionQuery,
-              ...{dataModelName, columns},
-              ...{formData, setformData},
-              ...{records, setrecords, mutateRecords, deleteRecord, totalCount},
-              ...{
-                myTable,
-                myForm,
-                additional: {...tunedAdditional, toggleLoadFunc},
-                EditForm,
-                editType,
-                useGlobalProps,
-              },
-            }}
-          />
+          <TableForm {...tableFormProps} />
         </C_Stack>
       )}
     </div>

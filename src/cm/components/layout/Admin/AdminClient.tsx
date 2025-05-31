@@ -14,10 +14,11 @@ import {AdminLayout} from './components/AdminLayout'
 
 const AdminClient = React.memo((props: adminProps) => {
   const useGlobalProps = useGlobal()
+
   const {AppName, children} = props
   const {pathname, query} = useGlobalProps
 
-  // カスタムフックを使用してロジックを分離
+  // カスタムフックを使用してロジックを
   const {adminContext, menuContext} = useAdminContext(props, useGlobalProps)
   const {isValid, redirectPath, needsRedirect} = useAccessValidation(useGlobalProps)
 

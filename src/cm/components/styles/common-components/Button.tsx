@@ -42,7 +42,12 @@ export const Button = (
   return (
     <button
       {...{
-        className: buttonVariants({color: color as any, size, active: active !== false, class: className}),
+        className: buttonVariants({
+          color: color as any,
+          size,
+          active: active !== false,
+          class: className,
+        }),
         style,
         ...rest,
       }}

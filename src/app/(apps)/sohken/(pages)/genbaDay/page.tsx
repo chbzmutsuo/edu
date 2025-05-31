@@ -2,7 +2,7 @@
 import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
 
 import {Days} from '@class/Days/Days'
-import { toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@class/Days/date-utils/calculations'
 import GenbadayListClient from '@app/(apps)/sohken/(pages)/genbaDay/GenbadayListClient'
 import prisma from '@lib/prisma'
 
@@ -40,6 +40,12 @@ export default async function DynamicMasterPage(props) {
     while (holidays.find(holiday => Days.validate.isSameDate(holiday.date, today))) {
       today = Days.day.add(today, -1)
     }
+  }
+
+  if (isMyPage) {
+    //
+
+    return <div>日祝を非表示に</div>
   }
 
   const records = await prisma.genbaDay.findMany({

@@ -20,6 +20,9 @@ import {doTransaction} from '@lib/server-actions/common-server-actions/doTransac
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {useRouter} from 'next/navigation'
 import {targetUsers} from '@app/(apps)/sohken/api/cron/targetUsers'
+import BasicModal from '@components/utils/modal/BasicModal'
+import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+import {ColBuilder} from '@app/(apps)/sohken/class/ColBuilder'
 
 type dayRemarksType = DayRemarks & {
   DayRemarksUser: (DayRemarksUser & {User: User})[]
@@ -383,18 +386,15 @@ const FileUploader = ({ParentData}) => {
         <div className={` text-error-main text-center`}>{ParentData.DayRemarksFile.length}件のファイルが登録されています。</div>
       )}
 
-      {/* <BasicModal {...{btnComponent: <Button>ファイル編集</Button>}}>
+      <BasicModal {...{btnComponent: <Button>添付ファイル</Button>}}>
         <ChildCreator
           {...{
-            ...{
-              ParentData,
-              useGlobalProps,
-            },
+            ...{ParentData, useGlobalProps},
             columns: ColBuilder.DayRemarksFile({useGlobalProps}),
             models: {parent: `dayRemarks`, children: `dayRemarksFile`},
           }}
         />
-      </BasicModal> */}
+      </BasicModal>
     </R_Stack>
   )
 }

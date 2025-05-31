@@ -1,32 +1,29 @@
+import {useState, useCallback, useEffect} from 'react'
 import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
-import {useEffect, useState, useCallback} from 'react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
 import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
+import {tableRecord} from './useRecords'
 
-// 型定義を改善
-export interface tableRecord {
-  id: number
-  [key: string]: any
-}
-
-interface UseRecordsProps {
+interface UseRecordsCoreProps {
   serverFetchProps: serverFetchProps
   initialModelRecords?: Awaited<ReturnType<typeof getInitModelRecordsProps>>
   fetchTime?: Date
+  query: any
+  rootPath: string
+  isInfiniteScrollMode: boolean
+  resetToFirstPage: () => void
 }
 
-interface UseRecordsReturn {
-  totalCount: number
+interface UseRecordsCoreReturn {
   records: tableRecord[] | null
   setrecords: React.Dispatch<React.SetStateAction<tableRecord[] | null>>
-  mutateRecords: ({record}: {record: tableRecord}) => void
-  deleteRecord: ({record}: {record: tableRecord}) => void
+  totalCount: number
   easySearchPrismaDataOnServer: easySearchDataSwrType
   EasySearcherQuery: any
   prismaDataExtractionQuery: any
   initFetchTableRecords: () => Promise<void>
   updateData: () => void
+  mutateRecords: ({record}: {record: tableRecord}) => void
+  deleteRecord: ({record}: {record: tableRecord}) => void
 }
 
 // 初期状態を定数として分離
@@ -38,7 +35,7 @@ const INITIAL_EASY_SEARCH_DATA: easySearchDataSwrType = {
   beforeLoad: true,
 }
 
-// レコード更新ロジックを分離
+// レコード更新ロジック
 const updateRecordInArray = (prev: tableRecord[] | null, record: tableRecord): tableRecord[] | null => {
   if (prev === null) return prev
 
@@ -52,7 +49,7 @@ const updateRecordInArray = (prev: tableRecord[] | null, record: tableRecord): t
   }
 }
 
-// レコード削除ロジックを分離
+// レコード削除ロジック
 const deleteRecordFromArray = (prev: tableRecord[] | null, record: tableRecord): tableRecord[] | null => {
   if (prev === null) return prev
 
@@ -65,10 +62,8 @@ const deleteRecordFromArray = (prev: tableRecord[] | null, record: tableRecord):
   return prev
 }
 
-const useRecords = (props: UseRecordsProps): UseRecordsReturn => {
-  const {serverFetchProps, initialModelRecords, fetchTime} = props
-  const {rootPath} = useGlobal()
-  const {query} = useMyNavigation() // path切り替え直後にエラーが出るので、useMyNavigationを使用
+export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn => {
+  const {serverFetchProps, initialModelRecords, fetchTime, query, rootPath, isInfiniteScrollMode, resetToFirstPage} = props
 
   const [easySearchPrismaDataOnServer, seteasySearchPrismaDataOnServer] =
     useState<easySearchDataSwrType>(INITIAL_EASY_SEARCH_DATA)
@@ -77,7 +72,7 @@ const useRecords = (props: UseRecordsProps): UseRecordsReturn => {
   const [prismaDataExtractionQuery, setprismaDataExtractionQuery] = useState({})
   const [EasySearcherQuery, setEasySearcherQuery] = useState({})
 
-  // ✅ 非同期処理で重い処理なのでメモ化有効
+  // 初期データ取得
   const initFetchTableRecords = useCallback(async () => {
     const {queries, data} = await getInitModelRecordsProps({
       ...serverFetchProps,
@@ -91,33 +86,47 @@ const useRecords = (props: UseRecordsProps): UseRecordsReturn => {
     seteasySearchPrismaDataOnServer(data.easySearchPrismaDataOnServer)
     setrecords(data.records)
     settotalCount(data.totalCount)
-  }, [serverFetchProps, query, rootPath])
 
-  // ✅ 配列操作を含む関数なのでメモ化有効
+    // 無限スクロールモードの場合はページをリセット
+    if (isInfiniteScrollMode) {
+      resetToFirstPage()
+    }
+  }, [serverFetchProps, query, rootPath, isInfiniteScrollMode, resetToFirstPage])
+
+  // レコード更新
   const mutateRecords = useCallback(({record}: {record: tableRecord}) => {
     setrecords(prev => updateRecordInArray(prev, record))
   }, [])
 
-  // ✅ 配列操作を含む関数なのでメモ化有効
+  // レコード削除
   const deleteRecord = useCallback(({record}: {record: tableRecord}) => {
     setrecords(prev => deleteRecordFromArray(prev, record))
   }, [])
+
+  // 手動でデータを更新する関数
+  const updateData = useCallback(() => {
+    initFetchTableRecords()
+  }, [initFetchTableRecords])
+
+  // 無限スクロールモードが変更された時の処理
+  useEffect(() => {
+    if (isInfiniteScrollMode) {
+      setrecords(null)
+      initFetchTableRecords()
+    }
+  }, [isInfiniteScrollMode, initFetchTableRecords])
 
   // 初期化ロジック
   useEffect(() => {
     if (fetchTime && initialModelRecords) {
       const {data: InitialData, queries: InitialQueries} = initialModelRecords ?? {}
       const diff = new Date().getTime() - fetchTime.getTime()
-
-      // 初回レンダリング判定（0.5秒以内）
-      // const firstRender = 0 < diff && diff < 2 * 1000
       const firstRender = false
 
       if (firstRender) {
         console.log(`①render`, diff)
         setrecords(InitialData.records)
         settotalCount(InitialData.totalCount)
-
         seteasySearchPrismaDataOnServer(InitialData.easySearchPrismaDataOnServer)
         setEasySearcherQuery(InitialQueries.EasySearcherQuery)
         setprismaDataExtractionQuery(InitialQueries.prismaDataExtractionQuery)
@@ -130,24 +139,16 @@ const useRecords = (props: UseRecordsProps): UseRecordsReturn => {
     }
   }, [])
 
-  // 手動でデータを更新する関数を追加
-  const updateData = useCallback(() => {
-    initFetchTableRecords()
-  }, [])
-
   return {
-    totalCount,
     records,
     setrecords,
-    mutateRecords,
-    deleteRecord,
+    totalCount,
     easySearchPrismaDataOnServer,
-
     EasySearcherQuery,
     prismaDataExtractionQuery,
     initFetchTableRecords,
     updateData,
+    mutateRecords,
+    deleteRecord,
   }
 }
-
-export default useRecords

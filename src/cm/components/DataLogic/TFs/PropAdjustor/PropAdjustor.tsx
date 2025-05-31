@@ -10,7 +10,7 @@ import {Z_INDEX} from '@lib/constants/constants'
 import {useMergeWithCustomViewParams} from '@components/DataLogic/TFs/PropAdjustor/useMergeWithCustomViewParams'
 
 import useColumns from '@components/DataLogic/TFs/PropAdjustor/useColumns'
-import useRecords from '@components/DataLogic/TFs/PropAdjustor/useRecords'
+import useRecords from '@components/DataLogic/TFs/PropAdjustor/(useRecords)/useRecords'
 import useInitFormState from '@hooks/useInitFormState'
 import useEditForm from '@components/DataLogic/TFs/PropAdjustor/useEditForm'
 import useMyTable from '@components/DataLogic/TFs/PropAdjustor/useMyTable'
@@ -96,7 +96,15 @@ const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
       ColBuilder: ClientProps.ColBuilder,
       ColBuilderExtraProps: ClientProps.ColBuilderExtraProps,
     }),
-    [useGlobalProps, HK_USE_RECORDS, ClientProps.dataModelName, ClientProps.ColBuilder, ClientProps.ColBuilderExtraProps]
+    [
+      useGlobalProps.session?.id,
+      useGlobalProps.query,
+      HK_USE_RECORDS.records?.length,
+      HK_USE_RECORDS.totalCount,
+      ClientProps.dataModelName,
+      ClientProps.ColBuilder,
+      ClientProps.ColBuilderExtraProps,
+    ]
   )
 
   const columns = useColumns(columnsArgs)

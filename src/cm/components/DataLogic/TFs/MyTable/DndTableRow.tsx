@@ -76,12 +76,12 @@ const DnDTableRow = React.memo(
       [dataModelName, mutateRecords, tbodyRowParams, DnDTableRowProps, dndStyle, rowColor]
     )
 
-    const TableCellCallBack = useCallback(
-      ({columnIdx, col}) => {
-        return <TableCell {...tableCellCallBackProps} {...{TableCellProps: {columnIdx, col}}} />
-      },
-      [tableCellCallBackProps]
-    )
+    // const TableCellCallBack = useCallback(
+    //   ({columnIdx, col}) => {
+    //     return <TableCell {...tableCellCallBackProps} {...{TableCellProps: {columnIdx, col}}} />
+    //   },
+    //   [tableCellCallBackProps]
+    // )
 
     const trClassName = useMemo(() => cl(createTrClassName({myTable, record, formData})), [myTable, record, formData])
 
@@ -118,8 +118,18 @@ const DnDTableRow = React.memo(
           </BodyLeftTh>
         )}
 
+        {/* <TableCell {...tableCellCallBackProps} {...{TableCellProps: {columnIdx, col}}} /> */}
         {visibleColumns.map((col, columnIdx) => {
-          return <TableCellCallBack key={`${col.id}-${columnIdx}`} {...{columnIdx, col, showHeader: myTable?.showHeader}} />
+          return (
+            <TableCell
+              key={`${col.id}-${columnIdx}`}
+              {...tableCellCallBackProps}
+              {...{
+                TableCellProps: {columnIdx, col},
+                showHeader: myTable?.showHeader,
+              }}
+            />
+          )
         })}
       </tr>
     )

@@ -60,6 +60,7 @@ export const getInitModelRecordsProps = async (props: serverFetchProps & {query:
     include,
     easySearchObject,
   })
+
   const EasySearcherQuery = await makeEasySearcherQuery({
     EasySearchBuilder,
     dataModelName,
