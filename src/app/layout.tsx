@@ -7,35 +7,30 @@ import GlobalToast from '@components/utils/GlobalToast'
 
 import React from 'react'
 
-import {fetcher} from '@lib/swr'
-import {GlobalProvider} from '@hooks/useGlobalContext/hooks/GlobalProvider'
-import GlobalTemplate from '@components/layout/GlobalTemplate'
+import {getServerSession, Session} from 'next-auth'
+import {authOptions} from '@app/api/auth/authOptions'
+import SessionContextProvider from '@hooks/useGlobalContext/providers/SessionContextProvider'
 
 const title = process.env.NEXT_PUBLIC_TITLE
 export const metadata: Metadata = {title: title}
 
-const swrConfig = {
-  fetcher,
-  revalidateOnFocus: false, // フォーカス時の再検証を無効化（必要に応じて）
-  revalidateOnReconnect: true, // 再接続時の再検証
-  dedupingInterval: 2000, // 重複リクエストの防止間隔
-  errorRetryCount: 3, // エラー時のリトライ回数
-  errorRetryInterval: 5000, // リトライ間隔
-}
-
 export default async function AppRootLayout(props) {
+  const session = (await getServerSession(authOptions)) as Session
+
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {/* <StrictMode> */}
 
         <Suspense>
-          <GlobalToast></GlobalToast>
-          {props.children}
+          <SessionContextProvider>
+            <GlobalToast></GlobalToast>
+            {props.children}
+          </SessionContextProvider>
         </Suspense>
         {/* </StrictMode> */}
       </body>

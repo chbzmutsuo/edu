@@ -110,7 +110,6 @@ export const createDocData = ({users, genbaDayList, allShiftBetweenDays, records
       const requests: textInsertRequest[] = [
         //
         {text: `(${num})`},
-        {text: formatDate(GenbaDay.date, 'M/D(ddd)')},
         {
           text: !forceNormal ? `---` : defaultStartTime,
           color: forceNormal ? (defaultStartTime === '通常' ? '#0059ff' : '#f000e4') : undefined,
@@ -317,6 +316,16 @@ export const createDocData = ({users, genbaDayList, allShiftBetweenDays, records
   })
 
   // データの最後に追加情報を結合
-  const finalData = [...data, ...additionalInfo]
+  // ドキュメントの最初に日付ヘッダーを追加
+  const dateHeader: {text: string; color?: string; alignment?: 'START' | 'CENTER' | 'END' | 'JUSTIFIED'}[] = []
+  if (genbaDayList.length > 0) {
+    const firstDate = genbaDayList[0].date
+    dateHeader.push({
+      text: `${formatDate(firstDate, 'YYYY年M月D日(ddd)')}\n\n`,
+      alignment: 'CENTER', // 中央寄せ
+    })
+  }
+
+  const finalData = [...dateHeader, ...data, ...additionalInfo]
   return finalData
 }

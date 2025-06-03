@@ -1,8 +1,8 @@
 'use client'
-import {useSessionContext} from '@hooks/useGlobalContext/contexts/CustomSessionContext'
-import {useDeviceContext} from '@hooks/useGlobalContext/contexts/DeviceContext'
-import {useLoaderContext} from '@hooks/useGlobalContext/contexts/LoaderContext'
-import {useNavigationContext} from '@hooks/useGlobalContext/contexts/NavigationContext'
+import {useSessionContext} from '@hooks/useGlobalContext/providers/SessionContextProvider'
+import {useDeviceContext} from '@hooks/useGlobalContext/providers/DeviceContextProvider'
+import {useLoaderContext} from '@hooks/useGlobalContext/providers/LoaderContextProvider'
+import {useNavigationContext} from '@hooks/useGlobalContext/providers/NavigationContextProvider'
 import {useMemo} from 'react'
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
 

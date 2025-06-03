@@ -25,7 +25,9 @@ import {chain_sohken_genbaDayUpdateChain} from 'src/non-common/(chains)/getGenba
 import {Alert} from '@components/styles/common-components/Alert'
 import {TaskAsignBtn} from '@app/(apps)/sohken/(parts)/Tasks/TaskAsignBtn'
 import {handleUpdateSchedule} from '@app/(apps)/sohken/(parts)/Tasks/handleUpdateSchedule'
+import useLogOnRender from '@hooks/useLogOnRender'
 export const GenbaForm = (props: DetailPagePropType) => {
+  useLogOnRender(`GenbaForm`)
   const genba = props.formData ?? {}
   const {floorThisPlay} = new GenbaCl(genba)
 

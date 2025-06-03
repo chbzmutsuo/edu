@@ -5,7 +5,7 @@ import {LoaderContextType} from './types'
 
 const LoaderContext = createContext<LoaderContextType | null>(null)
 
-export function LoaderProvider({children}: {children: ReactNode}) {
+const LoaderContextProvider = ({children}: {children: ReactNode}) => {
   const loaderData = useLoader()
 
   return <LoaderContext.Provider value={loaderData}>{children}</LoaderContext.Provider>
@@ -18,3 +18,5 @@ export function useLoaderContext() {
   }
   return context
 }
+
+export default LoaderContextProvider

@@ -167,6 +167,7 @@ const useMyTableParams = ({
           [pageKey]: pageNumber,
           [skipKey]: calcSkip(pageNumber, take),
         }
+
         shallowAddQuery(newQuery)
       }
 

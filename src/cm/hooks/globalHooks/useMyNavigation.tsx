@@ -15,7 +15,10 @@ export default function useMyNavigation() {
   const asPath = useMemo(() => pathname + '?' + searchParams?.toString(), [pathname, searchParams])
   const query = useMemo(() => makeQuery(searchParams), [searchParams])
 
-  const shallowPush = href => history.pushState({}, '', href)
+  const shallowPush = useCallback((href: string) => {
+    history.pushState({}, '', href)
+  }, [])
+
   const addQuery = useCallback(
     (additionalQuery = {}, method = 'push', shallow = false) => {
       const newQuery = {...query, ...additionalQuery}

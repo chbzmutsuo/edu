@@ -76,7 +76,9 @@ export const useInfiniteScrollLogic = (props: UseInfiniteScrollLogicProps): UseI
         rootPath: rootPath,
       })
 
-      setrecords(prevRecords => mergeRecordsWithoutDuplicates(prevRecords, data.records))
+      setrecords(prevRecords => {
+        return mergeRecordsWithoutDuplicates(prevRecords, data.records)
+      })
       setCurrentPage(nextPage)
     } catch (error) {
       console.error('Failed to fetch next page:', error)

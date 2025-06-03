@@ -9,13 +9,15 @@ import {judgeIsAdmin} from 'src/non-common/scope-lib/judgeIsAdmin'
 import {UserCl} from '@class/UserCl'
 import {User} from '@prisma/client'
 import {useMemo} from 'react'
+import {Session} from 'next-auth'
 
 export type customeSessionType = anyObject
-export default function useCustomSession() {
+export default function useCustomSession(props?: {session?: Session | null}) {
   const {query} = useMyNavigation()
 
   const {data: getSessoin, status} = useSession()
-  const realSession = status === 'loading' ? undefined : (getSessoin?.user as User)
+
+  const realSession = status === 'loading' ? props?.session?.user : (getSessoin?.user as User)
 
   const {globalUserId} = judgeIsAdmin(realSession, query)
 

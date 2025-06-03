@@ -6,7 +6,7 @@ import Loader from '@components/utils/loader/Loader'
 
 const DeviceContext = createContext<DeviceContextType | null>(null)
 
-export function DeviceProvider({children}: {children: ReactNode}) {
+const DeviceContextProvider = ({children}: {children: ReactNode}) => {
   const deviceData = useWindowSize()
 
   const {device, width} = deviceData
@@ -25,3 +25,5 @@ export function useDeviceContext() {
   }
   return context
 }
+
+export default DeviceContextProvider

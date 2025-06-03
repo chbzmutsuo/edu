@@ -10,6 +10,7 @@ import {usePageTracking} from '@hooks/usePageTracking'
 import {RefreshCwIcon} from 'lucide-react'
 import {twMerge} from 'tailwind-merge'
 import {useGlobalContext} from '@hooks/useGlobalContext/hooks/useGlobalContext'
+import useLogOnRender from '@hooks/useLogOnRender'
 
 // 新しいContext方式のインポート
 

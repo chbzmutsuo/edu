@@ -40,7 +40,8 @@ const Header = React.memo<HeaderProps>(({adminContext}) => {
     menuContext: {MenuButton},
   } = adminContext
 
-  const {device, query, rootPath, appbarHeight} = useGlobalProps ?? {}
+  const {device, query, rootPath, appbarHeight, session} = useGlobalProps ?? {}
+
   const {PC} = device ?? {}
 
   // GlobalIdSelectorのメモ化を改善

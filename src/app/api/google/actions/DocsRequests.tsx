@@ -4,6 +4,7 @@ export type textInsertRequest = {
   text: string
   color?: string
   backgroundColor?: string
+  alignment?: 'START' | 'CENTER' | 'END' | 'JUSTIFIED'
 }
 
 // ヘルパー関数群
@@ -44,6 +45,36 @@ export const DocsRequests = {
     return updateTextStyleRequest
   },
 
+  updateParagraphStyleRequest: (options: textInsertRequest & {startIndex?: number}) => {
+    const {
+      //
+      text,
+      startIndex = 1,
+      alignment,
+    } = options
+
+    if (!alignment) return null
+
+    const range = {
+      startIndex: startIndex,
+      endIndex: startIndex ? startIndex + text.length : text.length,
+    }
+
+    const paragraphStyle = {
+      alignment: alignment,
+    }
+
+    const updateParagraphStyleRequest: docs_v1.Schema$Request = {
+      updateParagraphStyle: {
+        range,
+        paragraphStyle,
+        fields: 'alignment',
+      },
+    }
+
+    return updateParagraphStyleRequest
+  },
+
   setIndex: (textStyleUpdateRequest: textInsertRequest[]) => {
     // 何文字目まで書き込んだか
     let nextstartIndex = 1
@@ -51,13 +82,15 @@ export const DocsRequests = {
     const result = textStyleUpdateRequest.map((data, i) => {
       const textRequest = DocsRequests.insertText({...data, startIndex: nextstartIndex})
       const updateTextStyleRequest = DocsRequests.updateStyleRequest({...data, startIndex: nextstartIndex})
+      const updateParagraphStyleRequest = DocsRequests.updateParagraphStyleRequest({...data, startIndex: nextstartIndex})
 
       // 次の文字列の開始位置
       nextstartIndex += data.text.length
-      return [textRequest, updateTextStyleRequest]
+
+      return [textRequest, updateTextStyleRequest, updateParagraphStyleRequest].filter(Boolean)
     })
 
-    const data = result.flat()
+    const data = result.flat() as docs_v1.Schema$Request[]
 
     return data
   },

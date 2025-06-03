@@ -7,7 +7,7 @@ import Redirector from '@components/utils/Redirector'
 
 const NavigationContext = createContext<NavigationContextType | null>(null)
 
-export function NavigationProvider({children}: {children: ReactNode}) {
+const NavigationContextProvider = ({children}: {children: ReactNode}) => {
   const navigationData = useMyNavigation()
   const {pathname} = navigationData
 
@@ -29,3 +29,5 @@ export function useNavigationContext() {
   }
   return context
 }
+
+export default NavigationContextProvider
