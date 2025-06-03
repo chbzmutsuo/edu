@@ -1447,7 +1447,8 @@ model DayRemarks {
  bikou        String?
  shinseiGyomu String?
 
- ninkuCount Float?
+ ninkuCount   Float?
+ nippoDocsUrl String?
 
  DayRemarksUser DayRemarksUser[]
  DayRemarksFile DayRemarksFile[]
@@ -1479,6 +1480,15 @@ model SohkenGoogleCalendar {
  startAt DateTime?
  endAt   DateTime?
  summary String?
+}
+
+model ForcedWorkDay {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date DateTime
 }
 
  

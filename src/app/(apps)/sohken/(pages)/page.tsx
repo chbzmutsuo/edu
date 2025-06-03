@@ -8,8 +8,6 @@ import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitche
 import BasicModal from '@components/utils/modal/BasicModal'
 import Redirector from '@components/utils/Redirector'
 import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {addQuerySentence} from '@lib/methods/urls'
-import {isDev} from '@lib/methods/common'
 
 import prisma from '@lib/prisma'
 import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
@@ -39,11 +37,15 @@ const Top = async props => {
   //   )
   // }
 
-  // return (
-  //   <Redirector
-  //     {...{redirectPath: '/sohken/genbaDay' + addQuerySentence({from: formatDate(Days.day.add(getMidnight(), 1)), myPage: true})}}
-  //   />
-  // )
+  // if (!isDev) {
+  //   return (
+  //     <Redirector
+  //       {...{
+  //         redirectPath: '/sohken/genbaDay' + addQuerySentence({from: formatDate(Days.day.add(getMidnight(), 1)), myPage: true}),
+  //       }}
+  //     />
+  //   )
+  // }
 
   const dayRemarks = await prisma.dayRemarks.findMany({
     where: {date: date},
@@ -58,9 +60,6 @@ const Top = async props => {
       <div className={`grid grid-cols-1  `}>
         {dayRemarks.map(data => {
           const {DayRemarksFile} = data
-
-          const isImage = DayRemarksFile.some(file => file.url.includes(`image`))
-          const isVideo = DayRemarksFile.some(file => file.url.includes(`video`))
 
           return (
             <Paper key={data.id} className={`p-3 max-w-xl mx-auto min-w-[280px]`}>

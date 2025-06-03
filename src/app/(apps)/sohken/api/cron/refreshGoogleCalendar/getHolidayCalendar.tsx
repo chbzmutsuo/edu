@@ -11,6 +11,8 @@ export const getHolidayCalendar = async (props: {whereQuery: {gte: Date; lte: Da
 
   const sunDays = days.filter(day => formatDate(day, `ddd`) === `日`)
 
+  const forcedWorkDays = await prisma.forcedWorkDay.findMany({})
+
   const japaneseHolidays = await prisma.sohkenGoogleCalendar.findMany({
     where: {
       date: whereQuery,
@@ -22,9 +24,11 @@ export const getHolidayCalendar = async (props: {whereQuery: {gte: Date; lte: Da
     ...sunDays.map(d => {
       return {date: d}
     }),
-    ...japaneseHolidays.map(d => {
-      return {date: d.date}
-    }),
+    ...japaneseHolidays
+      .filter(d => !forcedWorkDays.some(f => Days.validate.isSameDate(f.date, d.date)))
+      .map(d => {
+        return {date: d.date}
+      }),
   ]
 
   return {holidays}

@@ -7,11 +7,8 @@ import {Center, C_Stack, R_Stack} from '@components/styles/common-components/com
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 import {T_LINK} from '@components/styles/common-components/links'
 import {Paper} from '@components/styles/common-components/paper'
-import {TableBordered, TableWrapper} from '@components/styles/common-components/Table'
 import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import MyPopover from '@components/utils/popover/MyPopover'
 import Redirector from '@components/utils/Redirector'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
 import {HREF} from '@lib/methods/urls'
 
@@ -40,16 +37,33 @@ export default async function CalendarPage(props) {
   const {holidays} = await getHolidayCalendar({whereQuery: {gte: from, lte: to}})
 
   const prev_next_Query = {
-    from: Days.day.add(from, -15),
-    to: Days.day.add(from, 15),
+    from: formatDate(Days.day.add(from, -15)),
+    to: formatDate(Days.day.add(from, 15)),
   }
+
+  const allGenbaDaysInPeriod = await prisma.genbaDay.findMany({
+    where: {
+      date: {gte: from, lte: to},
+      // finished: {not: true},
+      OR: [{status: {not: `不要`}}, {status: null}],
+    },
+    include: {
+      GenbaDayTaskMidTable: {
+        include: {
+          GenbaDay: {},
+          GenbaTask: {include: {GenbaDayTaskMidTable: {include: {GenbaDay: {}}}}},
+        },
+      },
+      Genba: true,
+    },
+  })
 
   const allGenbaTasks = await prisma.genbaTask.findMany({
     include: {
       GenbaDayTaskMidTable: {include: {GenbaDay: {}}},
       Genba: {include: {PrefCity: true}},
     },
-    where: {from: {gte: from, lte: to}},
+    where: {genbaId: {in: allGenbaDaysInPeriod.map(g => g.Genba.id)}},
   })
 
   const dayRemarks = await prisma.dayRemarks.findMany({
@@ -65,23 +79,15 @@ export default async function CalendarPage(props) {
 
   const userCount = userList.length
 
-  const allGenbaDaysInPeriod = await prisma.genbaDay.findMany({
-    where: {date: {gte: from, lte: to}},
-    include: {
-      GenbaDayTaskMidTable: {
-        include: {
-          GenbaDay: {},
-          GenbaTask: {include: {GenbaDayTaskMidTable: {include: {GenbaDay: {}}}}},
-        },
-      },
-      Genba: true,
-    },
-  })
-
-  const result: {
+  const ninkuObj: {
     [date: string]: {
       [genbaId: string]: {
         [taskId: string]: {
+          genbaName: string | null
+          taskName: string | null
+          taskId: number | null
+          from?: Date
+          to?: Date
           requiredNinku: number | null
           scheduleCount: number
           ninkuAveragedPerDay: number | null
@@ -90,79 +96,117 @@ export default async function CalendarPage(props) {
     }
   } = {}
 
+  const foo: {
+    [taskId: string]: {
+      taskName: string | null
+      taskId: number | null
+      from?: Date
+      to?: Date
+      requiredNinku: number
+      scheduleCount: number
+      ninkuAveragedPerDay: number | null
+    }
+  } = {}
+
+  allGenbaTasks.forEach(task => {
+    const genbaDaySorted = task.GenbaDayTaskMidTable.map(mid => mid.GenbaDay)
+      .filter(data => {
+        const isHoliday = chechIsHoliday({holidays, date: data.date})
+        return isHoliday === false
+      })
+      .sort((a, b) => {
+        return a.date.getTime() - b.date.getTime()
+      })
+
+    const taskName = task.name
+    const taskId = task.id
+
+    const from = formatDate(genbaDaySorted[0]?.date)
+    const to = formatDate(genbaDaySorted[genbaDaySorted.length - 1]?.date)
+
+    const requiredNinku = task.requiredNinku ?? 0
+
+    const scheduleCount = genbaDaySorted.length
+    const ninkuAveragedPerDay = scheduleCount > 0 ? Math.round((requiredNinku / scheduleCount) * 100) / 100 : null
+
+    const data = {
+      from,
+      to,
+      taskName,
+      taskId,
+      requiredNinku,
+      scheduleCount,
+      ninkuAveragedPerDay,
+    }
+
+    if (!foo[taskId]) {
+      foo[taskId] = data
+    } else {
+      foo[taskId] = {
+        ...foo[taskId],
+        ...data,
+      }
+    }
+
+    // const requiredNinku = task.requiredNinku
+    // const scheduleCount = task.GenbaDayTaskMidTable.length
+    // const ninkuAveragedPerDay = requiredNinku / scheduleCount
+  })
+
   allGenbaDaysInPeriod.forEach(genbaDay => {
     const {date, GenbaDayTaskMidTable, Genba} = genbaDay ?? {}
     const genbaId = Genba.id
-
     const dateStr = formatDate(date)
+    const genbaName = Genba.name
 
-    const taskStartingToday = GenbaDayTaskMidTable?.filter(mid => {
-      const {GenbaTask} = mid
-      const {from, requiredNinku} = GenbaTask
-      return from && Days.validate.isSameDate(from, date)
-    })
+    GenbaDayTaskMidTable.map(mid => {
+      const taskInfo = foo[mid.genbaTaskId]
 
-    taskStartingToday.forEach(mid => {
-      const {genbaTaskId} = mid
-      const GenbaTask = allGenbaTasks.find(t => t.id === genbaTaskId)
+      if (taskInfo) {
+        const {taskName, taskId, requiredNinku} = taskInfo
 
-      const {requiredNinku = 0} = GenbaTask ?? {}
+        const taskIsOnGenbaDay = genbaDay.GenbaDayTaskMidTable.some(t => t.genbaTaskId === mid.genbaTaskId)
+        if (!ninkuObj[dateStr]) {
+          ninkuObj[dateStr] = {}
+        }
+        if (!ninkuObj[dateStr][genbaId]) {
+          ninkuObj[dateStr][genbaId] = {}
+        }
 
-      let scheduleCount = 0
+        let scheduleCount = 0
+        const ninkuUnderOne = requiredNinku && requiredNinku < 1
 
-      if (requiredNinku && requiredNinku < 1) {
-        scheduleCount = 0.5
-      } else {
-        scheduleCount =
-          GenbaTask?.GenbaDayTaskMidTable.filter(t => {
-            const {date} = t.GenbaDay
-            return date && Days.validate.isSameDate(date, date)
-          }).length ?? 0
-      }
+        if (ninkuUnderOne) {
+          scheduleCount = 0.5
+        } else {
+          scheduleCount = taskInfo.scheduleCount
+        }
 
-      const ninkuAveragedPerDay = requiredNinku && scheduleCount ? requiredNinku / scheduleCount : null
+        let ninkuAveragedPerDay: number | null = requiredNinku && scheduleCount ? requiredNinku / scheduleCount : null
+        if (ninkuUnderOne) {
+          if (genbaDay.date && taskInfo?.from && Days.validate.isSameDate(genbaDay.date, taskInfo?.from)) {
+            ninkuAveragedPerDay = 0.5
+          } else {
+            ninkuAveragedPerDay = null
+          }
+        }
 
-      if (!result[dateStr]) {
-        result[dateStr] = {}
-      }
-      if (!result[dateStr][genbaId]) {
-        result[dateStr][genbaId] = {}
-      }
-      result[dateStr][genbaId][genbaTaskId] = {
-        requiredNinku,
-        scheduleCount,
-        ninkuAveragedPerDay,
+        ninkuAveragedPerDay = NumHandler.round(ninkuAveragedPerDay ?? 0, 2)
+
+        ninkuObj[dateStr][genbaId][mid.genbaTaskId] = {
+          genbaName,
+          taskName,
+          taskId,
+          requiredNinku,
+          scheduleCount,
+
+          ninkuAveragedPerDay,
+        }
       }
     })
   })
 
-  const debug = () => {
-    Object.keys(result).forEach(dateStr => {
-      Object.keys(result[dateStr]).forEach(genbaId => {
-        Object.keys(result[dateStr][genbaId]).forEach(taskId => {
-          const {requiredNinku, scheduleCount, ninkuAveragedPerDay} = result[dateStr][genbaId][taskId] ?? {}
-
-          const GenbaDay = allGenbaDaysInPeriod.find(g => g.Genba.id === Number(genbaId))
-          const Genba = GenbaDay?.Genba
-          const Task = GenbaDay?.GenbaDayTaskMidTable.find(t => t.GenbaTask.id === Number(taskId))?.GenbaTask
-
-          const taskName = Task?.name
-          const genbaName = Genba?.name
-
-          if (dateStr === `2025-06-05`) {
-            console.log({
-              genbaId,
-              genbaName,
-              taskName,
-              ninkuAveragedPerDay,
-              requiredNinku,
-              scheduleCount,
-            })
-          }
-        })
-      })
-    })
-  }
+  const genbaDaysTest = allGenbaDaysInPeriod.filter(g => formatDate(g.date) === `2025-06-04`)
 
   return (
     <Center>
@@ -188,7 +232,98 @@ export default async function CalendarPage(props) {
           </section>
 
           <section>
-            <Table {...{holidays, days, dayRemarks, allGenbaTasks, userCount, query}} />
+            {CsvTable({
+              headerRecords: [
+                {
+                  csvTableRow: [
+                    //
+                    {cellValue: `日付`},
+                    // {cellValue: `人工`},
+                    // {cellValue: `余力`},
+                    {cellValue: `＃`},
+                    {cellValue: `人工（NEW）`},
+                    // {cellValue: `①タスク\n必要人工計`},
+                    // {cellValue: `②タスク\nスケジュール計`},
+                    // {cellValue: `① / ②`},
+                  ],
+                },
+              ],
+              bodyRecords: days
+                .filter(d => {
+                  return chechIsHoliday({holidays, date: d}) === false
+                })
+                .map((d, dayIdx) => {
+                  const ninkuCount = dayRemarks.find(dayRemark => Days.validate.isSameDate(dayRemark.date, d))?.ninkuCount ?? null
+
+                  // const genbaNameList = GenbaTaskStartingToday.map(t => t.Genba.name).join(`, `)
+                  const href = HREF(`/sohken/genbaDay`, {from: formatDate(d)}, query)
+                  let i = 0
+
+                  const ninku = Object.keys(ninkuObj[formatDate(d)] ?? {}).reduce((acc, genbaId) => {
+                    return (
+                      acc +
+                      (Object.keys(ninkuObj[formatDate(d)][genbaId]) ?? {}).reduce((acc, taskId) => {
+                        const {ninkuAveragedPerDay, requiredNinku, scheduleCount} = ninkuObj[formatDate(d)][genbaId][taskId] ?? {}
+
+                        const Genba = allGenbaDaysInPeriod.find(g => g.Genba.id === Number(genbaId))?.Genba
+                        const genbaName = Genba?.name
+                        const Task = allGenbaTasks.find(t => t.id === Number(taskId))
+                        const taskName = Task?.name
+
+                        if (formatDate(d) === `2025-06-04`) {
+                          i++
+                          // console.log({
+                          //   // i,
+                          //   '①必要人工': requiredNinku,
+                          //   '②カード数': scheduleCount,
+                          //   '③平均人工': ninkuAveragedPerDay,
+                          //   現場名: `${genbaName} (${genbaId})`,
+                          //   タスク名: taskName,
+                          // })
+                        }
+
+                        return acc + (ninkuAveragedPerDay ?? 0)
+                      }, 0)
+                    )
+                  }, 0)
+
+                  return {
+                    csvTableRow: [
+                      //
+                      {
+                        cellValue: (
+                          <T_LINK href={href} className={`t-link`}>
+                            {formatDate(d, 'YYYY-MM-DD(ddd)')}
+                          </T_LINK>
+                        ),
+                      },
+
+                      // {
+                      //   cellValue: (
+                      //     <MyPopover
+                      //       {...{
+                      //         mode: `click`,
+                      //         button: requiredNinkuSum,
+                      //       }}
+                      //     >
+                      //       <Paper>{genbaNameList}</Paper>
+                      //     </MyPopover>
+                      //   ),
+                      // },
+
+                      // {cellValue: userCount - requiredNinkuSum},
+                      {
+                        cellValue:
+                          ninkuCount === null ? '' : ninkuCount === 0 ? '0' : ninkuCount >= 0 ? ninkuCount : `▲${ninkuCount}`,
+                        style: {width: 100, textAlign: 'right'},
+                      },
+                      {
+                        cellValue: NumHandler.round(ninku, 1),
+                      },
+                    ],
+                  }
+                }),
+            }).WithWrapper({})}
           </section>
           <section>
             <R_Stack className={`w-[200px] justify-between`}>
@@ -199,108 +334,5 @@ export default async function CalendarPage(props) {
         </C_Stack>
       </Paper>
     </Center>
-  )
-}
-
-const Table = ({holidays, days, dayRemarks, allGenbaTasks, userCount, query}) => {
-  return (
-    <TableWrapper>
-      <TableBordered>
-        {CsvTable({
-          headerRecords: [
-            {
-              csvTableRow: [
-                //
-                {cellValue: `日付`},
-                // {cellValue: `人工`},
-                // {cellValue: `余力`},
-                {cellValue: `＃`},
-                // {cellValue: `①タスク\n必要人工計`},
-                // {cellValue: `②タスク\nスケジュール計`},
-                // {cellValue: `① / ②`},
-              ],
-            },
-          ],
-          bodyRecords: days
-            .filter(d => {
-              return chechIsHoliday({holidays, date: d}) === false
-            })
-            .map((d, dayIdx) => {
-              // const isHoliday = holidays.find(h => {
-              //   return Days.validate.isSameDate(h.date, d)
-              // })
-
-              const ninkuCount = dayRemarks.find(dayRemark => Days.validate.isSameDate(dayRemark.date, d))?.ninkuCount
-
-              const GenbaTaskStartingToday = allGenbaTasks.filter(task => Days.validate.isSameDate(task.from, d))
-
-              // const requiredNinkuSum = GenbaTaskStartingToday.reduce((acc, task) => {
-              //   return acc + task.requiredNinku
-              // }, 0)
-
-              // const calcRequiredNinkuSum = GenbaTaskStartingToday.filter(data => {
-              //   return data.Genba.name.includes(`鈴木`)
-              // }).reduce(
-              //   (acc, task) => {
-              //     const requiredNinku = acc.requiredNinku + task.requiredNinku
-              //     const scheduleCount =
-              //       acc.scheduleCount +
-              //       task.GenbaDayTaskMidTable.filter(t => {
-              //         const date = t.GenbaDay.date
-              //         const isHoliday = chechIsHoliday({holidays, date: date})
-
-              //         return isHoliday === false
-              //       }).length
-
-              //     return {
-              //       requiredNinku,
-              //       scheduleCount,
-              //     }
-              //   },
-              //   {requiredNinku: 0, scheduleCount: 0}
-              // )
-
-              // const genbaNameList = GenbaTaskStartingToday.map(t => t.Genba.name).join(`, `)
-              const href = HREF(`/sohken/genbaDay`, {from: formatDate(d)}, query)
-
-              return {
-                csvTableRow: [
-                  //
-                  {
-                    cellValue: (
-                      <T_LINK href={href} className={`t-link`}>
-                        {formatDate(d, 'YYYY-MM-DD(ddd)')}
-                      </T_LINK>
-                    ),
-                  },
-
-                  // {
-                  //   cellValue: (
-                  //     <MyPopover
-                  //       {...{
-                  //         mode: `click`,
-                  //         button: requiredNinkuSum,
-                  //       }}
-                  //     >
-                  //       <Paper>{genbaNameList}</Paper>
-                  //     </MyPopover>
-                  //   ),
-                  // },
-
-                  // {cellValue: userCount - requiredNinkuSum},
-                  {
-                    cellValue:
-                      ninkuCount === undefined ? '' : ninkuCount === 0 ? '0' : ninkuCount >= 0 ? ninkuCount : `▲${ninkuCount}`,
-                    style: {width: 100, textAlign: 'right'},
-                  },
-                  {
-                    cellValue: `test`,
-                  },
-                ],
-              }
-            }),
-        }).ALL()}
-      </TableBordered>
-    </TableWrapper>
   )
 }

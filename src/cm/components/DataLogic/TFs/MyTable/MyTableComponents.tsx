@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react'
+import React from 'react'
 
 export const LoadingComponent = React.memo(() => (
   <div className="flex justify-center items-center py-4">

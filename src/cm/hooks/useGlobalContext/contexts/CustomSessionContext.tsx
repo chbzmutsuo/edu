@@ -6,10 +6,11 @@ import Loader from '@components/utils/loader/Loader'
 
 const SessionContext = createContext<SessionContextType | null>(null)
 
-export function SessionProvider({children}: {children: ReactNode}) {
+export function CustomSessionProvider({children}: {children: ReactNode}) {
   const sessionData = useMySession()
   if (sessionData.sessionLoading) {
-    return <Loader>Validating Session Data...</Loader>
+    // return <Loader>Validating Session Data...</Loader>
+    return <Loader />
   }
 
   return <SessionContext.Provider value={sessionData}>{children}</SessionContext.Provider>

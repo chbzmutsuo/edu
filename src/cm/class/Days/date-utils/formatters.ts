@@ -60,11 +60,14 @@ export const formatDate = (dateObject?: DateInput, format?: TimeFormatType | Tim
   const originalValue = dateObject
   format = format ?? 'YYYY-MM-DD'
 
+  // dateObject = dateObject ? new Date(dateObject ?? '') : ``
+  if (dateObject) {
+    dateObject = new Date(dateObject)
+  }
+
   if (!isValidDate(dateObject)) {
     return originalValue ? String(originalValue) : null
   }
-
-  dateObject = dateObject ? new Date(dateObject) : new Date()
 
   const FORMATTER = (value: Date, f: TimeFormatType): string => {
     const dateObj = new Date(value)

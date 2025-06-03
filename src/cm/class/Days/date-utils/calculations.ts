@@ -1,24 +1,24 @@
 import {DateInput} from '@class/Days/date-utils/date-utils-type'
 import {formatDate} from '@class/Days/date-utils/formatters'
+import {isServer} from '@lib/methods/common'
 
-export const getMidnight = (date: DateInput = new Date()): Date => {
+export const getMidnight = (date = new Date()) => {
   const dt = new Date(date)
 
   const year = Number(formatDate(dt, 'YYYY'))
   const month = Number(formatDate(dt, 'MM'))
   const day = Number(formatDate(dt, 'DD'))
 
-  // 日本時間の0:00を作成
-  const midnight = new Date(year, month - 1, day, 0, 0, 0)
-
-  // 日本時間の0:00をUTCに変換（日本時間は UTC+9 なので9時間引く）
-  // midnight = addHours(midnight, -9)
-
-  // UTCでの日本時間0:00は15:00になるはず
-  if (midnight?.toISOString().includes(`15:00`) === false) {
-    // console.warn(`getMidnight: UTCでの日本時間0:00が15:00になっていません`, midnight.toISOString())
+  let midnightDate = new Date(year, month - 1, day, 0, 0, 0)
+  if (isServer) {
+    midnightDate = toUtc(midnightDate)
   }
-  return midnight
+
+  if (midnightDate?.toISOString().includes(`15:00`) === false) {
+    console.error(`getMidnightError`, date, new Date(year, month - 1, day, 0, 0, 0), midnightDate.toISOString())
+  }
+
+  return midnightDate
 }
 
 export const toUtc = (date: DateInput): Date => {

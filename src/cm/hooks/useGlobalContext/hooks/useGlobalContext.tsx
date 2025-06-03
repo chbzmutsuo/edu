@@ -1,16 +1,16 @@
 'use client'
-import {useSessionContext} from '@hooks/useGlobalContext/contexts/SessionContext'
+import {useSessionContext} from '@hooks/useGlobalContext/contexts/CustomSessionContext'
 import {useDeviceContext} from '@hooks/useGlobalContext/contexts/DeviceContext'
 import {useLoaderContext} from '@hooks/useGlobalContext/contexts/LoaderContext'
 import {useNavigationContext} from '@hooks/useGlobalContext/contexts/NavigationContext'
 import {useMemo} from 'react'
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
 
-// 各Contextの型を直接取得
-type SessionData = ReturnType<typeof useSessionContext>
-type DeviceData = ReturnType<typeof useDeviceContext>
-type LoaderData = ReturnType<typeof useLoaderContext>
-type NavigationData = ReturnType<typeof useNavigationContext>
+// // 各Contextの型を直接取得
+// type SessionData = ReturnType<typeof useSessionContext>
+// type DeviceData = ReturnType<typeof useDeviceContext>
+// type LoaderData = ReturnType<typeof useLoaderContext>
+// type NavigationData = ReturnType<typeof useNavigationContext>
 
 // 結合された型を定義
 type CombinedGlobalData = useGlobalPropType

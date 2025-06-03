@@ -1,7 +1,6 @@
 import React, {useCallback, useMemo} from 'react'
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import {DndContext, closestCenter} from '@dnd-kit/core'
-import {cl} from 'src/cm/lib/methods/common'
 import {TableWrapper} from '@components/styles/common-components/Table'
 import Tbody from './TableHandler/Tbody/Tbody'
 import Thead from './Thead/Thead'

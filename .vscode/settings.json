@@ -146,14 +146,14 @@
     "**/Grouping/**": true,
     "**/KM/**": true,
     "**/achievement/**": true,
+    "**/aquapot/**": true,
     "**/cruzdan/**": true,
     "**/kickswrap/**": true,
     "**/page/**": true,
-    "**/shinsei/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
     "**/tmp/**": true,
-    "**/aquapot/**": true
+    "**/tbm/**": true,
+    "**/shinsei/**": true
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
     "Advantage",

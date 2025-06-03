@@ -1,21 +1,33 @@
 'use client'
 
-import AppLogo from 'src/cm/components/layout/Navigation/AppLogo'
-import NavBar from 'src/cm/components/layout/Navigation/NavBar'
-import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
-import Breadcrumbs from 'src/cm/components/layout/breadcrumbs/Breadcrumbs'
-
+import React, {Fragment, useMemo} from 'react'
 import {Z_INDEX} from '@cm/lib/constants/constants'
 import {HREF} from '@lib/methods/urls'
-import React, {Fragment, useMemo} from 'react'
 import {T_LINK} from '@components/styles/common-components/links'
 import {adminContext} from '@components/layout/Admin/hooks/useAdminContext'
+import {R_Stack} from '@components/styles/common-components/common-components'
 
-export type HeaderProps = any
+// 動的インポートで軽量化
+const AppLogo = React.lazy(() => import('src/cm/components/layout/Navigation/AppLogo'))
+const NavBar = React.lazy(() => import('src/cm/components/layout/Navigation/NavBar'))
+const Breadcrumbs = React.lazy(() => import('src/cm/components/layout/breadcrumbs/Breadcrumbs'))
 
-const Header = React.memo((props: {adminContext: adminContext}) => {
-  const {adminContext} = props
+// 型定義を改善
+export interface HeaderProps {
+  adminContext: adminContext
+}
 
+// スタイルオブジェクトをコンポーネント外に移動
+const headerStyles = {
+  container: {
+    zIndex: Z_INDEX.appBar,
+    top: 0,
+    width: '100%',
+    position: 'sticky' as const,
+  },
+} as const
+
+const Header = React.memo<HeaderProps>(({adminContext}) => {
   const {
     AppName,
     Logo,
@@ -31,48 +43,56 @@ const Header = React.memo((props: {adminContext: adminContext}) => {
   const {device, query, rootPath, appbarHeight} = useGlobalProps ?? {}
   const {PC} = device ?? {}
 
+  // GlobalIdSelectorのメモ化を改善
   const GlobalIdSelector = useMemo(() => {
-    return PageBuilderGetter?.class[PageBuilderGetter.getter]?.({useGlobalProps})
+    if (!PageBuilderGetter?.class[PageBuilderGetter.getter]) return null
+    return PageBuilderGetter.class[PageBuilderGetter.getter]({useGlobalProps})
   }, [PageBuilderGetter, useGlobalProps])
 
-  // return <div></div>
-  const topLink = HREF(`/${rootPath}`, {}, query)
+  // topLinkのメモ化
+  const topLink = useMemo(() => HREF(`/${rootPath}`, {}, query), [rootPath, query])
+
+  // additionalHeadersのレンダリングをメモ化
+  const renderAdditionalHeaders = useMemo(() => {
+    return adminContext?.additionalHeaders?.map((d, idx) => <Fragment key={idx}>{d}</Fragment>)
+  }, [adminContext?.additionalHeaders])
 
   return (
-    <div
-      style={{
-        zIndex: Z_INDEX.appBar,
-        top: 0,
-        width: `100%`,
-        position: `sticky`,
-      }}
-      className={`bg-primary-light  shadow shadow-primary-main`}
-    >
+    <div style={headerStyles.container} className="bg-primary-light shadow shadow-primary-main">
       <div>
-        <R_Stack
-          {...{
-            style: {minHeight: appbarHeight},
-            className: `justify-between px-2 py-0  md:px-6 `,
-          }}
-        >
+        <R_Stack style={{minHeight: appbarHeight}} className="justify-between px-2 py-0 md:px-6">
           <R_Stack>
             {horizontalMenu === false && PC && MenuButton}
-            <R_Stack className={`  gap-x-10`}>
+            <R_Stack className="gap-x-10">
               <T_LINK href={topLink} simple>
-                <AppLogo {...{showLogoOnly, AppName, Logo}} />
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <AppLogo showLogoOnly={showLogoOnly} AppName={AppName} Logo={Logo} />
+                </React.Suspense>
               </T_LINK>
-              {PC && <Breadcrumbs {...{breads: pages?.breads ?? [], ModelBuilder}} />}
+              {PC && (
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <Breadcrumbs breads={pages?.breads ?? []} ModelBuilder={ModelBuilder} />
+                </React.Suspense>
+              )}
             </R_Stack>
 
             <div>{GlobalIdSelector && <GlobalIdSelector />}</div>
-
-            {adminContext?.additionalHeaders?.map((d, idx) => {
-              return <Fragment key={idx}>{d}</Fragment>
-            })}
+            {renderAdditionalHeaders}
           </R_Stack>
 
-          <R_Stack className={`ml-auto    items-center gap-2`}>
-            <div>{horizontalMenu && <NavBar {...{useGlobalProps, appbarHeight, horizontalMenu, navItems}} />}</div>
+          <R_Stack className="ml-auto items-center gap-2">
+            <div>
+              {horizontalMenu && (
+                <React.Suspense fallback={<div>Loading...</div>}>
+                  <NavBar
+                    useGlobalProps={useGlobalProps}
+                    // appbarHeight={appbarHeight}
+                    horizontalMenu={horizontalMenu}
+                    navItems={navItems}
+                  />
+                </React.Suspense>
+              )}
+            </div>
           </R_Stack>
           {!PC && MenuButton}
         </R_Stack>
@@ -81,4 +101,5 @@ const Header = React.memo((props: {adminContext: adminContext}) => {
   )
 })
 
+Header.displayName = 'Header'
 export default Header

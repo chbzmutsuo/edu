@@ -1064,6 +1064,7 @@ export interface P_DayRemarks {
   bikou: string;
   shinseiGyomu: string;
   ninkuCount: number;
+  nippoDocsUrl: string;
   DayRemarksUser: P_DayRemarksUser[];
 }
 
@@ -1086,6 +1087,14 @@ export interface P_SohkenGoogleCalendar {
   date: Date;
   endAt: Date;
   summary: string;
+}
+
+export interface P_ForcedWorkDay {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  date: Date;
 }
 
 export interface P_StockConfig {

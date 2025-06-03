@@ -1,24 +1,21 @@
 'use client'
 
-import CalenderRefresher from '@app/(apps)/sohken/(pages)/genbaDay/CalenderRefresher'
 import {useGenbaDayBasicEditor} from '@app/(apps)/sohken/hooks/useGenbaDayBasicEditor'
 import {useGenbaDayCardEditorModalGMF} from '@app/(apps)/sohken/hooks/useGenbaDayCardEditorModalGMF'
 import {useGenbaDetailModal} from '@app/(apps)/sohken/hooks/useGenbaDetailModal'
 import {useGenbaSearchModal} from '@app/(apps)/sohken/hooks/useGenbaSearchModal'
 import {useShiftEditFormModal} from '@app/(apps)/sohken/hooks/useShiftEditFormModal'
-import {Button} from '@components/styles/common-components/Button'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import Redirector from '@components/utils/Redirector'
+
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {useGlobalShortcut} from '@hooks/useGlobalShortcut'
-import {sleep} from '@lib/methods/common'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {isDev, sleep} from '@lib/methods/common'
 
 import React from 'react'
 import {toast} from 'react-toastify'
-import {chain_sohken_genbaDayUpdateChain} from 'src/non-common/(chains)/getGenbaScheduleStatus/chain_sohken_genbaDayUpdateChain'
 
 export default function template({children}) {
-  const {router, getHref} = useGlobal()
+  const {pathname, router, getHref, query} = useGlobal()
   const GenbaDayCardEditModal_HK = useGenbaDayCardEditorModalGMF()
   const ShiftEditFormModal_HK = useShiftEditFormModal()
   const GenbaDayBasicEditor_HK = useGenbaDayBasicEditor()
@@ -32,10 +29,15 @@ export default function template({children}) {
     await sleep(500)
     toast.info(`日付選択ショートカット`)
   })
-  useGlobalShortcut({key: 's', ctrlKey: true}, async () => {
+  useGlobalShortcut({key: 'j', ctrlKey: true}, async () => {
     toast.info(`現場一覧検索ショートカット`)
     GenbaSearchModal_HK.setGMF_OPEN(true)
   })
+
+  if (isDev && !query.g_userId) {
+    return <Redirector {...{redirectPath: getHref(pathname, {g_userId: 159})}} />
+  }
+
   return (
     <div>
       <GenbaDayCardEditModal_HK.Modal />

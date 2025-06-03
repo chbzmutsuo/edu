@@ -7,6 +7,7 @@ import {HREF, makeGlobalQuery, makeQuery} from 'src/cm/lib/methods/urls'
 
 export default function useMyNavigation() {
   const router = useRouter()
+
   const searchParams = useSearchParams()
   const pathname = usePathname() ?? ''
   const rootPath = useMemo(() => pathname?.split('/')[1], [pathname])

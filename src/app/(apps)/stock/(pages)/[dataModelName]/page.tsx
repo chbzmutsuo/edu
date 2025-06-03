@@ -12,7 +12,7 @@ import {ColBuilder} from '@app/(apps)/stock/(builders)/ColBuilder'
 import {QueryBuilder} from '@app/(apps)/stock/(builders)/QueryBuilder'
 
 import {ViewParamBuilder} from '@app/(apps)/stock/(builders)/ViewParamBuilder'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'
 const getBuilders = () => ({ColBuilder, ViewParamBuilder, PageBuilder, QueryBuilder})
 export default async function DynamicMasterPage(props) {
@@ -71,7 +71,7 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
             ColBuilderExtraProps: {config},
             additional: {
               where: {
-                Date: getMidnight(query.from ?? new Date()),
+                Date: getMidnight(toUtc(query.from ?? new Date())),
               },
               orderBy: [{Date: `desc`}, {Code: `asc`}],
             },

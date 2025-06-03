@@ -4,7 +4,6 @@ import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {getMidnight} from '@class/Days/date-utils/calculations'
 import {CleansePathSource, PageGetterType, pathItemType} from 'src/non-common/path-title-constsnts'
-import {isDev} from '@lib/methods/common'
 
 export const sohken_PAGES = (props: PageGetterType) => {
   const {session, query, rootPath, pathname, roles} = props
@@ -35,9 +34,9 @@ export const sohken_PAGES = (props: PageGetterType) => {
     },
     {
       tabId: `daily-summary`,
-      label: `印刷`,
+      label: `日報`,
       children: [{tabId: 'daily-summary', label: '日報', ROOT: [rootPath]}],
-      exclusiveTo: !!login && isDev,
+      exclusiveTo: !!login,
     },
 
     {
@@ -59,6 +58,7 @@ export const sohken_PAGES = (props: PageGetterType) => {
         {tabId: 'genbaTaskMaster', label: '共通タスクマスタ'},
         {tabId: 'prefCity', label: '市区町村一覧'},
         {tabId: `roleMaster`, label: '権限管理'},
+        {tabId: `forcedWorkDay`, label: '出勤日強制指定'},
       ],
       exclusiveTo: !!systemAdmin,
     },

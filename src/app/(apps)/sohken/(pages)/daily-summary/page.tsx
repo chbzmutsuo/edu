@@ -2,7 +2,7 @@ import {DailySummaryCC} from '@app/(apps)/sohken/(pages)/daily-summary/DailySumm
 import {genbaDaySorter} from '@app/(apps)/sohken/(pages)/genbaDay/genbaDaySorter'
 import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
 
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import Redirector from '@components/utils/Redirector'
 
@@ -11,10 +11,19 @@ import prisma from '@lib/prisma'
 
 export default async function DynamicMasterPage(props) {
   const query = await props.searchParams
+  const tomorrow = getMidnight(toUtc(new Date(query.from ?? new Date())))
+  if (!query.from) {
+    return (
+      <Redirector
+        {...{
+          redirectPath: '/sohken/daily-summary' + addQuerySentence({from: formatDate(tomorrow), myPage: true}),
+        }}
+      />
+    )
+  }
+
   // const params = await props.params
   // const {session, scopes} = await initServerComopnent({query})
-
-  const tomorrow = getMidnight(query.from)
 
   const include = QueryBuilder.getInclude({}).genbaDay.include as any
 
@@ -53,21 +62,61 @@ export default async function DynamicMasterPage(props) {
     where: {genbaDayId: {in: genbaDayList.map(item => item.id)}},
   })
 
+  // dayRemarksStateを取得（upsertで確実に存在させる）
+  const dayRemarksState = await prisma.dayRemarks.upsert({
+    where: {date: tomorrow},
+    create: {date: tomorrow},
+    update: {date: tomorrow},
+    include: {
+      DayRemarksFile: {},
+      DayRemarksUser: {
+        include: {
+          User: {
+            include: {
+              UserRole: {
+                include: {
+                  RoleMaster: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  // usersを取得（DayRemarkComponentで使用されているロジックと同様）
+  const users = await prisma.user.findMany({
+    where: {apps: {has: `sohken`}},
+    include: {
+      UserRole: {include: {RoleMaster: {}}},
+      GenbaDayShift: {
+        where: {
+          GenbaDay: {
+            date: tomorrow,
+          },
+        },
+      },
+      DayRemarksUser: {
+        include: {DayRemarks: {}},
+        where: {DayRemarks: {date: tomorrow}},
+      },
+    },
+    orderBy: {
+      sortOrder: 'asc',
+    },
+  })
+
+  // Googleカレンダー情報を取得
+  const calendar = await prisma.sohkenGoogleCalendar.findMany({
+    where: {date: tomorrow},
+  })
+
   genbaDayList.sort((a, b) => {
     return genbaDaySorter(a, b)
   })
 
-  if (!query.from) {
-    return (
-      <Redirector
-        {...{
-          redirectPath: '/sohken/daily-summary' + addQuerySentence({from: formatDate(tomorrow), myPage: true}),
-        }}
-      />
-    )
-  }
-
   const records = genbaDayList
 
-  return <DailySummaryCC {...{genbaDayList, allShiftBetweenDays, records}} />
+  return <DailySummaryCC {...{genbaDayList, allShiftBetweenDays, records, users, dayRemarksState, calendar}} />
 }

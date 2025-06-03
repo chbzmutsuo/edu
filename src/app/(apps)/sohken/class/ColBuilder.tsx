@@ -30,6 +30,9 @@ export class ColBuilder {
     data = []
     return Fields.transposeColumns(data)
   }
+  static forcedWorkDay = (props: columnGetterType) => {
+    return new Fields([{id: 'date', label: '日付', type: 'date', form: {...defaultRegister}}]).transposeColumns()
+  }
   static DayRemarksFile = (props: columnGetterType) => {
     return Fields.transposeColumns([
       {

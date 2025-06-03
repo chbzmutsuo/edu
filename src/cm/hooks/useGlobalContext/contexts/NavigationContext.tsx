@@ -3,14 +3,20 @@ import React, {createContext, useContext, ReactNode} from 'react'
 import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
 import {NavigationContextType} from './types'
 import Loader from '@components/utils/loader/Loader'
+import Redirector from '@components/utils/Redirector'
 
 const NavigationContext = createContext<NavigationContextType | null>(null)
 
 export function NavigationProvider({children}: {children: ReactNode}) {
   const navigationData = useMyNavigation()
+  const {pathname} = navigationData
 
   if (navigationData.query === null || navigationData.query === undefined) {
     return <Loader>Validating Navigation Data...</Loader>
+  }
+
+  if (pathname === `/` && process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_PATH) {
+    return <Redirector redirectPath={`/${process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_PATH}`} />
   }
 
   return <NavigationContext.Provider value={navigationData}>{children}</NavigationContext.Provider>

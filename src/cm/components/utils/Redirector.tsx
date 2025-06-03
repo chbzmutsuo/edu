@@ -1,11 +1,11 @@
 'use client'
 import useRedirect from 'src/cm/hooks/useRedirect'
-import Loader from '@components/utils/loader/Loader'
+import PlaceHolder from '@components/utils/loader/PlaceHolder'
 
 const Redirector = ({redirectPath}) => {
   useRedirect(redirectPath, redirectPath)
 
-  return <Loader>Redirecting...</Loader>
+  return <PlaceHolder>Redirecting...</PlaceHolder>
 }
 
 export default Redirector
