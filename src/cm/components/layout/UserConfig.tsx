@@ -7,6 +7,7 @@ import MyPopover from '@components/utils/popover/MyPopover'
 import {UserCircleIcon} from '@heroicons/react/20/solid'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {HREF} from '@lib/methods/urls'
+import {signOut} from 'next-auth/react'
 import React, {useMemo} from 'react'
 
 // 型定義を改善
@@ -28,7 +29,7 @@ interface UserConfigProps {
 const STYLING_CONFIG = {styles: {wrapper: {padding: 0, width: '100%'}}} as const
 
 export const UserConfig = React.memo(() => {
-  const {roles, accessScopes, session, rootPath, query, width} = useGlobal()
+  const {roles, accessScopes, session, rootPath, query, width, router} = useGlobal()
 
   // 幅計算をメモ化
   const dimensions = useMemo(() => {
@@ -57,7 +58,15 @@ export const UserConfig = React.memo(() => {
             <LabelValue styling={STYLING_CONFIG} label="Email" value={session?.email} />
             <LabelValue styling={STYLING_CONFIG} label="権限" value={roleNames} />
             <R_Stack className="w-full justify-end">
-              <T_LINK href={logoutHref}>ログアウト</T_LINK>
+              <button
+                className={`t-link`}
+                onClick={async () => {
+                  await signOut({redirect: false})
+                  router.refresh()
+                }}
+              >
+                ログアウト
+              </button>
             </R_Stack>
           </R_Stack>
         </Paper>

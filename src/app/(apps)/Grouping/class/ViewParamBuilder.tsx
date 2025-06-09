@@ -1,7 +1,7 @@
 'use client'
 
 import {upsertLearningRoleMaster, upsertSchoolWithSubjects} from '@app/(apps)/Grouping/class/defaultUpsertMethods'
-import {ViewParamBuilderProps} from '@components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
+import {ViewParamBuilderProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
 export class ViewParamBuilder {
   static school: ViewParamBuilderProps = props => {

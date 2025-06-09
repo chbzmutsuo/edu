@@ -3,7 +3,7 @@ import React from 'react'
 import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/Grouping/class/ColBuilder'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import useDataUpdated from '@components/DataLogic/TFs/ClientConf/useDataUpdated'
+
 import {ClipboardDocumentIcon} from '@heroicons/react/20/solid'
 
 import {Grouping} from '@app/(apps)/Grouping/class/Grouping'
@@ -15,7 +15,6 @@ export const RoleSetting = ({Game, useGlobalProps}) => {
   const {toggleLoad, accessScopes} = useGlobalProps as useGlobalPropType
   const {teacherId} = accessScopes().getGroupieScopes()
 
-  const {addUpdated} = useDataUpdated()
   const transferDataFromLearningRoleMaster = async () => {
     if (!confirm(`役割マスタから一括反映しますか？`)) {
       return
@@ -40,7 +39,6 @@ export const RoleSetting = ({Game, useGlobalProps}) => {
           })
         })
       )
-      addUpdated()
     })
   }
 

@@ -6,7 +6,7 @@ import React, {Fragment} from 'react'
 
 import {Controller} from 'react-hook-form'
 
-import Control from 'src/cm/components/DataLogic/TFs/MyForm/HookFormControl/Parts/Control/Control'
+import Control from '@components/DataLogic/TFs/MyForm/components/HookFormControl/ControlWrapper'
 
 export type ColFormPropType = BasicFormType & {
   col

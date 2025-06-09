@@ -5,11 +5,10 @@ import {useGenbaDayCardEditorModalGMF} from '@app/(apps)/sohken/hooks/useGenbaDa
 import {useGenbaDetailModal} from '@app/(apps)/sohken/hooks/useGenbaDetailModal'
 import {useGenbaSearchModal} from '@app/(apps)/sohken/hooks/useGenbaSearchModal'
 import {useShiftEditFormModal} from '@app/(apps)/sohken/hooks/useShiftEditFormModal'
-import Redirector from '@components/utils/Redirector'
 
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {useGlobalShortcut} from '@hooks/useGlobalShortcut'
-import {isDev, sleep} from '@lib/methods/common'
+import { sleep} from '@lib/methods/common'
 
 import React from 'react'
 import {toast} from 'react-toastify'
@@ -34,9 +33,9 @@ export default function template({children}) {
     GenbaSearchModal_HK.setGMF_OPEN(true)
   })
 
-  if (isDev && !query.g_userId) {
-    return <Redirector {...{redirectPath: getHref(pathname, {g_userId: 159})}} />
-  }
+  // if (isDev && !query.g_userId) {
+  //   return <Redirector {...{redirectPath: getHref(pathname, {g_userId: 159})}} />
+  // }
 
   return (
     <div>

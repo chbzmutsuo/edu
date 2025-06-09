@@ -4,7 +4,8 @@ import {getEasySearchBtnCountData} from '@lib/server-actions/common-server-actio
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
-import {additionalPropsType, anyObject, MyTableType} from '@cm/types/types'
+import {additionalPropsType, MyTableType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {EasySearchObject} from 'src/cm/class/builders/QueryBuilderVariables'
 
 export type ES_Atom_FetcherProps = {

@@ -1,6 +1,6 @@
 import {Fragment} from 'react'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {obj__initializeProperty} from '@class/ObjHandler/transformers'
 
 const Waiting = ({Game, GameCtxValue}) => {

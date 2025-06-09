@@ -1,7 +1,7 @@
 import React from 'react'
 
 import GroupViewer from '../Teacher/GroupHandler/GroupViewer/GroupViewer'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {Alert} from '@components/styles/common-components/Alert'

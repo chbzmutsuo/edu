@@ -61,7 +61,7 @@ export const GET = async (req: NextRequest) => {
         price,
         taxRate: AqProduct.taxRate,
         taxedPrice: price * (1 + AqProduct.taxRate / 100),
-        remarks: ['[定期購読]', remarks ?? ''].join(` `),
+        remarks: ['[定期契約]', remarks ?? ''].join(` `),
         subscriptionYearMonth: yearMonth,
       }
 

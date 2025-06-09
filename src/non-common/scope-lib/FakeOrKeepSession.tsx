@@ -36,10 +36,9 @@ export const FakeOrKeepSession = async ({query, realSession}) => {
 
       const {result: data} = res ?? {}
       fakeUser = data
-
       return data
     } else {
-      return undefined
+      continue
     }
   }
 
@@ -69,7 +68,8 @@ export const FakeOrKeepSession = async ({query, realSession}) => {
   // )
   // fakeUser = getFakeUsers.find(u => u)
 
-  const result = fakeUser ?? realSession
+  const result = {...(fakeUser ?? realSession), role: realSession?.role}
 
-  return {...result, ...(tempScopes?.admin ? {role: '管理者'} : {})}
+  // return {...result, ...(tempScopes?.admin ? {role: '管理者'} : {})}
+  return result
 }

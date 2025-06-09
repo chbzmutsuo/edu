@@ -1,4 +1,4 @@
-import {ClientPropsType} from '@cm/types/types'
+import {ClientPropsType} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import {server_getPathname} from 'src/non-common/serverSideFunction'
 export type prismaDataExtractionQueryType = {

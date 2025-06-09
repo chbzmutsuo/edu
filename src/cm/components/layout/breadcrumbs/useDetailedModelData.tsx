@@ -2,7 +2,7 @@
 
 import {useEffect, useState, useMemo, useCallback} from 'react'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 type UseDetailedModelDataProps = {

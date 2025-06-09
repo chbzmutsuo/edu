@@ -1,7 +1,7 @@
 'use client'
 import React, {JSX, useCallback, useMemo, useRef} from 'react'
 import {Dialog} from '@headlessui/react'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {myModalDefault} from 'src/cm/constants/defaults'
 import {XMarkIcon} from '@heroicons/react/20/solid'
 import {Z_INDEX} from 'src/cm/lib/constants/constants'

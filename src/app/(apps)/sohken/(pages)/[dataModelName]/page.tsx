@@ -1,12 +1,8 @@
 //classを切り替える
 
-import {initServerComopnent} from 'src/non-common/serverSideFunction'
-import {setCustomParams} from '@cm/components/DataLogic/TFs/Server/SetCustomParams'
+import {setCustomParams} from '@components/DataLogic/helpers/SetCustomParams'
 
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
-import {Conf} from '@components/DataLogic/TFs/Server/Conf'
-
-import PropAdjustor from '@components/DataLogic/TFs/PropAdjustor/PropAdjustor'
 
 import {PageBuilder} from '@app/(apps)/sohken/class/PageBuilder'
 import {ColBuilder} from '@app/(apps)/sohken/class/ColBuilder'
@@ -15,17 +11,18 @@ import {ViewParamBuilder} from '@app/(apps)/sohken/class/ViewParamBuilder'
 
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
+import {getMasterPageCommonConfig} from '@components/DataLogic/helpers/getMasterPageCommonConfig'
 export default async function DynamicMasterPage(props) {
-  const query = await props.searchParams
-  const params = await props.params
-  const {session, scopes} = await initServerComopnent({query})
-  const customParams = await parameters({params, query, session, scopes})
-  const conf = await Conf({params, session, query, customParams, ...getBuilders()})
-
-  return <PropAdjustor {...conf} />
+  return getMasterPageCommonConfig({
+    nextPageProps: props,
+    parameters,
+    ColBuilder,
+    ViewParamBuilder,
+    PageBuilder,
+    QueryBuilder,
+  })
 }
 
-const getBuilders = () => ({ColBuilder, ViewParamBuilder, PageBuilder, QueryBuilder})
 const parameters = async (props: {params; query; session; scopes: ReturnType<typeof getScopes>}) => {
   const {params, query, session, scopes} = props
   const {admin} = scopes

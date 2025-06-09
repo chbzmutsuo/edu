@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import {getSession, signIn} from 'next-auth/react'
+import {signIn} from 'next-auth/react'
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 
 import {toast} from 'react-toastify'
@@ -11,7 +11,8 @@ import {CheckLogin} from '@app/api/prisma/login/checkLogin'
 
 export default function LoginForm(props) {
   const {error} = props
-  const {toggleLoad, router} = useGlobal()
+  const {toggleLoad, router, session} = useGlobal()
+
   const columns =
     props.columns ??
     Fields.transposeColumns([
@@ -62,8 +63,9 @@ export default function LoginForm(props) {
                   })
 
                   if (result?.ok) {
-                    const session = await getSession()
+                    // const session = await getSession()
                     toast.success(`ログインしました。`)
+                    router.refresh()
                   } else if (result?.error) {
                     toast.error(`ログインに失敗しました。:${result.error}`)
                   }

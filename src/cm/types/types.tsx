@@ -1,6 +1,6 @@
-import {CSSProperties, ReactNode, Ref, MouseEventHandler, KeyboardEventHandler, FocusEventHandler} from 'react'
-import {JSX} from 'react'
-import {
+import type {CSSProperties, ReactNode, Ref, MouseEventHandler, KeyboardEventHandler, FocusEventHandler} from 'react'
+import type {JSX} from 'react'
+import type {
   FieldPathValue,
   FieldValues,
   InternalFieldName,
@@ -9,29 +9,31 @@ import {
   ValidateResult,
   ValidationRule,
 } from 'react-hook-form'
-import {acceptType, FileData, fileInfo} from '@cm/types/file-types'
-import {ControlContextType, ControlOptionType} from '@cm/types/form-control-type'
-import {PrismaModelNames} from '@cm/types/prisma-types'
-export type anyObject = {
-  [key: string | number]: any
-}
-import {optionsOrOptionFetcherType, optionType, transposeColumnsOptionProps} from 'src/cm/class/Fields/col-operator-types'
-import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
-import {myFormDefaultUpsertPropType} from '@lib/formMethods/separateFormData'
-import {prismaDataExtractionQueryType} from 'src/cm/components/DataLogic/TFs/Server/Conf'
-import {surroundings} from 'src/cm/components/DataLogic/TFs/Server/SetCustomParams'
-import {ClientPropsType2} from 'src/cm/components/DataLogic/TFs/PropAdjustor/PropAdjustor'
-import {EasySearchObject} from 'src/cm/class/builders/QueryBuilderVariables'
-
-import {HK_USE_RECORDS_TYPE} from '@components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
-import {codeObjectArgs} from '@class/Code'
 import {twMerge} from 'tailwind-merge'
-import React from 'react'
 
+// エイリアスimport
+import type {acceptType, FileData, fileInfo} from '@cm/types/file-types'
+import type {ControlContextType, ControlOptionType} from '@cm/types/form-control-type'
+import type {PrismaModelNames} from '@cm/types/prisma-types'
+
+// 相対パスimport
+import type {optionType, transposeColumnsOptionProps} from 'src/cm/class/Fields/col-operator-types'
+import type {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
+import type {myFormDefaultUpsertPropType} from '@lib/formMethods/separateFormData'
+import type {prismaDataExtractionQueryType} from 'src/cm/components/DataLogic/TFs/Server/Conf'
+import type {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import type {EasySearchObject} from 'src/cm/class/builders/QueryBuilderVariables'
+import {forSelcetType, multipleSelectProps} from '@cm/types/select-types'
+import {upsertControllerType} from '@cm/types/form-types'
+import {anyObject} from '@cm/types/utility-types'
+import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+
+// --- JSX関連 ---
 export type JSXReturnFunc = (props: any) => JSX.Element
 
+// --- カラム型・テーブル型 ---
 export type colTypeStr =
-  | `json`
+  | 'json'
   | 'url'
   | 'text'
   | 'price'
@@ -57,12 +59,12 @@ export type colTypeStr =
   | 'textarea'
   | 'confirm'
   | 'string'
-  | 'file'
   | 'review'
   | 'array'
   | 'rate'
   | ''
 
+// --- カラム・フォーム関連型 ---
 export type TdcreateFormPropss = {
   style?: CSSProperties | ((value, record) => any) | any
   hidden?: boolean
@@ -81,16 +83,8 @@ export type onFormItemBlurType = (props: {
   newlatestFormData: anyObject
   ReactHookForm: UseFormReturn
 }) => any
-export type forSelectConfig = {
-  displayExtractKeys?: string[]
-  modelName?: PrismaModelNames
-  select?: {[key: string]: colTypeStr | boolean}
-  where?: anyObject | ((props: {col: colType; latestFormData: anyObject}) => anyObject)
-  orderBy?: any
-  include?: any
-  nameChanger?: (op: optionType & anyObject) => optionType & {name: any}
-  messageWhenNoHit?: string
-}
+
+// --- セレクト・オプション関連型 ---
 
 export type OptionCreatorProps = {searchedInput} & ControlContextType
 
@@ -108,39 +102,6 @@ export type allowCreateOptionsType = {
   }
 }
 
-export type multipleSelectProps = {
-  models: {
-    parent: PrismaModelNames
-    mid: PrismaModelNames
-    option: PrismaModelNames
-    uniqueWhereKey: string
-  }
-}
-export type forSelcetType = {
-  codeMaster?: codeObjectArgs
-  radio?: anyObject
-
-  searcher?: (props: ControlContextType) => {
-    getSearchFormProps?: () => {
-      columns: colType[][]
-      formData: anyObject
-    }
-    getItems?: getItems
-  }
-
-  config?: forSelectConfig
-  dependenceColIds?: string[]
-  allowCreateOptions?: allowCreateOptionsType
-  optionsOrOptionFetcher?: optionsOrOptionFetcherType | optionType[] | any[]
-  option?: {
-    alignment?: {
-      direction?: 'row' | 'column'
-      justify?: 'start' | 'end' | 'center' | 'between' | 'around'
-      alignItems?: 'start' | 'end' | 'center' | 'baseline' | 'stretch'
-    }
-    style: CSSProperties
-  }
-}
 export type colTdProps = {
   withLabel?: boolean
   editable?: {
@@ -174,6 +135,7 @@ export type registerType = {
   disabled?: boolean
   deps?: InternalFieldName | InternalFieldName[]
 }
+
 export type colFormProps = {
   showResetBtn?: boolean
   placerHolder?: any
@@ -191,6 +153,7 @@ export type colFormProps = {
   addFormat?: JSXReturnFunc | any
   disabled?: boolean | ((props: {record: any; col: any}) => boolean)
 } & TdcreateFormPropss
+
 export type colTypeOptional = {
   isMain?: boolean
 
@@ -233,6 +196,7 @@ export type colTypeOptional = {
   // Register?: anyObject
   originalColIdx?: number // このカラムが元々のカラムの何番目か（自動計算のため手動は不要）
 }
+
 export type colType = {
   id: string
   label: any
@@ -241,9 +205,10 @@ export type colType = {
 export type columnGetterType = {
   useGlobalProps: useGlobalPropType
   transposeColumnsOptions?: transposeColumnsOptionProps
-  ColBuilderExtraProps?: anyObject & {HK_USE_RECORDS?: HK_USE_RECORDS_TYPE}
+  ColBuilderExtraProps?: anyObject & {UseRecordsReturn?: UseRecordsReturn}
 }
 
+// --- テーブル・フォーム全体の型 ---
 export type MyTableType =
   | {
       NoDataElement?: () => JSX.Element
@@ -265,11 +230,9 @@ export type MyTableType =
       fixedCols?: number
       customActions?: (props: {ClientProps2: ClientPropsType2}) => JSX.Element
       caption?: JSX.Element | string
-
       showHeader?: boolean
       showRecordIndex?: boolean
       hideEasySearch?: boolean
-
       useWrapperCard?: boolean
     }
   | undefined
@@ -277,20 +240,8 @@ export type MyTableType =
 export type extraFormStateType = {
   files?: {[key in PrismaModelNames | string]?: FileData[]}
 }
+
 type myformCreateDeleteMethod = ((props: myFormDefaultUpsertPropType) => void) | boolean | anyObject
-
-export type upsertControllerType =
-  | {
-      //更新するかどうか判定する
-      validateUpdate?: (props: myFormDefaultUpsertPropType) => Promise<requestResultType>
-
-      //メインの更新処理を実施する
-      executeUpdate?: (props: myFormDefaultUpsertPropType) => Promise<requestResultType>
-
-      //更新後の処理を実行する
-      finalizeUpdate?: (props: {res: requestResultType; formData: any}) => void
-    }
-  | boolean
 
 export type MyFormType = {
   create?: upsertControllerType
@@ -328,6 +279,7 @@ export type prismaDataType = {
   loading: boolean
   beforeLoad?: boolean
 }
+
 export type editTypePropType =
   | {
       type: 'modal' | 'page' | 'pageOnSame'
@@ -362,7 +314,7 @@ export type formDataStateType = {
 }
 
 export type DetailPagePropType = {
-  HK_USE_RECORDS?: HK_USE_RECORDS_TYPE
+  UseRecordsReturn?: UseRecordsReturn
   myForm?: MyFormType
   myTable?: MyTableType
   PageBuilderExtraProps?: anyObject
@@ -417,30 +369,10 @@ export type serverFetchihngDataType = {
   // prismaData: any
   // easySearchPrismaDataOnServer: easySearchDataSwrType
 }
-export type ClientPropsType = {
-  params: anyObject
-  dataModelName: dataModelNameType
-  surroundings?: surroundings
-  displayStyle?: CSSProperties
-  DetailePageId?: any
-  redirectPath?: any
-  EasySearchBuilder?: any
-  ColBuilder?: anyObject
-  PageBuilder?: anyObject
-  ViewParamBuilder?: anyObject
-  ColBuilderExtraProps?: anyObject
-  PageBuilderExtraProps?: anyObject
-  easySearchPrismaDataOnServer?: anyObject
-  easySearchExtraProps?: anyObject
-  serverFetchihngData?: anyObject
-  include?: anyObject
-} & dataMinimumServerType &
-  form_table_modal_config & {
-    PageBuilderGetter?: PageBuilderGetterType
-  }
 
 export type globalModalString = 'workLogHistory' | `sateiConnection` | `SaleEditor`
 
+// --- htmlProps型・ユーティリティ関数 ---
 export type htmlProps = {
   id?: string
   className?: string
@@ -448,18 +380,19 @@ export type htmlProps = {
   style?: CSSProperties
   type?: 'button' | 'submit'
   disabled?: boolean
-
   onClick?: MouseEventHandler
   onKeyDown?: KeyboardEventHandler
   onBlur?: FocusEventHandler
   onMouseEnter?: MouseEventHandler
   onMouseLeave?: MouseEventHandler
   onMouseDown?: MouseEventHandler
-
   children?: ReactNode
 }
 
-export const mergeHtmlProps = (htmlProps: htmlProps, uniqueProps?: any) => {
+/**
+ * htmlPropsをマージするユーティリティ関数
+ */
+export const mergeHtmlProps = (htmlProps: htmlProps, uniqueProps?: Partial<htmlProps>) => {
   const newObject = {...htmlProps}
   // styleだけobjectマージ
   if (uniqueProps?.style) {
@@ -470,10 +403,12 @@ export const mergeHtmlProps = (htmlProps: htmlProps, uniqueProps?: any) => {
     newObject.className = newObject.className ? twMerge(uniqueProps.className, newObject.className) : uniqueProps.className
   }
   // その他は上書き
-  Object.keys(uniqueProps ?? {}).forEach(key => {
-    if (key !== 'style' && key !== 'className') {
-      newObject[key] = uniqueProps[key]
-    }
-  })
+  if (uniqueProps) {
+    Object.keys(uniqueProps).forEach(key => {
+      if (key !== 'style' && key !== 'className') {
+        newObject[key] = uniqueProps[key]
+      }
+    })
+  }
   return newObject
 }

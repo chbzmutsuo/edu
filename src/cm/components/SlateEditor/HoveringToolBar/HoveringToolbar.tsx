@@ -6,7 +6,7 @@ import {Editor, Range} from 'slate'
 import {SlateToolbar} from 'src/cm/components/SlateEditor/SlateToolbar'
 
 import {cl} from 'src/cm/lib/methods/common'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {Padding} from 'src/cm/components/styles/common-components/common-components'
 import {Z_INDEX} from 'src/cm/lib/constants/constants'
 

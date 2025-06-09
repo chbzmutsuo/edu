@@ -1,5 +1,7 @@
 import {prismaMethodType} from '@cm/types/prisma-types'
-import {anyObject, dataModelNameType} from '@cm/types/types'
+import {dataModelNameType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
+
 export const buildUniversalRoutePayload = (
   model: dataModelNameType,
   method: prismaMethodType,

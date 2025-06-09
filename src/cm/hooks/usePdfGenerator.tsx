@@ -1,7 +1,7 @@
 import React from 'react'
 import {Text, View, StyleSheet} from '@react-pdf/renderer'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {Style} from '@react-pdf/types'
 
 import {PDFDownloadLink, PDFViewer, Font} from '@react-pdf/renderer'

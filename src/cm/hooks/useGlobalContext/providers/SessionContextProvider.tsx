@@ -36,7 +36,7 @@ const ProviderChain = ({children, session}: {children: ReactNode; session?: Sess
   const sessionData = useMySession({session})
 
   if (sessionData.sessionLoading) {
-    return <Loader>Loading...</Loader>
+    return <Loader>Session Loading...</Loader>
     // return <Loader />
   }
 

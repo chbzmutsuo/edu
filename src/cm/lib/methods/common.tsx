@@ -1,4 +1,4 @@
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {CSSProperties} from 'react'
 import {toast} from 'react-toastify'
 import {memoize} from 'lodash'
@@ -6,7 +6,7 @@ import {memoize} from 'lodash'
 export const basePath = typeof window === `undefined` ? (process.env.NEXT_PUBLIC_BASEPATH ?? '') : window.location.origin
 export const isDev = process.env.NODE_ENV === 'development'
 export const apiPath = `${basePath}/api`
-export const systemEmailTo = process.env.SYSTEM_EMAIL_TO ?? ''
+export const systemEmailTo = String(process.env.SYSTEM_EMAIL_TO ?? '').split(',')
 
 export const routePath = `${basePath}/api/prisma`
 export const routeEndpoint = {

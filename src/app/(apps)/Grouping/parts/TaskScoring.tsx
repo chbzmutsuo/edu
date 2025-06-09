@@ -1,7 +1,7 @@
 import {gpt_chat_getGptReply} from '@app/api/openAi/open-ai-lib'
 import {arr__uniqArray} from '@class/ArrHandler/array-utils/basic-operations'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {Button} from '@components/styles/common-components/Button'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 import {IconBtn} from '@components/styles/common-components/IconBtn'

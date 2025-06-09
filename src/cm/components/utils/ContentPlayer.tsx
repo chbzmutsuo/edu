@@ -5,13 +5,13 @@ import BasicModal from 'src/cm/components/utils/modal/BasicModal'
 
 import dynamic from 'next/dynamic'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import useWindowSize from 'src/cm/hooks/useWindowSize'
 
 import {Absolute, Center} from 'src/cm/components/styles/common-components/common-components'
 import {cl} from 'src/cm/lib/methods/common'
-import {pathToNoImage} from 'src/cm/components/DataLogic/TFs/MyForm/HookFormControl/Parts/Control/MyFileControl/MyFileControl'
+import {pathToNoImage} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
 import {ArrowDownTrayIcon} from '@heroicons/react/20/solid'
 import {T_LINK} from '@components/styles/common-components/links'
 import {useMemo, memo} from 'react'

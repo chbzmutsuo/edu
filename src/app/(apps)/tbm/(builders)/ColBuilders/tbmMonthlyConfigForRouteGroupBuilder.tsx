@@ -37,7 +37,7 @@ export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) =>
       id: 'seikyuKaisu',
       label: '請求回数\n(チェック用)',
       type: 'number',
-      td: {style: {width: 80}},
+      td: {style: {width: 100}},
     },
 
     {

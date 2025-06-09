@@ -3,14 +3,13 @@
 import React from 'react'
 import {R_Stack} from '@components/styles/common-components/common-components'
 import {sleep} from '@cm/lib/methods/common'
-import ColOptionModal from '@components/DataLogic/TFs/MyTable/Thead/ColOption/ColOptionModal'
+import ColOptionModal from '@components/DataLogic/TFs/MyTable/components/Thead/ColOption/ColOptionModal'
 import Loader from '@components/utils/loader/Loader'
 import {useScrollPosition} from '@hooks/scrollPosition/useScrollPosition'
 import {usePageTracking} from '@hooks/usePageTracking'
 import {RefreshCwIcon} from 'lucide-react'
 import {twMerge} from 'tailwind-merge'
 import {useGlobalContext} from '@hooks/useGlobalContext/hooks/useGlobalContext'
-import useLogOnRender from '@hooks/useLogOnRender'
 
 // 新しいContext方式のインポート
 

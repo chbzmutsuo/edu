@@ -1,7 +1,7 @@
 'use client'
 import React, {useId, useMemo, useCallback} from 'react'
 import {DetailPagePropType} from '@cm/types/types'
-import FormHeader from 'src/cm/components/DataLogic/TFs/MyForm/FormHeader'
+import FormHeader from '@components/DataLogic/TFs/MyForm/components/FormHeader'
 import {myFormDefault} from 'src/cm/constants/defaults'
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
@@ -10,25 +10,14 @@ import {UseFormReturn} from 'react-hook-form'
 import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
 import {useFormSubmit} from './hooks/useFormSubmit'
 
-// 型定義を追加
-interface MyFormProps extends DetailPagePropType {
-  prismaDataExtractionQuery?: prismaDataExtractionQueryType
-}
-
-const MyForm = React.memo<MyFormProps>(props => {
+const MyForm = React.memo<DetailPagePropType>(props => {
   const prismaDataExtractionQuery = props?.prismaDataExtractionQuery as prismaDataExtractionQueryType
 
   // プロパティをメモ化（依存関係を細分化）
-  const memoizedProps = useMemo(
-    () => ({
-      ...props,
-      myForm: {...myFormDefault, ...props.myForm},
-    }),
-    [props]
-  )
+  const memoizedProps = useMemo(() => ({...props, myForm: {...myFormDefault, ...props.myForm}}), [props])
 
   const {mutateRecords, dataModelName, myForm, formData, setformData, columns, editType, additional} = memoizedProps
-  const {session} = memoizedProps.useGlobalProps
+
   const formId = useId()
 
   // onFormItemBlurをメモ化（より効率的に）
@@ -81,22 +70,10 @@ const MyForm = React.memo<MyFormProps>(props => {
   const buttonColor = useMemo(() => (updateMode ? 'blue' : 'primary'), [updateMode])
 
   // customActionsの引数をメモ化
-  const customActionsArgs = useMemo(
-    () => ({
-      ...memoizedProps,
-      ReactHookForm,
-    }),
-    [memoizedProps, ReactHookForm]
-  )
+  const customActionsArgs = useMemo(() => ({...memoizedProps, ReactHookForm}), [memoizedProps, ReactHookForm])
 
   // スタイルをメモ化
-  const containerStyle = useMemo(
-    () => ({
-      ...myForm?.style,
-      maxHeight: undefined,
-    }),
-    [myForm?.style]
-  )
+  const containerStyle = useMemo(() => ({...myForm?.style, maxHeight: undefined}), [myForm?.style])
 
   return (
     <div id={formElementId} style={containerStyle} className="m-0.5">

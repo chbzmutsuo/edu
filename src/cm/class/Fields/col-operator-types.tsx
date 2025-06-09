@@ -1,4 +1,5 @@
-import {anyObject, colType} from '@cm/types/types'
+import {colType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 export type transposeColumnsOptionProps = {
   autoSplit?: {
@@ -19,8 +20,7 @@ export type optionsOrOptionFetcherType = (
 
 export type optionType = {
   id?: any
-  label?: any
-  value: any
-  color?: any
-  // name?: any
+  label?: string
+  value: string
+  color?: string
 } & anyObject

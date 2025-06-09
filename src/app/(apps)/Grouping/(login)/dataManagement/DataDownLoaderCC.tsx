@@ -10,7 +10,7 @@ import {Prisma} from '@prisma/client'
 import {Days} from '@class/Days/Days'
 
 import {formatDate, toIsoDateIfExist} from '@class/Days/date-utils/formatters'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {CssString} from '@components/styles/cssString'
 import {cl} from '@lib/methods/common'
 

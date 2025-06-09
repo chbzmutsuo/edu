@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 import {PaperLarge} from '@components/styles/common-components/paper'
 

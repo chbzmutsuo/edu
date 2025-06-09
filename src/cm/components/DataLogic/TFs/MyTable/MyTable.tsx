@@ -2,19 +2,19 @@
 import React, {useMemo} from 'react'
 import {TableSkelton} from '@components/utils/loader/TableSkelton'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/PropAdjustor'
-import {HK_USE_RECORDS_TYPE} from '@components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
+import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 
 // 分割されたコンポーネントをインポート
 import {MyTableInfiniteScroll} from './MyTableInfiniteScroll'
-import {MyTableControls} from './MyTableControls'
-import {useMyTableLogic} from './useMyTableLogic'
-import {MainTable} from './MainTable'
+import {MyTableControls} from './components/MyTableControls/MyTableControls'
+import {useMyTableLogic} from './hooks/useMyTableLogic'
+import {MainTable} from './components/MainTable'
 
 // 型定義
 interface MyTableProps {
   ClientProps2: ClientPropsType2 & {
-    HK_USE_RECORDS?: HK_USE_RECORDS_TYPE
+    UseRecordsReturn?: UseRecordsReturn
   }
 }
 

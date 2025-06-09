@@ -1,5 +1,7 @@
-import {additionalPropsType, anyObject, dataModelNameType} from '@cm/types/types'
+import {additionalPropsType, dataModelNameType} from '@cm/types/types'
 import {Days} from '@class/Days/Days'
+
+import {anyObject} from '@cm/types/utility-types'
 
 import {StrHandler} from '@class/StrHandler'
 

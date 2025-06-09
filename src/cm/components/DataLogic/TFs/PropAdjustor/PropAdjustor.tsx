@@ -3,58 +3,17 @@ import React, {useMemo} from 'react'
 import {NestHandler} from 'src/cm/class/NestHandler'
 import {C_Stack, Padding, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import {HK_USE_RECORDS_TYPE} from 'src/cm/components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
 import {Z_INDEX} from '@lib/constants/constants'
-import {useMergeWithCustomViewParams} from '@components/DataLogic/TFs/PropAdjustor/useMergeWithCustomViewParams'
-
-import useColumns from '@components/DataLogic/TFs/PropAdjustor/useColumns'
-import useRecords from '@components/DataLogic/TFs/PropAdjustor/(useRecords)/useRecords'
-import useInitFormState from '@hooks/useInitFormState'
-import useEditForm from '@components/DataLogic/TFs/PropAdjustor/useEditForm'
-import useMyTable from '@components/DataLogic/TFs/PropAdjustor/useMyTable'
-import useAdditional from '@components/DataLogic/TFs/PropAdjustor/useAdditional'
 
 import {TableSkelton} from '@components/utils/loader/TableSkelton'
-import useGlobal, {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
-import DetailedPageCC from '@components/DataLogic/TFs/PropAdjustor/DetailedPageCC'
+import DetailedPageCC from '@components/DataLogic/TFs/PropAdjustor/components/DetailedPageCC'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import TableForm from '@components/DataLogic/TFs/PropAdjustor/TableForm'
-import {ClientPropsType} from '@cm/types/types'
-import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
+import TableForm from '@components/DataLogic/TFs/PropAdjustor/components/TableForm'
 
-import EasySearcher from '@components/DataLogic/TFs/MyTable/EasySearcher/EasySearcher'
+import EasySearcher from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
 
-export interface PropAdjustorPropsType {
-  ClientProps: ClientPropsType
-  serverFetchProps: serverFetchProps
-  initialModelRecords: Awaited<ReturnType<typeof getInitModelRecordsProps>>
-  fetchTime: Date
-}
-
-export interface ClientPropsType2 extends ClientPropsType {
-  HK_USE_RECORDS?: HK_USE_RECORDS_TYPE
-  useGlobalProps: useGlobalPropType
-  columns: any
-  formData: any
-  setformData: any
-  records: any
-  setrecords: any
-  totalCount: number
-  mutateRecords: any
-  deleteRecord: any
-}
-
-interface UsePropAdjustorLogicProps {
-  ClientProps: ClientPropsType
-  serverFetchProps: serverFetchProps
-  initialModelRecords: Awaited<ReturnType<typeof getInitModelRecordsProps>>
-  fetchTime: Date
-}
-
-interface SurroundingComponentProps {
-  type: 'top' | 'left' | 'table' | 'right' | 'bottom'
-  ClientProps2: ClientPropsType2
-}
+import {usePropAdjustorLogic} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/usePropAdjustorLogic'
+import {PropAdjustorPropsType, SurroundingComponentProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
 const SurroundingComponent = React.memo<SurroundingComponentProps>(({type, ClientProps2}) => {
   const {PageBuilder, dataModelName} = ClientProps2
@@ -78,70 +37,9 @@ const SurroundingComponent = React.memo<SurroundingComponentProps>(({type, Clien
 
 SurroundingComponent.displayName = 'SurroundingComponent'
 
-const usePropAdjustorLogic = ({ClientProps, serverFetchProps, initialModelRecords, fetchTime}: UsePropAdjustorLogicProps) => {
-  const useGlobalProps = useGlobal()
-
-  const HK_USE_RECORDS: HK_USE_RECORDS_TYPE = useRecords({
-    serverFetchProps,
-    initialModelRecords,
-    fetchTime,
-  })
-
-  const {prismaDataExtractionQuery, easySearchPrismaDataOnServer} = HK_USE_RECORDS
-  const modelData = useMemo(() => HK_USE_RECORDS?.records?.[0], [HK_USE_RECORDS?.records])
-  const {formData, setformData} = useInitFormState(null, [modelData])
-
-  const columns = useColumns({
-    useGlobalProps,
-    HK_USE_RECORDS,
-    dataModelName: ClientProps.dataModelName,
-    ColBuilder: ClientProps.ColBuilder,
-    ColBuilderExtraProps: ClientProps.ColBuilderExtraProps,
-  })
-
-  const additional = useAdditional({
-    additional: ClientProps.additional,
-    prismaDataExtractionQuery,
-  })
-
-  const EditForm = useEditForm({
-    PageBuilderGetter: ClientProps.PageBuilderGetter,
-    PageBuilder: ClientProps.PageBuilder,
-    dataModelName: ClientProps.dataModelName,
-  })
-
-  const myTable = useMyTable({
-    columns,
-    displayStyle: ClientProps.displayStyle,
-    myTable: ClientProps.myTable,
-  })
-
-  const ClientProps2: ClientPropsType2 = useMergeWithCustomViewParams({
-    ...ClientProps,
-    ...HK_USE_RECORDS,
-    additional,
-    EditForm,
-    myTable,
-    useGlobalProps,
-    columns,
-    formData,
-    setformData,
-    HK_USE_RECORDS,
-    prismaDataExtractionQuery,
-  })
-
-  return {
-    ClientProps2,
-    HK_USE_RECORDS,
-    modelData,
-    easySearchPrismaDataOnServer,
-    useGlobalProps,
-  }
-}
-
 const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
   const {serverFetchProps} = props
-  const {ClientProps2, HK_USE_RECORDS, modelData, easySearchPrismaDataOnServer, useGlobalProps} = usePropAdjustorLogic(props)
+  const {ClientProps2, UseRecordsReturn, modelData, easySearchPrismaDataOnServer, useGlobalProps} = usePropAdjustorLogic(props)
 
   const {appbarHeight} = useGlobalProps
 
@@ -155,14 +53,14 @@ const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
       dataModelName: ClientProps2.dataModelName,
       easySearchPrismaDataOnServer,
       useGlobalProps,
-      HK_USE_RECORDS,
+      UseRecordsReturn,
       hideEasySearch: ClientProps2?.myTable?.hideEasySearch,
     }),
     [
       ClientProps2.dataModelName,
       easySearchPrismaDataOnServer,
       useGlobalProps,
-      HK_USE_RECORDS,
+      UseRecordsReturn,
       ClientProps2?.myTable?.hideEasySearch,
     ]
   )
@@ -192,7 +90,7 @@ const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
     []
   )
 
-  if (HK_USE_RECORDS.records === null) {
+  if (UseRecordsReturn.records === null) {
     return (
       <Padding>
         <TableSkelton />

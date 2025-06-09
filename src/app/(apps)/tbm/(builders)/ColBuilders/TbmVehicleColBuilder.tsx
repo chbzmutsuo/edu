@@ -3,7 +3,8 @@ import {defaultRegister} from '@class/builders/ColBuilderVariables'
 import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {Fields} from '@cm/class/Fields/Fields'
-import {columnGetterType, forSelectConfig} from '@cm/types/types'
+import {columnGetterType} from '@cm/types/types'
+import {forSelectConfig} from '@cm/types/select-types'
 
 export const TbmVehicleColBuilder = (props: columnGetterType) => {
   return new Fields([
@@ -172,8 +173,12 @@ export const getVehicleForSelectConfig = ({tbmBaseId}: {tbmBaseId?: number}) => 
       name: false,
     },
     nameChanger(op) {
-      const {type, shape, frameNo} = op
-      return {...op, name: op ? [`[${type}]`, frameNo, op.vehicleNumber, shape].join(` `) : ''}
+      if (op) {
+        const {type, shape, frameNo} = op
+        return {...op, name: op ? [`[${type}]`, frameNo, op.vehicleNumber, shape].join(` `) : ''}
+      }
+
+      return op
     },
   }
 

@@ -176,14 +176,3 @@ model Calendar {
 
   holidayType String @default("出勤")
 }
-
-model Tokens {
-  id        Int       @id @default(autoincrement())
-  createdAt DateTime  @default(now())
-  updatedAt DateTime? @default(now()) @updatedAt()
-  sortOrder Float     @default(0)
-
-  name      String    @unique
-  token     String
-  expiresAt DateTime?
-}

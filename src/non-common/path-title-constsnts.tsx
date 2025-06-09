@@ -1,4 +1,4 @@
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {JSX} from 'react'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {Advantage_PAGES} from 'src/non-common/getPages/getAdvantagePages'

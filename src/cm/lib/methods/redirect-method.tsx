@@ -1,6 +1,6 @@
 'use server'
 import {ObjectMap} from './common'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {HREF} from 'src/cm/lib/methods/urls'
 import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'

@@ -2,7 +2,8 @@ import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {TimeFormatType} from '@class/Days/date-utils/formatters'
 import {CSSProperties} from 'react'
-import {colType, anyObject} from '@cm/types/types'
+import {colType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 export const breakLines = (
   text: any,

@@ -4,7 +4,7 @@ import BasicModal from '@cm/components/utils/modal/BasicModal'
 
 import Rank from './Rank'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
 import BasicTabs from '@cm/components/utils/tabs/BasicTabs'

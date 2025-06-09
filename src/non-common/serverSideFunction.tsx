@@ -4,7 +4,7 @@ import {basePath} from '../cm/lib/methods/common'
 import {fileTypeFromBuffer} from 'file-type'
 import {getServerSession} from 'next-auth'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {Prisma} from '@prisma/client'
 import {authOptions} from '@app/api/auth/authOptions'
@@ -79,6 +79,7 @@ export const initServerComopnent = async ({query}) => {
   const {session: realSession} = await sessionOnServer()
 
   const session = await FakeOrKeepSession({query, realSession: realSession})
+
   const {roles} = await fetchUserRole({session})
 
   const scopes = getScopes(session, {query, roles})

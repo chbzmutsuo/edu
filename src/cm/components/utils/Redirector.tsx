@@ -4,7 +4,7 @@ import useRedirect from 'src/cm/hooks/useRedirect'
 import Loader from '@components/utils/loader/Loader'
 
 const Redirector = ({redirectPath}) => {
-  useRedirect(redirectPath, redirectPath)
+  useRedirect(true, redirectPath)
 
   return <Loader>Redirecting...</Loader>
 }

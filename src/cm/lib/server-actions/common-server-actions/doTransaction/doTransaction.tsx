@@ -1,7 +1,8 @@
 'use server'
 
 import prisma, {handlePrismaError} from 'src/cm/lib/prisma'
-import {anyObject, dataModelNameType, requestResultType} from '@cm/types/types'
+import {dataModelNameType, requestResultType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {prismaMethodType} from '@cm/types/prisma-types'
 
 export const doTransaction = async (props: {transactionQueryList: transactionQuery[]; transaction?: boolean}) => {

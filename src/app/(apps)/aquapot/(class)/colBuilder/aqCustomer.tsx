@@ -5,7 +5,8 @@ import {defaultMultipleSelectFormat} from '@class/Fields/lib/defaultFormat'
 import {obj__objectToArray} from '@class/ObjHandler/transformers'
 
 import {Fields} from '@cm/class/Fields/Fields'
-import {columnGetterType, forSelectConfig} from '@cm/types/types'
+import {forSelectConfig} from '@cm/types/select-types'
+import {columnGetterType} from '@cm/types/types'
 
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 

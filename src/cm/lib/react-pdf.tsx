@@ -1,7 +1,8 @@
 import React from 'react'
 import {Text, View, StyleSheet} from '@react-pdf/renderer'
-import {anyObject} from 'src/cm/types/types'
+
 import {Style} from '@react-pdf/types'
+import {anyObject} from '@cm/types/utility-types'
 
 const borderStyles: Style = {
   borderStyle: 'solid',

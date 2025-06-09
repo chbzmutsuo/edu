@@ -1,0 +1,120 @@
+model Tokens {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name      String    @unique
+ token     String
+ expiresAt DateTime?
+}
+
+// Sara App - おうちスタンプラリーアプリ
+
+model SaraFamily {
+ id        String    @id @default(cuid())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name String
+
+ parents         SaraParent[]
+ children        SaraChild[]
+ evaluationItems SaraEvaluationItem[]
+}
+
+model SaraParent {
+ id        String    @id @default(cuid())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name     String
+ email    String @unique
+ password String
+
+ family   SaraFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId String
+
+ approvedRequests SaraEvaluationRequest[] @relation("ApprovedBy")
+}
+
+model SaraChild {
+ id        String    @id @default(cuid())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name     String
+ password String?
+ avatar   String? // アバター画像URL
+
+ family   SaraFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId String
+
+ evaluationRequests SaraEvaluationRequest[]
+}
+
+model SaraEvaluationItem {
+ id        String    @id @default(cuid())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ title       String
+ description String?
+ order       Int     @default(0)
+ active      Boolean @default(true)
+
+ family   SaraFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId String
+
+ scores             SaraEvaluationScore[]
+ evaluationRequests SaraEvaluationRequest[]
+}
+
+model SaraEvaluationScore {
+ id        String    @id @default(cuid())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ score             Int
+ title             String
+ description       String?
+ iconUrl           String?
+ achievementImgUrl String?
+ animationLevel    String  @default("light") // light, medium, heavy
+
+ evaluationItem   SaraEvaluationItem @relation(fields: [evaluationItemId], references: [id], onDelete: Cascade)
+ evaluationItemId String
+
+ evaluationRequests SaraEvaluationRequest[]
+}
+
+model SaraEvaluationRequest {
+ id        String    @id @default(cuid())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date          DateTime @default(now())
+ status        String   @default("pending") // pending, approved, rejected
+ comment       String?
+ openedByChild Boolean  @default(false)
+
+ child   SaraChild @relation(fields: [childId], references: [id], onDelete: Cascade)
+ childId String
+
+ evaluationItem   SaraEvaluationItem @relation(fields: [evaluationItemId], references: [id], onDelete: Cascade)
+ evaluationItemId String
+
+ evaluationScore   SaraEvaluationScore @relation(fields: [evaluationScoreId], references: [id], onDelete: Cascade)
+ evaluationScoreId String
+
+ approvedBy   SaraParent? @relation("ApprovedBy", fields: [approvedById], references: [id])
+ approvedById String?
+
+ @@unique([childId, evaluationItemId, date], name: "child_item_date_unique")
+}

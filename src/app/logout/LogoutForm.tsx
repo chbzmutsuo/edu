@@ -1,5 +1,5 @@
 'use client'
-import {getSession, signOut} from 'next-auth/react'
+import { signOut} from 'next-auth/react'
 import {useEffect} from 'react'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 
@@ -11,11 +11,7 @@ const LogoutForm = () => {
       const logout = async () => {
         toggleLoad(async () => {
           const res = await signOut({redirect: false})
-          const session = await getSession()
-          if (res.url) {
-            // toast.success('ログアウトしました。')
-            router.refresh()
-          }
+          router.refresh()
         })
       }
       logout()

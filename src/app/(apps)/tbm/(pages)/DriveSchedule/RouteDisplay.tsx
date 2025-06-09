@@ -41,7 +41,7 @@ export default function RouteDisplay({tbmBase, whereQuery}) {
             orderBy: [{code: `asc`}],
           },
           myForm: {create: TbmRouteGroupUpsertController},
-          myTable: {style: {width: `90vw`, maxHeight: `70vh`}, pagination: {countPerPage: 10}},
+          myTable: {style: {width: `90vw`}, pagination: {countPerPage: 10}},
           columns: ColBuilder.tbmRouteGroup({
             useGlobalProps,
             ColBuilderExtraProps: {showMonthConfig: true, yearMonth},

@@ -1,7 +1,8 @@
 import {Grouping} from '@app/(apps)/Grouping/class/Grouping'
 import React, {useEffect, useState} from 'react'
 
-import {anyObject, colType} from '@cm/types/types'
+import {colType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {Prisma} from '@prisma/client'
 import {toast} from 'react-toastify'

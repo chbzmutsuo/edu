@@ -4,7 +4,7 @@ import {formatDate} from '@class/Days/date-utils/formatters'
 
 import {getUniqueColorById, ObjectMap} from '@cm/lib/methods/common'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import {Prisma} from '@prisma/client'

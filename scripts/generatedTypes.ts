@@ -443,6 +443,88 @@ export interface P_KaizenCMS {
   principlePageMsg: string;
 }
 
+export interface P_Tokens {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  name: string;
+  token: string;
+}
+
+export interface P_SaraFamily {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  name: string;
+  children: SaraChild[];
+}
+
+export interface P_SaraParent {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  name: string;
+  password: string;
+  familyId: string;
+}
+
+export interface P_SaraChild {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  name: string;
+  avatar: string;
+  family: SaraFamily;
+  familyId: string;
+}
+
+export interface P_SaraEvaluationItem {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  title: string;
+  order: number;
+  active: boolean;
+  family: SaraFamily;
+  familyId: string;
+  evaluationRequests: SaraEvaluationRequest[];
+}
+
+export interface P_SaraEvaluationScore {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  score: number;
+  description: string;
+  iconUrl: string;
+  achievementImgUrl: string;
+  animationLevel: string;
+  evaluationItem: SaraEvaluationItem;
+  evaluationItemId: string;
+}
+
+export interface P_SaraEvaluationRequest {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  date: Date;
+  status: string;
+  comment: string;
+  openedByChild: boolean;
+  child: SaraChild;
+  childId: string;
+  evaluationItemId: string;
+  evaluationScoreId: string;
+  approvedById: string;
+}
+
 export interface P_AqSaleCart {
   id: number;
   baseOrderId: string;
@@ -833,15 +915,6 @@ export interface P_Calendar {
   sortOrder: number;
   date: Date;
   holidayType: string;
-}
-
-export interface P_Tokens {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  sortOrder: number;
-  name: string;
-  token: string;
 }
 
 export interface P_Product {

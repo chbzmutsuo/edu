@@ -1,5 +1,5 @@
 import {arr__findCommonValues} from '@class/ArrHandler/array-utils/data-operations'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import {judgeIsAdmin, roleIs, typeIs} from 'src/non-common/scope-lib/judgeIsAdmin'
 
@@ -62,6 +62,7 @@ export const getScopes = (session: anyObject, options: getScopeOptionsProps) => 
     getTbmScopes: () => {
       const userId = !admin ? session?.id : Number(query?.g_userId ?? session?.id ?? 0)
       const tbmBaseId = !admin ? session?.tbmBaseId : Number(query?.g_tbmBaseId ?? session?.tbmBaseId ?? 0)
+
       return {userId, tbmBaseId}
     },
 

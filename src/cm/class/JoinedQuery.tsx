@@ -1,4 +1,4 @@
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 // 型定義の改善
 export interface ModelData {

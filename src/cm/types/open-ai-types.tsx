@@ -1,4 +1,4 @@
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 export type aiThreadMessage = {
   id?: string

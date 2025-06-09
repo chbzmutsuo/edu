@@ -25,7 +25,7 @@ export default function Page() {
       },
     },
     {
-      label: `定期購読バッチ`,
+      label: `定期契約バッチ`,
       description: ``,
       purpose: ``,
       onClick: async () => {

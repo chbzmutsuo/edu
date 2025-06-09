@@ -51,7 +51,7 @@ export const aquapot_PAGES = (props: PageGetterType) => {
       children: [
         {tabId: 'aqProduct', label: '商品'},
         {tabId: 'aqCustomer', label: '顧客'},
-        {tabId: 'aqCustomerSubscription', label: '定期購読一覧'},
+        {tabId: 'aqCustomerSubscription', label: '定期契約一覧'},
         {tabId: 'user', label: '従業員'},
         {
           tabId: 'aqCustomerRecord',

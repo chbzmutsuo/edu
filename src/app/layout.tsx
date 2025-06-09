@@ -27,7 +27,7 @@ export default async function AppRootLayout(props) {
         {/* <StrictMode> */}
 
         <Suspense>
-          <SessionContextProvider>
+          <SessionContextProvider {...{session}}>
             <GlobalToast></GlobalToast>
             {props.children}
           </SessionContextProvider>

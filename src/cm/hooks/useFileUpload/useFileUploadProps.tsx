@@ -2,7 +2,7 @@
 
 import React, {useCallback, useMemo, useState} from 'react'
 import {toast} from 'react-toastify'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import {FileRejection} from 'react-dropzone'
 import FileUploader from 'src/cm/hooks/useFileUpload/FileUploader'

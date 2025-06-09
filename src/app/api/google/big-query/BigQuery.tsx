@@ -1,5 +1,5 @@
 import {bgDataSet, bigQuerySqlArgs, bigQueryWhere, bqTable} from '@app/api/google/big-query/big-query-types'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {BigQuery} from '@google-cloud/bigquery'
 export class BQ {
   datasetId

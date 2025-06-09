@@ -2,26 +2,27 @@
 import {
   dataMinimumCommonType,
   form_table_modal_config,
-  anyObject,
   prismaDataType,
   colType,
   additionalPropsType,
   MyTableType,
 } from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import {C_Stack, NoData} from 'src/cm/components/styles/common-components/common-components'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import React, {JSX, useMemo} from 'react'
-import TableForm from 'src/cm/components/DataLogic/TFs/PropAdjustor/TableForm'
+import TableForm from '@components/DataLogic/TFs/PropAdjustor/components/TableForm'
 import {useParams} from 'next/navigation'
 import {StrHandler} from '@class/StrHandler'
-import {checkShowHeader} from '@components/DataLogic/TFs/PropAdjustor/useMyTable'
-import useRecords from '@components/DataLogic/TFs/PropAdjustor/(useRecords)/useRecords'
+import {checkShowHeader} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useMyTable'
+import useRecords from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 import useInitFormState from '@hooks/useInitFormState'
 import {serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {getQueryArgs} from '@components/DataLogic/TFs/Server/fetchers/getQueryArgs'
-import EasySearcher from '@components/DataLogic/TFs/MyTable/EasySearcher/EasySearcher'
+import EasySearcher from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
+import {convertColumns, getModelData} from '@components/DataLogic/RTs/ChildCreator/helpers/childCreator-helpers'
 
 export type ChildCreatorProps = dataMinimumCommonType &
   form_table_modal_config & {
@@ -101,13 +102,13 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
     [prismaDataExtractionQuery, models.children, tunedAdditional, myTable, props.easySearchExtraProps]
   )
 
-  const HK_USE_RECORDS = useRecords({
+  const UseRecordsReturn = useRecords({
     serverFetchProps,
     initialModelRecords: undefined,
     fetchTime: undefined,
   })
 
-  const {records, setrecords, mutateRecords, deleteRecord, totalCount, easySearchPrismaDataOnServer} = HK_USE_RECORDS
+  const {records, setrecords, mutateRecords, deleteRecord, totalCount, easySearchPrismaDataOnServer} = UseRecordsReturn
 
   const hasEasySearch = useMemo(
     () => Object.keys(easySearchPrismaDataOnServer?.availableEasySearchObj || {}).length > 0,
@@ -142,7 +143,7 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
       EditForm,
       editType,
       useGlobalProps,
-      HK_USE_RECORDS,
+      UseRecordsReturn,
     }),
     [
       params,
@@ -164,7 +165,7 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
       EditForm,
       editType,
       useGlobalProps,
-      HK_USE_RECORDS,
+      UseRecordsReturn,
     ]
   )
 
@@ -180,7 +181,7 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
                 dataModelName={dataModelName}
                 easySearchPrismaDataOnServer={easySearchPrismaDataOnServer}
                 useGlobalProps={useGlobalProps}
-                HK_USE_RECORDS={HK_USE_RECORDS}
+                UseRecordsReturn={UseRecordsReturn}
               />
             </div>
           )}
@@ -192,26 +193,3 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
 })
 
 export default ChildCreator
-
-const getModelData = models => {
-  const parentModelIdStr = models.parent ? StrHandler.lowerCaseFirstLetter(models.parent) + 'Id' : ''
-  const childrenModelIdStr = models.children ? StrHandler.lowerCaseFirstLetter(models.children) + 'Id' : ''
-
-  return {
-    parentModelIdStr,
-    childrenModelIdStr,
-  }
-}
-
-const convertColumns = props => {
-  const columns = props.columns as unknown as colType[][]
-  // わかりきっているカラムは削除
-  columns.forEach((rows, i) => {
-    rows.forEach((col: {id: any}, j: any) => {
-      if (props?.nonRelativeColumns?.includes(col?.id)) {
-        columns[i].splice(j, 1)
-      }
-    })
-  })
-  return columns
-}

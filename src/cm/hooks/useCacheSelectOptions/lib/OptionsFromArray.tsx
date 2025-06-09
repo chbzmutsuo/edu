@@ -1,4 +1,4 @@
-import {mapAdjustOptionValue} from 'src/cm/components/DataLogic/TFs/MyForm/HookFormControl/Parts/MySelect/lib/MySelectMethods-server'
+import {mapAdjustOptionValue} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 
 export const OptionsFromArray = ({givenArrayCols}) => {
   const Array_OP = {}

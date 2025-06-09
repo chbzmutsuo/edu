@@ -1,6 +1,6 @@
 import {basePath} from '@cm/lib/methods/common'
 import {NextRequest} from 'next/server'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 export const isRouteAccessAllowed = async (req: NextRequest) => {
   const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')

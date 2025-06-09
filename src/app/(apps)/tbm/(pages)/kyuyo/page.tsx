@@ -7,7 +7,7 @@ import prisma from '@lib/prisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
-export default async function DynamicMasterPage(props) {
+export default async function Page(props) {
   const query = await props.searchParams
   const {session, scopes} = await initServerComopnent({query})
   const {tbmBaseId} = scopes.getTbmScopes()

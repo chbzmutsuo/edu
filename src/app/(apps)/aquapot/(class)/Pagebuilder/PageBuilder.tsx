@@ -146,7 +146,7 @@ export class PageBuilder {
         })
 
         TabComponentArray.push({
-          label: `定期購読`,
+          label: `定期契約`,
           component: (
             <ChildCreator
               {...{

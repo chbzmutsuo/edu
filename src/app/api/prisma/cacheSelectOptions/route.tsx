@@ -2,7 +2,7 @@ import prisma, {handlePrismaError} from '@cm/lib/prisma'
 
 import {NextRequest, NextResponse} from 'next/server'
 import {colType} from '@cm/types/types'
-import {getSelectId} from '@components/DataLogic/TFs/MyForm/HookFormControl/Parts/MySelect/lib/MySelectMethods-server'
+import {getSelectId} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {GetCaheOptionSWR_REQUEST_PARAMS} from '@lib/server-actions/common-server-actions/serverGetCaheOptions'
 
 export const POST = async (req: NextRequest) => {

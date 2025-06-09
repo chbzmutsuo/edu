@@ -3,7 +3,8 @@ import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions
 
 import {CSSProperties} from 'react'
 import {UseFormReturn} from 'react-hook-form'
-import {anyObject, colType, colTypeStr, extraFormStateType} from '@cm/types/types'
+import {colType, colTypeStr, extraFormStateType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {BaseColTypes} from '@class/DataHandler/types'
 
 export type liftUpNewValueOnChangeType = (props: {id: string; newValue: any; ReactHookForm: any}) => void
@@ -13,7 +14,7 @@ export type formPropType = {
   type: colTypeStr
 }
 
-export type ControlPropType = {
+export type ControlWrapperPropType = {
   formId: string
   formData: anyObject
   setformData: any
@@ -40,7 +41,7 @@ export type ControlPropType = {
   alignMode?: `row` | `col`
 }
 
-export type ControlContextType = ControlPropType & {
+export type ControlContextType = ControlWrapperPropType & {
   formId: string
   col: colType
   liftUpNewValueOnChange: liftUpNewValueOnChangeType

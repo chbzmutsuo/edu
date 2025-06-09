@@ -1,6 +1,7 @@
-import {SearchQuery} from 'src/cm/components/DataLogic/TFs/MyTable/TableHandler/SearchHandler/search-methods'
+import {SearchQuery} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
 import {getRelationalModels} from 'src/cm/lib/methods/prisma-schema'
-import {additionalPropsType, anyObject, MyTableType} from '@cm/types/types'
+import {additionalPropsType, MyTableType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {DH__switchColType} from '@class/DataHandler/type-converter'
 
 // 型定義

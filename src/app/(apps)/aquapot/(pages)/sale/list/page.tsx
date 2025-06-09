@@ -35,7 +35,7 @@ export default async function Page(props) {
     query.paymentMethod ? (where += ` AND sc."paymentMethod" = '${query.paymentMethod}'`) : ``
     const textContainKeys = [`customerNumber`, `companyName`, `jobTitle`, `name`]
 
-    if (query.subsc === `定期購読`) {
+    if (query.subsc === `定期契約`) {
       where += sql` AND (sr."aqCustomerSubscriptionId" IS NOT NULL )`
     } else if (query.subsc === `通常`) {
       where += sql` AND (sr."aqCustomerSubscriptionId" IS NULL )`

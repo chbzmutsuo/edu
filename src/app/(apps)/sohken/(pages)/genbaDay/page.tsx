@@ -6,17 +6,14 @@ import {toUtc} from '@class/Days/date-utils/calculations'
 import GenbadayListClient from '@app/(apps)/sohken/(pages)/genbaDay/GenbadayListClient'
 import prisma from '@lib/prisma'
 
-import {C_Stack, CenterScreen} from '@components/styles/common-components/common-components'
+import {C_Stack} from '@components/styles/common-components/common-components'
 
 import {getHolidayCalendar} from '@app/(apps)/sohken/api/cron/refreshGoogleCalendar/getHolidayCalendar'
 import {genbaDaySorter} from '@app/(apps)/sohken/(pages)/genbaDay/genbaDaySorter'
-import {chechIsHoliday} from '@app/(apps)/sohken/api/cron/refreshGoogleCalendar/chechIsHoliday'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {formatDate} from '@class/Days/date-utils/formatters'
 
 const include = QueryBuilder.getInclude({}).genbaDay.include as any
 
-export default async function DynamicMasterPage(props) {
+export default async function Page(props) {
   const query = await props.searchParams
   const isMyPage = query[`myPage`] === `true`
   const genbaId = query.genbaId ? Number(query.genbaId) : undefined
@@ -43,20 +40,6 @@ export default async function DynamicMasterPage(props) {
 
     while (holidays.find(holiday => Days.validate.isSameDate(holiday.date, today))) {
       today = Days.day.add(today, -1)
-    }
-  }
-
-  if (isMyPage) {
-    const isHoliday = chechIsHoliday({holidays, date: today})
-
-    //
-
-    if (isHoliday) {
-      return (
-        <CenterScreen>
-          <PlaceHolder>{formatDate(today, `YYYY-MM-DD(ddd)`)}は日曜日または祝日です。</PlaceHolder>
-        </CenterScreen>
-      )
     }
   }
 

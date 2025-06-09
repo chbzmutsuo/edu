@@ -8,7 +8,7 @@ import {cl} from 'src/cm/lib/methods/common'
 import {CSSProperties, useEffect} from 'react'
 
 import {TitleDescription} from 'src/cm/components/styles/common-components/Notation'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 
 import {useJotaiByKey, atomTypes} from '@hooks/useJotai'
 

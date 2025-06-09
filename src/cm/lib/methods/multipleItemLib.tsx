@@ -4,9 +4,12 @@ import {PrismaModelNames} from '@cm/types/prisma-types'
 
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import {additionalPropsType, anyObject, colType, forSelcetType} from '@cm/types/types'
+import {additionalPropsType, colType} from '@cm/types/types'
+
 import {IconBtnForSelect} from '@components/styles/common-components/IconBtn'
 import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {anyObject} from '@cm/types/utility-types'
+import {forSelcetType} from '@cm/types/select-types'
 
 export const multiId = (model: PrismaModelNames, colId: string, idx: number) => {
   const modelNameInCapital = model.charAt(0).toUpperCase() + model.slice(1)

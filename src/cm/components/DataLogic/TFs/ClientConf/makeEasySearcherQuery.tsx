@@ -1,6 +1,6 @@
 import {additionalPropsType} from '@cm/types/types'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {SearchQuery} from '@components/DataLogic/TFs/MyTable/TableHandler/SearchHandler/search-methods'
+import {SearchQuery} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
 
 export type makeEasySearcherQueryReturnType = ReturnType<typeof makeEasySearcherQuery>
 export const makeEasySearcherQuery = async (props: {

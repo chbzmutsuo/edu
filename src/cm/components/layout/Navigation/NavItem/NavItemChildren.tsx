@@ -2,7 +2,7 @@
 import React from 'react'
 import NavItemWrapper, {getItemProps, navItemProps} from 'src/cm/components/layout/Navigation/NavItem/NavItemWrapper'
 
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {C_Stack} from '@components/styles/common-components/common-components'
 
 const NavItemChildren = React.memo((props: navItemProps) => {

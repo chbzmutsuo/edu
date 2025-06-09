@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useRef} from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
-import {LoadingComponent, EndMessage} from './MyTableComponents'
+import {EndMessage} from './components/MyTableControls/EndMessage'
+import {LoadingComponent} from './components/MyTableControls/LoadingComponent'
 
 interface MyTableInfiniteScrollProps {
   recordCount: number

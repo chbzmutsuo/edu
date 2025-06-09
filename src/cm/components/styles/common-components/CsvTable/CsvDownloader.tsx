@@ -2,7 +2,7 @@
 
 import {R_Stack} from '@components/styles/common-components/common-components'
 import {CsvTableProps} from '@components/styles/common-components/CsvTable/CsvTable'
-import {useEffect, useRef, useState} from 'react'
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CSVLink} from 'react-csv'
 
 const defaultDataArranger = (headerRecords, bodyRecords) => {
@@ -30,10 +30,21 @@ export const Downloader = (props: CsvTableProps) => {
     const csvDataArr = await dataArrangeFunc(headerRecords, bodyRecords)
     setcsvDataArr(csvDataArr)
   }
+  const linkId = useMemo(() => `csv-link-${Date.now()}`, [])
+
+  const outputCsv = useCallback(() => {
+    if (csvDataArr.length > 0 && linkRef.current) {
+      const link = document.getElementById(linkId)
+      if (link) {
+        link.click()
+        alert('CSVファイルをダウンロードしました')
+      }
+    }
+  }, [csvDataArr, linkId])
 
   useEffect(() => {
-    if (csvDataArr.length > 0 && linkRef.current) {
-      linkRef.current.click()
+    if (csvDataArr.length > 0) {
+      outputCsv()
     }
   }, [csvDataArr])
 
@@ -45,7 +56,7 @@ export const Downloader = (props: CsvTableProps) => {
         <button onClick={initalData} className={`t-link`} type="button">
           CSV
         </button>
-        <CSVLink ref={linkRef} data={csvDataArr} filename={`${props.csvOutput?.fileTitle}.csv`} />
+        <CSVLink id={linkId} ref={linkRef} data={csvDataArr} filename={`${props.csvOutput?.fileTitle}.csv`} />
       </R_Stack>
     )
   } else {

@@ -20,8 +20,8 @@ export const knockEmailApi = async (props: {
 
   const originalTo = to
   const originCC = cc
-  to = isDev ? [systemEmailTo] : [...to]
-  cc = isDev ? [systemEmailTo] : [...(cc ?? [])]
+  to = isDev ? [...systemEmailTo] : [...to]
+  cc = isDev ? [] : [...(cc ?? [])]
 
   if (isDev) {
     const result = {

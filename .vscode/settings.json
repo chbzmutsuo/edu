@@ -150,10 +150,11 @@
     "**/cruzdan/**": true,
     "**/kickswrap/**": true,
     "**/page/**": true,
+    "**/sohken/**": true,
     "**/stock/**": true,
     "**/tmp/**": true,
-    "**/tbm/**": true,
-    "**/shinsei/**": true
+    "**/shinsei/**": true,
+    "**/tbm/**": true
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
     "Advantage",
@@ -166,6 +167,7 @@
     "kickswrap",
     "page",
     "shinsei",
+    "sohken",
     "stock",
     "tbm",
     "tmp"

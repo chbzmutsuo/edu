@@ -17,7 +17,7 @@ const NavBar = React.memo(({useGlobalProps, horizontalMenu, navItems}: NavBarPro
 
   // スタイルクラスをメモ化
   const ulClass = useMemo(() => {
-    return `${horizontalMenu ? 'row-stack pr-2' : 'col-stack px-1'} w-full gap-2`
+    return `${horizontalMenu ? 'row-stack pr-2' : 'col-stack px-1'} w-full gap-4`
   }, [horizontalMenu])
 
   // マウスリーブハンドラーをメモ化

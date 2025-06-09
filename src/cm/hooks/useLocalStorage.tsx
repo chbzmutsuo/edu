@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 type storageType = typeof localStorage | anyObject
 function useLocalStorage(key, initialValue) {
   /**localStorageを取得 */

@@ -2,7 +2,7 @@ import {IsInKyuka, IsInKyukaTodoke, isRed} from '@app/(apps)/sohken/(parts)/genb
 import {IsInShift} from '@app/(apps)/sohken/(parts)/genbaDay/DistributionListByModel/Stars'
 import {userForSelect} from '@app/(apps)/sohken/class/sohken-constants'
 import {Days} from '@class/Days/Days'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {Button} from '@components/styles/common-components/Button'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'

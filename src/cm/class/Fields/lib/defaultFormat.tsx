@@ -13,7 +13,7 @@ import {
   convertColIdToModelName,
   getNameFromSelectOption,
   mapAdjustOptionValue,
-} from 'src/cm/components/DataLogic/TFs/MyForm/HookFormControl/Parts/MySelect/lib/MySelectMethods-server'
+} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {isRelationalData} from 'src/cm/class/Fields/lib/methods'
 import {cl} from 'src/cm/lib/methods/common'
 import ContentPlayer from 'src/cm/components/utils/ContentPlayer'
@@ -102,7 +102,7 @@ export const defaultFormat = (value, row, col) => {
 
     return result
   } catch (error) {
-    return <small className={`text-error-main`}>{error.messages}</small>
+    return <small className={`text-error-main`}>{error.message}</small>
   }
 }
 

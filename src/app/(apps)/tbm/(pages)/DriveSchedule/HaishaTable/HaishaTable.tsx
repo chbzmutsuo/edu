@@ -6,7 +6,6 @@ import {C_Stack, R_Stack} from '@components/styles/common-components/common-comp
 import useHaishaTableEditorGMF from '@app/(apps)/tbm/(globalHooks)/useHaishaTableEditorGMF'
 import {getListData, haishaListData} from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/getListData'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import useLogOnRender from '@hooks/useLogOnRender'
 
 import HaishaTableSwitcher from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/HaishaTableSwitcher'
 import {Paper} from '@components/styles/common-components/paper'
@@ -16,7 +15,7 @@ import useGlobal from '@hooks/globalHooks/useGlobal'
 export type haishaTableMode = 'ROUTE' | 'DRIVER'
 export default function HaishaTable({whereQuery, days, tbmBase}) {
   const {query} = useGlobal()
-  useLogOnRender('haisha')
+
   const [listDataState, setlistDataState] = useState<haishaListData | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(15)

@@ -253,7 +253,7 @@ export class ColBuilder {
       return result
     })
 
-    const HK_USE_RECORDS = props.ColBuilderExtraProps?.HK_USE_RECORDS
+    const UseRecordsReturn = props.ColBuilderExtraProps?.UseRecordsReturn
 
     const data = new Fields([
       ...new Fields([
@@ -321,7 +321,7 @@ export class ColBuilder {
                   holidays,
                   GenbaDayBasicEditor_HK,
                   allShiftBetweenDays,
-                  records: HK_USE_RECORDS?.records,
+                  records: UseRecordsReturn?.records,
                   GenbaDay: row,
                   editable: true,
                 }}
@@ -439,7 +439,7 @@ export class ColBuilder {
   }
   static user = (props: columnGetterType) => {
     const data: colType[] = [
-      {id: 'name', label: '氏名', form: {register}},
+      {id: 'name', label: '氏名', form: {}},
       {id: 'email', label: 'メールアドレス', form: {register}, type: 'email'},
       {id: 'password', label: 'パスワード', form: {}, type: 'password'},
       {

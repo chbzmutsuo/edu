@@ -2,7 +2,7 @@ import {AccordiongPropType} from '@components/utils/Accordions/Accordion'
 import {getRelationalModels, getSchema} from 'src/cm/lib/methods/prisma-schema'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {CSSProperties} from 'react'
 import {Prisma, PrismaClient} from '@prisma/client'
 import {dataCountObject} from '@components/DataLogic/TFs/Server/fetchers/EasySearchDataSwrFetcher'

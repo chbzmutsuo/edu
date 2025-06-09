@@ -18,8 +18,8 @@ const Top = async props => {
 
   const date = query.from ? toUtc(query.from) : undefined
   if (!date) {
-    const tomorrow = Days.day.add(getMidnight(), 1)
-    return <Redirector {...{redirectPath: `?from=${formatDate(tomorrow)}`}} />
+    const today = Days.day.add(getMidnight(), 0)
+    return <Redirector {...{redirectPath: `?from=${formatDate(today)}`}} />
   }
   // if (isDev) {
   //   return (

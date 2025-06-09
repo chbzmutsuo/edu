@@ -1,5 +1,5 @@
 import {isApiAccessAllowed} from 'src/non-common/serverSideFunction'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 export const config = {
   api: {
     responseLimit: '8mb',

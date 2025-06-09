@@ -1,6 +1,6 @@
 'use client'
 
-import {ViewParamBuilderProps} from '@components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
+import {ViewParamBuilderProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {toast} from 'react-toastify'
 

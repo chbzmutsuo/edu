@@ -1,7 +1,8 @@
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
 import {colType} from '@cm/types/types'
-import {HK_USE_RECORDS_TYPE} from '@components/DataLogic/TFs/PropAdjustor/usePropAdjustorProps'
+import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
 import {atom, useAtom} from 'jotai'
 import {atomFamily} from 'jotai/utils'
@@ -76,13 +77,13 @@ export type atomTypes = {
   globalModalOpen: boolean
   torokuDateApplicationForm: {newCar: any}
   torokuMikomiApplicationForm: {newCar: any}
-  selectedUcarNotes: {UcarData: any; mutateRecords: HK_USE_RECORDS_TYPE[`mutateRecords`]}
+  selectedUcarNotes: {UcarData: any; mutateRecords: UseRecordsReturn[`mutateRecords`]}
   showGarageRegister: {ucar: any; UcarGarageLocationMaster: any}
   ucrDetailUpdater: {ucarId: any}
   sateiConnectionGMF: {newCar: any; sateiNoList: any}
   crScheduleSwitcherModal: {theCar: any; lastHistory: any}
   waitingCarVisualizerOpen: boolean
-  checkPointModalGMF: {cp: any; newCar: any; HK_USE_RECORDS: any}
+  checkPointModalGMF: {cp: any; newCar: any; UseRecordsReturn: any}
   stuffSwitcherGMF: {newCar: any}
 
   //

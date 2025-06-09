@@ -3,7 +3,8 @@ import {useState, useEffect, CSSProperties} from 'react'
 import {NestHandler} from 'src/cm/class/NestHandler'
 
 import {nestIsolatorType} from 'src/cm/class/NestHandler'
-import {additionalPropsType, anyObject} from '@cm/types/types'
+import {additionalPropsType} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 

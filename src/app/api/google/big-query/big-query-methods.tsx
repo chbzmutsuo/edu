@@ -1,6 +1,6 @@
 'use server'
 import {bigQuerySqlArgs, bigQuerytableConfig, bigQueryWhere} from '@app/api/google/big-query/big-query-types'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {BigQuery} from '@google-cloud/bigquery'
 
 const bigquery = new BigQuery()

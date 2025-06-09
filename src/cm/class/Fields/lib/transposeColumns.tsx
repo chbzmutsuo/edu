@@ -1,6 +1,7 @@
 'use client'
 
-import {anyObject, colType, colTypeStr} from '@cm/types/types'
+import {colType, colTypeStr} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {NestHandler} from 'src/cm/class/NestHandler'
 
 import {transposeColumnsOptionProps} from 'src/cm/class/Fields/col-operator-types'
@@ -28,12 +29,16 @@ export const transposeColumns = (columns: colType[], transposeColumnsOptions?: t
     const type = judgeColType(col) as colTypeStr
 
     const minWidth = getColMinWidth(col)
-    col = {
-      ...col,
-      td: {...col.td, style: {minWidth, ...col?.td?.style}},
-      originalColIdx,
-      type: type,
-    }
+
+    // col = {
+    //   ...col,
+    //   td: {...col.td, style: {minWidth, ...col?.td?.style}},
+    //   originalColIdx,
+    //   type: type,
+    // }
+    col.td = {...col.td, style: {minWidth, ...col?.td?.style}}
+    col.originalColIdx = originalColIdx
+    col.type = type
 
     if (col.format === undefined) {
       // 色選択の場合

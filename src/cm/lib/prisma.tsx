@@ -1,6 +1,6 @@
 import {PrismaClient} from '@prisma/client'
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {isDev} from '@lib/methods/common'
 
 let prisma

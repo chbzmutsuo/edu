@@ -5,7 +5,7 @@ import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/commo
 import {cl} from 'src/cm/lib/methods/common'
 import React, {Fragment, useMemo} from 'react'
 
-import TdContent from 'src/cm/components/DataLogic/TFs/MyTable/TableHandler/Tbody/TableCell/childrens/TdContent'
+import TdContent from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
 import {Fields} from 'src/cm/class/Fields/Fields'
 import {converDataForClient} from 'src/cm/class/Fields/lib/methods'
 import {defaultFormat} from 'src/cm/class/Fields/lib/defaultFormat'
@@ -122,54 +122,51 @@ export const aggregateOnSingleTd = (
       return EntireCellFormat
     }
 
-    return React.useCallback(
-      ({record, dataModelName, mutateRecords, tdStyle, showHeader}) => {
-        const processedCols = React.useMemo(() => {
-          return theaderCols.map((col, i) => {
-            const newCol = {...col}
-            if (i === 0) {
-              newCol.isMain = true //tdの中にlabelをつけるときに二重になるのフラグをつける
-            }
-            const value = row[col.id] ? converDataForClient(row[col.id], newCol) : undefined
-            const format = newCol.format ?? defaultFormat
-            return {
-              col: newCol,
-              value: format(value, row, newCol),
-            }
-          })
-        }, [theaderCols, row])
+    return ({record, dataModelName, mutateRecords, tdStyle, showHeader}) => {
+      const processedCols = React.useMemo(() => {
+        return theaderCols.map((col, i) => {
+          const newCol = {...col}
+          if (i === 0) {
+            newCol.isMain = true //tdの中にlabelをつけるときに二重になるのフラグをつける
+          }
+          const value = row[col.id] ? converDataForClient(row[col.id], newCol) : undefined
+          const format = newCol.format ?? defaultFormat
+          return {
+            col: newCol,
+            value: format(value, row, newCol),
+          }
+        })
+      }, [theaderCols, row])
 
-        return (
-          <Fragment>
-            <C_Stack className={cl(`stretching-in-td  justify-start gap-0  leading-[20px]`, stackClassName)}>
-              {processedCols.map((item, i) => {
-                const style = {
-                  ...defaultStyle,
-                  ...(item.col.type === `date` ? {minWidth: getColMinWidth(item.col)} : undefined),
-                }
+      return (
+        <Fragment>
+          <C_Stack className={cl(`stretching-in-td  justify-start gap-0  leading-[20px]`, stackClassName)}>
+            {processedCols.map((item, i) => {
+              const style = {
+                ...defaultStyle,
+                ...(item.col.type === `date` ? {minWidth: getColMinWidth(item.col)} : undefined),
+              }
 
-                return (
-                  <R_Stack key={i} style={style} className={defaultClassName}>
-                    <MemoizedTdContent
-                      {...{
-                        showHeader,
-                        value: item.value,
-                        dataModelName,
-                        col: item.col,
-                        record,
-                        tdStyle,
-                        mutateRecords,
-                      }}
-                    />
-                  </R_Stack>
-                )
-              })}
-            </C_Stack>
-          </Fragment>
-        )
-      },
-      [theaderCols, row, stackClassName, defaultStyle, defaultClassName]
-    )
+              return (
+                <R_Stack key={i} style={style} className={defaultClassName}>
+                  <MemoizedTdContent
+                    {...{
+                      showHeader,
+                      value: item.value,
+                      dataModelName,
+                      col: item.col,
+                      record,
+                      tdStyle,
+                      mutateRecords,
+                    }}
+                  />
+                </R_Stack>
+              )
+            })}
+          </C_Stack>
+        </Fragment>
+      )
+    }
   }
 
   // 改善案

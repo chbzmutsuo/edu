@@ -1,4 +1,4 @@
-import {mapAdjustOptionValue} from 'src/cm/components/DataLogic/TFs/MyForm/HookFormControl/Parts/MySelect/lib/MySelectMethods-server'
+import {mapAdjustOptionValue} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {useEffect, useState} from 'react'
 import useSWR from 'swr'
 import {obj__initializeProperty} from '@class/ObjHandler/transformers'

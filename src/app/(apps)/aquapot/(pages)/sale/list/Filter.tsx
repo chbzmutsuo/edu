@@ -29,7 +29,7 @@ export default function Filter() {
         id: `subsc`,
         label: `形態`,
         forSelect: {
-          optionsOrOptionFetcher: [`通常`, `定期購読`, `BASEインポート`],
+          optionsOrOptionFetcher: [`通常`, `定期契約`, `BASEインポート`],
         },
       },
       // {id: `jobTitle`, label: `役職`},

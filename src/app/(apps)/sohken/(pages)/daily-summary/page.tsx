@@ -9,7 +9,7 @@ import Redirector from '@components/utils/Redirector'
 import {addQuerySentence} from '@lib/methods/urls'
 import prisma from '@lib/prisma'
 
-export default async function DynamicMasterPage(props) {
+export default async function Page(props) {
   const query = await props.searchParams
   const tomorrow = getMidnight(toUtc(new Date(query.from ?? new Date())))
   if (!query.from) {
@@ -28,7 +28,7 @@ export default async function DynamicMasterPage(props) {
   const include = QueryBuilder.getInclude({}).genbaDay.include as any
 
   const genbaDayList = await prisma.genbaDay.findMany({
-    where: {date: tomorrow},
+    where: {date: tomorrow, OR: [{status: {not: `不要`}}, {status: null}]},
     include: {
       ...include,
       // Genba: {

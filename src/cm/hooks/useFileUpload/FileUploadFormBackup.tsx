@@ -3,7 +3,7 @@ import ContentPlayer from 'src/cm/components/utils/ContentPlayer'
 
 import React, {useState} from 'react'
 import {toast} from 'react-toastify'
-import {anyObject} from '@cm/types/types'
+import {anyObject} from '@cm/types/utility-types'
 import {cl} from 'src/cm/lib/methods/common'
 
 type FileUploadFormProps = {

@@ -56,10 +56,6 @@ export default function DriveScheduleCC({days, tbmBase, whereQuery}) {
           showAll: false,
           TabComponentArray: [
             {
-              label: <TextRed>配車管理【月別】</TextRed>,
-              component: <HaishaTable {...{tbmBase, days, whereQuery}} />,
-            },
-            {
               label: <TextRed>便設定【月別】</TextRed>,
               component: (
                 <C_Stack>
@@ -75,6 +71,10 @@ export default function DriveScheduleCC({days, tbmBase, whereQuery}) {
                   <RouteDisplay {...{tbmBase, whereQuery}} />
                 </C_Stack>
               ),
+            },
+            {
+              label: <TextRed>配車管理【月別】</TextRed>,
+              component: <HaishaTable {...{tbmBase, days, whereQuery}} />,
             },
 
             {

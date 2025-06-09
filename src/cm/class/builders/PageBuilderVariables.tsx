@@ -2,13 +2,14 @@ import {TableBordered, TableWrapper} from '@components/styles/common-components/
 
 import GlobalModal from '@components/utils/modal/GlobalModal'
 
-import {surroundings} from 'src/cm/components/DataLogic/TFs/Server/SetCustomParams'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {anyObject, DetailPagePropType} from '@cm/types/types'
+import {DetailPagePropType} from '@cm/types/types'
 import {useEffect, useState} from 'react'
 import {RoleMaster, User, UserRole} from '@prisma/client'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {surroundings} from '@components/DataLogic/types/customParams-types'
+import {anyObject} from '@cm/types/utility-types'
 
 export type PageBuidlerClassType = {
   [key in PrismaModelNames]: surroundings
