@@ -1,9 +1,11 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import Link from 'next/link'
 import {motion, AnimatePresence} from 'framer-motion'
 import {FaArrowLeft, FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaGripVertical, FaStar} from 'react-icons/fa'
+import {useSession} from 'next-auth/react'
+import {evaluationItemsActions} from '../../../../(lib)/nextauth-api'
 
 // モックデータ
 const mockEvaluationItems = [
@@ -42,9 +44,11 @@ const animationLevels = [
 const iconOptions = ['🦷', '✨', '💎', '📦', '🌟', '👏', '💪', '🏆', '🎯', '🎨', '📚', '🍎', '🌸', '⭐', '💖']
 
 export default function EvaluationItemsPage() {
-  const [items, setItems] = useState(mockEvaluationItems)
+  const {data: session, status} = useSession()
+  const [items, setItems] = useState<any[]>([])
   const [showModal, setShowModal] = useState(false)
   const [editingItem, setEditingItem] = useState<any>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -54,6 +58,25 @@ export default function EvaluationItemsPage() {
       {score: 3, title: '', description: '', iconUrl: '🏆', animationLevel: 'heavy'},
     ],
   })
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user?.type === 'parent') {
+      loadItems()
+    }
+  }, [status, session])
+
+  const loadItems = async () => {
+    try {
+      setIsLoading(true)
+      const data = await evaluationItemsActions.getAll({session})
+
+      setItems(data.data || [])
+    } catch (error) {
+      console.error('Failed to load items:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleAddNew = () => {
     setEditingItem(null)
@@ -73,61 +96,54 @@ export default function EvaluationItemsPage() {
     setEditingItem(item)
     setFormData({
       title: item.title,
-      description: item.description,
-      scores: item.scores.map((score: any) => ({
+      description: item.description || '',
+      scores: item.scores?.map((score: any) => ({
         score: score.score,
         title: score.title,
-        description: score.description,
-        iconUrl: score.iconUrl,
-        animationLevel: score.animationLevel,
-      })),
+        description: score.description || '',
+        iconUrl: score.iconUrl || '✨',
+        animationLevel: score.animationLevel || 'medium',
+      })) || [
+        {score: 1, title: '', description: '', iconUrl: '✨', animationLevel: 'light'},
+        {score: 2, title: '', description: '', iconUrl: '⭐', animationLevel: 'medium'},
+        {score: 3, title: '', description: '', iconUrl: '🏆', animationLevel: 'heavy'},
+      ],
     })
     setShowModal(true)
   }
 
-  const handleDelete = async (itemId: string) => {
+  const handleDelete = async (itemId: number) => {
     if (confirm('この評価項目を削除しますか？')) {
-      // TODO: API実装
-      setItems(prev => prev.filter(item => item.id !== itemId))
+      try {
+        await evaluationItemsActions.delete(session, itemId)
+        await loadItems()
+      } catch (error) {
+        console.error('Failed to delete item:', error)
+      }
     }
   }
 
   const handleSave = async () => {
     try {
-      // TODO: API実装
       if (editingItem) {
         // 編集
-        setItems(prev =>
-          prev.map(item =>
-            item.id === editingItem.id
-              ? {
-                  ...item,
-                  title: formData.title,
-                  description: formData.description,
-                  scores: formData.scores.map((score, index) => ({
-                    ...item.scores[index],
-                    ...score,
-                  })),
-                }
-              : item
-          )
-        )
-      } else {
-        // 新規追加
-        const newItem = {
-          id: Date.now().toString(),
+        await evaluationItemsActions.update(session, {
+          id: editingItem.id,
           title: formData.title,
           description: formData.description,
-          order: items.length + 1,
-          active: true,
-          scores: formData.scores.map((score, index) => ({
-            id: `${Date.now()}_${index}`,
-            ...score,
-          })),
-        }
-        setItems(prev => [...prev, newItem])
+          scores: formData.scores,
+        })
+      } else {
+        // 新規追加
+        await evaluationItemsActions.create(session, {
+          title: formData.title,
+          description: formData.description,
+          scores: formData.scores,
+        })
       }
+
       setShowModal(false)
+      await loadItems()
     } catch (error) {
       console.error('Failed to save item:', error)
     }
@@ -143,6 +159,30 @@ export default function EvaluationItemsPage() {
   const canSave = () => {
     return (
       formData.title.trim() !== '' && formData.scores.every(score => score.title.trim() !== '' && score.description.trim() !== '')
+    )
+  }
+
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'unauthenticated' || session?.user?.type !== 'parent') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">親としてログインしてください</p>
+          <Link href="/sara/auth/parent/login" className="text-blue-600 hover:text-blue-800">
+            ログインページへ
+          </Link>
+        </div>
+      </div>
     )
   }
 
@@ -183,76 +223,75 @@ export default function EvaluationItemsPage() {
 
         {/* 評価項目一覧 */}
         <div className="space-y-6">
-          {items.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{opacity: 0, y: 20}}
-              animate={{opacity: 1, y: 0}}
-              transition={{delay: index * 0.1}}
-              className="bg-white rounded-xl shadow-lg p-6"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <FaGripVertical className="text-gray-400 cursor-move" />
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-800">{item.title}</h3>
-                    <p className="text-gray-600">{item.description}</p>
+          {items.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg mb-4">まだ評価項目がありません</p>
+              <button onClick={handleAddNew} className="text-blue-600 hover:text-blue-800 font-semibold">
+                最初の習慣を追加しましょう
+              </button>
+            </div>
+          ) : (
+            items.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: index * 0.1}}
+                className="bg-white rounded-xl shadow-lg p-6"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <FaGripVertical className="text-gray-400 cursor-move" />
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">{item.title}</h3>
+                      <p className="text-gray-600">{item.description}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <motion.button
+                      whileHover={{scale: 1.05}}
+                      whileTap={{scale: 0.95}}
+                      onClick={() => handleEdit(item)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <FaEdit />
+                    </motion.button>
+                    <motion.button
+                      whileHover={{scale: 1.05}}
+                      whileTap={{scale: 0.95}}
+                      onClick={() => handleDelete(item.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
+                    >
+                      <FaTrash />
+                    </motion.button>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <motion.button
-                    whileHover={{scale: 1.05}}
-                    whileTap={{scale: 0.95}}
-                    onClick={() => handleEdit(item)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-lg"
-                  >
-                    <FaEdit />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{scale: 1.05}}
-                    whileTap={{scale: 0.95}}
-                    onClick={() => handleDelete(item.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg"
-                  >
-                    <FaTrash />
-                  </motion.button>
-                </div>
-              </div>
 
-              {/* スコア一覧 */}
-              <div className="grid md:grid-cols-3 gap-4">
-                {item.scores.map(score => (
-                  <div key={score.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="text-2xl">{score.iconUrl}</span>
-                      <div className="flex items-center space-x-1">
-                        {Array.from({length: score.score}).map((_, i) => (
-                          <FaStar key={i} className="text-yellow-500 text-sm" />
-                        ))}
+                {/* スコア一覧 */}
+                <div className="grid md:grid-cols-3 gap-4">
+                  {item.scores?.map((score: any) => (
+                    <div key={score.id} className="border border-gray-200 rounded-lg p-3">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <span className="text-2xl">{score.iconUrl}</span>
+                        <div>
+                          <p className="font-semibold text-gray-800">{score.title}</p>
+                          <p className="text-sm text-gray-600">{score.description}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-gray-500">スコア: {score.score}</span>
+                        <span className="text-xs text-gray-500">{score.animationLevel}</span>
                       </div>
                     </div>
-                    <h4 className="font-semibold text-gray-800">{score.title}</h4>
-                    <p className="text-sm text-gray-600">{score.description}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      演出: {animationLevels.find(level => level.value === score.animationLevel)?.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
+                  ))}
+                </div>
+              </motion.div>
+            ))
+          )}
         </div>
-
-        {items.length === 0 && (
-          <motion.div initial={{opacity: 0}} animate={{opacity: 1}} className="text-center py-12">
-            <FaPlus className="text-4xl text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">まだ評価項目がありません</p>
-            <p className="text-gray-400">「新しい習慣を追加」ボタンから始めましょう</p>
-          </motion.div>
-        )}
       </div>
 
-      {/* 追加・編集モーダル */}
+      {/* モーダル */}
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -266,145 +305,135 @@ export default function EvaluationItemsPage() {
               initial={{scale: 0.9, opacity: 0}}
               animate={{scale: 1, opacity: 1}}
               exit={{scale: 0.9, opacity: 0}}
-              className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-center justify-between">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
                   <h2 className="text-2xl font-bold text-gray-800">{editingItem ? '評価項目を編集' : '新しい評価項目を追加'}</h2>
                   <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
-                    <FaTimes className="text-xl" />
+                    <FaTimes />
                   </button>
                 </div>
-              </div>
 
-              <div className="p-6 space-y-6">
-                {/* 基本情報 */}
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* 基本情報 */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">習慣名 *</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">習慣名</label>
                     <input
                       type="text"
                       value={formData.title}
                       onChange={e => setFormData(prev => ({...prev, title: e.target.value}))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       placeholder="例：歯磨き"
                     />
                   </div>
+
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">説明</label>
                     <textarea
                       value={formData.description}
                       onChange={e => setFormData(prev => ({...prev, description: e.target.value}))}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="例：きれいに歯を磨こう"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       rows={3}
+                      placeholder="例：きれいに歯を磨こう"
                     />
                   </div>
-                </div>
 
-                {/* スコア設定 */}
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4">評価レベル設定</h3>
-                  <div className="space-y-4">
-                    {formData.scores.map((score, index) => (
-                      <div key={index} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center space-x-2 mb-3">
-                          <div className="flex items-center space-x-1">
-                            {Array.from({length: score.score}).map((_, i) => (
-                              <FaStar key={i} className="text-yellow-500" />
-                            ))}
+                  {/* スコア設定 */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4">評価レベル設定</h3>
+                    <div className="space-y-4">
+                      {formData.scores.map((score, index) => (
+                        <div key={index} className="border border-gray-200 rounded-lg p-4">
+                          <div className="flex items-center mb-3">
+                            <FaStar className="text-yellow-500 mr-2" />
+                            <span className="font-semibold">レベル {score.score}</span>
                           </div>
-                          <span className="font-semibold text-gray-700">レベル {score.score}</span>
-                        </div>
 
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">タイトル *</label>
-                            <input
-                              type="text"
-                              value={score.title}
-                              onChange={e => handleScoreChange(index, 'title', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="例：やった"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">説明 *</label>
-                            <input
-                              type="text"
-                              value={score.description}
-                              onChange={e => handleScoreChange(index, 'description', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                              placeholder="例：歯を磨いた"
-                            />
-                          </div>
-                        </div>
+                          <div className="grid md:grid-cols-2 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">タイトル</label>
+                              <input
+                                type="text"
+                                value={score.title}
+                                onChange={e => handleScoreChange(index, 'title', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="例：やった"
+                              />
+                            </div>
 
-                        <div className="grid md:grid-cols-2 gap-4 mt-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
-                            <div className="grid grid-cols-5 gap-2">
-                              {iconOptions.map(icon => (
-                                <button
-                                  key={icon}
-                                  type="button"
-                                  onClick={() => handleScoreChange(index, 'iconUrl', icon)}
-                                  className={`p-2 text-2xl border rounded ${
-                                    score.iconUrl === icon
-                                      ? 'border-blue-500 bg-blue-50'
-                                      : 'border-gray-200 hover:border-blue-300'
-                                  }`}
-                                >
-                                  {icon}
-                                </button>
-                              ))}
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">説明</label>
+                              <input
+                                type="text"
+                                value={score.description}
+                                onChange={e => handleScoreChange(index, 'description', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="例：歯を磨いた"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">アイコン</label>
+                              <div className="flex flex-wrap gap-2">
+                                {iconOptions.map(icon => (
+                                  <button
+                                    key={icon}
+                                    type="button"
+                                    onClick={() => handleScoreChange(index, 'iconUrl', icon)}
+                                    className={`p-2 rounded-lg border-2 transition-colors ${
+                                      score.iconUrl === icon
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                  >
+                                    <span className="text-xl">{icon}</span>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">演出レベル</label>
+                              <select
+                                value={score.animationLevel}
+                                onChange={e => handleScoreChange(index, 'animationLevel', e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                              >
+                                {animationLevels.map(level => (
+                                  <option key={level.value} value={level.value}>
+                                    {level.label} - {level.description}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">演出レベル</label>
-                            <select
-                              value={score.animationLevel}
-                              onChange={e => handleScoreChange(index, 'animationLevel', e.target.value)}
-                              className="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            >
-                              {animationLevels.map(level => (
-                                <option key={level.value} value={level.value}>
-                                  {level.label} - {level.description}
-                                </option>
-                              ))}
-                            </select>
-                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="p-6 border-t border-gray-200">
-                <div className="flex justify-end space-x-4">
-                  <motion.button
-                    whileHover={{scale: 1.02}}
-                    whileTap={{scale: 0.98}}
+                {/* ボタン */}
+                <div className="flex items-center justify-end space-x-4 mt-8">
+                  <button
                     onClick={() => setShowModal(false)}
-                    className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     キャンセル
-                  </motion.button>
+                  </button>
                   <motion.button
                     whileHover={{scale: 1.02}}
                     whileTap={{scale: 0.98}}
                     onClick={handleSave}
                     disabled={!canSave()}
-                    className={`px-6 py-3 rounded-lg font-semibold text-white flex items-center space-x-2 ${
-                      canSave()
-                        ? 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700'
-                        : 'bg-gray-400 cursor-not-allowed'
+                    className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                      canSave() ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    <FaSave />
-                    <span>{editingItem ? '更新' : '追加'}</span>
+                    <FaSave className="inline mr-2" />
+                    {editingItem ? '更新' : '追加'}
                   </motion.button>
                 </div>
               </div>

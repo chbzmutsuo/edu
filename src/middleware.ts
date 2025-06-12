@@ -23,9 +23,9 @@ const getFreePathsMathcer = (rootPath, pathArray) => {
 export const rootPaths: rootPath[] = [
   {paths: [{matcher: getFreePathsMathcer(`Grouping`, [`/game/main`]), ...defaultPathValidateConfig}], rootPath: 'Grouping'},
   {paths: [{matcher: getFreePathsMathcer(`aquapot`, [`/myPage`]), ...defaultPathValidateConfig}], rootPath: `aquapot`},
-  {paths: [{matcher: getFreePathsMathcer(`shinsei`, []), ...defaultPathValidateConfig}], rootPath: `shinsei`},
   {paths: [{matcher: getFreePathsMathcer(`sohken`, []), ...defaultPathValidateConfig}], rootPath: `sohken`},
   {paths: [{matcher: getFreePathsMathcer(`tbm`, []), ...defaultPathValidateConfig}], rootPath: `tbm`},
+  {paths: [{matcher: getFreePathsMathcer(`health`, []), ...defaultPathValidateConfig}], rootPath: `health`},
 ]
 
 export async function middleware(req: NextRequest) {

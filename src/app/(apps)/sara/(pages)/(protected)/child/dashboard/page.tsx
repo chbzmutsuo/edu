@@ -3,190 +3,100 @@
 import {useState, useEffect} from 'react'
 import {motion, AnimatePresence} from 'framer-motion'
 import Confetti from 'react-confetti'
-import {FaStar, FaCheck, FaClock, FaTimes, FaSignOutAlt, FaCalendar, FaMedal, FaHeart} from 'react-icons/fa'
-
-// モックデータ
-const mockEvaluationItems = [
-  {
-    id: '1',
-    title: '歯磨き',
-    description: 'きれいに歯を磨こう',
-    order: 1,
-    scores: [
-      {
-        id: '1',
-        score: 1,
-        title: 'やった',
-        description: '歯を磨いた',
-        iconUrl: '🦷',
-        achievementImgUrl: '/stars/bronze.png',
-        animationLevel: 'light',
-      },
-      {
-        id: '2',
-        score: 2,
-        title: 'しっかり',
-        description: '3分以上磨いた',
-        iconUrl: '✨',
-        achievementImgUrl: '/stars/silver.png',
-        animationLevel: 'medium',
-      },
-      {
-        id: '3',
-        score: 3,
-        title: 'ぴかぴか',
-        description: '完璧に磨いた',
-        iconUrl: '💎',
-        achievementImgUrl: '/stars/gold.png',
-        animationLevel: 'heavy',
-      },
-    ],
-    todayRequest: null,
-  },
-  {
-    id: '2',
-    title: 'お片付け',
-    description: 'おもちゃをきれいに片付けよう',
-    order: 2,
-    scores: [
-      {
-        id: '4',
-        score: 1,
-        title: 'やった',
-        description: 'おもちゃを片付けた',
-        iconUrl: '📦',
-        achievementImgUrl: '/stars/bronze.png',
-        animationLevel: 'light',
-      },
-      {
-        id: '5',
-        score: 2,
-        title: 'きれいに',
-        description: 'きちんと整理した',
-        iconUrl: '✨',
-        achievementImgUrl: '/stars/silver.png',
-        animationLevel: 'medium',
-      },
-      {
-        id: '6',
-        score: 3,
-        title: '完璧',
-        description: '完璧に整理整頓',
-        iconUrl: '🌟',
-        achievementImgUrl: '/stars/gold.png',
-        animationLevel: 'heavy',
-      },
-    ],
-    todayRequest: {
-      id: 'req1',
-      status: 'approved',
-      scoreTitle: 'きれいに',
-      approvedAt: '2024-01-20 20:30',
-      openedByChild: false,
-    },
-  },
-  {
-    id: '3',
-    title: 'お手伝い',
-    description: 'お家のお手伝いをしよう',
-    order: 3,
-    scores: [
-      {
-        id: '7',
-        score: 1,
-        title: 'やった',
-        description: 'お手伝いした',
-        iconUrl: '👏',
-        achievementImgUrl: '/stars/bronze.png',
-        animationLevel: 'light',
-      },
-      {
-        id: '8',
-        score: 2,
-        title: 'がんばった',
-        description: 'しっかりお手伝い',
-        iconUrl: '💪',
-        achievementImgUrl: '/stars/silver.png',
-        animationLevel: 'medium',
-      },
-      {
-        id: '9',
-        score: 3,
-        title: 'すごい',
-        description: '完璧なお手伝い',
-        iconUrl: '🏆',
-        achievementImgUrl: '/stars/gold.png',
-        animationLevel: 'heavy',
-      },
-    ],
-    todayRequest: {
-      id: 'req2',
-      status: 'pending',
-      scoreTitle: 'がんばった',
-      requestedAt: '2024-01-20 19:45',
-    },
-  },
-]
-
-const mockChild = {
-  id: '1',
-  name: 'はなこ',
-  avatar: '🌸',
-  todayStamps: 2,
-  totalStamps: 45,
-}
+import {FaStar, FaCheck, FaClock, FaTimes, FaSignOutAlt, FaMedal, FaHeart} from 'react-icons/fa'
+import {signOut} from 'next-auth/react'
+import {evaluationItemsActions, evaluationRequestsActions} from '../../../../(lib)/nextauth-api'
+import Link from 'next/link'
+import useGlobal from '@hooks/globalHooks/useGlobal'
 
 export default function ChildDashboard() {
-  const [evaluationItems, setEvaluationItems] = useState(mockEvaluationItems)
-  const [child, setChild] = useState(mockChild)
+  const {session, status} = useGlobal()
+  const [evaluationItems, setEvaluationItems] = useState<any[]>([])
+  const [todayRequests, setTodayRequests] = useState<any[]>([])
   const [showCelebration, setShowCelebration] = useState(false)
   const [selectedItem, setSelectedItem] = useState<any>(null)
   const [selectedScore, setSelectedScore] = useState<any>(null)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (status === 'authenticated' && session?.type === 'child') {
+      loadDashboardData()
+    }
+  }, [status, session])
+
+  const loadDashboardData = async () => {
+    try {
+      setIsLoading(true)
+
+      // 評価項目を取得
+      const itemsData = await evaluationItemsActions.getAll({session})
+      setEvaluationItems(itemsData.data || [])
+
+      // 今日の申請を取得
+      const today = new Date().toISOString().split('T')[0]
+      const requestsData = await evaluationRequestsActions.getAll({
+        session,
+        childId: session?.id,
+        date: today,
+      })
+      setTodayRequests(requestsData.data || [])
+
+      // 承認済みで未開封の申請があるかチェック
+      const unopenedApproved = requestsData.data?.find((req: any) => req.status === 'approved' && !req.openedByChild)
+      if (unopenedApproved) {
+        handleOpenCelebration(unopenedApproved)
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleScoreSelect = async (item: any, score: any) => {
-    if (item.todayRequest) return // 既に申請済み
+    // 既に今日申請済みかチェック
+    const existingRequest = todayRequests.find(req => req.evaluationItemId === item.id)
+    if (existingRequest) return
 
     try {
-      // TODO: API実装
-      console.log('Submitting request:', {itemId: item.id, scoreId: score.id})
+      await evaluationRequestsActions.create(session, {
+        activityId: item.id,
+        activityScoreId: score.id,
+      })
 
-      // 申請状態を更新
-      setEvaluationItems(prev =>
-        prev.map(i =>
-          i.id === item.id
-            ? {
-                ...i,
-                todayRequest: {
-                  id: `req_${Date.now()}`,
-                  status: 'pending',
-                  scoreTitle: score.title,
-                  requestedAt: new Date().toLocaleString(),
-                },
-              }
-            : i
-        )
-      )
+      // 申請リストを更新
+      await loadDashboardData()
     } catch (error) {
       console.error('Failed to submit request:', error)
     }
   }
 
-  const handleOpenCelebration = (request: any) => {
+  const handleOpenCelebration = async (request: any) => {
     if (request.status === 'approved' && !request.openedByChild) {
-      const item = evaluationItems.find(i => i.todayRequest?.id === request.id)
-      const score = item?.scores.find(s => s.title === request.scoreTitle)
+      const item = evaluationItems.find(i => i.id === request.evaluationItemId)
+      const score = item?.scores?.find((s: any) => s.id === request.evaluationScoreId)
 
       setSelectedItem(item)
       setSelectedScore(score)
       setShowCelebration(true)
       setShowConfetti(true)
 
-      // TODO: API call to mark as opened
+      // 開封状態を更新
+      try {
+        await evaluationRequestsActions.markAsOpened(session, request.id)
+      } catch (error) {
+        console.error('Failed to mark as opened:', error)
+      }
+
       setTimeout(() => {
         setShowConfetti(false)
       }, 3000)
     }
+  }
+
+  const handleLogout = async () => {
+    await signOut()
   }
 
   const getGreeting = () => {
@@ -199,24 +109,24 @@ export default function ChildDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'approved':
-        return 'text-green-600'
+        return 'text-green-600 bg-green-100'
       case 'pending':
-        return 'text-yellow-600'
+        return 'text-yellow-600 bg-yellow-100'
       case 'rejected':
-        return 'text-red-600'
+        return 'text-red-600 bg-red-100'
       default:
-        return 'text-gray-600'
+        return 'text-gray-600 bg-gray-100'
     }
   }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <FaCheck className="text-green-500" />
+        return <FaCheck />
       case 'pending':
-        return <FaClock className="text-yellow-500" />
+        return <FaClock />
       case 'rejected':
-        return <FaTimes className="text-red-500" />
+        return <FaTimes />
       default:
         return null
     }
@@ -225,169 +135,174 @@ export default function ChildDashboard() {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'approved':
-        return 'けっていしたよ！'
+        return 'やったね！'
       case 'pending':
-        return 'まってるよ...'
+        return 'まってるよ'
       case 'rejected':
-        return 'もういちど がんばろう'
+        return 'もういちど'
       default:
         return ''
     }
   }
 
+  const getTodayRequestForItem = (itemId: string) => {
+    return todayRequests.find(req => req.evaluationItemId === itemId)
+  }
+
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'unauthenticated' || session?.type !== 'child') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">子どもとしてログインしてください</p>
+          <Link href="/sara/auth/child/login" className="text-pink-600 hover:text-pink-800">
+            ログインページへ
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100">
-      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} numberOfPieces={200} recycle={false} />}
+      {showConfetti && <Confetti />}
 
       {/* ヘッダー */}
       <header className="bg-white shadow-sm border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <span className="text-4xl">{child.avatar}</span>
+              <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-2xl">{session.avatar || '👶'}</span>
+              </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-800">
-                  {getGreeting()}、{child.name}ちゃん！
+                <h1 className="text-xl font-bold text-gray-800">
+                  {getGreeting()}、{session.name}ちゃん！
                 </h1>
-                <p className="text-gray-600">きょうも がんばろうね！✨</p>
+                <p className="text-sm text-gray-600">きょうも がんばろうね ✨</p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-yellow-100 px-4 py-2 rounded-full">
+              <div className="flex items-center space-x-2">
                 <FaStar className="text-yellow-500" />
-                <span className="font-bold text-yellow-700">{child.todayStamps}</span>
-                <span className="text-yellow-600 text-sm">きょう</span>
+                <span className="font-bold text-gray-800">{todayRequests.filter(req => req.status === 'approved').length}</span>
+                <span className="text-sm text-gray-600">きょう</span>
               </div>
-              <a href="/sara" className="text-gray-600 hover:text-red-600 cursor-pointer">
-                <FaSignOutAlt />
-              </a>
+              <button onClick={handleLogout}>
+                <FaSignOutAlt className="text-gray-600 hover:text-red-600 cursor-pointer" />
+              </button>
             </div>
           </div>
         </div>
       </header>
 
       <div className="container mx-auto px-4 py-6">
-        {/* スタンプ統計 */}
-        <motion.div
-          initial={{opacity: 0, y: 20}}
-          animate={{opacity: 1, y: 0}}
-          className="bg-white rounded-2xl shadow-lg p-6 mb-8"
-        >
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">きょうの せいか 🏆</h2>
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <FaStar className="text-3xl text-yellow-500" />
-              </div>
-              <p className="font-bold text-2xl text-gray-800">{child.todayStamps}</p>
-              <p className="text-gray-600">きょうの スタンプ</p>
+        {/* 今日の成果 */}
+        <motion.div initial={{opacity: 0, y: 20}} animate={{opacity: 1, y: 0}} className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center">
+            <FaMedal className="text-yellow-500 mr-2" />
+            きょうの せいか
+          </h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <div className="text-center p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
+              <FaCheck className="text-3xl text-green-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-green-600">{todayRequests.filter(req => req.status === 'approved').length}</p>
+              <p className="text-sm text-gray-600">できたこと</p>
             </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <FaMedal className="text-3xl text-purple-500" />
-              </div>
-              <p className="font-bold text-2xl text-gray-800">{child.totalStamps}</p>
-              <p className="text-gray-600">ぜんぶの スタンプ</p>
+            <div className="text-center p-4 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg">
+              <FaClock className="text-3xl text-yellow-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-yellow-600">{todayRequests.filter(req => req.status === 'pending').length}</p>
+              <p className="text-sm text-gray-600">まってるよ</p>
             </div>
-            <div className="text-center">
-              <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                <FaHeart className="text-3xl text-pink-500" />
-              </div>
-              <p className="font-bold text-2xl text-gray-800">
-                {evaluationItems.filter(item => item.todayRequest?.status === 'approved').length}
-              </p>
-              <p className="text-gray-600">けっていした</p>
+            <div className="text-center p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+              <FaHeart className="text-3xl text-purple-500 mx-auto mb-2" />
+              <p className="text-2xl font-bold text-purple-600">{evaluationItems.length - todayRequests.length}</p>
+              <p className="text-sm text-gray-600">まだできるよ</p>
             </div>
           </div>
         </motion.div>
 
-        {/* 今日の習慣項目 */}
-        <motion.div
-          initial={{opacity: 0, y: 20}}
-          animate={{opacity: 1, y: 0}}
-          transition={{delay: 0.2}}
-          className="bg-white rounded-2xl shadow-lg p-6"
-        >
-          <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">きょうの おやくそく 📝</h2>
+        {/* 評価項目一覧 */}
+        <div className="grid gap-6">
+          {evaluationItems.map((item, index) => {
+            const todayRequest = getTodayRequestForItem(item.id)
 
-          <div className="space-y-6">
-            {evaluationItems.map((item, index) => (
+            return (
               <motion.div
                 key={item.id}
-                initial={{opacity: 0, x: -20}}
-                animate={{opacity: 1, x: 0}}
-                transition={{delay: 0.1 * index}}
-                className={`border-2 rounded-2xl p-6 ${
-                  item.todayRequest
-                    ? 'border-gray-300 bg-gray-50'
-                    : 'border-dashed border-gray-300 hover:border-pink-300 cursor-pointer'
-                }`}
+                initial={{opacity: 0, y: 20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{delay: index * 0.1}}
+                className="bg-white rounded-xl shadow-sm overflow-hidden"
               >
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xl font-bold text-gray-800">{item.title}</h3>
-                  {item.todayRequest && (
-                    <div className="flex items-center space-x-2">
-                      {getStatusIcon(item.todayRequest.status)}
-                      <span className={`font-semibold ${getStatusColor(item.todayRequest.status)}`}>
-                        {getStatusText(item.todayRequest.status)}
-                      </span>
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800">{item.title}</h3>
+                      <p className="text-gray-600">{item.description}</p>
                     </div>
-                  )}
-                </div>
-
-                <p className="text-gray-600 mb-4">{item.description}</p>
-
-                {item.todayRequest ? (
-                  <div className="bg-white rounded-xl p-4 border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-semibold text-gray-800">せんたく: {item.todayRequest.scoreTitle}</p>
-                        <p className="text-sm text-gray-600">
-                          {item.todayRequest.status === 'pending'
-                            ? `しんせい: ${item.todayRequest.requestedAt}`
-                            : `けってい: ${item.todayRequest.approvedAt}`}
-                        </p>
+                    {todayRequest && (
+                      <div
+                        className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center space-x-1 ${getStatusColor(todayRequest.status)}`}
+                      >
+                        {getStatusIcon(todayRequest.status)}
+                        <span>{getStatusText(todayRequest.status)}</span>
                       </div>
-                      {item.todayRequest.status === 'approved' && !item.todayRequest.openedByChild && (
+                    )}
+                  </div>
+
+                  {todayRequest ? (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <p className="text-gray-600 text-center">
+                        {todayRequest.status === 'approved' && '✨ やったね！すごいよ！ ✨'}
+                        {todayRequest.status === 'pending' && '⏰ おとうさんかおかあさんが みてくれるよ'}
+                        {todayRequest.status === 'rejected' && '💪 もういちど がんばってみよう！'}
+                      </p>
+                      {todayRequest.status === 'approved' && !todayRequest.openedByChild && (
                         <motion.button
                           whileHover={{scale: 1.05}}
                           whileTap={{scale: 0.95}}
-                          onClick={() => handleOpenCelebration(item.todayRequest)}
-                          className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-3 rounded-xl font-bold text-lg"
+                          onClick={() => handleOpenCelebration(todayRequest)}
+                          className="w-full mt-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-3 px-4 rounded-lg"
                         >
-                          スタンプを みる！✨
+                          🎉 おめでとう！タップしてね 🎉
                         </motion.button>
                       )}
                     </div>
-                  </div>
-                ) : (
-                  <div>
-                    <p className="text-lg font-semibold text-gray-700 mb-3">どのくらい がんばった？</p>
-                    <div className="grid grid-cols-1 gap-3">
-                      {item.scores.map(score => (
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {item.scores?.map((score: any) => (
                         <motion.button
                           key={score.id}
                           whileHover={{scale: 1.02}}
                           whileTap={{scale: 0.98}}
                           onClick={() => handleScoreSelect(item, score)}
-                          className="bg-gradient-to-r from-pink-100 to-purple-100 hover:from-pink-200 hover:to-purple-200 border border-pink-200 rounded-xl p-4 text-left transition-all"
+                          className="p-4 border-2 border-gray-200 rounded-lg hover:border-pink-300 hover:bg-pink-50 transition-all"
                         >
-                          <div className="flex items-center space-x-3">
-                            <span className="text-3xl">{score.iconUrl}</span>
-                            <div>
-                              <p className="font-bold text-lg text-gray-800">{score.title}</p>
-                              <p className="text-gray-600">{score.description}</p>
-                            </div>
+                          <div className="text-center">
+                            <div className="text-3xl mb-2">{score.iconUrl}</div>
+                            <p className="font-semibold text-gray-800">{score.title}</p>
+                            <p className="text-sm text-gray-600">{score.description}</p>
                           </div>
                         </motion.button>
                       ))}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </motion.div>
-            ))}
-          </div>
-        </motion.div>
+            )
+          })}
+        </div>
       </div>
 
       {/* 承認演出モーダル */}
@@ -401,49 +316,36 @@ export default function ChildDashboard() {
             onClick={() => setShowCelebration(false)}
           >
             <motion.div
-              initial={{scale: 0, rotate: -180}}
-              animate={{scale: 1, rotate: 0}}
-              exit={{scale: 0, rotate: 180}}
-              transition={{type: 'spring', duration: 0.8}}
-              className="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-3xl p-8 max-w-md mx-4 text-center"
+              initial={{scale: 0.5, opacity: 0}}
+              animate={{scale: 1, opacity: 1}}
+              exit={{scale: 0.5, opacity: 0}}
+              className="bg-white rounded-2xl p-8 max-w-md mx-4 text-center"
               onClick={e => e.stopPropagation()}
             >
               <motion.div
                 animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 360, 0],
+                  rotate: [0, 10, -10, 10, 0],
+                  scale: [1, 1.1, 1, 1.1, 1],
                 }}
                 transition={{
                   duration: 2,
                   repeat: Infinity,
-                  ease: 'easeInOut',
+                  repeatType: 'reverse',
                 }}
-                className="text-8xl mb-4"
+                className="text-6xl mb-4"
               >
                 {selectedScore.iconUrl}
               </motion.div>
-
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">すごいね！ 🎉</h2>
-
-              <p className="text-xl text-gray-700 mb-4">
-                「{selectedItem.title}」で
-                <br />「{selectedScore.title}」を がんばったね！
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">やったね！</h2>
+              <p className="text-lg text-gray-600 mb-4">
+                {selectedItem.title} - {selectedScore.title}
               </p>
-
-              <div className="flex items-center justify-center space-x-2 mb-6">
-                <FaStar className="text-yellow-500 text-2xl" />
-                <span className="text-2xl font-bold text-gray-800">スタンプ ゲット！</span>
-                <FaStar className="text-yellow-500 text-2xl" />
-              </div>
-
+              <p className="text-gray-600 mb-6">すごいね！がんばったね！✨</p>
               <motion.button
                 whileHover={{scale: 1.05}}
                 whileTap={{scale: 0.95}}
-                onClick={() => {
-                  setShowCelebration(false)
-                  // TODO: Mark as opened in API
-                }}
-                className="bg-gradient-to-r from-pink-400 to-purple-500 text-white px-8 py-3 rounded-xl font-bold text-lg"
+                onClick={() => setShowCelebration(false)}
+                className="bg-gradient-to-r from-pink-400 to-purple-500 text-white font-bold py-3 px-6 rounded-lg"
               >
                 ありがとう！
               </motion.button>

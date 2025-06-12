@@ -7,7 +7,7 @@ import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {anyObject} from '@cm/types/utility-types'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {Prisma} from '@prisma/client'
-import {authOptions} from '@app/api/auth/authOptions'
+import {authOptions} from '@app/api/auth/[...nextauth]/constants/authOptions'
 import {FakeOrKeepSession} from 'src/non-common/scope-lib/FakeOrKeepSession'
 import {headers} from 'next/headers'
 

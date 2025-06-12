@@ -4,7 +4,6 @@ import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import prisma from '@lib/prisma'
 import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
-import {getMidnight} from '@class/Days/date-utils/calculations'
 import Redirector from '@components/utils/Redirector'
 import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
 

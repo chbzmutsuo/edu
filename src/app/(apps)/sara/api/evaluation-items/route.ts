@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     const items = await prisma.saraEvaluationItem.findMany({
-      where: {familyId: auth.familyId},
+      where: {saraFamilyId: auth.saraFamilyId},
       include: {
         scores: {
           orderBy: {score: 'asc'},
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     // 最大のorderを取得
     const maxOrderItem = await prisma.saraEvaluationItem.findFirst({
-      where: {familyId: auth.familyId},
+      where: {saraFamilyId: auth.saraFamilyId},
       orderBy: {order: 'desc'},
     })
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
           title,
           description: description || '',
           order: newOrder,
-          familyId: auth.familyId,
+          saraFamilyId: auth.saraFamilyId,
         },
       })
 
@@ -119,7 +119,7 @@ export async function PUT(request: NextRequest) {
     const existingItem = await prisma.saraEvaluationItem.findFirst({
       where: {
         id,
-        familyId: auth.familyId,
+        saraFamilyId: auth.saraFamilyId,
       },
     })
 
@@ -199,7 +199,7 @@ export async function DELETE(request: NextRequest) {
     const existingItem = await prisma.saraEvaluationItem.findFirst({
       where: {
         id,
-        familyId: auth.familyId,
+        saraFamilyId: auth.saraFamilyId,
       },
     })
 

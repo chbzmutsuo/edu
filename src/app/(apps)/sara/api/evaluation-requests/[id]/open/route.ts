@@ -4,9 +4,10 @@ import {requireChildAuth} from '../../../middleware/auth'
 
 const prisma = new PrismaClient()
 
-export async function PUT(request: NextRequest, {params}: {params: {id: string}}) {
+export async function PUT(request: NextRequest, context: {params: Promise<{id: string}>}) {
   try {
-    const auth = requireChildAuth(request)
+    const params = await context.params
+    const auth = await requireChildAuth(request)
     if (!auth) {
       return NextResponse.json({error: '子どもの認証が必要です'}, {status: 401})
     }

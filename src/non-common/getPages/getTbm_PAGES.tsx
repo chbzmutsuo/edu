@@ -39,7 +39,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'eigyosho', label: <IconLetter {...{Icon: CurrencyYenIcon}}>営業所別売上</IconLetter>},
         {tabId: 'etc', label: <IconLetter {...{Icon: CurrencyYenIcon}}>ETC明細連携</IconLetter>},
         {tabId: 'kyuyo', label: <IconLetter {...{Icon: CurrencyYenIcon}}>給与</IconLetter>},
-        {tabId: 'simpleDriveHistory', label: <IconLetter {...{Icon: FileText}}>走行記録（PDF）</IconLetter>},
+        {tabId: 'simpleDriveHistory', label: <IconLetter {...{Icon: FileText}}>簡易走行記録（PDF）</IconLetter>},
       ],
     },
 

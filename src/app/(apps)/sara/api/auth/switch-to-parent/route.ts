@@ -13,14 +13,14 @@ export async function POST(request: NextRequest) {
     }
 
     // 親の情報を取得
-    const parent = await prisma.saraParent.findFirst({
+    const parent = await prisma.parent.findFirst({
       where: {
-        familyId: session.user.familyId,
+        familyId: session.user.saraFamilyId,
       },
       include: {
-        family: {
+        Family: {
           include: {
-            children: true,
+            Child: true,
           },
         },
       },
@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
         email: parent.email,
         type: 'parent',
         familyId: parent.familyId,
-        familyName: parent.family.name,
-        children: parent.family.children.map(child => ({
+        familyName: parent.Family.name,
+        children: parent.Family.Child.map(child => ({
           id: child.id,
           name: child.name,
           avatar: child.avatar,

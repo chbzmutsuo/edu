@@ -23,6 +23,51 @@ export const PAGES: any = {
   aquapot_PAGES,
   shinsei_PAGES,
   stock_PAGES,
+  health_PAGES: (props: PageGetterType) => {
+    const {roles, query, session, rootPath, pathname} = props
+
+    const {login} = getScopes(session, {query, roles})
+    const loginPaths = [
+      {
+        tabId: '',
+        label: '入力・閲覧',
+        children: [
+          {tabId: 'daily', label: '日別ページ', ROOT: [rootPath]},
+          {tabId: 'monthly', label: '月別ページ', ROOT: [rootPath]},
+        ],
+      },
+      {
+        tabId: '',
+        label: 'データ',
+        children: [
+          {tabId: 'user', label: 'ユーザー'},
+          {tabId: 'medicine', label: '薬'},
+          // {tabId: 'healthRecord', label: '健康記録'},
+        ],
+      },
+    ].map((item, i) => {
+      return {
+        ...item,
+        ROOT: [rootPath],
+        exclusiveTo: !!login,
+      }
+    })
+    const pathSource: pathItemType[] = [...loginPaths]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      session,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
 }
 
 export const CleansePathSource = (props: anyObject) => {

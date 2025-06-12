@@ -1,49 +1,10 @@
+import {User} from '@prisma/client'
 import 'next-auth'
-import NextAuth from 'next-auth'
 
 declare module 'next-auth' {
-  interface User {
-    type: 'parent' | 'child'
-    familyId: string
-    familyName: string
-    avatar?: string
-    children?: {
-      id: string
-      name: string
-      avatar: string
-    }[]
-  }
-
   interface Session {
-    user: {
-      id: string
-      name?: string | null
-      email?: string | null
-      image?: string | null
-      type: 'parent' | 'child'
-      familyId: string
-      familyName: string
-      avatar?: string
-      children?: {
-        id: string
-        name: string
-        avatar: string
-      }[]
-    }
+    user: User | (Parent & {Child: Child[]; Family: Family}) | (Child & {Family: Family})
   }
-
-  // interface User {
-  //   id?: string
-  //   idToken?: string
-  //   accessToken?: string
-  //   refreshToken?: string
-  //   expiresIn?: number
-  //   email: string
-  //   name: string
-  //   emailVerified?: boolean
-  //   sub?: string
-  //   userStatus?: string
-  // }
 }
 
 declare module 'next-auth/jwt' {
@@ -59,13 +20,13 @@ declare module 'next-auth/jwt' {
     sub?: string
     userStatus?: string
     type: 'parent' | 'child'
-    familyId: string
+    saraFamilyId: string
     familyName: string
-    avatar?: string
+    avatar?: string | null
     children?: {
       id: string
       name: string
-      avatar: string
+      avatar: string | null
     }[]
   }
 }

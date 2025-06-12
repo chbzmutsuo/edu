@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 // 評価申請一覧取得
 export async function GET(request: NextRequest) {
   try {
-    const auth = requireAnyAuth(request)
+    const auth = await requireAnyAuth(request)
     if (!auth) {
       return NextResponse.json({error: '認証が必要です'}, {status: 401})
     }
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     // フィルター条件を構築
     const where: any = {
       evaluationItem: {
-        familyId: auth.familyId,
+        saraFamilyId: auth.saraFamilyId,
       },
     }
 
@@ -83,7 +83,7 @@ export async function GET(request: NextRequest) {
 // 評価申請作成（子ども用）
 export async function POST(request: NextRequest) {
   try {
-    const auth = requireChildAuth(request)
+    const auth = await requireChildAuth(request)
     if (!auth) {
       return NextResponse.json({error: '子どもの認証が必要です'}, {status: 401})
     }
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     const evaluationItem = await prisma.saraEvaluationItem.findFirst({
       where: {
         id: evaluationItemId,
-        familyId: auth.familyId,
+        saraFamilyId: auth.saraFamilyId,
       },
       include: {
         scores: true,
@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 申請を作成
-    const request = await prisma.saraEvaluationRequest.create({
+    const newRequest = await prisma.saraEvaluationRequest.create({
       data: {
         childId: auth.childId!,
         evaluationItemId,
@@ -162,7 +162,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: '評価申請を送信しました',
-      request,
+      request: newRequest,
     })
   } catch (error) {
     console.error('Create evaluation request error:', error)
@@ -175,13 +175,13 @@ export async function POST(request: NextRequest) {
 // 評価申請更新（親用：承認・却下）
 export async function PUT(request: NextRequest) {
   try {
-    const auth = requireParentAuth(request)
+    const auth = await requireParentAuth(request)
     if (!auth) {
       return NextResponse.json({error: '親の認証が必要です'}, {status: 401})
     }
 
     const body = await request.json()
-    const {id, status, parentComment} = body
+    const {id, status, comment} = body
 
     // バリデーション
     if (!id || !status || !['approved', 'rejected'].includes(status)) {
@@ -193,7 +193,7 @@ export async function PUT(request: NextRequest) {
       where: {
         id,
         evaluationItem: {
-          familyId: auth.familyId,
+          saraFamilyId: auth.saraFamilyId,
         },
       },
     })
@@ -211,8 +211,8 @@ export async function PUT(request: NextRequest) {
       where: {id},
       data: {
         status,
-        parentComment: parentComment || null,
-        approvedAt: status === 'approved' ? new Date() : null,
+        comment: comment || null,
+        approvedById: status === 'approved' ? auth.parentId : null,
       },
       include: {
         evaluationItem: true,

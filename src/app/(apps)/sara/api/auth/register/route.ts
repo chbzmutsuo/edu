@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     }
 
     // メールアドレスの重複チェック
-    const existingParent = await prisma.saraParent.findUnique({
+    const existingParent = await prisma.parent.findUnique({
       where: {email: parent.email},
     })
 
@@ -33,14 +33,14 @@ export async function POST(request: NextRequest) {
     // トランザクションで一括作成
     const result = await prisma.$transaction(async tx => {
       // 家族を作成
-      const family = await tx.saraFamily.create({
+      const family = await tx.family.create({
         data: {
           name: familyName,
         },
       })
 
       // 親を作成
-      const parentRecord = await tx.saraParent.create({
+      const parentRecord = await tx.parent.create({
         data: {
           name: parent.name,
           email: parent.email,
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       // 子どもたちを作成
       const childrenRecords = await Promise.all(
         children.map(async (child: any) =>
-          tx.saraChild.create({
+          tx.child.create({
             data: {
               name: child.name,
               avatar: child.avatar,

@@ -96,7 +96,7 @@ export default function RegisterPage() {
     setError('')
 
     try {
-      // TODO: API実装後に置き換え
+      // NextAuth対応のAPI呼び出し
       const response = await fetch('/sara/api/auth/register', {
         method: 'POST',
         headers: {

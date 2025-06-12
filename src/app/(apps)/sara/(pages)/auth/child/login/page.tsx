@@ -5,25 +5,39 @@ import {useRouter} from 'next/navigation'
 import Link from 'next/link'
 import {motion} from 'framer-motion'
 import {FaArrowLeft, FaStar} from 'react-icons/fa'
-
-// モックデータ（後でAPIから取得）
-const mockChildren = [
-  {id: '1', name: 'はなこ', avatar: '🌸'},
-  {id: '2', name: 'たろう', avatar: '🦁'},
-  {id: '3', name: 'みお', avatar: '🐱'},
-]
+import {clientAuthActions} from '../../../../(lib)/client-auth'
 
 export default function ChildLoginPage() {
   const router = useRouter()
-  const [selectedChild, setSelectedChild] = useState<string>('')
+  const [selectedChildId, setSelectedChildId] = useState<number | null>(null)
   const [password, setPassword] = useState('')
-  const [children, setChildren] = useState(mockChildren)
+  const [children, setChildren] = useState<{id: number; name: string; avatar: string}[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
+  // 子どもリストを取得（実際の実装では親のセッションから取得）
+  useEffect(() => {
+    const loadChildren = async () => {
+      try {
+        // TODO: 実際の実装では親のセッションから子どもリストを取得
+        // 現在はモックデータを使用
+        const mockChildren = [
+          {id: 1, name: 'はなこ', avatar: '🌸'},
+          {id: 2, name: 'たろう', avatar: '🦁'},
+          {id: 3, name: 'みお', avatar: '🐱'},
+        ]
+        setChildren(mockChildren)
+      } catch (error) {
+        console.error('Failed to load children:', error)
+      }
+    }
+
+    loadChildren()
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!selectedChild) {
+    if (selectedChildId === null) {
       setError('お名前を選んでね！')
       return
     }
@@ -32,24 +46,16 @@ export default function ChildLoginPage() {
     setError('')
 
     try {
-      // TODO: API実装後に置き換え
-      const response = await fetch('/sara/api/auth/child/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          childId: selectedChild,
-          password: password,
-        }),
-      })
+      // NextAuthのsignInを使用
+      const result = await clientAuthActions.childLogin(selectedChildId, password || '')
 
-      if (response.ok) {
+      if (result?.ok) {
         router.push('/sara/child/dashboard')
       } else {
         setError('ログインできませんでした。おとうさんかおかあさんにきいてね！')
       }
     } catch (error) {
+      console.error('Child login error:', error)
       setError('ログインできませんでした。もういちどやってみてね！')
     } finally {
       setIsLoading(false)
@@ -97,11 +103,11 @@ export default function ChildLoginPage() {
                     <motion.button
                       key={child.id}
                       type="button"
-                      onClick={() => setSelectedChild(child.id)}
+                      onClick={() => setSelectedChildId(Number(child.id))}
                       whileHover={{scale: 1.02}}
                       whileTap={{scale: 0.98}}
                       className={`p-4 rounded-xl border-2 transition-all ${
-                        selectedChild === child.id
+                        selectedChildId === Number(child.id)
                           ? 'border-pink-400 bg-pink-50 shadow-md'
                           : 'border-gray-200 bg-white hover:border-pink-200'
                       }`}
@@ -109,7 +115,7 @@ export default function ChildLoginPage() {
                       <div className="flex items-center justify-center space-x-3">
                         <span className="text-3xl">{child.avatar}</span>
                         <span className="text-xl font-semibold text-gray-700">{child.name}</span>
-                        {selectedChild === child.id && <span className="text-pink-500">✓</span>}
+                        {selectedChildId === child.id && <span className="text-pink-500">✓</span>}
                       </div>
                     </motion.button>
                   ))}
@@ -142,11 +148,11 @@ export default function ChildLoginPage() {
 
               <motion.button
                 type="submit"
-                disabled={isLoading || !selectedChild}
+                disabled={isLoading || !selectedChildId}
                 whileHover={{scale: 1.02}}
                 whileTap={{scale: 0.98}}
                 className={`w-full py-4 px-4 rounded-xl font-semibold text-white text-lg transition-colors ${
-                  isLoading || !selectedChild
+                  isLoading || !selectedChildId
                     ? 'bg-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-pink-400 to-purple-500 hover:from-pink-500 hover:to-purple-600'
                 }`}

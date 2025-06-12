@@ -101,6 +101,7 @@ model User {
   KyuyoTableRecord  KyuyoTableRecord[]
   Department        Department?         @relation(fields: [departmentId], references: [id])
   departmentId      Int?
+  HealthRecord      HealthRecord[]
 }
 
 model ReleaseNotes {

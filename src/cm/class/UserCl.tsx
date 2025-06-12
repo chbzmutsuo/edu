@@ -1,11 +1,15 @@
 import {userRoleType} from '@hooks/useUserRole'
-import {User} from '@prisma/client'
+import {Family, Child, Parent, User} from '@prisma/client'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 
 export class UserCl {
   data: User & {
+    avatar?: string | null
     roles: userRoleType[]
     scopes: ReturnType<typeof getScopes>
+    Parent?: Parent
+    Child?: Child[]
+    Family?: Family
   }
   constructor(props: {user: User; roles: userRoleType[]; scopes: ReturnType<typeof getScopes>}) {
     this.data = {

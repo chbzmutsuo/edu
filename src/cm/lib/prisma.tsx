@@ -76,7 +76,7 @@ export const handlePrismaError: (error: anyObject) => string = error => {
       }
 
       case 'P2003': {
-        const [modelA, modelB] = meta?.field_name.split(`_`)
+        const [modelA, modelB] = (meta?.field_name ?? meta?.constraint).split(`_`)
         errorMessage = `外部キー制約エラー: (${[modelA, modelB].join(`, `)})`
 
         break

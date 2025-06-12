@@ -10,7 +10,6 @@ import {BodyLeftTh} from '@components/DataLogic/TFs/MyTable/components/Tbody/Bod
 import {MyTableType} from '@cm/types/types'
 import TableCell from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/TableCell'
 import {twMerge} from 'tailwind-merge'
-import useLogOnRender from '@hooks/useLogOnRender'
 
 export type DnDTableRowPropsType = {
   record: any

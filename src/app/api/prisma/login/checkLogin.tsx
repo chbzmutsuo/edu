@@ -24,6 +24,7 @@ export const CheckLogin = async ({authId, authPw}) => {
     }
 
     const PrismaClient = prisma?.[name] as any
+
     const userData = await PrismaClient?.findUnique({where: {[authKey.id]: authId}})
 
     if (userData) {
@@ -46,7 +47,7 @@ export const CheckLogin = async ({authId, authPw}) => {
 
     if (match) {
       const {name, email, role, type} = userData ?? {}
-      console.info('login successed', {name, email, role, type})
+      console.info('user confirmed', {name, email, role, type})
       return foundUser
     }
   }

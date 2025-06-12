@@ -4,63 +4,84 @@ import {useState, useEffect} from 'react'
 import Link from 'next/link'
 import {motion} from 'framer-motion'
 import {FaBell, FaCheck, FaTimes, FaStar, FaPlus, FaCog, FaCalendar, FaChild, FaChartBar, FaSignOutAlt} from 'react-icons/fa'
-
-// モックデータ
-const mockPendingRequests = [
-  {
-    id: '1',
-    childName: 'はなこ',
-    childAvatar: '🌸',
-    itemTitle: '歯磨き',
-    scoreTitle: 'ぴかぴか',
-    requestTime: '2024-01-20 19:30',
-    date: '2024-01-20',
-  },
-  {
-    id: '2',
-    childName: 'たろう',
-    childAvatar: '🦁',
-    itemTitle: 'お片付け',
-    scoreTitle: 'きれいに完璧',
-    requestTime: '2024-01-20 20:15',
-    date: '2024-01-20',
-  },
-]
-
-const mockChildren = [
-  {
-    id: '1',
-    name: 'はなこ',
-    avatar: '🌸',
-    todayStamps: 3,
-    totalStamps: 45,
-    lastActivity: '歯磨き (19:30)',
-  },
-  {
-    id: '2',
-    name: 'たろう',
-    avatar: '🦁',
-    todayStamps: 2,
-    totalStamps: 38,
-    lastActivity: 'お片付け (20:15)',
-  },
-]
+import {signOut} from 'next-auth/react'
+import {evaluationRequestsActions, dashboardActions} from '../../../../(lib)/nextauth-api'
+import useGlobal from '@hooks/globalHooks/useGlobal'
 
 export default function ParentDashboard() {
-  const [pendingRequests, setPendingRequests] = useState(mockPendingRequests)
-  const [children, setChildren] = useState(mockChildren)
-  const [selectedFilter, setSelectedFilter] = useState('all')
+  // const useSessionReturn = useSession()
+  const {session: user, status} = useGlobal()
 
-  const handleApproveRequest = async (requestId: string) => {
-    // TODO: API実装
-    console.log('Approving request:', requestId)
-    setPendingRequests(prev => prev.filter(req => req.id !== requestId))
+  const [pendingRequests, setPendingRequests] = useState<any[]>([])
+  const [children, setChildren] = useState<any[]>([])
+  const [stats, setStats] = useState<any>({})
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (user?.type === 'parent') {
+      loadDashboardData()
+    }
+  }, [status, user])
+
+  const loadDashboardData = async () => {
+    try {
+      setIsLoading(true)
+
+      // 承認待ちの申請を取得
+      const pendingData = await evaluationRequestsActions.getAll({session: user, status: 'pending'})
+      setPendingRequests(pendingData.data || [])
+
+      // 統計データを取得
+      const statsData = await dashboardActions.getStats(user)
+      setStats(statsData)
+
+      // 子どもリストを取得（セッションから）
+      if (user?.Child) {
+        setChildren(user.Child)
+      }
+    } catch (error) {
+      console.error('Failed to load dashboard data:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleRejectRequest = async (requestId: string) => {
-    // TODO: API実装
-    console.log('Rejecting request:', requestId)
-    setPendingRequests(prev => prev.filter(req => req.id !== requestId))
+  const handleApproveRequest = async (requestId: number) => {
+    try {
+      await evaluationRequestsActions.update(user, {
+        id: requestId,
+        status: 'approved',
+        comment: '承認しました！',
+      })
+
+      // リストから削除
+      setPendingRequests(prev => prev.filter(req => req.id !== requestId))
+
+      // 統計データを再読み込み
+      const statsData = await dashboardActions.getStats(user)
+      setStats(statsData)
+    } catch (error) {
+      console.error('Failed to approve request:', error)
+    }
+  }
+
+  const handleRejectRequest = async (requestId: number) => {
+    try {
+      await evaluationRequestsActions.update(user, {
+        id: requestId,
+        status: 'rejected',
+        comment: 'もう一度がんばってみてね',
+      })
+
+      // リストから削除
+      setPendingRequests(prev => prev.filter(req => req.id !== requestId))
+    } catch (error) {
+      console.error('Failed to reject request:', error)
+    }
+  }
+
+  const handleLogout = async () => {
+    await signOut()
   }
 
   const getGreeting = () => {
@@ -68,6 +89,30 @@ export default function ParentDashboard() {
     if (hour < 12) return 'おはようございます'
     if (hour < 18) return 'こんにちは'
     return 'お疲れさまです'
+  }
+
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === 'unauthenticated' || user?.type !== 'parent') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">親としてログインしてください</p>
+          <Link href="/sara/auth/parent/login" className="text-blue-600 hover:text-blue-800">
+            ログインページへ
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -82,7 +127,9 @@ export default function ParentDashboard() {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-gray-800">親ダッシュボード</h1>
-                <p className="text-sm text-gray-600">{getGreeting()}！</p>
+                <p className="text-sm text-gray-600">
+                  {getGreeting()}、{user.name}さん！
+                </p>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -94,12 +141,12 @@ export default function ParentDashboard() {
                   </span>
                 )}
               </div>
-              <Link href="/sara/parent/settings">
+              <Link href="/sara/parent/evaluation-items">
                 <FaCog className="text-gray-600 hover:text-blue-600 cursor-pointer" />
               </Link>
-              <Link href="/sara">
+              <button onClick={handleLogout}>
                 <FaSignOutAlt className="text-gray-600 hover:text-red-600 cursor-pointer" />
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -132,7 +179,7 @@ export default function ParentDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">今日のスタンプ</p>
-                <p className="text-2xl font-bold text-green-600">{children.reduce((sum, child) => sum + child.todayStamps, 0)}</p>
+                <p className="text-2xl font-bold text-green-600">{stats.todayStamps || 0}</p>
               </div>
               <FaStar className="text-3xl text-green-500" />
             </div>
@@ -162,9 +209,7 @@ export default function ParentDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">総スタンプ</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {children.reduce((sum, child) => sum + child.totalStamps, 0)}
-                </p>
+                <p className="text-2xl font-bold text-purple-600">{stats.totalStamps || 0}</p>
               </div>
               <FaChartBar className="text-3xl text-purple-500" />
             </div>
@@ -198,38 +243,32 @@ export default function ParentDashboard() {
                   {pendingRequests.map(request => (
                     <motion.div
                       key={request.id}
-                      initial={{opacity: 0, scale: 0.95}}
-                      animate={{opacity: 1, scale: 1}}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      initial={{opacity: 0, y: 10}}
+                      animate={{opacity: 1, y: 0}}
+                      className="border border-gray-200 rounded-lg p-4"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{request.childAvatar}</span>
+                          <span className="text-2xl">{request.child?.avatar || '👶'}</span>
                           <div>
-                            <h3 className="font-semibold text-gray-800">
-                              {request.childName} - {request.itemTitle}
-                            </h3>
-                            <p className="text-sm text-gray-600">レベル: {request.scoreTitle}</p>
-                            <p className="text-xs text-gray-500">{request.requestTime}</p>
+                            <p className="font-semibold text-gray-800">{request.child?.name}</p>
+                            <p className="text-sm text-gray-600">{request.evaluationItem?.title}</p>
+                            <p className="text-xs text-gray-500">{request.evaluationScore?.title}</p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          <motion.button
-                            whileHover={{scale: 1.05}}
-                            whileTap={{scale: 0.95}}
+                        <div className="flex space-x-2">
+                          <button
                             onClick={() => handleApproveRequest(request.id)}
-                            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg"
+                            className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-lg transition-colors"
                           >
                             <FaCheck />
-                          </motion.button>
-                          <motion.button
-                            whileHover={{scale: 1.05}}
-                            whileTap={{scale: 0.95}}
+                          </button>
+                          <button
                             onClick={() => handleRejectRequest(request.id)}
-                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg"
+                            className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-lg transition-colors"
                           >
                             <FaTimes />
-                          </motion.button>
+                          </button>
                         </div>
                       </div>
                     </motion.div>
@@ -239,7 +278,7 @@ export default function ParentDashboard() {
             </div>
           </motion.div>
 
-          {/* 子どもたちの状況 */}
+          {/* 子ども一覧 */}
           <motion.div
             initial={{opacity: 0, x: 20}}
             animate={{opacity: 1, x: 0}}
@@ -247,27 +286,23 @@ export default function ParentDashboard() {
             className="bg-white rounded-xl shadow-sm"
           >
             <div className="p-6 border-b border-gray-100">
-              <h2 className="text-xl font-bold text-gray-800">子どもたちの状況</h2>
+              <h2 className="text-xl font-bold text-gray-800">お子様の状況</h2>
             </div>
             <div className="p-6">
               <div className="space-y-4">
                 {children.map(child => (
-                  <div key={child.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={child.id} className="border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
-                        <span className="text-3xl">{child.avatar}</span>
+                        <span className="text-2xl">{child.avatar}</span>
                         <div>
-                          <h3 className="font-semibold text-gray-800">{child.name}</h3>
-                          <p className="text-sm text-gray-600">最後の活動: {child.lastActivity}</p>
+                          <p className="font-semibold text-gray-800">{child.name}</p>
+                          <p className="text-sm text-gray-600">今日: {stats.childStats?.[child.id]?.todayStamps || 0}スタンプ</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <FaStar className="text-yellow-500" />
-                          <span className="font-bold text-gray-800">{child.todayStamps}</span>
-                          <span className="text-sm text-gray-600">今日</span>
-                        </div>
-                        <p className="text-xs text-gray-500">合計: {child.totalStamps}個</p>
+                        <p className="text-lg font-bold text-purple-600">{stats.childStats?.[child.id]?.totalStamps || 0}</p>
+                        <p className="text-xs text-gray-500">総スタンプ</p>
                       </div>
                     </div>
                   </div>
@@ -284,50 +319,28 @@ export default function ParentDashboard() {
           transition={{delay: 0.7}}
           className="mt-8 bg-white rounded-xl shadow-sm p-6"
         >
-          <h2 className="text-xl font-bold text-gray-800 mb-6">クイックアクション</h2>
-          <div className="grid md:grid-cols-4 gap-4">
-            <Link href="/sara/parent/evaluation-items">
-              <motion.div
-                whileHover={{scale: 1.02}}
-                className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
-              >
-                <FaPlus className="text-blue-500 text-2xl mb-2" />
-                <h3 className="font-semibold text-gray-800">評価項目管理</h3>
-                <p className="text-sm text-gray-600">新しい習慣を追加</p>
-              </motion.div>
+          <h2 className="text-xl font-bold text-gray-800 mb-4">クイックアクション</h2>
+          <div className="grid md:grid-cols-3 gap-4">
+            <Link
+              href="/sara/parent/evaluation-items"
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <FaPlus className="text-blue-500" />
+              <span className="font-medium">評価項目を管理</span>
             </Link>
-
-            <Link href="/sara/parent/statistics">
-              <motion.div
-                whileHover={{scale: 1.02}}
-                className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
-              >
-                <FaChartBar className="text-green-500 text-2xl mb-2" />
-                <h3 className="font-semibold text-gray-800">統計・レポート</h3>
-                <p className="text-sm text-gray-600">成長の記録を確認</p>
-              </motion.div>
+            <Link
+              href="/sara/parent/calendar"
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <FaCalendar className="text-green-500" />
+              <span className="font-medium">カレンダーを見る</span>
             </Link>
-
-            <Link href="/sara/parent/calendar">
-              <motion.div
-                whileHover={{scale: 1.02}}
-                className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
-              >
-                <FaCalendar className="text-purple-500 text-2xl mb-2" />
-                <h3 className="font-semibold text-gray-800">カレンダー</h3>
-                <p className="text-sm text-gray-600">月間の記録を確認</p>
-              </motion.div>
-            </Link>
-
-            <Link href="/sara/parent/children">
-              <motion.div
-                whileHover={{scale: 1.02}}
-                className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-4 cursor-pointer hover:shadow-md transition-shadow"
-              >
-                <FaChild className="text-orange-500 text-2xl mb-2" />
-                <h3 className="font-semibold text-gray-800">子ども管理</h3>
-                <p className="text-sm text-gray-600">アカウントや設定</p>
-              </motion.div>
+            <Link
+              href="/sara/parent/reports"
+              className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              <FaChartBar className="text-purple-500" />
+              <span className="font-medium">レポートを見る</span>
             </Link>
           </div>
         </motion.div>

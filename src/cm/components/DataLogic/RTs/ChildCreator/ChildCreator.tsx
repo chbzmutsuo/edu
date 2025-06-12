@@ -3,7 +3,6 @@ import {
   dataMinimumCommonType,
   form_table_modal_config,
   prismaDataType,
-  colType,
   additionalPropsType,
   MyTableType,
 } from '@cm/types/types'
@@ -14,7 +13,6 @@ import {PrismaModelNames} from '@cm/types/prisma-types'
 import React, {JSX, useMemo} from 'react'
 import TableForm from '@components/DataLogic/TFs/PropAdjustor/components/TableForm'
 import {useParams} from 'next/navigation'
-import {StrHandler} from '@class/StrHandler'
 import {checkShowHeader} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useMyTable'
 import useRecords from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 import useInitFormState from '@hooks/useInitFormState'

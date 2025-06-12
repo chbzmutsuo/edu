@@ -565,21 +565,21 @@ model Tokens {
 
 // Sara App - おうちスタンプラリーアプリ
 
-model SaraFamily {
- id        String    @id @default(cuid())
+model Family {
+ id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
 
  name String
 
- parents         SaraParent[]
- children        SaraChild[]
- evaluationItems SaraEvaluationItem[]
+ Parent   Parent[]
+ Child    Child[]
+ Activity Activity[]
 }
 
-model SaraParent {
- id        String    @id @default(cuid())
+model Parent {
+ id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
@@ -587,15 +587,16 @@ model SaraParent {
  name     String
  email    String @unique
  password String
+ type     String @default("parent") // parent, guardian
 
- family   SaraFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId String
+ Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId Int
 
- approvedRequests SaraEvaluationRequest[] @relation("ApprovedBy")
+ ActivityEvaluationRequest ActivityEvaluationRequest[] @relation("ApprovedBy")
 }
 
-model SaraChild {
- id        String    @id @default(cuid())
+model Child {
+ id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
@@ -603,15 +604,16 @@ model SaraChild {
  name     String
  password String?
  avatar   String? // アバター画像URL
+ type     String  @default("child") // child, guardian
 
- family   SaraFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId String
+ Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId Int
 
- evaluationRequests SaraEvaluationRequest[]
+ ActivityEvaluationRequest ActivityEvaluationRequest[]
 }
 
-model SaraEvaluationItem {
- id        String    @id @default(cuid())
+model Activity {
+ id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
@@ -621,15 +623,15 @@ model SaraEvaluationItem {
  order       Int     @default(0)
  active      Boolean @default(true)
 
- family   SaraFamily @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId String
+ Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId Int
 
- scores             SaraEvaluationScore[]
- evaluationRequests SaraEvaluationRequest[]
+ ActivityScore             ActivityScore[]
+ ActivityEvaluationRequest ActivityEvaluationRequest[]
 }
 
-model SaraEvaluationScore {
- id        String    @id @default(cuid())
+model ActivityScore {
+ id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
@@ -641,14 +643,14 @@ model SaraEvaluationScore {
  achievementImgUrl String?
  animationLevel    String  @default("light") // light, medium, heavy
 
- evaluationItem   SaraEvaluationItem @relation(fields: [evaluationItemId], references: [id], onDelete: Cascade)
- evaluationItemId String
+ Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+ activityId Int
 
- evaluationRequests SaraEvaluationRequest[]
+ ActivityEvaluationRequest ActivityEvaluationRequest[]
 }
 
-model SaraEvaluationRequest {
- id        String    @id @default(cuid())
+model ActivityEvaluationRequest {
+ id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
@@ -658,19 +660,19 @@ model SaraEvaluationRequest {
  comment       String?
  openedByChild Boolean  @default(false)
 
- child   SaraChild @relation(fields: [childId], references: [id], onDelete: Cascade)
- childId String
+ Child   Child @relation(fields: [childId], references: [id], onDelete: Cascade)
+ childId Int
 
- evaluationItem   SaraEvaluationItem @relation(fields: [evaluationItemId], references: [id], onDelete: Cascade)
- evaluationItemId String
+ Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+ activityId Int
 
- evaluationScore   SaraEvaluationScore @relation(fields: [evaluationScoreId], references: [id], onDelete: Cascade)
- evaluationScoreId String
+ ActivityScore   ActivityScore @relation(fields: [activityScoreId], references: [id], onDelete: Cascade)
+ activityScoreId Int
 
- approvedBy   SaraParent? @relation("ApprovedBy", fields: [approvedById], references: [id])
- approvedById String?
+ Parent   Parent? @relation("ApprovedBy", fields: [parentId], references: [id])
+ parentId Int?
 
- @@unique([childId, evaluationItemId, date], name: "child_item_date_unique")
+ @@unique([childId, activityId, date], name: "child_item_date_unique")
 }
 
  
@@ -1054,6 +1056,65 @@ model AqInventoryByMonth {
 }
 
  
+// 健康管理アプリ用のPrismaスキーマ
+
+// 薬マスタ
+model Medicine {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name        String  @unique // 薬名
+ requireUnit Boolean @default(false) // 単位入力が必要かどうか
+ active      Boolean @default(true) // 有効/無効
+
+ // リレーション
+ HealthRecord HealthRecord[]
+}
+
+// 健康記録
+model HealthRecord {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ // 関連ユーザー
+ User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int
+
+ // 記録日時
+ recordDate DateTime // 記録対象の日付
+ recordTime String // 時刻（HH:mm形式）
+
+ // カテゴリ
+ category String // "blood_sugar", "urine", "stool", "meal", "medicine", "walking"
+
+ // 血糖値データ
+ bloodSugarValue Int? // 血糖値（数値のみ）
+
+ // 薬データ
+ Medicine     Medicine? @relation(fields: [medicineId], references: [id])
+ medicineId   Int?
+ medicineUnit Float? // 薬の単位（数値）
+
+ // 歩行データ
+ walkingShortDistance  Float? @default(0) // 短距離
+ walkingMediumDistance Float? @default(0) // 中距離
+ walkingLongDistance   Float? @default(0) // 長距離
+ walkingExercise       Float? @default(0) // 運動
+
+ // その他のデータ（尿、便、食事は時刻のみなので追加のフィールドは不要）
+
+ // メモ（任意）
+ memo String?
+
+ @@index([userId, recordDate])
+ @@index([userId, category])
+}
+
+ 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -1157,6 +1218,7 @@ model User {
   KyuyoTableRecord  KyuyoTableRecord[]
   Department        Department?         @relation(fields: [departmentId], references: [id])
   departmentId      Int?
+  HealthRecord      HealthRecord[]
 }
 
 model ReleaseNotes {

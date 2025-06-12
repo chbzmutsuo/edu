@@ -4,7 +4,7 @@ import {getServerSession} from 'next-auth'
 export interface AuthPayload {
   parentId?: string
   childId?: string
-  familyId: string
+  saraFamilyId: string
   type: 'parent' | 'child'
   user: any
 }
@@ -20,7 +20,7 @@ export async function verifyAuth(request: NextRequest): Promise<AuthPayload | nu
     return {
       parentId: session.user.type === 'parent' ? session.user.id : undefined,
       childId: session.user.type === 'child' ? session.user.id : undefined,
-      familyId: session.user.familyId,
+      saraFamilyId: session.user.saraFamilyId,
       type: session.user.type,
       user: session.user,
     }

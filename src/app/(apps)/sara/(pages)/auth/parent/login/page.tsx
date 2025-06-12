@@ -5,6 +5,7 @@ import {useRouter} from 'next/navigation'
 import Link from 'next/link'
 import {motion} from 'framer-motion'
 import {FaEye, FaEyeSlash, FaArrowLeft} from 'react-icons/fa'
+import {clientAuthActions} from '../../../../(lib)/client-auth'
 
 export default function ParentLoginPage() {
   const router = useRouter()
@@ -22,21 +23,16 @@ export default function ParentLoginPage() {
     setError('')
 
     try {
-      // TODO: API実装後に置き換え
-      const response = await fetch('/sara/api/auth/parent/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      })
+      // NextAuthのsignInを使用
+      const result = await clientAuthActions.parentLogin(formData.email, formData.password)
 
-      if (response.ok) {
+      if (result?.ok) {
         router.push('/sara/parent/dashboard')
       } else {
         setError('メールアドレスまたはパスワードが間違っています')
       }
     } catch (error) {
+      console.error('Login error:', error)
       setError('ログインに失敗しました。もう一度お試しください。')
     } finally {
       setIsLoading(false)

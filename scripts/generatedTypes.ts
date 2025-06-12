@@ -452,51 +452,53 @@ export interface P_Tokens {
   token: string;
 }
 
-export interface P_SaraFamily {
-  id: string;
+export interface P_Family {
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   sortOrder: number;
   name: string;
-  children: SaraChild[];
+  Child: P_Child[];
 }
 
-export interface P_SaraParent {
-  id: string;
+export interface P_Parent {
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   sortOrder: number;
   name: string;
   password: string;
-  familyId: string;
+  Family: P_Family;
+  familyId: number;
 }
 
-export interface P_SaraChild {
-  id: string;
+export interface P_Child {
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   sortOrder: number;
   name: string;
   avatar: string;
-  family: SaraFamily;
-  familyId: string;
+  type: string;
+  Family: P_Family;
+  familyId: number;
 }
 
-export interface P_SaraEvaluationItem {
-  id: string;
+export interface P_Activity {
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   sortOrder: number;
   title: string;
   order: number;
   active: boolean;
-  family: SaraFamily;
-  familyId: string;
-  evaluationRequests: SaraEvaluationRequest[];
+  Family: P_Family;
+  familyId: number;
+  ActivityEvaluationRequest: P_ActivityEvaluationRequest[];
 }
 
-export interface P_SaraEvaluationScore {
-  id: string;
+export interface P_ActivityScore {
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   sortOrder: number;
@@ -505,12 +507,12 @@ export interface P_SaraEvaluationScore {
   iconUrl: string;
   achievementImgUrl: string;
   animationLevel: string;
-  evaluationItem: SaraEvaluationItem;
-  evaluationItemId: string;
+  Activity: P_Activity;
+  activityId: number;
 }
 
-export interface P_SaraEvaluationRequest {
-  id: string;
+export interface P_ActivityEvaluationRequest {
+  id: number;
   createdAt: Date;
   updatedAt: Date;
   sortOrder: number;
@@ -518,11 +520,11 @@ export interface P_SaraEvaluationRequest {
   status: string;
   comment: string;
   openedByChild: boolean;
-  child: SaraChild;
-  childId: string;
-  evaluationItemId: string;
-  evaluationScoreId: string;
-  approvedById: string;
+  Child: P_Child;
+  childId: number;
+  activityId: number;
+  activityScoreId: number;
+  parentId: number;
 }
 
 export interface P_AqSaleCart {
@@ -796,6 +798,38 @@ export interface P_AqInventoryByMonth {
   aqProductId: number;
 }
 
+export interface P_Medicine {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  name: string;
+  requireUnit: boolean;
+  active: boolean;
+  HealthRecord: P_HealthRecord[];
+}
+
+export interface P_HealthRecord {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  sortOrder: number;
+  User: P_User;
+  userId: number;
+  recordDate: Date;
+  recordTime: string;
+  category: string;
+  bloodSugarValue: number;
+  Medicine: P_Medicine;
+  medicineId: number;
+  medicineUnit: number;
+  walkingShortDistance: number;
+  walkingMediumDistance: number;
+  walkingLongDistance: number;
+  walkingExercise: number;
+  memo: string;
+}
+
 export interface P_Department {
   id: number;
   createdAt: Date;
@@ -853,6 +887,7 @@ export interface P_User {
   Approval: P_Approval[];
   KyuyoTableRecord: P_KyuyoTableRecord[];
   departmentId: number;
+  HealthRecord: P_HealthRecord[];
 }
 
 export interface P_ReleaseNotes {

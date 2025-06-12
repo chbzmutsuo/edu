@@ -1,31 +1,31 @@
 'use client'
 
 import {useState} from 'react'
-import {useSession} from 'next-auth/react'
 import {motion, AnimatePresence} from 'framer-motion'
-import {authApi} from '../(lib)/nextauth-api'
+import useGlobal from '@hooks/globalHooks/useGlobal'
+import {clientAuthActions} from '../(lib)/client-auth'
 
 interface ModeSwitcherProps {
   onModeChange?: (mode: 'parent' | 'child') => void
 }
 
 export default function ModeSwitcher({onModeChange}: ModeSwitcherProps) {
-  const {data: session, update} = useSession()
+  const {session} = useGlobal()
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [selectedChild, setSelectedChild] = useState<string>('')
+  const [selectedChild, setSelectedChild] = useState<number | null>(null)
   const [password, setPassword] = useState('')
 
-  if (!session?.user) return null
+  if (!session) return null
 
-  const isParentMode = session.user.type === 'parent'
-  const children = session.user.children || []
+  const isParentMode = session.type === 'parent'
+  const children = session.Child || []
 
-  const handleSwitchToChild = async (childId: string, childPassword?: string) => {
+  const handleSwitchToChild = async (childId: number, childPassword?: string) => {
     setIsLoading(true)
     try {
-      await authApi.switchToChild(childId, childPassword)
-      await update() // セッションを更新
+      await clientAuthActions.childLogin(childId, childPassword)
+      // await update() // セッションを更新
       onModeChange?.('child')
       setIsOpen(false)
       setPassword('')
@@ -40,8 +40,8 @@ export default function ModeSwitcher({onModeChange}: ModeSwitcherProps) {
   const handleSwitchToParent = async () => {
     setIsLoading(true)
     try {
-      await authApi.switchToParent()
-      await update() // セッションを更新
+      await clientAuthActions.parentLogin(session.email ?? '', session.password ?? '')
+      // await update() // セッションを更新
       onModeChange?.('parent')
     } catch (error) {
       console.error('親モードへの切り替えに失敗:', error)
@@ -59,9 +59,9 @@ export default function ModeSwitcher({onModeChange}: ModeSwitcherProps) {
         className="flex items-center space-x-2 px-4 py-2 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
         disabled={isLoading}
       >
-        <div className="text-2xl">{isParentMode ? '👨‍👩‍👧‍👦' : session.user.avatar || '👶'}</div>
+        <div className="text-2xl">{isParentMode ? '👨‍👩‍👧‍👦' : session.avatar || '👶'}</div>
         <div className="text-left">
-          <div className="text-sm font-medium text-gray-900">{session.user.name}</div>
+          <div className="text-sm font-medium text-gray-900">{session.name}</div>
           <div className="text-xs text-gray-500">{isParentMode ? '親モード' : '子モード'}</div>
         </div>
         <div className="text-gray-400">{isOpen ? '▲' : '▼'}</div>
@@ -139,7 +139,7 @@ export default function ModeSwitcher({onModeChange}: ModeSwitcherProps) {
                     </button>
                     <button
                       onClick={() => {
-                        setSelectedChild('')
+                        setSelectedChild(null)
                         setPassword('')
                       }}
                       className="flex-1 px-3 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 transition-colors"

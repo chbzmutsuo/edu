@@ -8,7 +8,7 @@ import GlobalToast from '@components/utils/GlobalToast'
 import React from 'react'
 
 import {getServerSession, Session} from 'next-auth'
-import {authOptions} from '@app/api/auth/authOptions'
+import {authOptions} from '@app/api/auth/[...nextauth]/constants/authOptions'
 import SessionContextProvider from '@hooks/useGlobalContext/providers/SessionContextProvider'
 
 const title = process.env.NEXT_PUBLIC_TITLE

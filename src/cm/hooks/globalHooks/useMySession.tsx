@@ -17,7 +17,7 @@ export default function useCustomSession(props?: {session?: Session | null}) {
 
   // next auth sessionの取得
   const {data: getSessoin, status} = useSession()
-  const realSession = status === 'loading' ? props?.session?.user : (getSessoin?.user as User)
+  const realSession = (status === 'loading' ? props?.session?.user : getSessoin?.user) as unknown as User
 
   // fakeSessionの取得
   const {globalUserId} = judgeIsAdmin(realSession, query)

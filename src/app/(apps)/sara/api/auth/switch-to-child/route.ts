@@ -21,13 +21,13 @@ export async function POST(request: NextRequest) {
     }
 
     // 子どもの存在確認と家族の確認
-    const child = await prisma.saraChild.findFirst({
+    const child = await prisma.child.findFirst({
       where: {
         id: childId,
-        familyId: session.user.familyId,
+        familyId: session.user.saraFamilyId,
       },
       include: {
-        family: true,
+        Family: true,
       },
     })
 
@@ -54,8 +54,8 @@ export async function POST(request: NextRequest) {
         id: child.id,
         name: child.name,
         type: 'child',
-        familyId: child.familyId,
-        familyName: child.family.name,
+        saraFamilyId: child.familyId,
+        familyName: child.Family.name,
         avatar: child.avatar,
       },
     })
