@@ -3,10 +3,10 @@
 import {useState, useEffect} from 'react'
 import HealthRecordForm from '../HealthRecordForm'
 import DailyRecords from '../DailyRecords'
-import DailyChart from '../../(components)/DailyChart'
+import DailyChart from '../../(components)/DailyChart/DailyChart'
 import {HealthRecordFormData} from '../../(constants)/types'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {Days} from '@class/Days/Days'
 import {toastByResult} from '@lib/ui/notifications'
 import useGlobal from '@hooks/globalHooks/useGlobal'
@@ -21,22 +21,26 @@ interface User {
 }
 
 export default function HealthPage() {
-  const {session, query} = useGlobal()
+  const {session, query, addQuery} = useGlobal()
 
-  const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
-  // const [showForm, setShowForm] = useState(false)
+  // const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
+
+  const selectedDate = query.date ? query.date : formatDate(getMidnight())
+
+  const setSelectedDate = value => addQuery({date: value})
+
   const {open: showForm, setopen: setShowForm, Modal} = useModal()
   const [editingRecord, setEditingRecord] = useState<any>(null)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [records, setRecords] = useState<any[]>([])
 
-  // URLパラメータから日付を取得
-  useEffect(() => {
-    const dateParam = query.date
-    if (dateParam) {
-      setSelectedDate(dateParam)
-    }
-  }, [query])
+  // // URLパラメータから日付を取得
+  // useEffect(() => {
+  //   const dateParam = query.date
+  //   if (dateParam) {
+  //     setSelectedDate(dateParam)
+  //   }
+  // }, [query])
 
   // 日別レコードを取得（6:00〜翌6:00）
   const fetchDailyRecords = async () => {
@@ -105,6 +109,44 @@ export default function HealthPage() {
       setRefreshTrigger(prev => prev + 1)
     } catch (error) {
       console.error('送信エラー:', error)
+      alert('エラーが発生しました')
+    }
+  }
+
+  const handleBulkFormSubmit = async (dataArray: HealthRecordFormData[]) => {
+    try {
+      const results: any[] = []
+
+      for (const data of dataArray) {
+        const {recordDate, recordTime, ...rest} = data
+        const recordDateISO = getMidnight(new Date(recordDate))
+
+        const payload = {
+          userId: session.id,
+          recordDate: recordDateISO,
+          recordTime,
+          ...rest,
+        }
+
+        const result = await doStandardPrisma('healthRecord', 'create', {
+          data: payload,
+        })
+
+        results.push(result)
+      }
+
+      // すべて成功した場合
+      if (results.every((r: any) => r.success)) {
+        alert(`${dataArray.length}件の記録を登録しました`)
+        setShowForm(false)
+        setRefreshTrigger(prev => prev + 1)
+      } else {
+        const successCount = results.filter((r: any) => r.success).length
+        alert(`${successCount}/${dataArray.length}件の記録を登録しました（一部失敗）`)
+        setRefreshTrigger(prev => prev + 1)
+      }
+    } catch (error) {
+      console.error('一括送信エラー:', error)
       alert('エラーが発生しました')
     }
   }
@@ -186,6 +228,7 @@ export default function HealthPage() {
         <Modal>
           <HealthRecordForm
             onSubmit={handleFormSubmit}
+            onBulkSubmit={handleBulkFormSubmit}
             initialData={
               editingRecord
                 ? {

@@ -88,5 +88,5 @@ requirements_md = """
 id: string
 title: string
 order: number
-saraFamilyId: string
+familyId: string
 ```

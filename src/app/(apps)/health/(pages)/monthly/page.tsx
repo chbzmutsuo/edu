@@ -1,13 +1,17 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {DailySummary, HEALTH_CATEGORY_COLORS} from '../../(constants)/types'
-import MonthlyChart from '../../(components)/MonthlyChart'
+import {DailySummary} from '../../(constants)/types'
+import {HEALTH_CATEGORY_COLORS} from '../../(constants)/types'
+import MonthlyChart from '../../(components)/MonthlyChart/MonthlyChart'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {getMidnight} from '@class/Days/date-utils/calculations'
 import {Days} from '@class/Days/Days'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import Link from 'next/link'
+import {formatDate} from '@class/Days/date-utils/formatters'
+import MonthlySummaryTable from '@app/(apps)/health/(components)/MonthlySummaryTable'
+import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 
 // useGlobalの型定義（実際の実装に合わせて調整してください）
 interface User {
@@ -16,9 +20,13 @@ interface User {
 }
 
 export default function MonthlyPage() {
-  const {session} = useGlobal()
-  const [year, setYear] = useState(new Date().getFullYear())
-  const [month, setMonth] = useState(new Date().getMonth() + 1)
+  const {session, query, addQuery} = useGlobal()
+
+  const year = query.year ? parseInt(query.year) : new Date().getFullYear()
+  const month = query.month ? parseInt(query.month) : new Date().getMonth() + 1
+
+  // const [year, setYear] = useState(new Date().getFullYear())
+  // const [month, setMonth] = useState(new Date().getMonth() + 1)
   const [summaryData, setSummaryData] = useState<DailySummary[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -56,6 +64,7 @@ export default function MonthlyPage() {
         // 日別サマリーを生成
         const summary = generateMonthlySummary(result.result, startDate, endDate)
         console.log('生成されたサマリー:', summary.slice(0, 5))
+
         setSummaryData(summary)
       } else {
         console.error('記録取得エラー:', result.error)
@@ -74,7 +83,7 @@ export default function MonthlyPage() {
     // 月内の全ての日を生成（日別判定は6:00〜翌6:00）
     const currentDate = new Date(startDate)
     while (currentDate <= endDate) {
-      const dateStr = currentDate.toISOString().split('T')[0]
+      const dateStr = formatDate(currentDate, 'YYYY-MM-DD')
 
       // その日の6:00から翌日6:00までのレコードを抽出
       const dayStart = new Date(dateStr + ' 06:00:00')
@@ -139,29 +148,28 @@ export default function MonthlyPage() {
     return summary
   }
 
+  // 月間統計データ
+  const validBloodSugarDays = summaryData.filter(day => day.bloodSugar.avg !== null)
+  const monthlyStats = {
+    bloodSugar: {
+      max: validBloodSugarDays.length > 0 ? Math.max(...validBloodSugarDays.map(d => d.bloodSugar.max!)) : 0,
+      min: validBloodSugarDays.length > 0 ? Math.min(...validBloodSugarDays.map(d => d.bloodSugar.min!)) : 0,
+      avg:
+        validBloodSugarDays.length > 0
+          ? Math.round(validBloodSugarDays.reduce((sum, d) => sum + d.bloodSugar.avg!, 0) / validBloodSugarDays.length)
+          : 0,
+      days: validBloodSugarDays.length,
+    },
+    walking: {
+      totalPoints: summaryData.reduce((sum, d) => sum + d.walkingPoints.total, 0),
+      avgDaily: summaryData.length > 0 ? summaryData.reduce((sum, d) => sum + d.walkingPoints.total, 0) / summaryData.length : 0,
+      activeDays: summaryData.filter(d => d.walkingPoints.total > 0).length,
+    },
+  }
+
   useEffect(() => {
     fetchSummary()
   }, [session, year, month])
-
-  const getDayOfWeek = (dateStr: string) => {
-    const date = new Date(dateStr)
-    const days = ['日', '月', '火', '水', '木', '金', '土']
-    return days[date.getDay()]
-  }
-
-  const getDay = (dateStr: string) => {
-    const date = new Date(dateStr)
-    return date.getDate()
-  }
-
-  const formatValue = (value: number | null) => {
-    return value !== null && value !== undefined ? value.toString() : ''
-  }
-
-  const formatDecimal = (value: number) => {
-    if (value === null || value === undefined || value === 0) return ''
-    return value.toFixed(1)
-  }
 
   if (!session) {
     return <div className="p-4 text-center">ログインが必要です</div>
@@ -169,7 +177,7 @@ export default function MonthlyPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-7xl mx-auto space-y-6">
+      <div className="max-w-[1300px] mx-auto space-y-6">
         {/* ヘッダー */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
@@ -184,214 +192,77 @@ export default function MonthlyPage() {
             </div>
           </div>
 
-          {/* 年月選択 */}
-          <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-700">年月:</label>
-            <select
-              value={year}
-              onChange={e => setYear(parseInt(e.target.value))}
-              className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {Array.from({length: 10}, (_, i) => new Date().getFullYear() - 5 + i).map(y => (
-                <option key={y} value={y}>
-                  {y}年
-                </option>
-              ))}
-            </select>
-            <select
-              value={month}
-              onChange={e => setMonth(parseInt(e.target.value))}
-              className="p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              {Array.from({length: 12}, (_, i) => i + 1).map(m => (
-                <option key={m} value={m}>
-                  {m}月
-                </option>
-              ))}
-            </select>
-          </div>
+          <R_Stack className="gap-4 ">
+            {/* 年月選択 */}
+            <C_Stack className={`gap-2 items-center`}>
+              <select
+                value={year}
+                onChange={e => addQuery({year: e.target.value})}
+                className="w-[100px] p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {Array.from({length: 10}, (_, i) => new Date().getFullYear() - 5 + i).map(y => (
+                  <option key={y} value={y}>
+                    {y}年
+                  </option>
+                ))}
+              </select>
+              <select
+                value={month}
+                onChange={e => addQuery({month: e.target.value})}
+                className="w-[100px] p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {Array.from({length: 12}, (_, i) => i + 1).map(m => (
+                  <option key={m} value={m}>
+                    {m}月
+                  </option>
+                ))}
+              </select>
+            </C_Stack>
+
+            <R_Stack className="gap-4 ">
+              <div className="bg-red-50 p-4 rounded-lg text-center">
+                <div className="text-sm text-gray-600 mb-1">血糖値最高</div>
+                <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                  {monthlyStats.bloodSugar.max || '-'}
+                </div>
+                <div className="text-xs text-gray-500">mg/dL</div>
+              </div>
+              <div className="bg-red-50 p-4 rounded-lg text-center">
+                <div className="text-sm text-gray-600 mb-1">血糖値平均</div>
+                <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                  {monthlyStats.bloodSugar.avg || '-'}
+                </div>
+                <div className="text-xs text-gray-500">mg/dL</div>
+              </div>
+              {/* <div className="bg-red-50 p-4 rounded-lg text-center">
+              <div className="text-sm text-gray-600 mb-1">測定日数</div>
+              <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                {monthlyStats.bloodSugar.days}
+              </div>
+              <div className="text-xs text-gray-500">日</div>
+            </div> */}
+              <div className="bg-orange-50 p-4 rounded-lg text-center">
+                <div className="text-sm text-gray-600 mb-1">月間歩行P</div>
+                <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
+                  {monthlyStats.walking.totalPoints.toFixed(1)}
+                </div>
+                <div className="text-xs text-gray-500">ポイント</div>
+              </div>
+              {/* <div className="bg-orange-50 p-4 rounded-lg text-center">
+              <div className="text-sm text-gray-600 mb-1">歩行日数</div>
+              <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
+                {monthlyStats.walking.activeDays}
+              </div>
+              <div className="text-xs text-gray-500">日</div>
+            </div> */}
+            </R_Stack>
+          </R_Stack>
         </div>
 
-        {/* グラフ表示 */}
         <MonthlyChart summaryData={summaryData} year={year} month={month} />
 
         {/* 月別サマリーテーブル */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">
-            {year}年{month}月
-          </h2>
-
-          {loading ? (
-            <div className="text-center py-8">読み込み中...</div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full border-collapse border border-gray-300 text-sm">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-2 py-2">日付</th>
-                    <th className="border border-gray-300 px-2 py-2"></th>
-                    <th className="border border-gray-300 px-2 py-2">日別ページリンク</th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                      最高
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                      平均
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                      最低
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      短距離P
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      中距離P
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      長距離P
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      運動P
-                    </th>
-                    <th className="border border-gray-300 px-2 py-2" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      P合計
-                    </th>
-                  </tr>
-                  <tr className="bg-gray-50">
-                    <th className="border border-gray-300 px-2 py-1 text-xs">月：</th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs">
-                      {year}年{month}月
-                    </th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                      血糖値
-                    </th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      歩行
-                    </th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                    <th className="border border-gray-300 px-2 py-1 text-xs"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summaryData.map(day => (
-                    <tr key={day.date} className="hover:bg-gray-50">
-                      <td className="border border-gray-300 px-2 py-2 text-center">{getDay(day.date)}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-center">{getDayOfWeek(day.date)}</td>
-                      <td className="border border-gray-300 px-2 py-2 text-center">
-                        <Link href={`/health/daily?date=${day.date}`} className="text-blue-600 hover:text-blue-800 underline">
-                          リンク
-                        </Link>
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}
-                      >
-                        {formatValue(day.bloodSugar.max)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}
-                      >
-                        {formatValue(day.bloodSugar.avg)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}
-                      >
-                        {formatValue(day.bloodSugar.min)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.walking}}
-                      >
-                        {formatDecimal(day.walkingPoints.shortDistance)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.walking}}
-                      >
-                        {formatDecimal(day.walkingPoints.mediumDistance)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.walking}}
-                      >
-                        {formatDecimal(day.walkingPoints.longDistance)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.walking}}
-                      >
-                        {formatDecimal(day.walkingPoints.exercise)}
-                      </td>
-                      <td
-                        className="border border-gray-300 px-2 py-2 text-center"
-                        style={{color: HEALTH_CATEGORY_COLORS.walking, fontWeight: 'bold'}}
-                      >
-                        {formatDecimal(day.walkingPoints.total)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="bg-gray-100 font-bold">
-                    <td className="border border-gray-300 px-2 py-2 text-center" colSpan={3}>
-                      月計
-                    </td>
-                    <td
-                      className="border border-gray-300 px-2 py-2 text-center"
-                      style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}
-                    >
-                      {summaryData.length > 0
-                        ? Math.max(...summaryData.map(d => d.bloodSugar.max).filter(v => v !== null)) || ''
-                        : ''}
-                    </td>
-                    <td
-                      className="border border-gray-300 px-2 py-2 text-center"
-                      style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}
-                    >
-                      {(() => {
-                        const validAvgs = summaryData.filter(d => d.bloodSugar.avg !== null)
-                        if (validAvgs.length === 0) return ''
-                        return Math.round(validAvgs.reduce((sum, d) => sum + (d.bloodSugar.avg || 0), 0) / validAvgs.length)
-                      })()}
-                    </td>
-                    <td
-                      className="border border-gray-300 px-2 py-2 text-center"
-                      style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}
-                    >
-                      {summaryData.length > 0
-                        ? Math.min(...summaryData.map(d => d.bloodSugar.min).filter(v => v !== null)) || ''
-                        : ''}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      {formatDecimal(summaryData.reduce((sum, d) => sum + d.walkingPoints.shortDistance, 0))}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      {formatDecimal(summaryData.reduce((sum, d) => sum + d.walkingPoints.mediumDistance, 0))}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      {formatDecimal(summaryData.reduce((sum, d) => sum + d.walkingPoints.longDistance, 0))}
-                    </td>
-                    <td className="border border-gray-300 px-2 py-2 text-center" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                      {formatDecimal(summaryData.reduce((sum, d) => sum + d.walkingPoints.exercise, 0))}
-                    </td>
-                    <td
-                      className="border border-gray-300 px-2 py-2 text-center"
-                      style={{color: HEALTH_CATEGORY_COLORS.walking, fontWeight: 'bold'}}
-                    >
-                      {formatDecimal(summaryData.reduce((sum, d) => sum + d.walkingPoints.total, 0))}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
-          )}
-        </div>
+        <MonthlySummaryTable year={year} month={month} loading={loading} summaryData={summaryData} />
       </div>
     </div>
   )

@@ -5,9 +5,12 @@ import {motion, AnimatePresence} from 'framer-motion'
 import Confetti from 'react-confetti'
 import {FaStar, FaCheck, FaClock, FaTimes, FaSignOutAlt, FaMedal, FaHeart} from 'react-icons/fa'
 import {signOut} from 'next-auth/react'
-import {evaluationItemsActions, evaluationRequestsActions} from '../../../../(lib)/nextauth-api'
+
 import Link from 'next/link'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import {activity__getAll, request__getAll} from 'src/app/(apps)/sara/(lib)/nextauth-api'
+import {request__create} from 'src/app/(apps)/sara/(lib)/nextauth-api'
+import {request__markAsOpened} from 'src/app/(apps)/sara/(lib)/nextauth-api'
 
 export default function ChildDashboard() {
   const {session, status} = useGlobal()
@@ -30,15 +33,15 @@ export default function ChildDashboard() {
       setIsLoading(true)
 
       // 評価項目を取得
-      const itemsData = await evaluationItemsActions.getAll({session})
+      const itemsData = await activity__getAll()
       setEvaluationItems(itemsData.data || [])
 
       // 今日の申請を取得
       const today = new Date().toISOString().split('T')[0]
-      const requestsData = await evaluationRequestsActions.getAll({
-        session,
+      const requestsData = await request__getAll({
         childId: session?.id,
         date: today,
+        status: 'approved',
       })
       setTodayRequests(requestsData.data || [])
 
@@ -60,7 +63,7 @@ export default function ChildDashboard() {
     if (existingRequest) return
 
     try {
-      await evaluationRequestsActions.create(session, {
+      await request__create({
         activityId: item.id,
         activityScoreId: score.id,
       })
@@ -84,7 +87,7 @@ export default function ChildDashboard() {
 
       // 開封状態を更新
       try {
-        await evaluationRequestsActions.markAsOpened(session, request.id)
+        await request__markAsOpened(request.id)
       } catch (error) {
         console.error('Failed to mark as opened:', error)
       }

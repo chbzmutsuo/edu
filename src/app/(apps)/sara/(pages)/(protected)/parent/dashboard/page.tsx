@@ -5,8 +5,8 @@ import Link from 'next/link'
 import {motion} from 'framer-motion'
 import {FaBell, FaCheck, FaTimes, FaStar, FaPlus, FaCog, FaCalendar, FaChild, FaChartBar, FaSignOutAlt} from 'react-icons/fa'
 import {signOut} from 'next-auth/react'
-import {evaluationRequestsActions, dashboardActions} from '../../../../(lib)/nextauth-api'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import {request__approve, request__getAll, dashboard__getStats} from 'src/app/(apps)/sara/(lib)/nextauth-api'
 
 export default function ParentDashboard() {
   // const useSessionReturn = useSession()
@@ -28,11 +28,11 @@ export default function ParentDashboard() {
       setIsLoading(true)
 
       // 承認待ちの申請を取得
-      const pendingData = await evaluationRequestsActions.getAll({session: user, status: 'pending'})
+      const pendingData = await request__getAll({status: 'pending'})
       setPendingRequests(pendingData.data || [])
 
       // 統計データを取得
-      const statsData = await dashboardActions.getStats(user)
+      const statsData = await dashboard__getStats()
       setStats(statsData)
 
       // 子どもリストを取得（セッションから）
@@ -48,7 +48,7 @@ export default function ParentDashboard() {
 
   const handleApproveRequest = async (requestId: number) => {
     try {
-      await evaluationRequestsActions.update(user, {
+      await request__approve({
         id: requestId,
         status: 'approved',
         comment: '承認しました！',
@@ -58,7 +58,7 @@ export default function ParentDashboard() {
       setPendingRequests(prev => prev.filter(req => req.id !== requestId))
 
       // 統計データを再読み込み
-      const statsData = await dashboardActions.getStats(user)
+      const statsData = await dashboard__getStats()
       setStats(statsData)
     } catch (error) {
       console.error('Failed to approve request:', error)
@@ -67,7 +67,7 @@ export default function ParentDashboard() {
 
   const handleRejectRequest = async (requestId: number) => {
     try {
-      await evaluationRequestsActions.update(user, {
+      await request__approve({
         id: requestId,
         status: 'rejected',
         comment: 'もう一度がんばってみてね',

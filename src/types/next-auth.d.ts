@@ -1,9 +1,9 @@
-import {User} from '@prisma/client'
+import {userClData} from '@class/UserCl'
 import 'next-auth'
 
 declare module 'next-auth' {
   interface Session {
-    user: User | (Parent & {Child: Child[]; Family: Family}) | (Child & {Family: Family})
+    user: userClData
   }
 }
 
@@ -20,7 +20,7 @@ declare module 'next-auth/jwt' {
     sub?: string
     userStatus?: string
     type: 'parent' | 'child'
-    saraFamilyId: string
+    familyId: string
     familyName: string
     avatar?: string | null
     children?: {

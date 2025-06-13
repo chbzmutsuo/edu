@@ -20,6 +20,15 @@ export const HEALTH_CATEGORY_LABELS: Record<HealthCategory, string> = {
   [HEALTH_CATEGORIES.WALKING]: '歩行',
 }
 
+export const HEALTH_CATEGORY_CHART_HEIGHT_VALUE: Record<HealthCategory, number> = {
+  [HEALTH_CATEGORIES.BLOOD_SUGAR]: 0,
+  [HEALTH_CATEGORIES.URINE]: 480,
+  [HEALTH_CATEGORIES.STOOL]: 420,
+  [HEALTH_CATEGORIES.MEAL]: 390,
+  [HEALTH_CATEGORIES.MEDICINE]: 330,
+  [HEALTH_CATEGORIES.WALKING]: 270,
+}
+
 // カテゴリの色定義
 export const HEALTH_CATEGORY_COLORS: Record<HealthCategory, string> = {
   [HEALTH_CATEGORIES.BLOOD_SUGAR]: '#ef4444', // 赤
@@ -27,7 +36,7 @@ export const HEALTH_CATEGORY_COLORS: Record<HealthCategory, string> = {
   [HEALTH_CATEGORIES.STOOL]: '#8b5cf6', // 紫
   [HEALTH_CATEGORIES.MEAL]: '#10b981', // 緑
   [HEALTH_CATEGORIES.MEDICINE]: '#3b82f6', // 青
-  [HEALTH_CATEGORIES.WALKING]: '#f97316', // オレンジ
+  [HEALTH_CATEGORIES.WALKING]: '#464646', // オレンジ
 }
 
 // カテゴリの背景色（薄い色）

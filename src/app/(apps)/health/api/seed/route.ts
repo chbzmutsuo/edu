@@ -15,8 +15,8 @@ export async function POST(request: NextRequest) {
     console.log(`ユーザーID ${userId} の健康記録をシーディングします`)
 
     // シーディング実行
-
     await doStandardPrisma(`healthRecord`, `deleteMany`, {where: {id: {gte: 0}}})
+
     const result = await seedHealthRecords(userId)
 
     if (result.success) {

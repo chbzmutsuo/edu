@@ -43,9 +43,9 @@ export const UserConfig = React.memo(() => {
   const loginHref = useMemo(() => HREF('/login', {rootPath}, query), [rootPath, query])
 
   // ロール名の文字列をメモ化
-  const roleNames = useMemo(() => session.roles.map(role => role.name).join(','), [session.roles])
+  const roleNames = useMemo(() => session?.roles?.map(role => role.name).join(','), [session?.roles])
 
-  if (!session.scopes.login) {
+  if (!session?.scopes.login) {
     return <T_LINK href={loginHref}>ログイン</T_LINK>
   }
 
@@ -54,7 +54,7 @@ export const UserConfig = React.memo(() => {
       <MyPopover mode="click" button={<UserCircleIcon className="w-7 text-gray-700 onHover" />}>
         <Paper>
           <R_Stack style={dimensions}>
-            <LabelValue styling={STYLING_CONFIG} label="氏名" value={session.name} />
+            <LabelValue styling={STYLING_CONFIG} label="氏名" value={session?.name} />
             <LabelValue styling={STYLING_CONFIG} label="Email" value={session?.email} />
             <LabelValue styling={STYLING_CONFIG} label="権限" value={roleNames} />
             <R_Stack className="w-full justify-end">

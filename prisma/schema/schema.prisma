@@ -59,6 +59,9 @@ model User {
   employeeCode String? @unique
   phone        String?
 
+  familyId Int? // Sara家族ID
+  avatar   String? // 子ども用アバター画像URL
+
   School School? @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
   VideoFromUser           VideoFromUser[]
@@ -102,6 +105,11 @@ model User {
   Department        Department?         @relation(fields: [departmentId], references: [id])
   departmentId      Int?
   HealthRecord      HealthRecord[]
+
+  // Sara App リレーション
+  Family               Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
+  RequestedEvaluations ActivityEvaluationRequest[] @relation("RequestedBy")
+  ApprovedEvaluations  ActivityEvaluationRequest[] @relation("ApprovedBy")
 }
 
 model ReleaseNotes {

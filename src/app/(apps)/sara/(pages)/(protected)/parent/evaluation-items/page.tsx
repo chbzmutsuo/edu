@@ -5,7 +5,10 @@ import Link from 'next/link'
 import {motion, AnimatePresence} from 'framer-motion'
 import {FaArrowLeft, FaPlus, FaEdit, FaTrash, FaSave, FaTimes, FaGripVertical, FaStar} from 'react-icons/fa'
 import {useSession} from 'next-auth/react'
-import {evaluationItemsActions} from '../../../../(lib)/nextauth-api'
+import {activity__getAll} from 'src/app/(apps)/sara/(lib)/activity-actions'
+import {activity__delete} from 'src/app/(apps)/sara/(lib)/activity-actions'
+import {activity__update} from 'src/app/(apps)/sara/(lib)/activity-actions'
+import {activity__create} from 'src/app/(apps)/sara/(lib)/activity-actions'
 
 // モックデータ
 const mockEvaluationItems = [
@@ -53,9 +56,9 @@ export default function EvaluationItemsPage() {
     title: '',
     description: '',
     scores: [
-      {score: 1, title: '', description: '', iconUrl: '✨', animationLevel: 'light'},
-      {score: 2, title: '', description: '', iconUrl: '⭐', animationLevel: 'medium'},
-      {score: 3, title: '', description: '', iconUrl: '🏆', animationLevel: 'heavy'},
+      {id: 1, score: 1, title: '', description: '', iconUrl: '✨', animationLevel: 'light'},
+      {id: 2, score: 2, title: '', description: '', iconUrl: '⭐', animationLevel: 'medium'},
+      {id: 3, score: 3, title: '', description: '', iconUrl: '🏆', animationLevel: 'heavy'},
     ],
   })
 
@@ -68,8 +71,7 @@ export default function EvaluationItemsPage() {
   const loadItems = async () => {
     try {
       setIsLoading(true)
-      const data = await evaluationItemsActions.getAll({session})
-
+      const data = await activity__getAll()
       setItems(data.data || [])
     } catch (error) {
       console.error('Failed to load items:', error)
@@ -84,9 +86,9 @@ export default function EvaluationItemsPage() {
       title: '',
       description: '',
       scores: [
-        {score: 1, title: '', description: '', iconUrl: '✨', animationLevel: 'light'},
-        {score: 2, title: '', description: '', iconUrl: '⭐', animationLevel: 'medium'},
-        {score: 3, title: '', description: '', iconUrl: '🏆', animationLevel: 'heavy'},
+        {id: 1, score: 1, title: '', description: '', iconUrl: '✨', animationLevel: 'light'},
+        {id: 2, score: 2, title: '', description: '', iconUrl: '⭐', animationLevel: 'medium'},
+        {id: 3, score: 3, title: '', description: '', iconUrl: '🏆', animationLevel: 'heavy'},
       ],
     })
     setShowModal(true)
@@ -102,7 +104,7 @@ export default function EvaluationItemsPage() {
         title: score.title,
         description: score.description || '',
         iconUrl: score.iconUrl || '✨',
-        animationLevel: score.animationLevel || 'medium',
+        animationLevel: score.animationLevel || 'light',
       })) || [
         {score: 1, title: '', description: '', iconUrl: '✨', animationLevel: 'light'},
         {score: 2, title: '', description: '', iconUrl: '⭐', animationLevel: 'medium'},
@@ -115,7 +117,7 @@ export default function EvaluationItemsPage() {
   const handleDelete = async (itemId: number) => {
     if (confirm('この評価項目を削除しますか？')) {
       try {
-        await evaluationItemsActions.delete(session, itemId)
+        await activity__delete(itemId)
         await loadItems()
       } catch (error) {
         console.error('Failed to delete item:', error)
@@ -127,7 +129,7 @@ export default function EvaluationItemsPage() {
     try {
       if (editingItem) {
         // 編集
-        await evaluationItemsActions.update(session, {
+        await activity__update({
           id: editingItem.id,
           title: formData.title,
           description: formData.description,
@@ -135,7 +137,7 @@ export default function EvaluationItemsPage() {
         })
       } else {
         // 新規追加
-        await evaluationItemsActions.create(session, {
+        await activity__create({
           title: formData.title,
           description: formData.description,
           scores: formData.scores,

@@ -458,30 +458,7 @@ export interface P_Family {
   updatedAt: Date;
   sortOrder: number;
   name: string;
-  Child: P_Child[];
-}
-
-export interface P_Parent {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  sortOrder: number;
-  name: string;
-  password: string;
-  Family: P_Family;
-  familyId: number;
-}
-
-export interface P_Child {
-  id: number;
-  createdAt: Date;
-  updatedAt: Date;
-  sortOrder: number;
-  name: string;
-  avatar: string;
-  type: string;
-  Family: P_Family;
-  familyId: number;
+  Activity: P_Activity[];
 }
 
 export interface P_Activity {
@@ -520,11 +497,21 @@ export interface P_ActivityEvaluationRequest {
   status: string;
   comment: string;
   openedByChild: boolean;
-  Child: P_Child;
-  childId: number;
+  RequestedBy: User;
+  requestedById: number;
+  Activity: P_Activity;
   activityId: number;
   activityScoreId: number;
-  parentId: number;
+  approvedById: number;
+}
+
+export interface P_MonthlySetting {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+  year: number;
+  key: string;
+  value: string;
 }
 
 export interface P_AqSaleCart {
@@ -869,6 +856,8 @@ export interface P_User {
   apps: string[];
   employeeCode: string;
   phone: string;
+  familyId: number;
+  avatar: string;
   School: P_School;
   VideoFromUser: P_VideoFromUser[];
   LessonLog: P_LessonLog[];
@@ -888,6 +877,9 @@ export interface P_User {
   KyuyoTableRecord: P_KyuyoTableRecord[];
   departmentId: number;
   HealthRecord: P_HealthRecord[];
+  Family: P_Family;
+  RequestedEvaluations: ActivityEvaluationRequest[];
+  ApprovedEvaluations: ActivityEvaluationRequest[];
 }
 
 export interface P_ReleaseNotes {

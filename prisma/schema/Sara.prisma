@@ -10,6 +10,7 @@ model Tokens {
 }
 
 // Sara App - おうちスタンプラリーアプリ
+// User統合版スキーマ
 
 model Family {
  id        Int       @id @default(autoincrement())
@@ -19,43 +20,8 @@ model Family {
 
  name String
 
- Parent   Parent[]
- Child    Child[]
+ User     User[]     @relation("FamilyUsers")
  Activity Activity[]
-}
-
-model Parent {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
-
- name     String
- email    String @unique
- password String
- type     String @default("parent") // parent, guardian
-
- Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId Int
-
- ActivityEvaluationRequest ActivityEvaluationRequest[] @relation("ApprovedBy")
-}
-
-model Child {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
-
- name     String
- password String?
- avatar   String? // アバター画像URL
- type     String  @default("child") // child, guardian
-
- Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId Int
-
- ActivityEvaluationRequest ActivityEvaluationRequest[]
 }
 
 model Activity {
@@ -106,8 +72,8 @@ model ActivityEvaluationRequest {
  comment       String?
  openedByChild Boolean  @default(false)
 
- Child   Child @relation(fields: [childId], references: [id], onDelete: Cascade)
- childId Int
+ RequestedBy   User @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
+ requestedById Int // 申請者（子ども）
 
  Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
  activityId Int
@@ -115,8 +81,20 @@ model ActivityEvaluationRequest {
  ActivityScore   ActivityScore @relation(fields: [activityScoreId], references: [id], onDelete: Cascade)
  activityScoreId Int
 
- Parent   Parent? @relation("ApprovedBy", fields: [parentId], references: [id])
- parentId Int?
+ ApprovedBy   User? @relation("ApprovedBy", fields: [approvedById], references: [id])
+ approvedById Int? // 承認者（親）
 
- @@unique([childId, activityId, date], name: "child_item_date_unique")
+ @@unique([requestedById, activityId, date], name: "user_activity_date_unique")
+}
+
+model MonthlySetting {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ year      Int
+ month     Int
+ key       String // 例: "walking_goal"
+ value     String // 例: "650"（将来はJSONも可）
+
+ @@unique([year, month, key])
 }
