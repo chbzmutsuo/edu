@@ -216,6 +216,7 @@ export type makeEasySearchGroupsProp = {
   options?: makeEasySearchGroupsPropOptions
   name: string
   additionalProps?: {
+    showAsModal?: boolean
     refresh?: boolean
     [key: string]: any
   }

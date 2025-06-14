@@ -157,6 +157,7 @@ export default function RegisterPage() {
               3
             </div>
           </div>
+
           <div className="flex items-center justify-center space-x-4 mt-2 text-xs text-gray-600">
             <span className="w-16 text-center">家族情報</span>
             <span className="w-16"></span>

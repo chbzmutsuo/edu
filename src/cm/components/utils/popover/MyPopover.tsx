@@ -32,7 +32,7 @@ const MyPopover = React.memo(
     stayOpen?: boolean
     childrenWidth?: number
 
-    mode?: 'click' | 'hover'
+    mode?: 'click' | 'hover' | 'hover-absolute'
   }) => {
     const {button, children, positionFree = true, stayOpen, childrenWidth, offsets = {x: 10, y: 20}, mode = `hover`} = props
     const [showpopoverAtom, setshowpopoverAtom] = useJotaiByKey<atomTypes[`showpopover`]>(`showpopover`, null)
@@ -89,7 +89,16 @@ const MyPopover = React.memo(
         const positionFreeStyle: CSSProperties = {
           cursor: 'pointer',
           ...{zIndex: Z_INDEX.popover, position: 'fixed'},
+
           ...{top: top, left, right},
+        }
+
+        if (mode === 'hover-absolute') {
+          const positionFreeStyle = {
+            cursor: 'pointer',
+            ...{zIndex: Z_INDEX.popover, position: 'absolute'},
+          }
+          return positionFreeStyle as CSSProperties
         }
 
         return positionFreeStyle
@@ -99,6 +108,7 @@ const MyPopover = React.memo(
         ...(positionFree ? makePositionFreeStyle() : style),
         zIndex: contentZindex,
       }
+
       return (
         <>
           {props.children && isOpen && (
@@ -151,7 +161,7 @@ const MyPopover = React.memo(
           <OverLayToClick />
         </>
       )
-    } else if (mode === `hover`) {
+    } else if (mode === `hover` || mode === `hover-absolute`) {
       return (
         <>
           <Wrapper {...{button, children}}>

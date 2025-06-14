@@ -6,7 +6,6 @@ import Confetti from 'react-confetti'
 import {FaStar, FaCheck, FaClock, FaTimes, FaSignOutAlt, FaMedal, FaHeart} from 'react-icons/fa'
 import {signOut} from 'next-auth/react'
 
-import Link from 'next/link'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {activity__getAll, request__getAll} from 'src/app/(apps)/sara/(lib)/nextauth-api'
 import {request__create} from 'src/app/(apps)/sara/(lib)/nextauth-api'
@@ -152,29 +151,29 @@ export default function ChildDashboard() {
     return todayRequests.find(req => req.evaluationItemId === itemId)
   }
 
-  if (status === 'loading' || isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    )
-  }
+  // if (status === 'loading' || isLoading) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+  //         <p className="text-gray-600">読み込み中...</p>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
-  if (status === 'unauthenticated' || session?.type !== 'child') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">子どもとしてログインしてください</p>
-          <Link href="/sara/auth/child/login" className="text-pink-600 hover:text-pink-800">
-            ログインページへ
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  // if (status === 'unauthenticated' || session?.type !== 'child') {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <p className="text-gray-600 mb-4">子どもとしてログインしてください</p>
+  //         <Link href="/sara/auth/child/login" className="text-pink-600 hover:text-pink-800">
+  //           ログインページへ
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-yellow-100">

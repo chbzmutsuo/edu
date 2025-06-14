@@ -2,19 +2,20 @@ import {EasyProfile} from '@app/(apps)/KM/components/common'
 import {Introducation} from '@app/(apps)/KM/components/Introduction'
 
 import prisma from '@cm/lib/prisma'
+import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {T_LINK} from '@components/styles/common-components/links'
+import {Paper} from '@components/styles/common-components/paper'
+import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
 const KM_PAGE = async () => {
+  const {session, scopes} = await initServerComopnent({query: {}})
   const kaizenClient = await prisma.kaizenClient.findMany({where: {public: true}, orderBy: [{id: 'asc'}]})
   const works = await prisma.kaizenWork.findMany({
     include: {
       KaizenClient: {},
       KaizenWorkImage: true,
     },
-    orderBy: [
-      {
-        date: 'desc',
-      },
-    ],
+    orderBy: [{date: 'desc'}],
   })
 
   return (

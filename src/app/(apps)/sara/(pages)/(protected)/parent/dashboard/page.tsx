@@ -5,8 +5,9 @@ import Link from 'next/link'
 import {motion} from 'framer-motion'
 import {FaBell, FaCheck, FaTimes, FaStar, FaPlus, FaCog, FaCalendar, FaChild, FaChartBar, FaSignOutAlt} from 'react-icons/fa'
 import {signOut} from 'next-auth/react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+
 import {request__approve, request__getAll, dashboard__getStats} from 'src/app/(apps)/sara/(lib)/nextauth-api'
+import useGlobal from '@hooks/globalHooks/useGlobal'
 
 export default function ParentDashboard() {
   // const useSessionReturn = useSession()
@@ -91,29 +92,29 @@ export default function ParentDashboard() {
     return 'お疲れさまです'
   }
 
-  if (status === 'loading' || isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">読み込み中...</p>
-        </div>
-      </div>
-    )
-  }
+  // if (status === 'loading' || isLoading) {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+  //         <p className="text-gray-600">読み込み中...</p>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
-  if (status === 'unauthenticated' || user?.type !== 'parent') {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">親としてログインしてください</p>
-          <Link href="/sara/auth/parent/login" className="text-blue-600 hover:text-blue-800">
-            ログインページへ
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  // if (status === 'unauthenticated' || user?.type !== 'parent') {
+  //   return (
+  //     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <p className="text-gray-600 mb-4">親としてログインしてください</p>
+  //         <Link href="/sara/auth/parent/login" className="text-blue-600 hover:text-blue-800">
+  //           ログインページへ
+  //         </Link>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">

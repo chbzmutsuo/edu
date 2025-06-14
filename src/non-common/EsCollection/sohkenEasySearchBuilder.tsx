@@ -24,7 +24,7 @@ export const sohkenEasySearchBuilder = async () => {
 
     const dataArr: makeEasySearchGroupsProp[] = [
       // {exclusiveGroup: Ex_exclusive0, name: ``, additionalProps: {refresh: true}},
-      {exclusiveGroup: keyValuedExclusive1, name: ``},
+      {exclusiveGroup: keyValuedExclusive1, name: `表示区分`},
     ]
 
     const result = makeEasySearchGroups(dataArr)

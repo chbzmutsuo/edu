@@ -29,7 +29,7 @@ export default function SaraLandingPage() {
           </div>
         </div>
       </header>
-
+      コードです。皆さんちょっと画面の雰囲気違うけど
       {/* メインコンテンツ */}
       <main className="max-w-6xl mx-auto px-4 py-12">
         {/* ヒーローセクション */}
@@ -145,7 +145,6 @@ export default function SaraLandingPage() {
           </Link>
         </section>
       </main>
-
       {/* フッター */}
       <footer className="bg-gray-800 text-white py-8 mt-16">
         <div className="max-w-6xl mx-auto px-4 text-center">

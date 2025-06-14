@@ -11,7 +11,7 @@
     "upload": "node scripts/prepareVercelUpload.js  ",
     "convert": "node scripts/convertPrismaToJSON.js",
     "generateType": "node scripts/generateTypeScriptInterface.js",
-    "dev": "npm run convert && npm run generateType && next dev --turbo",
+    "dev": "npm run convert  && next dev  --turbo ",
     "build": "next build",
     "start": "next start",
     "local-start": "next start",

@@ -44,3 +44,5 @@ next-env.d.ts
 # dumpfileは送らないようにしたい
 *.dump
 
+
+certificates

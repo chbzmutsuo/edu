@@ -10,7 +10,6 @@ import {
 } from '../../(constants)/types'
 import MonthlyWalkingChart from '@app/(apps)/health/(components)/MonthlyChart/MonthlyWalkingChart'
 import MonthlyBloodSugarChart from '@app/(apps)/health/(components)/MonthlyChart/MonthlyBloodSugarChart'
-import {R_Stack} from '@components/styles/common-components/common-components'
 
 // 血糖値帯域定義（DailyChartと同じ）
 const BLOOD_SUGAR_ZONES = [

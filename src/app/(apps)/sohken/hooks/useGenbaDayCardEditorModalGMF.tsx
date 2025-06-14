@@ -10,10 +10,9 @@ import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {atomTypes} from '@hooks/useJotai'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {toastByResult} from '@lib/ui/notifications'
-import {Prisma} from '@prisma/client'
+import {GenbaTask, Prisma} from '@prisma/client'
 import {toast} from 'react-toastify'
 
-import {P_GenbaTask} from 'scripts/generatedTypes'
 import {chain_sohken_genbaDayUpdateChain} from 'src/non-common/(chains)/getGenbaScheduleStatus/chain_sohken_genbaDayUpdateChain'
 
 export const useGenbaDayCardEditorModalGMF = () => {
@@ -39,7 +38,7 @@ export const useGenbaDayCardEditorModalGMF = () => {
             label: 'タスク',
             form: {...defaultRegister},
             forSelect: {
-              optionsOrOptionFetcher: GenbaTask.map((d: P_GenbaTask) => {
+              optionsOrOptionFetcher: GenbaTask.map((d: GenbaTask) => {
                 return {value: d.name, id: d.id, color: d.color}
               }),
             },

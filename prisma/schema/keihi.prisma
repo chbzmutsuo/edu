@@ -1,0 +1,97 @@
+// 経費記録アプリ用スキーマ
+model KeihiExpense {
+ id        String   @id @default(cuid())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // 基本情報
+ date                 DateTime
+ amount               Int
+ subject              String // 科目
+ location             String? // 場所
+ counterpartyName     String? // 相手名
+ counterpartyIndustry String? // 相手の職種・業種
+ conversationPurpose  String? // 会話の目的
+ keywords             String[] // キーワード（配列）
+
+ // 会話記録
+ conversationSummary String? // 会話内容の要約
+
+ // 評価
+ learningDepth Int? // 学びの深さ・重要度（1-5）
+
+ // 税務調査対応項目
+ counterpartyContact String? // 相手の連絡先
+ followUpPlan        String? // フォローアップ予定
+ businessOpportunity String? // ビジネス機会の評価
+ competitorInfo      String? // 競合情報
+
+ // AI生成情報
+ businessInsightDetail  String? // 営業インサイト（詳細）
+ businessInsightSummary String? // 営業インサイト（要約）
+ techInsightDetail      String? // 技術インサイト（詳細）
+ techInsightSummary     String? // 技術インサイト（要約）
+ autoTags               String[] // 自動生成タグ
+
+ // MoneyForward用情報
+ mfSubject     String? // MF用科目
+ mfSubAccount  String? // MF用補助科目
+ mfTaxCategory String? // MF用税区分
+ mfDepartment  String? // MF用部門
+ mfMemo        String? // MF用摘要
+
+ // ファイル添付
+ KeihiAttachment KeihiAttachment[]
+
+ // ユーザー情報（将来的に）
+ userId String?
+}
+
+model KeihiAttachment {
+ id        String   @id @default(cuid())
+ createdAt DateTime @default(now())
+
+ filename     String
+ originalName String
+ mimeType     String
+ size         Int
+ url          String // S3 URL or local path
+
+ keihiExpenseId String?
+ KeihiExpense   KeihiExpense? @relation(fields: [keihiExpenseId], references: [id], onDelete: Cascade)
+}
+
+// 勘定科目マスタ（将来的に）
+model KeihiAccountMaster {
+ id        String   @id @default(cuid())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ category       String // 帳票
+ classification String // 分類
+ balanceSheet   String // 決算書科目
+ account        String // 勘定科目
+ subAccount     String? // 補助科目
+ taxCategory    String // 税区分
+ searchKey      String? // 検索キー
+ isActive       Boolean @default(true) // 使用
+ sortOrder      Int? // 並び順
+}
+
+// 選択肢マスタ（科目、業種、目的など）
+model KeihiOptionMaster {
+ id        String   @id @default(cuid())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ category    String // 'subjects', 'industries', 'purposes'
+ value       String // 選択肢の値
+ label       String // 表示名
+ description String? // 説明
+ isActive    Boolean @default(true) // 有効/無効
+ sortOrder   Int     @default(0) // 並び順
+ color       String? // 色（任意）
+
+ @@unique([category, value], name: "category_value_unique")
+ @@index([category, isActive, sortOrder])
+}
