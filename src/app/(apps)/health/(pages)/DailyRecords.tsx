@@ -2,6 +2,7 @@
 
 import {HEALTH_CATEGORY_LABELS, HEALTH_CATEGORY_COLORS} from '../(constants)/types'
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
+import {Paper} from '@components/styles/common-components/paper'
 import {COLORS} from '@lib/constants/constants'
 
 interface HealthRecord {
@@ -63,104 +64,103 @@ export default function DailyRecords({userId, date, records, onEdit, onDelete, r
   const tdBorderClass = 'border-b-2 border-gray-300 border-r-[1px] !p-1 !px-2 text-sm'
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow">
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
-        {new Date(date).toLocaleDateString('ja-JP')} 6:00 〜 翌日6:00 の記録
-      </h2>
-
-      {records.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">この日の記録はありません</p>
-      ) : (
-        <div>
-          {CsvTable({
-            records: records.map(record => {
-              const walkingData = getWalkingData(record)
-              return {
-                csvTableRow: [
-                  {
-                    label: '時刻',
-                    style: {
-                      minWidth: 50,
-                      position: 'sticky',
-                      left: 0,
-                      background: COLORS.table.thead,
+    <>
+      <div>
+        {records.length === 0 ? (
+          <p className="text-gray-500 text-center py-8">この日の記録はありません</p>
+        ) : (
+          <div className={``}>
+            {CsvTable({
+              records: records.map(record => {
+                const walkingData = getWalkingData(record)
+                return {
+                  csvTableRow: [
+                    {
+                      label: '時刻',
+                      style: {
+                        minWidth: 50,
+                        position: 'sticky',
+                        left: 0,
+                        background: COLORS.table.thead,
+                      },
+                      className: tdBorderClass,
+                      cellValue: record.recordTime,
                     },
-                    className: tdBorderClass,
-                    cellValue: record.recordTime,
-                  },
-                  {
-                    label: 'カテゴリ',
-                    style: {minWidth: 90},
-                    className: tdBorderClass,
-                    cellValue: (
-                      <div
-                        className="px-2 py-1 rounded-md"
-                        style={{
-                          backgroundColor: HEALTH_CATEGORY_COLORS[record.category as keyof typeof HEALTH_CATEGORY_COLORS] + '20',
-                          color: HEALTH_CATEGORY_COLORS[record.category as keyof typeof HEALTH_CATEGORY_COLORS],
-                        }}
-                      >
-                        {HEALTH_CATEGORY_LABELS[record.category as keyof typeof HEALTH_CATEGORY_LABELS]}
-                      </div>
-                    ),
-                  },
-                  {
-                    label: '備考',
-                    style: {minWidth: 160},
-                    className: tdBorderClass,
-                    cellValue: record.category === 'walking' ? '' : formatRemarks(record),
-                  },
-                  {
-                    label: '短距離',
-                    style: {minWidth: 50},
-                    className: tdBorderClass,
-                    cellValue: walkingData ? walkingData.shortDistance || '' : '',
-                  },
-                  {
-                    label: '中距離',
-                    style: {minWidth: 50},
-                    className: tdBorderClass,
-                    cellValue: walkingData ? walkingData.mediumDistance || '' : '',
-                  },
-                  {
-                    label: '長距離',
-                    style: {minWidth: 50},
-                    className: tdBorderClass,
-                    cellValue: walkingData ? walkingData.longDistance || '' : '',
-                  },
-                  {
-                    label: '運動',
-                    style: {minWidth: 50},
-                    className: tdBorderClass,
-                    cellValue: walkingData ? walkingData.exercise || '' : '',
-                  },
-                  {
-                    label: '操作',
-                    style: {minWidth: 50},
-                    className: tdBorderClass,
-                    cellValue: (
-                      <div className="flex gap-2 justify-center">
-                        <button
-                          onClick={() => onEdit(record)}
-                          className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+                    {
+                      label: 'カテゴリ',
+                      style: {minWidth: 90},
+                      className: tdBorderClass,
+                      cellValue: (
+                        <div
+                          className="px-2 py-1 rounded-md"
+                          style={{
+                            backgroundColor:
+                              HEALTH_CATEGORY_COLORS[record.category as keyof typeof HEALTH_CATEGORY_COLORS] + '20',
+                            color: HEALTH_CATEGORY_COLORS[record.category as keyof typeof HEALTH_CATEGORY_COLORS],
+                          }}
                         >
-                          編集
-                        </button>
-                        <button
-                          onClick={() => onDelete(record.id)}
-                          className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
-                        >
-                          削除
-                        </button>
-                      </div>
-                    ),
-                  },
-                ],
-              }
-            }),
-          }).WithWrapper({className: '!max-w-[85vw]'})}
-        </div>
-      )}
-    </div>
+                          {HEALTH_CATEGORY_LABELS[record.category as keyof typeof HEALTH_CATEGORY_LABELS]}
+                        </div>
+                      ),
+                    },
+                    {
+                      label: '備考',
+                      style: {minWidth: 160},
+                      className: tdBorderClass,
+                      cellValue: record.category === 'walking' ? '' : formatRemarks(record),
+                    },
+                    {
+                      label: '短距離',
+                      style: {minWidth: 50},
+                      className: tdBorderClass,
+                      cellValue: walkingData ? walkingData.shortDistance || '' : '',
+                    },
+                    {
+                      label: '中距離',
+                      style: {minWidth: 50},
+                      className: tdBorderClass,
+                      cellValue: walkingData ? walkingData.mediumDistance || '' : '',
+                    },
+                    {
+                      label: '長距離',
+                      style: {minWidth: 50},
+                      className: tdBorderClass,
+                      cellValue: walkingData ? walkingData.longDistance || '' : '',
+                    },
+                    {
+                      label: '運動',
+                      style: {minWidth: 50},
+                      className: tdBorderClass,
+                      cellValue: walkingData ? walkingData.exercise || '' : '',
+                    },
+                    {
+                      label: '操作',
+                      style: {minWidth: 50},
+                      className: tdBorderClass,
+                      cellValue: (
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() => onEdit(record)}
+                            className="px-3 py-1 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
+                          >
+                            編集
+                          </button>
+                          <button
+                            onClick={() => onDelete(record.id)}
+                            className="px-3 py-1 bg-red-500 text-white text-sm rounded hover:bg-red-600"
+                          >
+                            削除
+                          </button>
+                        </div>
+                      ),
+                    },
+                  ],
+                }
+              }),
+            }).WithWrapper({className: '!max-w-[90vw] max-h-[60vh]'})}
+          </div>
+        )}
+      </div>
+    </>
   )
 }

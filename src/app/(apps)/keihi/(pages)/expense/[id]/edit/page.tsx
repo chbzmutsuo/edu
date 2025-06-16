@@ -14,6 +14,7 @@ import {
 } from '../../../../actions/expense-actions'
 import CameraUpload from '../../../../components/CameraUpload'
 import {useAllOptions} from '../../../../hooks/useOptions'
+import {Loader2, Save, ArrowLeft, Sparkles, Eye, X} from 'lucide-react'
 
 interface ExpenseDetail {
   id: string
@@ -45,6 +46,33 @@ interface ExpenseDetail {
     size: number
     url: string
   }>
+}
+
+interface PreviewModalProps {
+  isOpen: boolean
+  onClose: () => void
+  imageUrl: string
+  fileName: string
+}
+
+const PreviewModal = ({isOpen, onClose, imageUrl, fileName}: PreviewModalProps) => {
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+      <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="text-lg font-semibold">{fileName}</h3>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="p-4 max-h-[calc(90vh-80px)] overflow-auto">
+          <img src={imageUrl} alt={fileName} className="max-w-full max-h-full object-contain mx-auto" />
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function ExpenseEditPage() {
@@ -104,6 +132,16 @@ export default function ExpenseEditPage() {
   })
 
   const [keywordInput, setKeywordInput] = useState('')
+
+  const [previewModal, setPreviewModal] = useState<{
+    isOpen: boolean
+    imageUrl: string
+    fileName: string
+  }>({
+    isOpen: false,
+    imageUrl: '',
+    fileName: '',
+  })
 
   // ファイルサイズをフォーマット
   const formatFileSize = (bytes: number) => {
@@ -437,6 +475,22 @@ export default function ExpenseEditPage() {
     return value && (Array.isArray(value) ? value.length > 0 : value.trim() !== '')
       ? `${baseClass} border-blue-300 bg-blue-50`
       : `${baseClass} border-gray-300`
+  }
+
+  const openPreviewModal = (imageUrl: string, fileName: string) => {
+    setPreviewModal({
+      isOpen: true,
+      imageUrl,
+      fileName,
+    })
+  }
+
+  const closePreviewModal = () => {
+    setPreviewModal({
+      isOpen: false,
+      imageUrl: '',
+      fileName: '',
+    })
   }
 
   if (isLoading) {
@@ -810,21 +864,10 @@ export default function ExpenseEditPage() {
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
-                            onClick={() => {
-                              const newWindow = window.open()
-                              if (newWindow) {
-                                newWindow.document.write(`
-                                  <html>
-                                    <head><title>${attachment.originalName}</title></head>
-                                    <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f0f0;">
-                                      <img src="${attachment.url}" style="max-width:100%;max-height:100%;object-fit:contain;" alt="${attachment.originalName}" />
-                                    </body>
-                                  </html>
-                                `)
-                              }
-                            }}
-                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                            onClick={() => openPreviewModal(attachment.url, attachment.originalName)}
+                            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
                           >
+                            <Eye className="w-4 h-4" />
                             プレビュー
                           </button>
                         </div>
@@ -855,21 +898,10 @@ export default function ExpenseEditPage() {
                         </div>
                         <button
                           type="button"
-                          onClick={() => {
-                            const newWindow = window.open()
-                            if (newWindow) {
-                              newWindow.document.write(`
-                                <html>
-                                  <head><title>${attachment.originalName}</title></head>
-                                  <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f0f0;">
-                                    <img src="${attachment.url}" style="max-width:100%;max-height:100%;object-fit:contain;" alt="${attachment.originalName}" />
-                                  </body>
-                                </html>
-                              `)
-                            }
-                          }}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          onClick={() => openPreviewModal(attachment.url, attachment.originalName)}
+                          className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
                         >
+                          <Eye className="w-4 h-4" />
                           プレビュー
                         </button>
                       </div>
@@ -944,6 +976,14 @@ export default function ExpenseEditPage() {
           </form>
         </div>
       </div>
+
+      {/* プレビューモーダル */}
+      <PreviewModal
+        isOpen={previewModal.isOpen}
+        onClose={closePreviewModal}
+        imageUrl={previewModal.imageUrl}
+        fileName={previewModal.fileName}
+      />
     </div>
   )
 }

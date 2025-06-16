@@ -8,7 +8,7 @@ export default async function AppLayout(props) {
     <Admin
       {...{
         AppName: '経費',
-        PagesMethod: 'Advantage_PAGES',
+        PagesMethod: 'keihi_PAGES',
         PageBuilderGetter: {class: PageBuilder, getter: 'getGlobalIdSelector'},
       }}
     >

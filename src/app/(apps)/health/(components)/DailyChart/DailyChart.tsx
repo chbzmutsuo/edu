@@ -1,7 +1,19 @@
 'use client'
 
 import React from 'react'
-import {ComposedChart, Line, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer, ReferenceArea} from 'recharts'
+import {
+  ComposedChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  ReferenceArea,
+  BarChart,
+  Bar,
+  Cell,
+} from 'recharts'
 import {
   HEALTH_CATEGORIES,
   HEALTH_CATEGORY_CHART_HEIGHT_VALUE,
@@ -9,6 +21,7 @@ import {
   HealthCategory,
 } from '../../(constants)/types'
 import {DAILY_CHART_HEIGHT, DAILY_CHART_MARGIN} from '@app/(apps)/health/(components)/DailyChart/constants'
+import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 
 // 血糖値帯域定義
 const BLOOD_SUGAR_ZONES = [
@@ -29,18 +42,18 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
   // 時刻でソートされた全記録
   const sortedRecords = records.sort((a, b) => a.recordTime.localeCompare(b.recordTime))
 
-  // 6:00〜翌6:00の時間軸を30分刻みで生成
+  // 7:00〜翌7:00の時間軸を30分刻みで生成
   const generateTimeLabels = () => {
     const timeLabels: string[] = []
-    for (let hour = 6; hour < 30; hour++) {
+    for (let hour = 7; hour < 31; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
         const actualHour = hour >= 24 ? hour - 24 : hour
         const timeStr = `${actualHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
         timeLabels.push(timeStr)
       }
     }
-    // 最後に翌日6:00を追加
-    timeLabels.push('06:00')
+    // 最後に翌日7:00を追加
+    timeLabels.push('07:00')
     return timeLabels
   }
 
@@ -54,8 +67,8 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
       urine: null,
       stool: null,
       meal: null,
+      snack: null,
       medicine: null,
-      walking: null,
     }
 
     // 該当時刻の記録を検索
@@ -84,19 +97,44 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
           dataPoint.meal = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEAL]
           dataPoint.mealRecord = record
           break
+        case 'snack':
+          dataPoint.snack = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.SNACK]
+          dataPoint.snackRecord = record
+          break
         case 'medicine':
           dataPoint.medicine = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEDICINE]
           dataPoint.medicineRecord = record
-          break
-        case 'walking':
-          dataPoint.walking = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.WALKING]
-          dataPoint.walkingRecord = record
           break
       }
     })
 
     return dataPoint
   })
+
+  // 歩行データの棒グラフ用データ
+  const walkingRecords = sortedRecords.filter(record => record.category === 'walking')
+  const walkingData = [
+    {
+      name: '短距離',
+      value: walkingRecords.reduce((sum, record) => sum + (record.walkingShortDistance || 0), 0),
+      color: '#3b82f6',
+    },
+    {
+      name: '中距離',
+      value: walkingRecords.reduce((sum, record) => sum + (record.walkingMediumDistance || 0), 0),
+      color: '#10b981',
+    },
+    {
+      name: '長距離',
+      value: walkingRecords.reduce((sum, record) => sum + (record.walkingLongDistance || 0), 0),
+      color: '#f59e0b',
+    },
+    {
+      name: '運動',
+      value: walkingRecords.reduce((sum, record) => sum + (record.walkingExercise || 0), 0),
+      color: '#ef4444',
+    },
+  ]
 
   // カスタムツールチップ
   const CustomTooltip = ({active, payload, label}: any) => {
@@ -155,8 +193,8 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
       urine: sortedRecords.filter(r => r.category === 'urine').length,
       stool: sortedRecords.filter(r => r.category === 'stool').length,
       meal: sortedRecords.filter(r => r.category === 'meal').length,
+      snack: sortedRecords.filter(r => r.category === 'snack').length,
       medicine: sortedRecords.filter(r => r.category === 'medicine').length,
-      walking: sortedRecords.filter(r => r.category === 'walking').length,
     },
   }
 
@@ -193,8 +231,8 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                     if (value === getValue(HEALTH_CATEGORIES.URINE)) return '尿'
                     if (value === getValue(HEALTH_CATEGORIES.STOOL)) return '便'
                     if (value === getValue(HEALTH_CATEGORIES.MEAL)) return '食事'
+                    if (value === getValue(HEALTH_CATEGORIES.SNACK)) return '間食'
                     if (value === getValue(HEALTH_CATEGORIES.MEDICINE)) return '薬'
-                    if (value === getValue(HEALTH_CATEGORIES.WALKING)) return '歩行'
                     if (value % 50 === 0) return `${value} mg/dL`
                     return ''
                   }}
@@ -372,6 +410,50 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                 <Line
                   isAnimationActive={false}
                   type="monotone"
+                  dataKey="snack"
+                  strokeWidth={0}
+                  dot={({cx, cy, payload, index}) => {
+                    if (!payload.snack || !payload.snackRecord) return <g key={index} />
+                    const record = payload.snackRecord
+                    const displayText = record.recordTime
+                    const color = HEALTH_CATEGORY_COLORS.snack
+
+                    const isOddIndex = index % 2 === 1
+                    const yOffset = isOddIndex ? 40 : 5
+
+                    return (
+                      <g key={index}>
+                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
+                        <rect
+                          x={cx - displayText.length * 3 - 3}
+                          y={cy - 20 + yOffset}
+                          width={displayText.length * 6 + 6}
+                          height={16}
+                          fill="rgba(255, 255, 255, 0.95)"
+                          stroke={color}
+                          strokeWidth={1}
+                          rx={2}
+                        />
+                        <text
+                          x={cx}
+                          y={cy - 12 + yOffset}
+                          textAnchor="middle"
+                          fontSize="11"
+                          fill={color}
+                          fontWeight="bold"
+                          dominantBaseline="middle"
+                        >
+                          {displayText}
+                        </text>
+                      </g>
+                    )
+                  }}
+                  name="間食"
+                  connectNulls={false}
+                />
+                <Line
+                  isAnimationActive={false}
+                  type="monotone"
                   dataKey="medicine"
                   strokeWidth={0}
                   dot={({cx, cy, payload, index}) => {
@@ -414,50 +496,6 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   name="薬"
                   connectNulls={false}
                 />
-                <Line
-                  isAnimationActive={false}
-                  type="monotone"
-                  dataKey="walking"
-                  strokeWidth={0}
-                  dot={({cx, cy, payload, index}) => {
-                    if (!payload.walking || !payload.walkingRecord) return <g key={index} />
-                    const record = payload.walkingRecord
-                    const displayText = record.recordTime
-                    const color = HEALTH_CATEGORY_COLORS.walking
-
-                    const isOddIndex = index % 2 === 1
-                    const yOffset = isOddIndex ? 45 : 10
-
-                    return (
-                      <g key={index}>
-                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
-                        <rect
-                          x={cx - displayText.length * 3 - 3}
-                          y={cy - 20 + yOffset}
-                          width={displayText.length * 6 + 6}
-                          height={16}
-                          fill="rgba(255, 255, 255, 0.95)"
-                          stroke={color}
-                          strokeWidth={1}
-                          rx={2}
-                        />
-                        <text
-                          x={cx}
-                          y={cy - 12 + yOffset}
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill={color}
-                          fontWeight="bold"
-                          dominantBaseline="middle"
-                        >
-                          {displayText}
-                        </text>
-                      </g>
-                    )
-                  }}
-                  name="歩行"
-                  connectNulls={false}
-                />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -482,77 +520,116 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
         </div>
 
         {/* 統計情報 */}
-        <div className="mt-6 space-y-4">
-          {/* 血糖値統計 */}
-          {stats.bloodSugar && (
-            <div className="bg-red-50 p-4 rounded-lg">
-              <h4 className="font-bold text-gray-800 mb-2">血糖値統計</h4>
-              <div className="grid grid-cols-4 gap-4 text-center">
-                <div>
-                  <div className="text-sm text-gray-600">最高値</div>
-                  <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                    {stats.bloodSugar.max} mg/dL
+        <R_Stack className="mt-6 gap-0">
+          <section className={`w-1/2 p-2`}>
+            <C_Stack>
+              {/* 血糖値統計 */}
+              {stats.bloodSugar && (
+                <div className="bg-red-50 p-4 rounded-lg">
+                  <h4 className="font-bold text-gray-800 mb-2">血糖値統計</h4>
+                  <div className="grid grid-cols-4 gap-4 text-center">
+                    <div>
+                      <div className="text-sm text-gray-600">最高値</div>
+                      <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                        {stats.bloodSugar.max} mg/dL
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">平均値</div>
+                      <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                        {stats.bloodSugar.avg} mg/dL
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">最低値</div>
+                      <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                        {stats.bloodSugar.min} mg/dL
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">測定回数</div>
+                      <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
+                        {stats.bloodSugar.count}回
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div>
-                  <div className="text-sm text-gray-600">平均値</div>
-                  <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                    {stats.bloodSugar.avg} mg/dL
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">最低値</div>
-                  <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                    {stats.bloodSugar.min} mg/dL
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sm text-gray-600">測定回数</div>
-                  <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                    {stats.bloodSugar.count}回
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+              )}
 
-          {/* 記録回数統計 */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h4 className="font-bold text-gray-800 mb-2">記録回数</h4>
-            <div className="grid grid-cols-5 gap-4 text-center">
-              <div>
-                <div className="text-sm text-gray-600">尿</div>
-                <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.urine}}>
-                  {stats.categories.urine}回
+              {/* 記録回数統計 */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-bold text-gray-800 mb-2">記録回数</h4>
+                <div className="grid grid-cols-5 gap-4 text-center">
+                  <div>
+                    <div className="text-sm text-gray-600">尿</div>
+                    <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.urine}}>
+                      {stats.categories.urine}回
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">便</div>
+                    <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.stool}}>
+                      {stats.categories.stool}回
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">食事</div>
+                    <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.meal}}>
+                      {stats.categories.meal}回
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">間食</div>
+                    <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.snack}}>
+                      {stats.categories.snack}回
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-sm text-gray-600">薬</div>
+                    <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.medicine}}>
+                      {stats.categories.medicine}回
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div>
-                <div className="text-sm text-gray-600">便</div>
-                <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.stool}}>
-                  {stats.categories.stool}回
+            </C_Stack>
+          </section>
+
+          <section className={`w-1/2 p-2`}>
+            {/* 歩行データ棒グラフ */}
+            <div>
+              {walkingData.some(item => item.value > 0) && (
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-gray-800 mb-4">歩行データ</h3>
+                  <div style={{height: 100}}>
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={walkingData} margin={{top: 20, right: 30, left: 20, bottom: 5}}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Bar dataKey="value" name="歩数/分">
+                          {walkingData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="mt-4 grid grid-cols-4 gap-4 text-center">
+                    {walkingData.map((item, index) => (
+                      <div key={index}>
+                        <div className="text-sm text-gray-600">{item.name}</div>
+                        <div className="text-lg font-bold" style={{color: item.color}}>
+                          {item.value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">食事</div>
-                <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.meal}}>
-                  {stats.categories.meal}回
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">薬</div>
-                <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.medicine}}>
-                  {stats.categories.medicine}回
-                </div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-600">歩行</div>
-                <div className="text-lg font-bold" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                  {stats.categories.walking}回
-                </div>
-              </div>
+              )}
             </div>
-          </div>
-        </div>
+          </section>
+        </R_Stack>
       </div>
 
       {/* データがない場合のメッセージ */}

@@ -90,6 +90,16 @@ model Stock {
  last_consecutivePositiveCloses Boolean? // 連続陽線
  last_macdBullish               Boolean? // MACD強気シグナル
 
+ // 新しく追加したシグナル
+ last_volumeBreakout      Boolean? // 出来高ブレイクアウト
+ last_priceVolumeBreakout Boolean? // 価格・出来高同時ブレイクアウト
+ last_deathCross          Boolean? // デッドクロス
+ last_rsiOverbought       Boolean? // RSI買われすぎ
+ last_macdBearish         Boolean? // MACD弱気シグナル
+ last_lowVolatility       Boolean? // 低ボラティリティ
+ last_supportBounce       Boolean? // サポート反発
+ last_resistanceBreak     Boolean? // レジスタンス突破
+
  // MACD値の保存
  last_macdLine      Float? // MACDライン
  last_macdSignal    Float? // MACDシグナルライン
@@ -147,6 +157,16 @@ model StockHistory {
  crashAndRebound           Boolean? // 急落後リバウンド
  consecutivePositiveCloses Boolean? // 連続陽線
  macdBullish               Boolean? // MACD強気シグナル
+
+ // 新しく追加したシグナル（履歴用）
+ volumeBreakout      Boolean? // 出来高ブレイクアウト
+ priceVolumeBreakout Boolean? // 価格・出来高同時ブレイクアウト
+ deathCross          Boolean? // デッドクロス
+ rsiOverbought       Boolean? // RSI買われすぎ
+ macdBearish         Boolean? // MACD弱気シグナル
+ lowVolatility       Boolean? // 低ボラティリティ
+ supportBounce       Boolean? // サポート反発
+ resistanceBreak     Boolean? // レジスタンス突破
 
  // MACD値の履歴保存
  macdLine      Float? // MACDライン

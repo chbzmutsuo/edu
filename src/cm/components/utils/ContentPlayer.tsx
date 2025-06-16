@@ -99,7 +99,7 @@ export default function ContentPlayer(props: ContentPlayerProps) {
     return {thumbnail, main}
   })()
 
-  const btnClass = `icon-btn absolute w-6  hover:opacity-100 z-50`
+  const btnClass = ` absolute w-6  hover:opacity-100 z-50`
   if (!src) {
     return <div>画像を読み込めません</div>
   } else if (props.showOnlyMain) {
@@ -139,7 +139,7 @@ export default function ContentPlayer(props: ContentPlayerProps) {
 
         {options?.download && !String(src).includes('data:') && (
           <T_LINK href={src} target="_blank" simple>
-            <ArrowDownTrayIcon className={`${btnClass} bg-sub-light right-10 top-1  `} />
+            <ArrowDownTrayIcon className={`${btnClass}  left-0 bottom-0  h-4  `} />
           </T_LINK>
         )}
 

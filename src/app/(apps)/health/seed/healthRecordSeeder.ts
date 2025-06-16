@@ -128,7 +128,19 @@ export const generateHealthRecordSeeds = (userId: number) => {
       })
     }
 
-    // 6. 昼食（12:30-13:30）
+    // 6. 午前の間食（10:00-11:00）
+    if (Math.random() > 0.6) {
+      // 40%の確率で記録
+      seeds.push({
+        userId,
+        category: 'snack',
+        recordDate,
+        recordTime: randomTime(10, 10),
+        memo: 'おやつ',
+      })
+    }
+
+    // 7. 昼食（12:30-13:30）
     if (Math.random() > 0.15) {
       // 85%の確率で記録
       seeds.push({
@@ -140,7 +152,7 @@ export const generateHealthRecordSeeds = (userId: number) => {
       })
     }
 
-    // 7. 昼の薬（13:00-14:00）
+    // 8. 昼の薬（13:00-14:00）
     if (Math.random() > 0.3) {
       // 70%の確率で記録
       seeds.push({
@@ -153,7 +165,7 @@ export const generateHealthRecordSeeds = (userId: number) => {
       })
     }
 
-    // 8. 午後の尿（14:00-16:00）
+    // 9. 午後の尿（14:00-16:00）
     if (Math.random() > 0.4) {
       // 60%の確率で記録
       seeds.push({
@@ -165,7 +177,19 @@ export const generateHealthRecordSeeds = (userId: number) => {
       })
     }
 
-    // 9. 夕食（19:00-20:00）
+    // 10. 午後の間食（15:00-16:00）
+    if (Math.random() > 0.7) {
+      // 30%の確率で記録
+      seeds.push({
+        userId,
+        category: 'snack',
+        recordDate,
+        recordTime: randomTime(15, 15),
+        memo: 'おやつ',
+      })
+    }
+
+    // 11. 夕食（19:00-20:00）
     if (Math.random() > 0.1) {
       // 90%の確率で記録
       seeds.push({
@@ -177,7 +201,7 @@ export const generateHealthRecordSeeds = (userId: number) => {
       })
     }
 
-    // 10. 夕方の薬（19:30-20:30）
+    // 12. 夕方の薬（19:30-20:30）
     if (Math.random() > 0.2) {
       // 80%の確率で記録
       seeds.push({
@@ -187,6 +211,18 @@ export const generateHealthRecordSeeds = (userId: number) => {
         recordTime: randomTime(19, 20),
         medicineId: MEDICINE_IDS.evening,
         medicineUnit: 1,
+      })
+    }
+
+    // 13. 夜の間食（21:00-22:00）
+    if (Math.random() > 0.8) {
+      // 20%の確率で記録
+      seeds.push({
+        userId,
+        category: 'snack',
+        recordDate,
+        recordTime: randomTime(21, 21),
+        memo: '夜食',
       })
     }
 

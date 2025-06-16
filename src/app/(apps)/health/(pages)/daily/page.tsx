@@ -13,6 +13,7 @@ import useGlobal from '@hooks/globalHooks/useGlobal'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import useModal from '@components/utils/modal/useModal'
 import Link from 'next/link'
+import {Paper} from '@components/styles/common-components/paper'
 
 // useGlobalの型定義（実際の実装に合わせて調整してください）
 interface User {
@@ -21,12 +22,9 @@ interface User {
 }
 
 export default function HealthPage() {
-  const {session, query, addQuery} = useGlobal()
-
-  // const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
+  const {session, query, addQuery, PC} = useGlobal()
 
   const selectedDate = query.date ? query.date : formatDate(getMidnight())
-
   const setSelectedDate = value => addQuery({date: value})
 
   const {open: showForm, setopen: setShowForm, Modal} = useModal()
@@ -34,23 +32,16 @@ export default function HealthPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [records, setRecords] = useState<any[]>([])
 
-  // // URLパラメータから日付を取得
-  // useEffect(() => {
-  //   const dateParam = query.date
-  //   if (dateParam) {
-  //     setSelectedDate(dateParam)
-  //   }
-  // }, [query])
-
-  // 日別レコードを取得（6:00〜翌6:00）
+  // 日別レコードを取得（7:00〜翌7:00）
   const fetchDailyRecords = async () => {
     if (!session?.id) return
 
     try {
-      // 指定日の00:00（日本時間）をUTC（15:00）で取得
-      const startDate = getMidnight(new Date(selectedDate))
-      // 翌日の00:00（日本時間）をUTC（15:00）で取得
-      const endDate = Days.day.add(startDate, 1)
+      // 指定日の7:00（日本時間）を取得
+      const baseDate = getMidnight(new Date(selectedDate))
+      const startDate = Days.hour.add(baseDate, 7)
+      // 翌日の7:00（日本時間）を取得
+      const endDate = Days.hour.add(startDate, 24)
 
       const result = await doStandardPrisma('healthRecord', 'findMany', {
         where: {
@@ -193,13 +184,13 @@ export default function HealthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-[1200px] mx-auto space-y-6">
+    <div className="min-h-screen bg-gray-100 p-1">
+      <div className="max-w-[1200px] mx-auto space-y-4">
         {/* ヘッダー */}
-        <div className="bg-white rounded-lg shadow p-6">
+        <Paper>
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-gray-800">健康記録 - {formatDate(selectedDate)} 6:00〜翌6:00</h1>
-            <div className="flex gap-2">
+            <h1 className="text-2xl font-bold text-gray-800">健康記録 - {formatDate(selectedDate)} 7:00〜翌7:00</h1>
+            <div className="flex  gap-2">
               <Link href="/health" className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
                 ホーム
               </Link>
@@ -210,8 +201,7 @@ export default function HealthPage() {
           </div>
 
           {/* 日付選択 */}
-          <div className="flex gap-4 items-center">
-            <label className="text-sm font-medium text-gray-700">表示日:</label>
+          <div className="flex gap-4 items-center justify-between">
             <input
               type="date"
               value={selectedDate}
@@ -222,7 +212,7 @@ export default function HealthPage() {
               新規登録
             </button>
           </div>
-        </div>
+        </Paper>
 
         {/* フォーム */}
         <Modal>
@@ -251,17 +241,23 @@ export default function HealthPage() {
         </Modal>
 
         {/* グラフ表示 */}
-        <DailyChart records={records} selectedDate={selectedDate} />
+        {PC && (
+          <Paper>
+            <DailyChart records={records} selectedDate={selectedDate} />
+          </Paper>
+        )}
 
         {/* 日別記録一覧 */}
-        <DailyRecords
-          userId={session.id}
-          date={selectedDate}
-          records={records}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          refreshTrigger={refreshTrigger}
-        />
+        <Paper className={`px-0`}>
+          <DailyRecords
+            userId={session.id}
+            date={selectedDate}
+            records={records}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            refreshTrigger={refreshTrigger}
+          />
+        </Paper>
       </div>
     </div>
   )

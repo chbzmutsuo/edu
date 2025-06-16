@@ -45,6 +45,13 @@ export const CustomLabel = (props: any) => {
       color = HEALTH_CATEGORY_COLORS.meal
       break
     }
+    case 'snack': {
+      const record = payload.snackRecord
+      if (!record) return null
+      displayText = record.recordTime
+      color = HEALTH_CATEGORY_COLORS.snack
+      break
+    }
     case 'walking': {
       const record = payload.walkingRecord
       if (!record) return null

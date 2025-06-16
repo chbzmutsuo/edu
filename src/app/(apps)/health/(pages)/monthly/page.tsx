@@ -20,7 +20,7 @@ interface User {
 }
 
 export default function MonthlyPage() {
-  const {session, query, addQuery} = useGlobal()
+  const {session, query, addQuery, PC} = useGlobal()
 
   const year = query.year ? parseInt(query.year) : new Date().getFullYear()
   const month = query.month ? parseInt(query.month) : new Date().getMonth() + 1
@@ -175,9 +175,13 @@ export default function MonthlyPage() {
     return <div className="p-4 text-center">ログインが必要です</div>
   }
 
+  if (!PC) {
+    return <div className="p-4 text-center">PCでご覧ください</div>
+  }
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-[1300px] mx-auto space-y-6">
+      <div className="max-w-[1500px] mx-auto space-y-6">
         {/* ヘッダー */}
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
@@ -234,13 +238,7 @@ export default function MonthlyPage() {
                 </div>
                 <div className="text-xs text-gray-500">mg/dL</div>
               </div>
-              {/* <div className="bg-red-50 p-4 rounded-lg text-center">
-              <div className="text-sm text-gray-600 mb-1">測定日数</div>
-              <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.blood_sugar}}>
-                {monthlyStats.bloodSugar.days}
-              </div>
-              <div className="text-xs text-gray-500">日</div>
-            </div> */}
+
               <div className="bg-orange-50 p-4 rounded-lg text-center">
                 <div className="text-sm text-gray-600 mb-1">月間歩行P</div>
                 <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
@@ -248,13 +246,6 @@ export default function MonthlyPage() {
                 </div>
                 <div className="text-xs text-gray-500">ポイント</div>
               </div>
-              {/* <div className="bg-orange-50 p-4 rounded-lg text-center">
-              <div className="text-sm text-gray-600 mb-1">歩行日数</div>
-              <div className="text-2xl font-bold" style={{color: HEALTH_CATEGORY_COLORS.walking}}>
-                {monthlyStats.walking.activeDays}
-              </div>
-              <div className="text-xs text-gray-500">日</div>
-            </div> */}
             </R_Stack>
           </R_Stack>
         </div>

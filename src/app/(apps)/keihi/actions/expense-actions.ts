@@ -59,8 +59,30 @@ export interface AIAnalysisResult {
   mfMemo: string
 }
 
+// インサイト生成の設定オプション
+interface InsightGenerationOptions {
+  isDraft?: boolean // 下書きモードかどうか
+  additionalInstruction?: string // 追加指示
+  includeMoneyForwardData?: boolean // MoneyForward用データを含めるか
+}
+
+// インサイト生成結果の型
+interface InsightGenerationResult {
+  businessInsightDetail: string
+  businessInsightSummary: string
+  techInsightDetail: string
+  techInsightSummary: string
+  autoTags: string[]
+  generatedKeywords?: string[] // 下書きモードの場合のみ
+  mfSubject?: string // MoneyForward用データ
+  mfTaxCategory?: string
+  mfMemo?: string
+}
+
 // 複数画像の統合解析
-export async function analyzeMultipleReceipts(imageDataList: string[]): Promise<{
+export const analyzeMultipleReceipts = async (
+  imageDataList: string[]
+): Promise<{
   success: boolean
   data?: {
     receipts: Array<{
@@ -77,7 +99,7 @@ export async function analyzeMultipleReceipts(imageDataList: string[]): Promise<
     allKeywords: string[]
   }
   error?: string
-}> {
+}> => {
   try {
     if (imageDataList.length === 0) {
       return {success: false, error: '画像が選択されていません'}
@@ -155,7 +177,9 @@ export async function analyzeMultipleReceipts(imageDataList: string[]): Promise<
 }
 
 // 画像からOCR＋AI解析
-export async function analyzeReceiptImage(imageBase64: string): Promise<{
+export const analyzeReceiptImage = async (
+  imageBase64: string
+): Promise<{
   success: boolean
   data?: {
     date: string
@@ -166,7 +190,7 @@ export async function analyzeReceiptImage(imageBase64: string): Promise<{
     keywords: string[]
   }
   error?: string
-}> {
+}> => {
   try {
     const prompt = `
 この領収書画像から情報を抽出し、税務調査に耐えうるビジネス情報交換会の記録として整理してください。
@@ -182,11 +206,29 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
 
 5. 摘要（税務調査対応：「○○業界の方との技術相談」「新規事業の情報交換」など具体的に）
 6. 関連キーワード（相手の業界・職種から想像される具体的なシステム開発ニーズ3-5個）
-   例：
-   - 飲食店なら：「売上管理アプリ」「メニューアプリ」「仕入れ管理」
-   - 教育関係なら：「学習管理システム」「自動添削」「スライド作成ツール」
-   - 人事担当なら：「社員データベース」「面接管理」「AIスコアリング」
-   - 運送業なら：「日報システム」「配車計画ツール」「GPS追跡」
+   以下のような多様なキーワードから、状況に応じて適切なものを選択してください。これらのキーワード以外にも、類推して生成してください:
+   業種別キーワード例：
+   - 飲食店：
+     * 売上管理アプリ、メニューアプリ、仕入れ管理、在庫管理、予約システム、POS連携、顧客管理、スタッフシフト管理、レシピ管理、食材発注
+     * デリバリー管理、テイクアウト注文、QR決済、ポイントカード、会計システム、売上分析、原価計算
+
+   - 教育関係：
+     * 学習管理システム、自動添削、スライド作成、教材管理、出席管理、成績管理、オンライン授業、宿題管理
+     * 保護者連絡、進捗管理、テスト作成、採点自動化、学習分析、個別指導計画、カリキュラム管理
+
+   - 人事担当：
+     * 社員データベース、面接管理、AIスコアリング、採用管理、研修管理、評価システム、給与計算
+     * 勤怠管理、福利厚生管理、人材育成、キャリアパス、組織図、採用広告、人材分析
+
+   - 運送業：
+     * 日報システム、配車計画、GPS追跡、配送管理、ドライバー管理、燃料管理、メンテナンス管理
+     * ルート最適化、荷物追跡、請求書管理、顧客管理、事故報告、運転記録、コンプライアンス管理
+
+   技術キーワード例：
+   - フロントエンド：React、Vue、Angular、Next.js、TypeScript、Tailwind CSS、レスポンシブデザイン
+   - バックエンド：Node.js、Python、Java、Go、GraphQL、REST API、マイクロサービス
+   - インフラ：AWS、GCP、Azure、Docker、Kubernetes、CI/CD、モニタリング
+   - データ：SQL、NoSQL、データ分析、機械学習、AI、ビッグデータ、ETL
 
 以下のJSON形式で返してください：
 {
@@ -195,7 +237,7 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
   "subject": "会議費",
   "counterpartyName": "○○レストラン",
   "mfMemo": "飲食店経営者との売上管理システム開発に関する技術相談",
-  "keywords": ["売上管理アプリ", "POSシステム連携", "在庫管理", "顧客管理", "配送システム"]
+  "keywords": []
 }
 `
 
@@ -216,6 +258,7 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
         },
       ],
       max_tokens: 1000,
+      temperature: 1.5, // より多様な応答を得るために温度を上げる
     })
 
     const content = response.choices[0]?.message?.content
@@ -245,7 +288,7 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
 }
 
 // 個人開発関連キーワードの生成
-function generatePersonalDevKeywords(formData: ExpenseFormData): string[] {
+const generatePersonalDevKeywords = (formData: ExpenseFormData): string[] => {
   const baseKeywords = [
     'Next.js',
     'React',
@@ -350,37 +393,98 @@ function generatePersonalDevKeywords(formData: ExpenseFormData): string[] {
   return shuffled.slice(0, count)
 }
 
-// AI下書き生成（プレビュー用）
-export async function generateInsightsDraft(
-  formData: ExpenseFormData,
-  additionalInstruction?: string
-): Promise<{
-  success: boolean
-  data?: {
-    businessInsightDetail: string
-    businessInsightSummary: string
-    techInsightDetail: string
-    techInsightSummary: string
-    autoTags: string[]
-    generatedKeywords: string[]
+// 共通のプロンプト生成関数
+const generateInsightPrompt = (formData: ExpenseFormData, options: InsightGenerationOptions = {}): string => {
+  const {isDraft = false, additionalInstruction, includeMoneyForwardData = false} = options
+
+  // 個人開発関連キーワードを生成（下書きモードの場合）
+  let generatedKeywords: string[] = []
+  let allKeywords: string[] = []
+  let uniqueKeywords: string[] = []
+
+  if (isDraft) {
+    generatedKeywords = generatePersonalDevKeywords(formData)
+    allKeywords = [...(formData.keywords || []), ...generatedKeywords]
+    uniqueKeywords = [...new Set(allKeywords)]
   }
-  error?: string
-}> {
-  try {
-    // 個人開発関連キーワードを生成
-    const generatedKeywords = generatePersonalDevKeywords(formData)
 
-    // 既存のキーワードと生成されたキーワードを結合
-    const allKeywords = [...(formData.keywords || []), ...generatedKeywords]
-    const uniqueKeywords = [...new Set(allKeywords)]
+  const additionalPrompt = additionalInstruction
+    ? `\n\n**追加指示：**\n${additionalInstruction}\n上記の追加指示も考慮してインサイトを生成してください。`
+    : ''
 
-    const additionalPrompt = additionalInstruction
-      ? `\n\n**追加指示：**\n${additionalInstruction}\n上記の追加指示も考慮してインサイトを生成してください。`
-      : ''
+  const keywordSection = isDraft
+    ? `
+- 入力済みキーワード: ${formData.keywords?.join(', ') || 'なし'}
+- 生成されたキーワード: ${generatedKeywords.join(', ')}
+- 全キーワード: ${uniqueKeywords.join(', ')}`
+    : `
+- キーワード: ${formData.keywords?.join(', ') || 'なし'}`
 
-    const prompt = `
-あなたは以下の経費記録の当事者です。その場にいて、実際に会話をし、経験した人として、主観的にどのような話をし、どのようなインサイトを得たのかを想像して個人記録・日記のようにまとめてください。
-特に、「具体的にどのような個人開発に繋げられるか」また、簡単にアプリの構想を書いてください。
+  const contextDescription = isDraft
+    ? `あなたは以下の経費記録の当事者です。その場にいて、実際に会話をし、経験した人として、主観的にどのような話をし、どのようなインサイトを得たのかを想像して個人記録・日記のようにまとめてください。
+特に、「具体的にどのような個人開発に繋げられるか」また、簡単にアプリの構想を書いてください。`
+    : `【税務調査対応】以下の経費記録について、実際にビジネス情報交換会を行った当事者として、具体的で説得力のある記録を作成してください。`
+
+  const guidelines = isDraft
+    ? `**重要な指針：**
+1. 上記のキーワード（特に生成されたキーワード）を参考にして、具体的な個人開発アイデアを考案してください
+2. 相手の業種や課題から、どのような技術で解決できるかを具体的に提案してください
+3. 実際に作れそうなアプリやツールの構想を含めてください
+4. 技術的な実装方法も簡潔に触れてください`
+    : `**税務調査対応の記録作成指針：**
+- 相手の具体的な業務課題とそれに対するシステム開発提案を詳細に記録
+- 「どのような技術的な解決策を提案したか」を具体的に記述
+- 「相手からどのような業界の課題を聞いたか」を詳細に記録
+- 今後のビジネス展開の可能性について言及
+- 実際の開発案件につながる可能性を示唆
+
+**記録の信憑性を高めるポイント：**
+- 相手の業界特有の課題を具体的に記述
+- 提案した技術ソリューションの実装方法に言及
+- 競合他社の状況や市場動向についての情報交換内容
+- 今後のフォローアップ予定や次回打ち合わせの可能性
+- 相手の反応や関心度を具体的に記録`
+
+  const styleGuidelines = isDraft
+    ? `**文体の指針：**
+- 事実を端的にまとめつつ、固くなりすぎない個人レポートとして。「だ。である。」体、体言止めや、「〜する。〜できる。」という未来志向・行動志向の表現。
+- 〇〇さんから〇〇という課題があった。それを〇〇の方法で解決できるというアイデア、アプリ・ツールの構想も添えて。
+- 〇〇を見て、〇〇に行かせそうなどでも可能。
+- 「Next.jsで〇〇を作れそう」「Prismaで〇〇のデータ管理」など、具体的な技術名を使用`
+    : `**文体の指針：**
+- ビジネス記録として適切な敬語・丁寧語を使用
+- 「〜について詳しく伺った」「〜を提案させていただいた」など
+- 具体的な数値や期間を含める（可能な範囲で）`
+
+  const jsonFormat = includeMoneyForwardData
+    ? `{
+  "businessInsightDetail": "営業・ビジネス面で得た気づきや学びを個人記録調で（150-200文字）",
+  "businessInsightSummary": "営業インサイトを一言で（30-50文字）",
+  "techInsightDetail": "技術・開発面で得た気づきや学びを個人記録調で（50-80文字）、その後改行して【要件定義】として5-10行程度の箇条書きを追加",
+  "techInsightSummary": "技術インサイトを一言で（30-50文字）",
+  "autoTags": ["その場で感じた印象や話題から3-5個のタグ"],
+  "mfSubject": "${MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.account || formData.subject}",
+  "mfTaxCategory": "${MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.taxCategory || '課仕 10%'}",
+  "mfMemo": "MoneyForward用の簡潔な摘要（30文字以内）"
+}`
+    : isDraft
+      ? `{
+  "businessInsightDetail": "営業・ビジネス面で得た気づきや学びを個人記録調で、具体的な個人開発アイデアを含めて（150-200文字）",
+  "businessInsightSummary": "営業インサイトを一言で（30-50文字）",
+  "techInsightDetail": "技術・開発面で得た気づきや学びを個人記録調で（50-80文字）、その後改行して【要件定義】として5-10行程度の箇条書きを追加（合計200-300文字）",
+  "techInsightSummary": "技術インサイトを一言で（30-50文字）",
+  "autoTags": ["その場で感じた印象や話題、技術要素から3-5個のタグ"]
+}`
+      : `{
+  "businessInsightDetail": "営業・ビジネス面で得た気づきや学びを個人記録調で（150-200文字）",
+  "businessInsightSummary": "営業インサイトを一言で（30-50文字）",
+  "techInsightDetail": "技術・開発面で得た気づきや学びを個人記録調で（50-80文字）、その後改行して【要件定義】として5-10行程度の箇条書きを追加",
+  "techInsightSummary": "技術インサイトを一言で（30-50文字）",
+  "autoTags": ["その場で感じた印象や話題から3-5個のタグ"]
+}`
+
+  return `
+${contextDescription}
 
 【記録内容】
 - 日付: ${formData.date}
@@ -388,47 +492,43 @@ export async function generateInsightsDraft(
 - 科目: ${formData.subject}
 - 場所: ${formData.location || '不明'}
 - 相手: ${formData.counterpartyName || '不明'}
-- 業種: ${formData.counterpartyIndustry || '不明'}
+- 業種: ${formData.counterpartyIndustry || '不明'}${keywordSection}
 - 目的: ${formData.conversationPurpose || '不明'}
-- 入力済みキーワード: ${formData.keywords?.join(', ') || 'なし'}
-- 生成されたキーワード: ${generatedKeywords.join(', ')}
-- 全キーワード: ${uniqueKeywords.join(', ')}
 - 会話要約: ${formData.conversationSummary || 'なし'}
 
-**重要な指針：**
-1. 上記のキーワード（特に生成されたキーワード）を参考にして、具体的な個人開発アイデアを考案してください
-2. 相手の業種や課題から、どのような技術で解決できるかを具体的に提案してください
-3. 実際に作れそうなアプリやツールの構想を含めてください
-4. 技術的な実装方法も簡潔に触れてください
+${guidelines}
 
 **技術インサイトの詳細について：**
 - 最初に技術的な気づきや学びを記述（50-80文字程度）
 - その後、改行して「【要件定義】」として5-10行程度の箇条書きを追加
 - 箇条書きは「・」で始める
 - 具体的な機能要件、技術要件、UI/UX要件などを含める
-- 実装可能性を考慮した現実的な要件にする
+- 実装可能性を考慮した現実的な要件にする${isDraft ? '' : '\n- 税務調査で説明できる具体性を持たせる'}
 
-**文体の指針：**
-- 事実を端的にまとめつつ、固くなりすぎない個人レポートとして
-- 〇〇さんから〇〇という課題があった。それを〇〇の方法で解決できるというアイデア、アプリ・ツールの構想も添えて。
-- 〇〇を見て、〇〇に行かせそうなどでも可能。
-- 「Next.jsで〇〇を作れそう」「Prismaで〇〇のデータ管理」など、具体的な技術名を使用
-${additionalPrompt}
+${styleGuidelines}${additionalPrompt}
 
 以下のJSON形式で返してください：
-{
-  "businessInsightDetail": "営業・ビジネス面で得た気づきや学びを個人記録調で、具体的な個人開発アイデアを含めて（150-200文字）",
-  "businessInsightSummary": "営業インサイトを一言で（30-50文字）",
-  "techInsightDetail": "技術・開発面で得た気づきや学びを個人記録調で（50-80文字）、その後改行して【要件定義】として5-10行程度の箇条書きを追加（合計200-300文字）",
-  "techInsightSummary": "技術インサイトを一言で（30-50文字）",
-  "autoTags": ["その場で感じた印象や話題、技術要素から3-5個のタグ"]
-}
+${jsonFormat}
 `
+}
+
+// 統合されたインサイト生成関数
+const generateInsightsCore = async (
+  formData: ExpenseFormData,
+  options: InsightGenerationOptions = {}
+): Promise<{
+  success: boolean
+  data?: InsightGenerationResult
+  error?: string
+}> => {
+  try {
+    const prompt = generateInsightPrompt(formData, options)
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [{role: 'user', content: prompt}],
       max_tokens: 1500,
+      temperature: 1,
     })
 
     const content = response.choices[0]?.message?.content
@@ -442,99 +542,76 @@ ${additionalPrompt}
     }
 
     const parsedData = JSON.parse(jsonMatch[0])
+
+    // 下書きモードの場合は生成されたキーワードを追加
+    if (options.isDraft) {
+      const generatedKeywords = generatePersonalDevKeywords(formData)
+      parsedData.generatedKeywords = generatedKeywords
+    }
+
     return {
       success: true,
-      data: {
-        ...parsedData,
-        generatedKeywords,
-      },
+      data: parsedData,
     }
   } catch (error) {
-    console.error('下書き生成エラー:', error)
+    console.error('インサイト生成エラー:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : '下書き生成に失敗しました',
+      error: error instanceof Error ? error.message : 'インサイト生成に失敗しました',
     }
   }
 }
 
-// AIインサイト生成
-export async function generateInsights(formData: ExpenseFormData): Promise<AIAnalysisResult> {
-  try {
-    const prompt = `
-【税務調査対応】以下の経費記録について、実際にビジネス情報交換会を行った当事者として、具体的で説得力のある記録を作成してください。
+// AI下書き生成（プレビュー用）
+export const generateInsightsDraft = async (
+  formData: ExpenseFormData,
+  additionalInstruction?: string
+): Promise<{
+  success: boolean
+  data?: {
+    businessInsightDetail: string
+    businessInsightSummary: string
+    techInsightDetail: string
+    techInsightSummary: string
+    autoTags: string[]
+    generatedKeywords: string[]
+  }
+  error?: string
+}> => {
+  const result = await generateInsightsCore(formData, {
+    isDraft: true,
+    additionalInstruction,
+    includeMoneyForwardData: false,
+  })
 
-【記録内容】
-- 日付: ${formData.date}
-- 金額: ${formData.amount}円
-- 科目: ${formData.subject}
-- 場所: ${formData.location || '不明'}
-- 相手: ${formData.counterpartyName || '不明'}
-- 業種: ${formData.counterpartyIndustry || '不明'}
-- 目的: ${formData.conversationPurpose || '不明'}
-- キーワード: ${formData.keywords?.join(', ') || 'なし'}
-- 会話要約: ${formData.conversationSummary || 'なし'}
+  if (!result.success || !result.data) {
+    return {
+      success: false,
+      error: result.error || '下書き生成に失敗しました',
+    }
+  }
 
-**税務調査対応の記録作成指針：**
-- 相手の具体的な業務課題とそれに対するシステム開発提案を詳細に記録
-- 「どのような技術的な解決策を提案したか」を具体的に記述
-- 「相手からどのような業界の課題を聞いたか」を詳細に記録
-- 今後のビジネス展開の可能性について言及
-- 実際の開発案件につながる可能性を示唆
-
-**技術インサイトの詳細について：**
-- 最初に技術的な気づきや学びを記述（50-80文字程度）
-- その後、改行して「【要件定義】」として5-10行程度の箇条書きを追加
-- 箇条書きは「・」で始める
-- 具体的な機能要件、技術要件、UI/UX要件などを含める
-- 実装可能性を考慮した現実的な要件にする
-- 税務調査で説明できる具体性を持たせる
-
-**記録の信憑性を高めるポイント：**
-- 相手の業界特有の課題を具体的に記述
-- 提案した技術ソリューションの実装方法に言及
-- 競合他社の状況や市場動向についての情報交換内容
-- 今後のフォローアップ予定や次回打ち合わせの可能性
-- 相手の反応や関心度を具体的に記録
-
-**文体の指針：**
-- ビジネス記録として適切な敬語・丁寧語を使用
-- 「〜について詳しく伺った」「〜を提案させていただいた」など
-- 具体的な数値や期間を含める（可能な範囲で）
-- 相手の発言を引用形式で含める
-
-以下のJSON形式で返してください：
-{
-  "businessInsightDetail": "営業・ビジネス面で得た気づきや学びを個人記録調で（150-200文字）",
-  "businessInsightSummary": "営業インサイトを一言で（30-50文字）",
-  "techInsightDetail": "技術・開発面で得た気づきや学びを個人記録調で（50-80文字）、その後改行して【要件定義】として5-10行程度の箇条書きを追加",
-  "techInsightSummary": "技術インサイトを一言で（30-50文字）",
-  "autoTags": ["その場で感じた印象や話題から3-5個のタグ"],
-  "mfSubject": "${MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.account || formData.subject}",
-  "mfTaxCategory": "${MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.taxCategory || '課仕 10%'}",
-  "mfMemo": "MoneyForward用の簡潔な摘要（30文字以内）"
+  return {
+    success: true,
+    data: {
+      businessInsightDetail: result.data.businessInsightDetail,
+      businessInsightSummary: result.data.businessInsightSummary,
+      techInsightDetail: result.data.techInsightDetail,
+      techInsightSummary: result.data.techInsightSummary,
+      autoTags: result.data.autoTags,
+      generatedKeywords: result.data.generatedKeywords || [],
+    },
+  }
 }
-`
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [{role: 'user', content: prompt}],
-      max_tokens: 1500,
-    })
+// AIインサイト生成（実際の記録作成用）
+export const generateInsights = async (formData: ExpenseFormData): Promise<AIAnalysisResult> => {
+  const result = await generateInsightsCore(formData, {
+    isDraft: false,
+    includeMoneyForwardData: true,
+  })
 
-    const content = response.choices[0]?.message?.content
-    if (!content) {
-      throw new Error('AI応答が空です')
-    }
-
-    const jsonMatch = content.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) {
-      throw new Error('JSON形式の応答が見つかりません')
-    }
-
-    return JSON.parse(jsonMatch[0])
-  } catch (error) {
-    console.error('インサイト生成エラー:', error)
+  if (!result.success || !result.data) {
     // フォールバック
     return {
       businessInsightDetail: '自動生成に失敗しました',
@@ -546,6 +623,17 @@ export async function generateInsights(formData: ExpenseFormData): Promise<AIAna
       mfTaxCategory: '課仕 10%',
       mfMemo: `${formData.subject} ${formData.amount}円`,
     }
+  }
+
+  return {
+    businessInsightDetail: result.data.businessInsightDetail,
+    businessInsightSummary: result.data.businessInsightSummary,
+    techInsightDetail: result.data.techInsightDetail,
+    techInsightSummary: result.data.techInsightSummary,
+    autoTags: result.data.autoTags,
+    mfSubject: result.data.mfSubject || formData.subject,
+    mfTaxCategory: result.data.mfTaxCategory || '課仕 10%',
+    mfMemo: result.data.mfMemo || `${formData.subject} ${formData.amount}円`,
   }
 }
 
@@ -655,14 +743,14 @@ export async function createExpenseWithDraft(
 }
 
 // 経費記録作成
-export async function createExpense(
+export const createExpense = async (
   formData: ExpenseFormData,
   imageFiles?: File[]
 ): Promise<{
   success: boolean
   data?: {id: string}
   error?: string
-}> {
+}> => {
   try {
     // AIインサイト生成
     const insights = await generateInsights(formData)
@@ -750,7 +838,7 @@ export async function createExpense(
 }
 
 // 経費記録一覧取得
-export async function getExpenses(page = 1, limit = 20) {
+export const getExpenses = async (page = 1, limit = 20) => {
   try {
     const expenses = await prisma.keihiExpense.findMany({
       include: {
@@ -785,7 +873,7 @@ export async function getExpenses(page = 1, limit = 20) {
 }
 
 // 経費記録詳細取得
-export async function getExpenseById(id: string) {
+export const getExpenseById = async (id: string) => {
   try {
     const expense = await prisma.keihiExpense.findUnique({
       where: {id},
@@ -809,7 +897,7 @@ export async function getExpenseById(id: string) {
 }
 
 // 経費記録更新
-export async function updateExpense(
+export const updateExpense = async (
   id: string,
   data: {
     date?: Date
@@ -837,7 +925,7 @@ export async function updateExpense(
     mfTaxCategory?: string
     mfMemo?: string
   }
-) {
+) => {
   try {
     const expense = await prisma.keihiExpense.update({
       where: {id},
@@ -860,10 +948,12 @@ export async function updateExpense(
 }
 
 // 経費記録削除
-export async function deleteExpense(id: string): Promise<{
+export const deleteExpense = async (
+  id: string
+): Promise<{
   success: boolean
   error?: string
-}> {
+}> => {
   try {
     // 関連する添付ファイルも削除
     await prisma.keihiAttachment.deleteMany({
@@ -887,11 +977,13 @@ export async function deleteExpense(id: string): Promise<{
 }
 
 // 複数の経費記録を一括削除
-export async function deleteMultipleExpenses(ids: string[]): Promise<{
+export const deleteMultipleExpenses = async (
+  ids: string[]
+): Promise<{
   success: boolean
   deletedCount?: number
   error?: string
-}> {
+}> => {
   try {
     // 関連する添付ファイルも削除
     await prisma.keihiAttachment.deleteMany({
@@ -918,7 +1010,9 @@ export async function deleteMultipleExpenses(ids: string[]): Promise<{
 }
 
 // ファイルアップロード（S3使用）
-export async function uploadAttachment(formData: FormData): Promise<{
+export const uploadAttachment = async (
+  formData: FormData
+): Promise<{
   success: boolean
   data?: {
     id: string
@@ -929,7 +1023,7 @@ export async function uploadAttachment(formData: FormData): Promise<{
     url: string
   }
   error?: string
-}> {
+}> => {
   try {
     const file = formData.get('file') as File
     if (!file) {
@@ -1006,13 +1100,13 @@ export async function uploadAttachment(formData: FormData): Promise<{
 }
 
 // 添付ファイルを経費記録に関連付け
-export async function linkAttachmentsToExpense(
+export const linkAttachmentsToExpense = async (
   expenseId: string,
   attachmentIds: string[]
 ): Promise<{
   success: boolean
   error?: string
-}> {
+}> => {
   try {
     await prisma.keihiAttachment.updateMany({
       where: {
@@ -1035,11 +1129,11 @@ export async function linkAttachmentsToExpense(
 }
 
 // 未関連付けの添付ファイルを削除（クリーンアップ用）
-export async function cleanupUnlinkedAttachments(): Promise<{
+export const cleanupUnlinkedAttachments = async (): Promise<{
   success: boolean
   deletedCount?: number
   error?: string
-}> {
+}> => {
   try {
     // 1時間以上前に作成された未関連付けファイルを削除
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
@@ -1093,10 +1187,12 @@ export async function cleanupUnlinkedAttachments(): Promise<{
 }
 
 // 添付ファイル削除
-export async function deleteAttachment(attachmentId: string): Promise<{
+export const deleteAttachment = async (
+  attachmentId: string
+): Promise<{
   success: boolean
   error?: string
-}> {
+}> => {
   try {
     const attachment = await prisma.keihiAttachment.findUnique({
       where: {id: attachmentId},
@@ -1134,6 +1230,226 @@ export async function deleteAttachment(attachmentId: string): Promise<{
     return {
       success: false,
       error: error instanceof Error ? error.message : '添付ファイルの削除に失敗しました',
+    }
+  }
+}
+
+// 一括登録用の基本レコード作成
+export const createBulkExpensesBasic = async (
+  imageDataList: string[]
+): Promise<{
+  success: boolean
+  data?: Array<{
+    id: string
+    date: string
+    amount: number
+    subject: string
+    counterpartyName: string
+    keywords: string[]
+    imageIndex: number
+  }>
+  error?: string
+}> => {
+  try {
+    if (imageDataList.length === 0) {
+      return {success: false, error: '画像が選択されていません'}
+    }
+
+    // 各画像を並列で解析
+    const analysisResults = await Promise.all(
+      imageDataList.map(async (imageData, index) => {
+        const result = await analyzeReceiptImage(imageData)
+        if (result.success && result.data) {
+          return {
+            ...result.data,
+            imageIndex: index,
+          }
+        }
+        return null
+      })
+    )
+
+    const validResults = analysisResults.filter(result => result !== null)
+
+    if (validResults.length === 0) {
+      return {success: false, error: 'すべての画像の解析に失敗しました'}
+    }
+
+    // 基本情報のみでレコードを作成
+    const createdRecords = await Promise.all(
+      validResults.map(async receiptData => {
+        const expense = await prisma.keihiExpense.create({
+          data: {
+            date: new Date(receiptData.date),
+            amount: receiptData.amount,
+            subject: receiptData.subject,
+            counterpartyName: receiptData.counterpartyName,
+            keywords: receiptData.keywords,
+            conversationSummary: receiptData.mfMemo,
+            learningDepth: 3, // デフォルト値
+            // インサイトは後で生成するため空文字で初期化
+            businessInsightDetail: '',
+            businessInsightSummary: '',
+            techInsightDetail: '',
+            techInsightSummary: '',
+            autoTags: [],
+            // MoneyForward用データ
+            mfSubject: receiptData.subject,
+            mfTaxCategory: '課仕 10%', // デフォルト値
+            mfMemo: receiptData.mfMemo,
+          },
+        })
+
+        return {
+          id: expense.id,
+          date: receiptData.date,
+          amount: receiptData.amount,
+          subject: receiptData.subject,
+          counterpartyName: receiptData.counterpartyName,
+          keywords: receiptData.keywords,
+          imageIndex: receiptData.imageIndex,
+        }
+      })
+    )
+
+    revalidatePath('/keihi')
+
+    return {
+      success: true,
+      data: createdRecords,
+    }
+  } catch (error) {
+    console.error('一括登録エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '一括登録に失敗しました',
+    }
+  }
+}
+
+// バックグラウンドでインサイト生成
+export const generateInsightsForExpense = async (
+  expenseId: string
+): Promise<{
+  success: boolean
+  error?: string
+}> => {
+  try {
+    // 既存のレコードを取得
+    const expense = await prisma.keihiExpense.findUnique({
+      where: {id: expenseId},
+    })
+
+    if (!expense) {
+      return {success: false, error: 'レコードが見つかりません'}
+    }
+
+    // フォームデータ形式に変換
+    const formData: ExpenseFormData = {
+      date: expense.date.toISOString().split('T')[0],
+      amount: expense.amount,
+      subject: expense.subject,
+      location: expense.location || '',
+      counterpartyName: expense.counterpartyName || '',
+      counterpartyIndustry: expense.counterpartyIndustry || '',
+      conversationPurpose: expense.conversationPurpose || '',
+      keywords: expense.keywords,
+      conversationSummary: expense.conversationSummary || '',
+      learningDepth: expense.learningDepth || 3,
+      counterpartyContact: expense.counterpartyContact || '',
+      followUpPlan: expense.followUpPlan || '',
+      businessOpportunity: expense.businessOpportunity || '',
+      competitorInfo: expense.competitorInfo || '',
+    }
+
+    // インサイト生成
+    const insightResult = await generateInsightsCore(formData, {
+      isDraft: false,
+      includeMoneyForwardData: true,
+    })
+
+    if (!insightResult.success || !insightResult.data) {
+      return {success: false, error: insightResult.error || 'インサイト生成に失敗しました'}
+    }
+
+    // レコードを更新
+    await prisma.keihiExpense.update({
+      where: {id: expenseId},
+      data: {
+        businessInsightDetail: insightResult.data.businessInsightDetail,
+        businessInsightSummary: insightResult.data.businessInsightSummary,
+        techInsightDetail: insightResult.data.techInsightDetail,
+        techInsightSummary: insightResult.data.techInsightSummary,
+        autoTags: insightResult.data.autoTags,
+        mfSubject: insightResult.data.mfSubject || expense.mfSubject,
+        mfTaxCategory: insightResult.data.mfTaxCategory || expense.mfTaxCategory,
+        mfMemo: insightResult.data.mfMemo || expense.mfMemo,
+      },
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('インサイト生成エラー:', error)
+
+    // エラーが発生した場合もフラグを更新
+    try {
+      await prisma.keihiExpense.update({
+        where: {id: expenseId},
+        data: {
+          businessInsightDetail: 'インサイト生成に失敗しました',
+          businessInsightSummary: 'エラーが発生しました',
+          techInsightDetail: 'インサイト生成に失敗しました',
+          techInsightSummary: 'エラーが発生しました',
+        },
+      })
+    } catch (updateError) {
+      console.error('フラグ更新エラー:', updateError)
+    }
+
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'インサイト生成に失敗しました',
+    }
+  }
+}
+
+// 複数レコードのバックグラウンドインサイト生成
+export const generateInsightsForMultipleExpenses = async (
+  expenseIds: string[]
+): Promise<{
+  success: boolean
+  processedCount?: number
+  error?: string
+}> => {
+  try {
+    let processedCount = 0
+
+    // 各レコードを順次処理（並列処理だとAPI制限に引っかかる可能性があるため）
+    for (const expenseId of expenseIds) {
+      try {
+        const result = await generateInsightsForExpense(expenseId)
+        if (result.success) {
+          processedCount++
+        }
+        // API制限を避けるため少し待機
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      } catch (error) {
+        console.error(`レコード ${expenseId} のインサイト生成エラー:`, error)
+        // 個別のエラーは続行
+      }
+    }
+
+    revalidatePath('/keihi')
+
+    return {
+      success: true,
+      processedCount,
+    }
+  } catch (error) {
+    console.error('一括インサイト生成エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '一括インサイト生成に失敗しました',
     }
   }
 }

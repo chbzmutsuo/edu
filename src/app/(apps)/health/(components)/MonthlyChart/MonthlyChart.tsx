@@ -40,6 +40,7 @@ export default function MonthlyChart({summaryData, year, month}: MonthlyChartPro
     urine: day.bloodSugar.max !== null ? HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.URINE] : null, // 仮:記録有無
     stool: day.bloodSugar.max !== null ? HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.STOOL] : null,
     meal: day.bloodSugar.max !== null ? HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEAL] : null,
+    snack: day.bloodSugar.max !== null ? HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.SNACK] : null,
     medicine: day.bloodSugar.max !== null ? HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEDICINE] : null,
     walking: day.walkingPoints.total > 0 ? HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.WALKING] : null,
     walkingPoints: day.walkingPoints,
@@ -103,8 +104,8 @@ export default function MonthlyChart({summaryData, year, month}: MonthlyChartPro
     <div className="space-y-6">
       {/* 月間統計サマリー */}
 
-      <div className={` flex items-start  `}>
-        <section className={`p-2 w-1/2`}>
+      <div className={` flex flex-col items-start  `}>
+        <section className={`p-2 w-full`}>
           <MonthlyBloodSugarChart
             summaryData={summaryData}
             chartData={chartData}
@@ -112,7 +113,7 @@ export default function MonthlyChart({summaryData, year, month}: MonthlyChartPro
             CustomTooltip={CustomTooltip}
           />
         </section>
-        <section className={`p-2 w-1/2`}>
+        <section className={`p-2 w-full`}>
           <MonthlyWalkingChart year={year} month={month} summaryData={summaryData} />
         </section>
       </div>

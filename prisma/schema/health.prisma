@@ -31,7 +31,7 @@ model HealthRecord {
  recordTime String // 時刻（HH:mm形式）
 
  // カテゴリ
- category String // "blood_sugar", "urine", "stool", "meal", "medicine", "walking"
+ category String // "blood_sugar", "urine", "stool", "meal", "snack", "medicine", "walking"
 
  // 血糖値データ
  bloodSugarValue Int? // 血糖値（数値のみ）
@@ -47,11 +47,83 @@ model HealthRecord {
  walkingLongDistance   Float? @default(0) // 長距離
  walkingExercise       Float? @default(0) // 運動
 
- // その他のデータ（尿、便、食事は時刻のみなので追加のフィールドは不要）
+ // その他のデータ（尿、便、食事、間食は時刻のみなので追加のフィールドは不要）
 
  // メモ（任意）
  memo String?
 
  @@index([userId, recordDate])
  @@index([userId, category])
+}
+
+// 日誌（1日分）
+model HealthJournal {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ // 関連ユーザー
+ User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ userId Int
+
+ // 日誌の日付（7:00起点）
+ journalDate DateTime // 記録対象の日付（7:00起点）
+
+ // 目標と振り返り
+ goalAndReflection String? // 自由記述欄
+
+ // テンプレート適用済みフラグ
+ templateApplied Boolean @default(false)
+
+ // リレーション
+ entries HealthJournalEntry[]
+
+ @@unique([userId, journalDate])
+ @@index([userId, journalDate])
+}
+
+// 日誌エントリ（時間帯ごと）
+model HealthJournalEntry {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ // 関連日誌
+ HealthJournal HealthJournal @relation(fields: [journalId], references: [id], onDelete: Cascade)
+ journalId     Int
+
+ // 時間帯（7, 8, 9, ..., 6）
+ hourSlot Int // 7:00-8:00なら7、8:00-9:00なら8
+
+ // 自由記述コメント
+ comment String?
+
+ // リレーション
+ images HealthJournalImage[]
+
+ @@unique([journalId, hourSlot])
+ @@index([journalId, hourSlot])
+}
+
+// 日誌画像
+model HealthJournalImage {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ // 関連エントリ
+ HealthJournalEntry HealthJournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+ entryId            Int
+
+ // 画像情報
+ fileName    String // ファイル名
+ filePath    String // ファイルパス
+ fileSize    Int? // ファイルサイズ（バイト）
+ mimeType    String? // MIMEタイプ
+ description String? // 画像の説明
+
+ @@index([entryId])
 }

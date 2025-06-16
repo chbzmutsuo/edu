@@ -105,6 +105,7 @@ model User {
   Department        Department?         @relation(fields: [departmentId], references: [id])
   departmentId      Int?
   HealthRecord      HealthRecord[]
+  HealthJournal     HealthJournal[]
 
   // Sara App リレーション
   Family               Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])

@@ -11,8 +11,52 @@ import {
   type ExpenseFormData,
 } from '../../actions/expense-actions'
 import CameraUpload from '../../components/CameraUpload'
+import BasicInfoForm from '../../components/BasicInfoForm'
+import KeywordManager from '../../components/KeywordManager'
+import ConversationSummary from '../../components/ConversationSummary'
+import AIDraftSection from '../../components/AIDraftSection'
+import FormActions from '../../components/FormActions'
+import MultiReceiptDisplay from '../../components/MultiReceiptDisplay'
 import {useAllOptions} from '../../hooks/useOptions'
 import {T_LINK} from '@components/styles/common-components/links'
+import {Eye, X} from 'lucide-react'
+
+// AI下書きの型定義
+interface AIDraft {
+  businessInsightDetail: string
+  businessInsightSummary: string
+  techInsightDetail: string
+  techInsightSummary: string
+  autoTags: string[]
+  generatedKeywords: string[]
+}
+
+interface PreviewModalProps {
+  isOpen: boolean
+  onClose: () => void
+  imageUrl: string
+  fileName: string
+}
+
+const PreviewModal = ({isOpen, onClose, imageUrl, fileName}: PreviewModalProps) => {
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+      <div className="relative max-w-4xl max-h-[90vh] bg-white rounded-lg overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="text-lg font-semibold">{fileName}</h3>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="p-4 max-h-[calc(90vh-80px)] overflow-auto">
+          <img src={imageUrl} alt={fileName} className="max-w-full max-h-full object-contain mx-auto" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function NewExpensePage() {
   const router = useRouter()
@@ -24,19 +68,21 @@ export default function NewExpensePage() {
   const [isLoading, setIsLoading] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisStatus, setAnalysisStatus] = useState('')
-  const [aiDraft, setAiDraft] = useState<{
-    businessInsightDetail: string
-    businessInsightSummary: string
-    techInsightDetail: string
-    techInsightSummary: string
-    autoTags: string[]
-    generatedKeywords: string[]
-  } | null>(null)
+  const [aiDraft, setAiDraft] = useState<AIDraft | null>(null)
   const [showDraft, setShowDraft] = useState(false)
   const [additionalInstruction, setAdditionalInstruction] = useState('')
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [capturedImageFiles, setCapturedImageFiles] = useState<File[]>([]) // 撮影した画像ファイル
   const [multiReceiptData, setMultiReceiptData] = useState<any>(null)
+  const [previewModal, setPreviewModal] = useState<{
+    isOpen: boolean
+    imageUrl: string
+    fileName: string
+  }>({
+    isOpen: false,
+    imageUrl: '',
+    fileName: '',
+  })
 
   // マスタデータを取得（メモ化）
   const {allOptions, isLoading: isOptionsLoading, error: optionsError} = useAllOptions()
@@ -58,17 +104,6 @@ export default function NewExpensePage() {
     businessOpportunity: '',
     competitorInfo: '',
   })
-
-  const [keywordInput, setKeywordInput] = useState('')
-
-  // ファイルサイズをフォーマット
-  const formatFileSize = useCallback((bytes: number) => {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }, [])
 
   // 状態の同期
   useEffect(() => {
@@ -199,23 +234,21 @@ export default function NewExpensePage() {
     [analyzeMultipleImages]
   )
 
-  // キーワード追加（useCallbackでメモ化）
-  const addKeyword = useCallback(() => {
-    if (keywordInput.trim() && !formData.keywords?.includes(keywordInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        keywords: [...(prev.keywords || []), keywordInput.trim()],
-      }))
-      setKeywordInput('')
-    }
-  }, [keywordInput, formData.keywords])
+  // プレビューモーダルの開閉
+  const openPreviewModal = useCallback((imageUrl: string, fileName: string) => {
+    setPreviewModal({
+      isOpen: true,
+      imageUrl,
+      fileName,
+    })
+  }, [])
 
-  // キーワード削除（useCallbackでメモ化）
-  const removeKeyword = useCallback((keyword: string) => {
-    setFormData(prev => ({
-      ...prev,
-      keywords: prev.keywords?.filter(k => k !== keyword) || [],
-    }))
+  const closePreviewModal = useCallback(() => {
+    setPreviewModal({
+      isOpen: false,
+      imageUrl: '',
+      fileName: '',
+    })
   }, [])
 
   // 項目のハイライト判定（useCallbackでメモ化）
@@ -307,7 +340,7 @@ export default function NewExpensePage() {
         setAnalysisStatus('')
       }
     },
-    [formData, aiDraft, showDraft, router]
+    [formData, aiDraft, showDraft, capturedImageFiles, router]
   )
 
   // メモ化されたCameraUploadのprops
@@ -319,83 +352,6 @@ export default function NewExpensePage() {
     }),
     [handleImageCapture, isAnalyzing, analysisStatus]
   )
-
-  // モバイル検出
-  const isMobile = useMemo(() => {
-    if (typeof window === 'undefined') return false
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768
-  }, [])
-
-  // 追加のrefを定義（モバイル対策）
-  const formDataRef = useRef(formData)
-  const multiReceiptDataRef = useRef(multiReceiptData)
-  const aiDraftRef = useRef(aiDraft)
-  const showDraftRef = useRef(showDraft)
-  const additionalInstructionRef = useRef(additionalInstruction)
-
-  // refの同期（常に最新の状態をrefに保持）
-  useEffect(() => {
-    formDataRef.current = formData
-    uploadedImagesRef.current = uploadedImages
-    multiReceiptDataRef.current = multiReceiptData
-    aiDraftRef.current = aiDraft
-    showDraftRef.current = showDraft
-    additionalInstructionRef.current = additionalInstruction
-  }, [formData, uploadedImages, multiReceiptData, aiDraft, showDraft, additionalInstruction])
-
-  // モバイル専用：スクロール時の状態保護
-  useEffect(() => {
-    if (!isMobile) return
-
-    // モバイル専用：タッチイベントでも状態保護
-    const handleTouchStart = () => {
-      // タッチ開始時に現在の状態をrefに確実に保存
-      formDataRef.current = formData
-      uploadedImagesRef.current = uploadedImages
-      multiReceiptDataRef.current = multiReceiptData
-      aiDraftRef.current = aiDraft
-      showDraftRef.current = showDraft
-      additionalInstructionRef.current = additionalInstruction
-      console.log('タッチ時状態保護:', {
-        formData: formDataRef.current,
-        uploadedImages: uploadedImagesRef.current.length,
-        aiDraft: !!aiDraftRef.current,
-      })
-    }
-
-    const handleScroll = () => {
-      // スクロール時に状態をrefに確実に保存
-      formDataRef.current = formData
-      uploadedImagesRef.current = uploadedImages
-      multiReceiptDataRef.current = multiReceiptData
-      aiDraftRef.current = aiDraft
-      showDraftRef.current = showDraft
-      additionalInstructionRef.current = additionalInstruction
-    }
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        // ページが非表示になる時に状態をrefに保存
-        formDataRef.current = formData
-        uploadedImagesRef.current = uploadedImages
-        multiReceiptDataRef.current = multiReceiptData
-        aiDraftRef.current = aiDraft
-        showDraftRef.current = showDraft
-        additionalInstructionRef.current = additionalInstruction
-        console.log('ページ非表示時状態保護')
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll, {passive: true})
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    window.addEventListener('touchstart', handleTouchStart, {passive: true})
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('visibilitychange', handleVisibilityChange)
-      window.removeEventListener('touchstart', handleTouchStart)
-    }
-  }, [formData, uploadedImages, multiReceiptData, aiDraft, showDraft, additionalInstruction, isMobile])
 
   return (
     <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
@@ -425,21 +381,34 @@ export default function NewExpensePage() {
             {/* カメラ・画像アップロード */}
             <div className="mb-6">
               <CameraUpload {...cameraUploadProps} />
+              <MultiReceiptDisplay multiReceiptData={multiReceiptData} />
 
-              {/* 複数領収書の解析結果表示 */}
-              {multiReceiptData && multiReceiptData.receipts.length > 1 && (
-                <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <h4 className="font-medium text-amber-800 mb-2">📋 複数領収書解析結果</h4>
-                  <div className="space-y-2">
-                    {multiReceiptData.receipts.map((receipt: any, index: number) => (
-                      <div key={index} className="text-sm text-amber-700 bg-white p-2 rounded border">
-                        {index + 1}枚目: {receipt.counterpartyName} - ¥{receipt.amount.toLocaleString()} ({receipt.date})
-                      </div>
-                    ))}
-                    <div className="text-sm font-medium text-amber-800 pt-2 border-t">
-                      合計金額: ¥{multiReceiptData.totalAmount.toLocaleString()}
-                      {multiReceiptData.suggestedMerge && ' (同一取引として統合済み)'}
-                    </div>
+              {/* アップロード済み画像のプレビュー */}
+              {uploadedImages.length > 0 && (
+                <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h4 className="font-medium text-gray-800 mb-3">📷 アップロード済み画像 ({uploadedImages.length}枚)</h4>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {uploadedImages.map((imageBase64, index) => {
+                      const imageUrl = `data:image/jpeg;base64,${imageBase64}`
+                      const fileName = `領収書${index + 1}.jpg`
+                      return (
+                        <div key={index} className="relative group">
+                          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border">
+                            <img src={imageUrl} alt={fileName} className="w-full h-full object-cover" />
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => openPreviewModal(imageUrl, fileName)}
+                            className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center"
+                          >
+                            <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          </button>
+                          <div className="absolute bottom-1 left-1 right-1 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded text-center">
+                            {index + 1}枚目
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </div>
               )}
@@ -457,471 +426,54 @@ export default function NewExpensePage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* 基本情報 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    日付 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.date}
-                    onChange={e => setFormData(prev => ({...prev, date: e.target.value}))}
-                    className={getFieldClass(formData.date, true)}
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    金額 <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.amount}
-                    onChange={e => setFormData(prev => ({...prev, amount: parseInt(e.target.value) || 0}))}
-                    className={getFieldClass(formData.amount, true)}
-                    placeholder="0"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    科目 <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={formData.subject}
-                    onChange={e => setFormData(prev => ({...prev, subject: e.target.value}))}
-                    className={getFieldClass(formData.subject, true)}
-                    required
-                  >
-                    <option value="">選択してください</option>
-                    {allOptions.subjects.map(subject => (
-                      <option key={subject.value} value={subject.value}>
-                        {subject.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">場所</label>
-                  <input
-                    type="text"
-                    value={formData.location}
-                    onChange={e => setFormData(prev => ({...prev, location: e.target.value}))}
-                    className={getFieldClass(formData.location || '')}
-                    placeholder="会場や店舗名など"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">相手名</label>
-                  <input
-                    type="text"
-                    value={formData.counterpartyName}
-                    onChange={e => setFormData(prev => ({...prev, counterpartyName: e.target.value}))}
-                    className={getFieldClass(formData.counterpartyName || '')}
-                    placeholder="個人名または法人名"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">相手の職種・業種</label>
-                  <input
-                    type="text"
-                    value={formData.counterpartyIndustry}
-                    onChange={e => setFormData(prev => ({...prev, counterpartyIndustry: e.target.value}))}
-                    className={getFieldClass(formData.counterpartyIndustry || '')}
-                    placeholder="例：飲食店経営、小学校教師、人事担当者、運送業"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">会話の目的</label>
-                  <select
-                    value={formData.conversationPurpose}
-                    onChange={e => setFormData(prev => ({...prev, conversationPurpose: e.target.value}))}
-                    className={getFieldClass(formData.conversationPurpose || '')}
-                  >
-                    <option value="">選択してください</option>
-                    {allOptions.purposes.map(purpose => (
-                      <option key={purpose.value} value={purpose.value}>
-                        {purpose.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">学びの深さ・重要度</label>
-                  <select
-                    value={formData.learningDepth}
-                    onChange={e => setFormData(prev => ({...prev, learningDepth: parseInt(e.target.value)}))}
-                    className={getFieldClass(formData.learningDepth || 0)}
-                  >
-                    <option value={1}>1 - 低い</option>
-                    <option value={2}>2</option>
-                    <option value={3}>3 - 普通</option>
-                    <option value={4}>4</option>
-                    <option value={5}>5 - 高い</option>
-                  </select>
-                </div>
-              </div>
+              <BasicInfoForm
+                formData={formData}
+                setFormData={setFormData}
+                allOptions={allOptions}
+                getFieldClass={getFieldClass}
+              />
 
               {/* キーワード */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">キーワード</label>
-                <div className="flex flex-col sm:flex-row gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={keywordInput}
-                    onChange={e => setKeywordInput(e.target.value)}
-                    onKeyPress={e => e.key === 'Enter' && (e.preventDefault(), addKeyword())}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="キーワードを入力してEnter"
-                  />
-                  <button
-                    type="button"
-                    onClick={addKeyword}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 sm:w-auto w-full"
-                  >
-                    追加
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {formData.keywords?.map(keyword => (
-                    <span
-                      key={keyword}
-                      className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
-                    >
-                      {keyword}
-                      <button
-                        type="button"
-                        onClick={() => removeKeyword(keyword)}
-                        className="ml-2 text-blue-600 hover:text-blue-800"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <KeywordManager formData={formData} setFormData={setFormData} />
 
               {/* 会話内容の要約 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">会話内容の要約</label>
-                <textarea
-                  value={formData.conversationSummary}
-                  onChange={e => setFormData(prev => ({...prev, conversationSummary: e.target.value}))}
-                  rows={4}
-                  className={getFieldClass(formData.conversationSummary || '')}
-                  placeholder="1〜3文程度の自然文要約"
-                />
-              </div>
-
-              {/* 税務調査対応項目 */}
-              <div className="border-t border-gray-200 pt-6">
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">相手の連絡先</label>
-                    <input
-                      type="text"
-                      value={formData.counterpartyContact}
-                      onChange={e => setFormData(prev => ({...prev, counterpartyContact: e.target.value}))}
-                      className={getFieldClass(formData.counterpartyContact || '')}
-                      placeholder="例：田中様（○○会社）090-1234-5678"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">フォローアップ予定</label>
-                    <textarea
-                      value={formData.followUpPlan}
-                      onChange={e => setFormData(prev => ({...prev, followUpPlan: e.target.value}))}
-                      rows={2}
-                      className={getFieldClass(formData.followUpPlan || '')}
-                      placeholder="例：来月中旬に提案書を作成して再度打ち合わせ予定"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">ビジネス機会の評価</label>
-                    <textarea
-                      value={formData.businessOpportunity}
-                      onChange={e => setFormData(prev => ({...prev, businessOpportunity: e.target.value}))}
-                      rows={2}
-                      className={getFieldClass(formData.businessOpportunity || '')}
-                      placeholder="例：月額10万円程度の開発案件に発展する可能性あり"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">競合・市場情報</label>
-                    <textarea
-                      value={formData.competitorInfo}
-                      onChange={e => setFormData(prev => ({...prev, competitorInfo: e.target.value}))}
-                      rows={2}
-                      className={getFieldClass(formData.competitorInfo || '')}
-                      placeholder="例：現在は○○社のシステムを使用中だが、カスタマイズ性に課題"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 撮影済み画像（レコード作成時に保存） */}
-              {capturedImageFiles.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">📎 撮影済み画像</label>
-                  <div className="space-y-2">
-                    {capturedImageFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">🖼️</span>
-                          <div>
-                            <p className="font-medium text-gray-900">{file.name}</p>
-                            <p className="text-sm text-gray-600">
-                              {file.type} • {formatFileSize(file.size)}
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const reader = new FileReader()
-                            reader.onload = e => {
-                              const newWindow = window.open()
-                              if (newWindow) {
-                                newWindow.document.write(`
-                                  <html>
-                                    <head><title>${file.name}</title></head>
-                                    <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#f0f0f0;">
-                                      <img src="${e.target?.result}" style="max-width:100%;max-height:100%;object-fit:contain;" alt="${file.name}" />
-                                    </body>
-                                  </html>
-                                `)
-                              }
-                            }
-                            reader.readAsDataURL(file)
-                          }}
-                          className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                        >
-                          プレビュー
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <ConversationSummary formData={formData} setFormData={setFormData} getFieldClass={getFieldClass} />
 
               {/* AI下書き生成セクション */}
-              <div className="border-t border-gray-200 pt-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-semibold text-gray-900">AIインサイト下書き</h2>
-                  <button
-                    type="button"
-                    onClick={generateDraft}
-                    disabled={isAnalyzing || isLoading}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {isAnalyzing && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
-                    {isAnalyzing ? '生成中...' : '下書き生成'}
-                  </button>
-                </div>
-
-                {/* 追加指示入力 */}
-                <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">AIへの追加指示（任意）</label>
-                  <textarea
-                    value={additionalInstruction}
-                    onChange={e => setAdditionalInstruction(e.target.value)}
-                    rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                    placeholder="例：技術的な内容を重視して、営業面は簡潔に"
-                  />
-                </div>
-
-                {/* 下書き表示 */}
-                {showDraft && aiDraft && (
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 space-y-4">
-                    <div className="flex justify-between items-center">
-                      <h3 className="font-medium text-purple-900">生成された下書き</h3>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={regenerateDraft}
-                          disabled={isAnalyzing}
-                          className="text-sm px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 disabled:opacity-50"
-                        >
-                          再生成
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowDraft(false)}
-                          className="text-sm px-3 py-1 border border-purple-300 text-purple-700 rounded hover:bg-purple-100"
-                        >
-                          閉じる
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      {/* 営業インサイト */}
-                      <div>
-                        <label className="block text-sm font-medium text-purple-800 mb-1">営業・ビジネスインサイト</label>
-                        <div className="space-y-2">
-                          <div>
-                            <label className="block text-xs text-purple-700">要約</label>
-                            <textarea
-                              value={aiDraft.businessInsightSummary}
-                              onChange={e =>
-                                setAiDraft(prev => (prev ? {...prev, businessInsightSummary: e.target.value} : null))
-                              }
-                              rows={1}
-                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-purple-700">詳細</label>
-                            <textarea
-                              value={aiDraft.businessInsightDetail}
-                              onChange={e => setAiDraft(prev => (prev ? {...prev, businessInsightDetail: e.target.value} : null))}
-                              rows={3}
-                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 技術インサイト */}
-                      <div>
-                        <label className="block text-sm font-medium text-purple-800 mb-1">技術・開発インサイト</label>
-                        <div className="space-y-2">
-                          <div>
-                            <label className="block text-xs text-purple-700">要約</label>
-                            <textarea
-                              value={aiDraft.techInsightSummary}
-                              onChange={e => setAiDraft(prev => (prev ? {...prev, techInsightSummary: e.target.value} : null))}
-                              rows={1}
-                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-xs text-purple-700">詳細</label>
-                            <textarea
-                              value={aiDraft.techInsightDetail}
-                              onChange={e => setAiDraft(prev => (prev ? {...prev, techInsightDetail: e.target.value} : null))}
-                              rows={3}
-                              className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                            />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 生成されたキーワード */}
-                      {aiDraft.generatedKeywords && aiDraft.generatedKeywords.length > 0 && (
-                        <div>
-                          <label className="block text-sm font-medium text-purple-800 mb-1">
-                            生成されたキーワード
-                            <span className="text-xs text-purple-600 ml-2">（個人開発アイデア生成に使用）</span>
-                          </label>
-                          <div className="flex flex-wrap gap-2">
-                            {aiDraft.generatedKeywords.map((keyword, index) => (
-                              <span
-                                key={index}
-                                className="px-2 py-1 text-xs bg-green-100 text-green-800 border border-green-300 rounded-full"
-                              >
-                                {keyword}
-                              </span>
-                            ))}
-                          </div>
-                          <div className="mt-2">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                // 生成されたキーワードをフォームのキーワードに追加
-                                const currentKeywords = formData.keywords || []
-                                const newKeywords = [...new Set([...currentKeywords, ...aiDraft.generatedKeywords])]
-                                setFormData(prev => ({...prev, keywords: newKeywords}))
-                                toast.success('生成されたキーワードをフォームに追加しました')
-                              }}
-                              className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
-                            >
-                              キーワードをフォームに追加
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* 自動タグ */}
-                      <div>
-                        <label className="block text-sm font-medium text-purple-800 mb-1">自動生成タグ</label>
-                        <div className="flex flex-wrap gap-2">
-                          {aiDraft.autoTags.map((tag, index) => (
-                            <div key={index} className="flex items-center gap-1">
-                              <input
-                                type="text"
-                                value={tag}
-                                onChange={e => {
-                                  const newTags = [...aiDraft.autoTags]
-                                  newTags[index] = e.target.value
-                                  setAiDraft(prev => (prev ? {...prev, autoTags: newTags} : null))
-                                }}
-                                className="px-2 py-1 text-xs border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const newTags = aiDraft.autoTags.filter((_, i) => i !== index)
-                                  setAiDraft(prev => (prev ? {...prev, autoTags: newTags} : null))
-                                }}
-                                className="text-purple-600 hover:text-purple-800 text-xs"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newTags = [...aiDraft.autoTags, '新しいタグ']
-                              setAiDraft(prev => (prev ? {...prev, autoTags: newTags} : null))
-                            }}
-                            className="px-2 py-1 text-xs border border-dashed border-purple-400 text-purple-600 rounded hover:bg-purple-100"
-                          >
-                            + タグ追加
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+              <AIDraftSection
+                formData={formData}
+                setFormData={setFormData}
+                aiDraft={aiDraft}
+                setAiDraft={setAiDraft}
+                showDraft={showDraft}
+                setShowDraft={setShowDraft}
+                isAnalyzing={isAnalyzing}
+                additionalInstruction={additionalInstruction}
+                setAdditionalInstruction={setAdditionalInstruction}
+                onGenerateDraft={generateDraft}
+                onRegenerateDraft={regenerateDraft}
+              />
 
               {/* 送信ボタン */}
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <button
-                  type="button"
-                  onClick={() => router.back()}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 order-2 sm:order-1"
-                >
-                  キャンセル
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading || isAnalyzing}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
-                >
-                  {(isLoading || isAnalyzing) && (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  )}
-                  {isLoading ? '作成中...' : isAnalyzing ? '解析中...' : aiDraft && showDraft ? '下書きで作成' : '作成'}
-                </button>
-              </div>
+              <FormActions
+                isLoading={isLoading}
+                isAnalyzing={isAnalyzing}
+                aiDraft={aiDraft}
+                showDraft={showDraft}
+                onSubmit={handleSubmit}
+              />
             </form>
           </div>
         </div>
       </div>
+
+      {/* プレビューモーダル */}
+      <PreviewModal
+        isOpen={previewModal.isOpen}
+        onClose={closePreviewModal}
+        imageUrl={previewModal.imageUrl}
+        fileName={previewModal.fileName}
+      />
     </div>
   )
 }

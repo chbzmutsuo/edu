@@ -1,11 +1,11 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import Link from 'next/link'
 import {toast} from 'react-toastify'
 import {getExpenses, deleteMultipleExpenses, type ExpenseFormData} from '../actions/expense-actions'
 import {exportAllExpensesToCSV, exportSelectedExpensesToCSV} from '../actions/csv-actions'
 import {T_LINK} from '@components/styles/common-components/links'
+import {R_Stack} from '@components/styles/common-components/common-components'
 
 interface Expense extends ExpenseFormData {
   id: string
@@ -186,6 +186,12 @@ export default function KeihiPage() {
                 >
                   🛠 マスタ
                 </T_LINK>
+                <T_LINK
+                  href="/keihi/new/bulk"
+                  className="px-3 sm:px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-center text-sm sm:text-base"
+                >
+                  📋 一括登録
+                </T_LINK>
                 <button
                   onClick={handleExportAll}
                   disabled={isExporting}
@@ -365,9 +371,14 @@ export default function KeihiPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{formatDate(expense.createdAt)}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <T_LINK href={`/keihi/expense/${expense.id}`} className="text-blue-600 hover:text-blue-900">
-                          詳細
-                        </T_LINK>
+                        <R_Stack className={`gap-8`}>
+                          <T_LINK href={`/keihi/expense/${expense.id}`} className="text-blue-600 hover:text-blue-900">
+                            詳細
+                          </T_LINK>
+                          <T_LINK href={`/keihi/expense/${expense.id}/edit`} className="text-blue-600 hover:text-blue-900">
+                            編集
+                          </T_LINK>
+                        </R_Stack>
                       </td>
                     </tr>
                   ))

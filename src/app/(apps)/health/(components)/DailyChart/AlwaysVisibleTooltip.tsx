@@ -45,6 +45,7 @@ export const AlwaysVisibleTooltip = ({chartData, timeLabels}: {chartData: any[];
               urine: getYPosition(HEALTH_CATEGORIES.URINE),
               stool: getYPosition(HEALTH_CATEGORIES.STOOL),
               meal: getYPosition(HEALTH_CATEGORIES.MEAL),
+              snack: getYPosition(HEALTH_CATEGORIES.SNACK),
               medicine: getYPosition(HEALTH_CATEGORIES.MEDICINE),
               walking: getYPosition(HEALTH_CATEGORIES.WALKING),
             }
@@ -73,6 +74,11 @@ export const AlwaysVisibleTooltip = ({chartData, timeLabels}: {chartData: any[];
               case 'meal': {
                 displayText = record.recordTime
                 color = HEALTH_CATEGORY_COLORS.meal
+                break
+              }
+              case 'snack': {
+                displayText = record.recordTime
+                color = HEALTH_CATEGORY_COLORS.snack
                 break
               }
               case 'walking': {

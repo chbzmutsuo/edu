@@ -374,7 +374,7 @@ export default function CameraUpload({onImageCapture, isAnalyzing, analysisStatu
 
     // 解析後は画像をクリア
     capturedImages.forEach(img => URL.revokeObjectURL(img.preview))
-    setCapturedImages([])
+    // setCapturedImages([])
 
     if (isMobile) {
       capturedImagesRef.current = []
@@ -635,14 +635,32 @@ export default function CameraUpload({onImageCapture, isAnalyzing, analysisStatu
           <div className="grid grid-cols-3 gap-2">
             {capturedImages.map((image, index) => (
               <div key={index} className="relative group">
-                <img src={image.preview} alt={`撮影済み ${index + 1}`} className="w-full h-20 object-cover rounded border" />
+                <button
+                  onClick={() => {
+                    const modal = document.createElement('div')
+                    modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50'
+                    modal.onclick = () => modal.remove()
+
+                    const img = document.createElement('img')
+                    img.src = image.preview
+                    img.className = 'max-w-[90vw] max-h-[90vh] object-contain'
+
+                    modal.appendChild(img)
+                    document.body.appendChild(modal)
+                  }}
+                  className="w-full h-20 relative"
+                >
+                  <img src={image.preview} alt={`撮影済み ${index + 1}`} className="w-full h-full object-cover rounded border" />
+                  <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
+                    {index + 1}
+                  </div>
+                </button>
                 <button
                   onClick={() => removeImage(index)}
                   className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
                 >
                   ×
                 </button>
-                <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">{index + 1}</div>
               </div>
             ))}
           </div>

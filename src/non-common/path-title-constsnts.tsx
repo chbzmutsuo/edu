@@ -23,10 +23,68 @@ export const PAGES: any = {
   aquapot_PAGES,
   shinsei_PAGES,
   stock_PAGES,
+  keihi_PAGES: (props: PageGetterType) => {
+    const {roles, query, session, rootPath, pathname} = props
+
+    const {login, admin} = getScopes(session, {query, roles})
+
+    const loginPaths = [
+      {
+        tabId: '',
+        label: '経費管理',
+        children: [
+          {tabId: '', label: '経費一覧', ROOT: [rootPath]},
+          {tabId: 'new', label: '新規登録', ROOT: [rootPath]},
+          {tabId: 'new/bulk', label: '一括登録', ROOT: [rootPath]},
+        ],
+      },
+      {
+        tabId: '',
+        label: 'マスタ管理',
+        children: [{tabId: 'master', label: 'マスタ設定', ROOT: [rootPath]}],
+      },
+    ].map((item, i) => {
+      return {
+        ...item,
+        ROOT: [rootPath],
+        exclusiveTo: !!login,
+      }
+    })
+
+    // const adminPaths = [
+    //   {
+    //     tabId: '',
+    //     label: '管理者メニュー',
+    //     children: [{tabId: 'admin', label: '管理者設定', ROOT: [rootPath]}],
+    //   },
+    // ].map((item, i) => {
+    //   return {
+    //     ...item,
+    //     ROOT: [rootPath],
+    //     exclusiveTo: true,
+    //   }
+    // })
+
+    const pathSource: pathItemType[] = [...loginPaths]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      session,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
   health_PAGES: (props: PageGetterType) => {
     const {roles, query, session, rootPath, pathname} = props
 
-    const {login} = getScopes(session, {query, roles})
+    const {login, admin} = getScopes(session, {query, roles})
     const loginPaths = [
       {
         tabId: '',
@@ -34,14 +92,14 @@ export const PAGES: any = {
         children: [
           {tabId: 'daily', label: '日別ページ', ROOT: [rootPath]},
           {tabId: 'monthly', label: '月別ページ', ROOT: [rootPath]},
+          {tabId: 'journal', label: '日誌', ROOT: [rootPath]},
         ],
       },
       {
         tabId: '',
-        label: 'データ',
+        label: '薬マスタ',
         children: [
-          {tabId: 'user', label: 'ユーザー'},
-          {tabId: 'medicine', label: '薬'},
+          {tabId: 'medicine', label: '薬マスタ'},
           // {tabId: 'healthRecord', label: '健康記録'},
         ],
       },
@@ -52,7 +110,25 @@ export const PAGES: any = {
         exclusiveTo: !!login,
       }
     })
-    const pathSource: pathItemType[] = [...loginPaths]
+
+    const adminPaths = [
+      {
+        tabId: '管理者メニュー',
+        label: 'データ',
+        children: [
+          {tabId: 'user', label: 'ユーザー'},
+          // {tabId: 'healthRecord', label: '健康記録'},
+        ],
+      },
+    ].map((item, i) => {
+      return {
+        ...item,
+        ROOT: [rootPath],
+        exclusiveTo: !!admin,
+      }
+    })
+
+    const pathSource: pathItemType[] = [...loginPaths, ...adminPaths]
 
     const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
       rootPath,

@@ -5,6 +5,7 @@ export const HEALTH_CATEGORIES = {
   URINE: 'urine',
   STOOL: 'stool',
   MEAL: 'meal',
+  SNACK: 'snack',
   MEDICINE: 'medicine',
   WALKING: 'walking',
 } as const
@@ -16,17 +17,19 @@ export const HEALTH_CATEGORY_LABELS: Record<HealthCategory, string> = {
   [HEALTH_CATEGORIES.URINE]: '尿',
   [HEALTH_CATEGORIES.STOOL]: '便',
   [HEALTH_CATEGORIES.MEAL]: '食事',
+  [HEALTH_CATEGORIES.SNACK]: '間食',
   [HEALTH_CATEGORIES.MEDICINE]: '薬',
   [HEALTH_CATEGORIES.WALKING]: '歩行',
 }
 
 export const HEALTH_CATEGORY_CHART_HEIGHT_VALUE: Record<HealthCategory, number> = {
   [HEALTH_CATEGORIES.BLOOD_SUGAR]: 0,
-  [HEALTH_CATEGORIES.URINE]: 480,
-  [HEALTH_CATEGORIES.STOOL]: 420,
-  [HEALTH_CATEGORIES.MEAL]: 390,
-  [HEALTH_CATEGORIES.MEDICINE]: 330,
-  [HEALTH_CATEGORIES.WALKING]: 270,
+  [HEALTH_CATEGORIES.URINE]: 450,
+  [HEALTH_CATEGORIES.STOOL]: 400,
+  [HEALTH_CATEGORIES.MEAL]: 350,
+  [HEALTH_CATEGORIES.SNACK]: 300,
+  [HEALTH_CATEGORIES.MEDICINE]: 250,
+  [HEALTH_CATEGORIES.WALKING]: 200,
 }
 
 // カテゴリの色定義
@@ -35,6 +38,7 @@ export const HEALTH_CATEGORY_COLORS: Record<HealthCategory, string> = {
   [HEALTH_CATEGORIES.URINE]: '#f59e0b', // オレンジ
   [HEALTH_CATEGORIES.STOOL]: '#8b5cf6', // 紫
   [HEALTH_CATEGORIES.MEAL]: '#10b981', // 緑
+  [HEALTH_CATEGORIES.SNACK]: '#06b6d4', // シアン
   [HEALTH_CATEGORIES.MEDICINE]: '#3b82f6', // 青
   [HEALTH_CATEGORIES.WALKING]: '#464646', // オレンジ
 }
@@ -45,6 +49,7 @@ export const HEALTH_CATEGORY_BG_COLORS: Record<HealthCategory, string> = {
   [HEALTH_CATEGORIES.URINE]: '#fef3c7', // 薄いオレンジ
   [HEALTH_CATEGORIES.STOOL]: '#f3e8ff', // 薄い紫
   [HEALTH_CATEGORIES.MEAL]: '#d1fae5', // 薄い緑
+  [HEALTH_CATEGORIES.SNACK]: '#cffafe', // 薄いシアン
   [HEALTH_CATEGORIES.MEDICINE]: '#dbeafe', // 薄い青
   [HEALTH_CATEGORIES.WALKING]: '#fed7aa', // 薄いオレンジ
 }
@@ -114,3 +119,78 @@ export interface DailySummary {
     total: number
   }
 }
+
+// 日誌機能の型定義
+export interface HealthJournal {
+  id: number
+  userId: number
+  journalDate: string // YYYY-MM-DD形式
+  goalAndReflection?: string
+  templateApplied: boolean
+  entries: HealthJournalEntry[]
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface HealthJournalEntry {
+  id: number
+  journalId: number
+  hourSlot: number // 7, 8, 9, ..., 6
+  comment?: string
+  images: HealthJournalImage[]
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface HealthJournalImage {
+  id: number
+  entryId: number
+  fileName: string
+  filePath: string
+  fileSize?: number
+  mimeType?: string
+  description?: string
+  createdAt: string
+  updatedAt?: string
+}
+
+// 日誌フォームデータ型
+export interface JournalFormData {
+  goalAndReflection?: string
+  entries: {
+    hourSlot: number
+    comment?: string
+    images?: File[]
+  }[]
+}
+
+// 時間帯ラベル
+export const HOUR_SLOT_LABELS: Record<number, string> = {
+  7: '7:00-8:00',
+  8: '8:00-9:00',
+  9: '9:00-10:00',
+  10: '10:00-11:00',
+  11: '11:00-12:00',
+  12: '12:00-13:00',
+  13: '13:00-14:00',
+  14: '14:00-15:00',
+  15: '15:00-16:00',
+  16: '16:00-17:00',
+  17: '17:00-18:00',
+  18: '18:00-19:00',
+  19: '19:00-20:00',
+  20: '20:00-21:00',
+  21: '21:00-22:00',
+  22: '22:00-23:00',
+  23: '23:00-0:00',
+  0: '0:00-1:00',
+  1: '1:00-2:00',
+  2: '2:00-3:00',
+  3: '3:00-4:00',
+  4: '4:00-5:00',
+  5: '5:00-6:00',
+  6: '6:00-7:00',
+}
+
+// 時間帯の順序（7:00起点）
+export const HOUR_SLOTS = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6]

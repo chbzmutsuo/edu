@@ -345,6 +345,204 @@ export class StockCl {
           return previousMacd <= previousSignal && latestMacd > latestSignal
         },
       },
+      // 新しいシグナルを追加
+      volumeBreakout: {
+        id: 'volumeBreakout',
+        label: '出来高ブレイクアウト',
+        description: `【出来高ブレイクアウト】当日の出来高が過去${riseWindowSize}日間の平均出来高の2倍以上になった場合に判定します。出来高の急増は、重要なニュースや材料の発生、機関投資家の参入などを示唆し、株価の大きな動きの前兆となることが多いです。`,
+        func(stockClThis) {
+          const latest = stockClThis.latest
+          const previousList = stockClThis.PrevListDesc
+          if (previousList.length < riseWindowSize + 1) return false
+
+          // 最新日を除く過去riseWindowSize日間の平均出来高を計算
+          const avgVolume =
+            previousList.slice(1, riseWindowSize + 1).reduce((sum, d) => sum + (d.Volume ?? 0), 0) / riseWindowSize
+          return (latest?.Volume ?? 0) >= avgVolume * 2
+        },
+      },
+      priceVolumeBreakout: {
+        id: 'priceVolumeBreakout',
+        label: '価格・出来高同時ブレイクアウト',
+        description: `【価格・出来高同時ブレイクアウト】高値ブレイクアウトと出来高ブレイクアウトが同時に発生した場合に判定します。価格と出来高の両方が急上昇することで、より信頼性の高い上昇シグナルとなります。`,
+        func(stockClThis) {
+          const takaneResult = barometerCols.takaneBreakout.func(stockClThis)
+          const volumeResult = barometerCols.volumeBreakout.func(stockClThis)
+          return takaneResult && volumeResult
+        },
+      },
+      deathCross: {
+        id: 'deathCross',
+        label: 'デッドクロス',
+        description: `【デッドクロス】短期移動平均線（${shortMA}日）が長期移動平均線（${longMA}日）を上から下に突き抜けた場合に判定します。これは下降トレンドへの転換点とされ、売りシグナルとして注意が必要です。ゴールデンクロスの逆パターンです。`,
+        func(stockClThis) {
+          const previousList = stockClThis.PrevListDesc
+          if (previousList.length < longMA + 1) return false
+
+          // 今日の移動平均線
+          const shortMAToday = previousList.slice(0, shortMA).reduce((sum, d) => sum + (d.Close ?? 0), 0) / shortMA
+          const longMAToday = previousList.slice(0, longMA).reduce((sum, d) => sum + (d.Close ?? 0), 0) / longMA
+
+          // 昨日の移動平均線
+          const shortMAYesterday = previousList.slice(1, shortMA + 1).reduce((sum, d) => sum + (d.Close ?? 0), 0) / shortMA
+          const longMAYesterday = previousList.slice(1, longMA + 1).reduce((sum, d) => sum + (d.Close ?? 0), 0) / longMA
+
+          // デッドクロス判定: 昨日は短期 > 長期、今日は短期 < 長期
+          return shortMAYesterday > longMAYesterday && shortMAToday < longMAToday
+        },
+      },
+      rsiOverbought: {
+        id: 'rsiOverbought',
+        label: 'RSI買われすぎ',
+        description: `【RSI買われすぎ】RSI（相対力指数）が70以上の場合は「買われすぎ」と判定します。買われすぎの状態は、今後調整（下落）する可能性が高いとされ、利益確定や新規買いを控える参考になります。`,
+        func(stockClThis) {
+          const previousList = stockClThis.PrevListDesc
+          if (previousList.length < rsiPeriod + 1) return false
+
+          // RSI計算（rsiOversoldと同じロジック）
+          const closePrices = previousList
+            .slice(0, rsiPeriod + 1)
+            .map(d => d.Close ?? 0)
+            .reverse()
+
+          let gains = 0
+          let losses = 0
+
+          for (let i = 1; i < closePrices.length; i++) {
+            const diff = closePrices[i] - closePrices[i - 1]
+            if (diff > 0) {
+              gains += diff
+            } else if (diff < 0) {
+              losses -= diff
+            }
+          }
+
+          const avgGain = gains / rsiPeriod
+          const avgLoss = losses / rsiPeriod
+
+          let rsi = 0
+          if (avgLoss > 0) {
+            const rs = avgGain / avgLoss
+            rsi = 100 - 100 / (1 + rs)
+          } else if (avgGain > 0) {
+            rsi = 100
+          }
+
+          return rsi >= 70 // 買われすぎ閾値
+        },
+      },
+      macdBearish: {
+        id: 'macdBearish',
+        label: 'MACD弱気',
+        description: `【MACD弱気シグナル】MACDラインがシグナルラインを上から下に突き抜けた場合（デッドクロス）、売りシグナルとして判定します。上昇トレンドの終了や下降トレンドの開始を示唆します。`,
+        func(stockClThis) {
+          const previousList = stockClThis.PrevListDesc
+          const requiredPeriod = Math.max(macdSlowPeriod, macdSignalPeriod) + 1
+          if (previousList.length < requiredPeriod) return false
+
+          // EMA計算用のヘルパー関数（macdBullishと同じ）
+          const calculateEMA = (data: number[], period: number): number[] => {
+            const ema: number[] = []
+            const multiplier = 2 / (period + 1)
+            ema[0] = data.slice(0, period).reduce((sum, val) => sum + val, 0) / period
+            for (let i = 1; i < data.length; i++) {
+              ema[i] = data[i] * multiplier + ema[i - 1] * (1 - multiplier)
+            }
+            return ema
+          }
+
+          const closePrices = previousList
+            .slice(0, requiredPeriod)
+            .map(d => d.Close ?? 0)
+            .reverse()
+
+          if (closePrices.length < requiredPeriod) return false
+
+          const fastEMA = calculateEMA(closePrices, macdFastPeriod)
+          const slowEMA = calculateEMA(closePrices, macdSlowPeriod)
+
+          const macdLine: number[] = []
+          for (let i = macdSlowPeriod - 1; i < fastEMA.length; i++) {
+            macdLine.push(fastEMA[i] - slowEMA[i])
+          }
+
+          if (macdLine.length < macdSignalPeriod + 1) return false
+
+          const signalLine = calculateEMA(macdLine, macdSignalPeriod)
+          if (signalLine.length < 2) return false
+
+          const latestMacd = macdLine[macdLine.length - 1]
+          const latestSignal = signalLine[signalLine.length - 1]
+          const previousMacd = macdLine[macdLine.length - 2]
+          const previousSignal = signalLine[signalLine.length - 2]
+
+          // デッドクロス判定: 前日はMACD > シグナル、今日はMACD < シグナル
+          return previousMacd >= previousSignal && latestMacd < latestSignal
+        },
+      },
+      lowVolatility: {
+        id: 'lowVolatility',
+        label: '低ボラティリティ',
+        description: `【低ボラティリティ】過去${riseWindowSize}日間の値幅（高値-安値）の平均が、それ以前の期間と比較して小さくなっている場合に判定します。値動きが小さくなることで、次の大きな動きに備えている可能性があります。`,
+        func(stockClThis) {
+          const previousList = stockClThis.PrevListDesc
+          if (previousList.length < riseWindowSize * 2) return false
+
+          // 直近期間の平均値幅
+          const recentAvgRange =
+            previousList.slice(0, riseWindowSize).reduce((sum, d) => sum + (d.High ?? 0) - (d.Low ?? 0), 0) / riseWindowSize
+
+          // 前期間の平均値幅
+          const previousAvgRange =
+            previousList.slice(riseWindowSize, riseWindowSize * 2).reduce((sum, d) => sum + (d.High ?? 0) - (d.Low ?? 0), 0) /
+            riseWindowSize
+
+          // 直近の値幅が前期間の70%以下なら低ボラティリティ
+          return recentAvgRange <= previousAvgRange * 0.7
+        },
+      },
+      supportBounce: {
+        id: 'supportBounce',
+        label: 'サポート反発',
+        description: `【サポート反発】過去${riseWindowSize}日間の安値付近（±2%以内）で株価が反発した場合に判定します。サポートライン（支持線）からの反発は、下値の堅さを示し、上昇転換のサインとなることがあります。`,
+        func(stockClThis) {
+          const previousList = stockClThis.PrevListDesc
+          if (previousList.length < riseWindowSize + 2) return false
+
+          const latest = stockClThis.latest
+          const previous = stockClThis.previous
+          if (!latest?.Close || !previous?.Close || !latest?.Low) return false
+
+          // 過去の安値を取得
+          const pastLows = previousList.slice(2, riseWindowSize + 2).map(d => d.Low ?? 0)
+          const minLow = Math.min(...pastLows)
+
+          // 当日安値がサポート付近（±2%）で、終値が前日より上昇
+          const isNearSupport = Math.abs((latest.Low - minLow) / minLow) <= 0.02
+          const isPriceRising = latest.Close > previous.Close
+
+          return isNearSupport && isPriceRising
+        },
+      },
+      resistanceBreak: {
+        id: 'resistanceBreak',
+        label: 'レジスタンス突破',
+        description: `【レジスタンス突破】過去${riseWindowSize}日間の高値付近（レジスタンスライン）を明確に突破した場合に判定します。抵抗線の突破は、新たな上昇局面への転換点となることが多く、強い買いシグナルとされます。`,
+        func(stockClThis) {
+          const previousList = stockClThis.PrevListDesc
+          if (previousList.length < riseWindowSize + 1) return false
+
+          const latest = stockClThis.latest
+          if (!latest?.High) return false
+
+          // 過去の高値を取得（最新日は除く）
+          const pastHighs = previousList.slice(1, riseWindowSize + 1).map(d => d.High ?? 0)
+          const maxHigh = Math.max(...pastHighs)
+
+          // 当日高値が過去の最高値を3%以上上回る
+          return latest.High > maxHigh * 1.03
+        },
+      },
     }
 
     return barometerCols

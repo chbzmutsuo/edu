@@ -45,6 +45,7 @@ export default function MonthlyBloodSugarChart({
                       if (value === getValue(HEALTH_CATEGORIES.URINE)) return '尿'
                       if (value === getValue(HEALTH_CATEGORIES.STOOL)) return '便'
                       if (value === getValue(HEALTH_CATEGORIES.MEAL)) return '食事'
+                      if (value === getValue(HEALTH_CATEGORIES.SNACK)) return '間食'
                       if (value === getValue(HEALTH_CATEGORIES.MEDICINE)) return '薬'
                       if (value === getValue(HEALTH_CATEGORIES.WALKING)) return '歩行'
                       if (value % 50 === 0) return `${value} mg/dL`
