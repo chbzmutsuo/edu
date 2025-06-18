@@ -13,6 +13,7 @@ import SearchedItemList from '@components/DataLogic/TFs/MyTable/components/Searc
 import {Button} from '@components/styles/common-components/Button'
 import {Main} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/Main'
 import {IconBtn} from '@components/styles/common-components/IconBtn'
+import useWindowSize from '@hooks/useWindowSize'
 
 type SearchHandler = {
   columns: colType[][]
@@ -22,10 +23,10 @@ type SearchHandler = {
 export const useSearchHandler = (props: SearchHandler) => {
   const {dataModelName, useGlobalProps} = props
   const SearchCols = props.columns.flat().filter((col: colType) => col.search)
-  const {toggleLoad, query, shallowAddQuery, device} = useGlobalProps
+  const {toggleLoad, query, shallowAddQuery} = useGlobalProps
+  const {SP} = useWindowSize()
   const [modalOpen, setmodalOpen] = useState(false)
   const addQuery = shallowAddQuery
-  const {SP} = device
 
   const columns = Sub.makeSearchColumns({columns: props.columns, dataModelName, SP})
 

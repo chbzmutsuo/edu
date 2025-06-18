@@ -9,9 +9,10 @@ import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {toUtc} from '@class/Days/date-utils/calculations'
 import {ChevronsLeft, ChevronsRight} from 'lucide-react'
+import useWindowSize from '@hooks/useWindowSize'
 
 export default function useDateSwitcherFunc(props) {
-  const {query, addQuery, toggleLoad, width} = useGlobal()
+  const {query, addQuery, toggleLoad} = useGlobal()
 
   const getAdditionalPayload = useCallback(
     data => Object.fromEntries(props.additionalCols?.map(col => [col.id, data[col.id]]) ?? []),

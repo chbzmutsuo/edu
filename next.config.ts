@@ -27,10 +27,11 @@ const withPWA = require('next-pwa')({
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+
   experimental: {
     serverActions: {bodySizeLimit: '10mb'},
-    // serverComponentsExternalPackages: ['@prisma/client'],
   },
+
   images: {
     remotePatterns: [
       {protocol: 'https', hostname: '**kickswrap.com'},

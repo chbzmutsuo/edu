@@ -5,9 +5,10 @@
  body * {
   visibility: hidden;
  }
- .ujklぴ；ううううう ｋ；ー {
+ .print-section {
   margin: 10px auto;
   padding: 10px;
+  page-break-before: always;
  }
  .print-target,
  .print-target * {

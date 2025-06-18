@@ -19,6 +19,7 @@ import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
 import {FilterIcon} from 'lucide-react'
 import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import useWindowSize from '@hooks/useWindowSize'
 
 export default function EasySearcher(props: {
   easySearchPrismaDataOnServer: easySearchDataSwrType
@@ -38,7 +39,8 @@ export default function EasySearcher(props: {
     useGlobalProps,
   })
 
-  const {query, SP} = useGlobal()
+  const {query} = useGlobal()
+  const {SP} = useWindowSize()
 
   const createNextQuery = useCallback(
     props => {

@@ -1,11 +1,11 @@
 'use client'
 
 import Redirector from '@components/utils/Redirector'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useWindowSize from '@hooks/useWindowSize'
 import React from 'react'
 
 export default function HealthPage() {
-  const {PC} = useGlobal()
+  const {PC} = useWindowSize()
   if (PC) {
     return <Redirector {...{redirectPath: '/health/monthly'}} />
   } else {

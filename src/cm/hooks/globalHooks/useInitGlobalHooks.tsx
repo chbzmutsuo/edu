@@ -11,7 +11,7 @@ export default function useInitGlobalHooks() {
   const useGlobalProps = useGlobalOrigin()
   const deps = [
     ...useGlobalProps.useGlobalDeps,
-    ...useGlobalProps.useWindowSizeDeps,
+    // ...useGlobalProps.useWindowSizeDeps,
     ...useGlobalProps.useLoaderDeps,
     ...useGlobalProps.useMyNavigationDependencies,
     ...useGlobalProps.useMySessionDependencies,

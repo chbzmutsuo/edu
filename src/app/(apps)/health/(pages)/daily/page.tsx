@@ -6,7 +6,7 @@ import DailyRecords from '../DailyRecords'
 import DailyChart from '../../(components)/DailyChart/DailyChart'
 import {HealthRecordFormData} from '../../(constants)/types'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {Days} from '@class/Days/Days'
 import {toastByResult} from '@lib/ui/notifications'
 import useGlobal from '@hooks/globalHooks/useGlobal'
@@ -14,6 +14,8 @@ import {formatDate} from '@class/Days/date-utils/formatters'
 import useModal from '@components/utils/modal/useModal'
 import Link from 'next/link'
 import {Paper} from '@components/styles/common-components/paper'
+import useWindowSize from '@hooks/useWindowSize'
+import {HealthService} from '@app/(apps)/health/(lib)/healthService'
 
 // useGlobalの型定義（実際の実装に合わせて調整してください）
 interface User {
@@ -22,9 +24,10 @@ interface User {
 }
 
 export default function HealthPage() {
-  const {session, query, addQuery, PC} = useGlobal()
+  const {session, query, addQuery} = useGlobal()
+  const {PC} = useWindowSize()
 
-  const selectedDate = query.date ? query.date : formatDate(getMidnight())
+  const selectedDate: string = query.date ? query.date : formatDate(getMidnight())
   const setSelectedDate = value => addQuery({date: value})
 
   const {open: showForm, setopen: setShowForm, Modal} = useModal()
@@ -32,35 +35,46 @@ export default function HealthPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [records, setRecords] = useState<any[]>([])
 
-  // 日別レコードを取得（7:00〜翌7:00）
+  // 日別レコードを取得（案A設計：recordDateがISO形式での検索）
   const fetchDailyRecords = async () => {
     if (!session?.id) return
 
     try {
-      // 指定日の7:00（日本時間）を取得
-      const baseDate = getMidnight(new Date(selectedDate))
-      const startDate = Days.hour.add(baseDate, 7)
-      // 翌日の7:00（日本時間）を取得
-      const endDate = Days.hour.add(startDate, 24)
+      // 指定日の範囲を計算（前日7:00〜当日7:00）
+
+      const {startDate, endDate} = await HealthService.getRecordDateWhere(selectedDate)
 
       const result = await doStandardPrisma('healthRecord', 'findMany', {
         where: {
           userId: session.id,
           recordDate: {
             gte: startDate,
-            lt: endDate,
+            lte: endDate,
           },
         },
-        include: {
-          Medicine: true,
-        },
-        orderBy: {
-          recordTime: 'asc',
-        },
+        include: {Medicine: true},
+        orderBy: [{recordDate: 'asc'}, {recordTime: 'asc'}],
       })
 
       if (result.success) {
-        setRecords(result.result)
+        const after7 = Days.hour.add(startDate, 7)
+        const before7 = Days.hour.add(endDate, 7)
+
+        const filterByTime = result.result
+          .map(rec => {
+            return {
+              ...rec,
+              recordDateTime: new Date(`${formatDate(rec.recordDate, 'YYYY-MM-DD')} ${rec.recordTime}`),
+            }
+          })
+          .filter(record => {
+            const isAfter7 = record.recordDateTime.getTime() >= after7.getTime()
+            const isBefore7 = record.recordDateTime.getTime() < before7.getTime()
+            return isAfter7 && isBefore7
+          })
+          .sort((a, b) => a.recordDateTime.getTime() - b.recordDateTime.getTime())
+
+        setRecords(filterByTime)
       }
     } catch (error) {
       console.error('レコード取得エラー:', error)
@@ -237,6 +251,7 @@ export default function HealthPage() {
                 : {recordDate: selectedDate}
             }
             isEditing={!!editingRecord}
+            selectedDate={selectedDate}
           />
         </Modal>
 

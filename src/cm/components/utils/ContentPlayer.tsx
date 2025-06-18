@@ -91,7 +91,14 @@ export default function ContentPlayer(props: ContentPlayerProps) {
         break
       }
       default: {
-        thumbnail = <img src={src} alt="" style={{...fileTypeAndStyles.thumbnailStyle}} />
+        thumbnail = (
+          <img
+            src={src}
+            alt=""
+            // style={{...fileTypeAndStyles.thumbnailStyle,
+            // }}
+          />
+        )
 
         main = <ImageRenderer src={src} style={fileTypeAndStyles.mainStyle} />
       }
@@ -143,11 +150,11 @@ export default function ContentPlayer(props: ContentPlayerProps) {
           </T_LINK>
         )}
 
-        <Absolute className={`position-center  h-full w-full `}>
-          <Center style={{...styles.thumbnail}}>
-            <div>{thumbnail}</div>
-          </Center>
-        </Absolute>
+        <Center style={{...styles.thumbnail}}>
+          <div>{thumbnail}</div>
+        </Center>
+        {/* <Absolute className={`position-center  h-full w-full `}>
+        </Absolute> */}
       </main>
     )
   }

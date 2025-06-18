@@ -23,6 +23,7 @@ interface HealthRecordFormProps {
   onBulkSubmit?: (data: HealthRecordFormData[]) => void
   initialData?: Partial<HealthRecordFormData>
   isEditing?: boolean
+  selectedDate?: string
 }
 
 interface BulkRecordItem {
@@ -37,11 +38,11 @@ interface BulkRecordItem {
   memo?: string
 }
 
-export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, isEditing}: HealthRecordFormProps) {
+export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, isEditing, selectedDate}: HealthRecordFormProps) {
   const [isBulkMode, setIsBulkMode] = useState(false)
   const [formData, setFormData] = useState<HealthRecordFormData>({
     category: HEALTH_CATEGORIES.BLOOD_SUGAR,
-    recordDate: new Date().toISOString().split('T')[0],
+    recordDate: selectedDate || new Date().toISOString().split('T')[0],
     recordTime: new Date().toTimeString().slice(0, 5),
     ...initialData,
   })
@@ -52,7 +53,7 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
     items: BulkRecordItem[]
   }>({
     category: HEALTH_CATEGORIES.BLOOD_SUGAR,
-    recordDate: new Date().toISOString().split('T')[0],
+    recordDate: selectedDate || new Date().toISOString().split('T')[0],
     items: Array.from({length: 10}, () => ({recordTime: ''})),
   })
 

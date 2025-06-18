@@ -15,11 +15,13 @@ import PlaceHolder from '@components/utils/loader/PlaceHolder'
 
 import BasicTabs from '@components/utils/tabs/BasicTabs'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import useWindowSize from '@hooks/useWindowSize'
 
 export default function DriveScheduleCC({days, tbmBase, whereQuery}) {
   const useGlobalProps = useGlobal()
 
-  const {pathname, width, query, toggleLoad, PC} = useGlobalProps
+  const {pathname, query, toggleLoad} = useGlobalProps
+  const {width, PC} = useWindowSize()
   const minWidth = width * 0.95
   const ColBuiderProps = {
     useGlobalProps,

@@ -8,6 +8,7 @@ import {DnDTableRowPropsType} from '@components/DataLogic/TFs/MyTable/components
 import dynamic from 'next/dynamic'
 import {obj__filterObject} from '@class/ObjHandler/transformers'
 import {PlainObject} from '@class/ObjHandler/types'
+import useWindowSize from '@hooks/useWindowSize'
 
 const DnDTableRow = dynamic(() => import(`@components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow`), {
   ssr: false,
@@ -22,6 +23,7 @@ const Tbody = React.memo((props: {rows: any[][]; ClientProps2: ClientPropsType2;
   const {ClientProps2, tbodyRowParams, rows} = props
   const {getPaginationProps} = tbodyRowParams
   const {from} = getPaginationProps({totalCount: ClientProps2.totalCount})
+  const {SP} = useWindowSize()
 
   const stableDnDTableRowCallbackProps = useMemo(
     () => ({
@@ -32,17 +34,10 @@ const Tbody = React.memo((props: {rows: any[][]; ClientProps2: ClientPropsType2;
         `dataModelName`,
         `mutateRecords`,
       ]) as any),
-      SP: ClientProps2.useGlobalProps.device.SP,
+      SP,
       tbodyRowParams,
     }),
-    [
-      ClientProps2.myTable,
-      ClientProps2.useGlobalProps.device.SP,
-      ClientProps2.formData,
-      ClientProps2.dataModelName,
-      ClientProps2.mutateRecords,
-      tbodyRowParams,
-    ]
+    [ClientProps2.myTable, SP, ClientProps2.formData, ClientProps2.dataModelName, ClientProps2.mutateRecords, tbodyRowParams]
   )
 
   const DnDTableRowCb = useCallback(

@@ -3,6 +3,7 @@ import {MenuButton} from 'src/cm/components/layout/MenuButton'
 import {getPathItemRelatedProps} from '@components/layout/Admin/getPathItemRelatedProps'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 import {adminProps} from '@components/layout/Admin/Admin'
+import useWindowSize from '@hooks/useWindowSize'
 
 export type menuContext = {
   isOpen: boolean
@@ -20,8 +21,8 @@ export type adminContext = adminProps & {
 }
 
 export const useAdminContext = (props: adminProps, useGlobalProps: useGlobalPropType) => {
-  const {pathname, query, device} = useGlobalProps
-  const {PC} = device ?? {}
+  const {pathname, query} = useGlobalProps
+  const {PC} = useWindowSize()
   const horizontalMenu = PC && (props.navBarPosition ?? `top`) === `top`
 
   const [isOpen, setIsOpen] = useState(false)

@@ -6,7 +6,8 @@ import React from 'react'
 import {Button} from '@components/styles/common-components/Button'
 
 export default function useAqCustomerRecordFilter() {
-  const {query, addQuery, PC} = useGlobal()
+  const {query, addQuery} = useGlobal()
+
   const columns = new Fields(AqCustomerCl.Filter.aqCustomerRecord.getCols())
   const prismaWhere = AqCustomerCl.Filter.aqCustomerRecord.getPrismaWhereByQuery({query})
   const {BasicForm, latestFormData} = useBasicFormProps({

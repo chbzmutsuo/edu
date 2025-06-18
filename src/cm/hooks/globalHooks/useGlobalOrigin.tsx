@@ -3,7 +3,6 @@ import useMySession from '@hooks/globalHooks/useMySession'
 import useMyNavigation from 'src/cm/hooks/globalHooks/useMyNavigation'
 
 import useLoader from 'src/cm/hooks/globalHooks/useLoader'
-import useWindowSize from 'src/cm/hooks/useWindowSize'
 
 export type useGlobalPropType = ReturnType<typeof useGlobalOrigin>
 
@@ -11,20 +10,20 @@ export default function useGlobalOrigin(place?: any) {
   type useMyNavigationHookType = ReturnType<typeof useMyNavigation>
   type useMySessionHookType = ReturnType<typeof useMySession>
   type loadingHookType = ReturnType<typeof useLoader>
-  type useWindowSizeHookType = ReturnType<typeof useWindowSize>
+  // type useWindowSizeHookType = ReturnType<typeof useWindowSize>
   const useMyNavigationHook: useMyNavigationHookType = useMyNavigation() ?? {}
   const useMySessionHook: useMySessionHookType = useMySession() ?? {}
   const loading: loadingHookType = useLoader()
-  const useWindowSizeHook: useWindowSizeHookType = useWindowSize() ?? {}
+  // const useWindowSizeHook: useWindowSizeHookType = useWindowSize() ?? {}
 
   const result = {
-    ...useWindowSizeHook,
+    // ...useWindowSizeHook,
     ...useMyNavigationHook,
     ...useMySessionHook,
     ...loading,
   }
 
-  const {width, globalLoaderAtom, status, session, device} = result
+  const {globalLoaderAtom, status, session} = result
 
   const waitRendering = [
     status === `loading`,
@@ -32,9 +31,9 @@ export default function useGlobalOrigin(place?: any) {
     useMyNavigationHook.query === null,
     useMyNavigationHook.query === undefined,
     typeof window === `undefined`,
-    width === 0,
     !session,
-    !device,
+    // width === 0,
+    // !device,
   ].some(Boolean)
 
   const showLoader = waitRendering || globalLoaderAtom

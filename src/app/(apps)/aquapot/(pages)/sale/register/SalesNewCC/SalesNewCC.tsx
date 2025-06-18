@@ -24,6 +24,7 @@ import {sleep} from '@lib/methods/common'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import {PaperLarge} from '@components/styles/common-components/paper'
 import {toastByResult} from '@lib/ui/notifications'
+import useWindowSize from '@hooks/useWindowSize'
 
 export type CartItem = {
   uuid: string
@@ -38,8 +39,9 @@ export type CartItem = {
 export default function SalesNewCC() {
   const useGlobalProps = useGlobal()
   const {toggleLoad, query, router, session} = useGlobalProps
+  const {width} = useWindowSize()
 
-  const maxWidth = Math.min(useGlobalProps.width, 500)
+  const maxWidth = Math.min(width, 500)
 
   const [cartUser, setcartUser] = useState<any>(isSaleTestMode ? {aqCustomerId: 3} : null)
   const [cartItems, setcartItems] = useState<CartItem[]>(isSaleTestMode ? defaultState : [])

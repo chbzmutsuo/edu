@@ -17,8 +17,6 @@ interface Child {
 }
 
 export default function LoginPage() {
-  const {session} = useGlobal()
-
   const router = useRouter()
   const [step, setStep] = useState<'select' | 'parent' | 'child'>('select')
   const [children, setChildren] = useState<Child[]>([])

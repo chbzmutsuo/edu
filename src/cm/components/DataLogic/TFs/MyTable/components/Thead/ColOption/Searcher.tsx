@@ -7,9 +7,11 @@ import {SearchQuery, searchQueryKey, Sub} from '@components/DataLogic/TFs/MyTabl
 
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
 import {confirmSearch} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
+import useWindowSize from '@hooks/useWindowSize'
 
 export default function Searcher({dataModelName, col, useGlobalProps}) {
-  const {SP, query, addQuery, toggleLoad} = useGlobalProps as useGlobalPropType
+  const {query, addQuery, toggleLoad} = useGlobalProps as useGlobalPropType
+  const {SP} = useWindowSize()
   const columns = Sub.makeSearchColumns({columns: new Fields([col ?? {}]).transposeColumns(), dataModelName, SP})
   const currentSearchedQuerys = SearchQuery.getSearchDefaultObject({dataModelName, query})
   const FormHook = useBasicFormProps({columns, formData: currentSearchedQuerys})

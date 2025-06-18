@@ -2,6 +2,8 @@
 
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {HOUR_SLOTS} from '../(constants)/types'
+import {HealthService} from '@app/(apps)/health/(lib)/healthService'
+import {journalDefaultValue} from '@app/(apps)/health/(lib)/journalService'
 
 // 日誌を取得または作成
 export async function getOrCreateJournal(userId: number, date: string) {
@@ -12,19 +14,12 @@ export async function getOrCreateJournal(userId: number, date: string) {
     // 既存の日誌を検索
     const findResult = await doStandardPrisma('healthJournal', 'findUnique', {
       where: {
-        userId_journalDate: {
-          userId,
-          journalDate,
-        },
+        userId_journalDate: {userId, journalDate},
       },
       include: {
         entries: {
-          include: {
-            images: true,
-          },
-          orderBy: {
-            hourSlot: 'asc',
-          },
+          include: {images: true},
+          orderBy: {hourSlot: 'asc'},
         },
       },
     })
@@ -38,11 +33,7 @@ export async function getOrCreateJournal(userId: number, date: string) {
 
     // 新規作成
     const createResult = await doStandardPrisma('healthJournal', 'create', {
-      data: {
-        userId,
-        journalDate,
-        templateApplied: false,
-      },
+      data: {userId, journalDate, templateApplied: false, goalAndReflection: journalDefaultValue},
       include: {
         entries: {
           include: {
@@ -189,27 +180,15 @@ export async function updateJournalEntry(entryId: number, comment: string) {
 // 指定日の全健康記録を取得
 export async function getAllHealthRecordsForDate(userId: number, journalDate: string) {
   try {
-    // 日本時刻の7:00から翌日7:00までの範囲（日誌の基点に合わせる）
-    const baseDate = new Date(journalDate + 'T00:00:00+09:00')
-    const startDate = new Date(baseDate)
-    startDate.setHours(7, 0, 0, 0)
-    const endDate = new Date(startDate)
-    endDate.setDate(endDate.getDate() + 1)
+    const {startDate, endDate} = await HealthService.getRecordDateWhere(journalDate)
 
     const result = await doStandardPrisma('healthRecord', 'findMany', {
       where: {
         userId,
-        recordDate: {
-          gte: startDate,
-          lt: endDate,
-        },
+        recordDate: {gte: startDate, lte: endDate},
       },
-      include: {
-        Medicine: true,
-      },
-      orderBy: {
-        recordTime: 'asc',
-      },
+      include: {Medicine: true},
+      orderBy: {recordTime: 'asc'},
     })
 
     return {

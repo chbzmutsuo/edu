@@ -39,21 +39,36 @@ interface DailyChartProps {
 }
 
 export default function DailyChart({records, selectedDate}: DailyChartProps) {
-  // 時刻でソートされた全記録
-  const sortedRecords = records.sort((a, b) => a.recordTime.localeCompare(b.recordTime))
+  // 時刻でソートされた全記録（recordDateとrecordTimeの組み合わせでソート）
+  const sortedRecords = records.sort((a, b) => {
+    // recordDateで比較
+    const dateCompare = new Date(a.recordDate).getTime() - new Date(b.recordDate).getTime()
+    if (dateCompare !== 0) return dateCompare
+
+    // recordDateが同じ場合はrecordTimeで比較
+    return a.recordTime.localeCompare(b.recordTime)
+  })
 
   // 7:00〜翌7:00の時間軸を30分刻みで生成
   const generateTimeLabels = () => {
     const timeLabels: string[] = []
-    for (let hour = 7; hour < 31; hour++) {
+
+    // 前日7:00〜23:30
+    for (let hour = 7; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 30) {
-        const actualHour = hour >= 24 ? hour - 24 : hour
-        const timeStr = `${actualHour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
         timeLabels.push(timeStr)
       }
     }
-    // 最後に翌日7:00を追加
-    timeLabels.push('07:00')
+
+    // 翌日00:00〜06:30
+    for (let hour = 0; hour < 7; hour++) {
+      for (let minute = 0; minute < 60; minute += 30) {
+        const timeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+        timeLabels.push(timeStr)
+      }
+    }
+
     return timeLabels
   }
 
@@ -74,9 +89,49 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
     // 該当時刻の記録を検索
     const recordsAtTime = sortedRecords.filter(record => {
       const recordTime = record.recordTime
+      const recordDate = new Date(record.recordDate)
+      const selectedDateObj = new Date(selectedDate)
+
+      // 時刻を分単位に変換（翌日の00:00-06:59は24時間加算）
+      const timeToMinutes = (timeStr: string, isNextDay: boolean = false) => {
+        const [hour, minute] = timeStr.split(':').map(Number)
+        const baseMinutes = hour * 60 + minute
+
+        // 翌日の場合は24時間加算
+        if (isNextDay || (hour >= 0 && hour < 7)) {
+          return baseMinutes + 24 * 60
+        }
+        return baseMinutes
+      }
+
+      // レコードが翌日のデータかどうかを判定
+      const isRecordNextDay = recordDate.getTime() > selectedDateObj.getTime()
+
+      // レコードの時刻が7:00未満の場合は翌日として扱う
+      const recordHour = parseInt(recordTime.split(':')[0])
+      const recordIsNextDay = isRecordNextDay || recordHour < 7
+
+      const recordMinutes = timeToMinutes(recordTime, recordIsNextDay)
+
+      // 現在の時刻範囲を計算
       const currentIndex = timeLabels.indexOf(time)
-      const prevTime = timeLabels[currentIndex - 1] || timeLabels[timeLabels.length - 1]
-      return recordTime > prevTime && recordTime <= time
+      let prevTime: string
+
+      if (currentIndex === 0) {
+        prevTime = '06:30'
+      } else {
+        prevTime = timeLabels[currentIndex - 1]
+      }
+
+      const currentHour = parseInt(time.split(':')[0])
+      const currentIsNextDay = currentHour < 7
+      const prevHour = parseInt(prevTime.split(':')[0])
+      const prevIsNextDay = prevHour < 7
+
+      const currentMinutes = timeToMinutes(time, currentIsNextDay)
+      const prevMinutes = timeToMinutes(prevTime, prevIsNextDay)
+
+      return recordMinutes > prevMinutes && recordMinutes <= currentMinutes
     })
 
     recordsAtTime.forEach(record => {
@@ -219,7 +274,19 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
 
                 <CartesianGrid strokeDasharray="3 3" />
 
-                <XAxis dataKey="time" tick={{fontSize: 12}} interval={1} />
+                <XAxis
+                  dataKey="time"
+                  tick={{fontSize: 12}}
+                  interval={3}
+                  tickFormatter={value => {
+                    // 主要な時刻のみ表示（3時間間隔）
+                    const hour = parseInt(value.split(':')[0])
+                    if (hour % 3 === 0 || value === '07:00') {
+                      return value
+                    }
+                    return ''
+                  }}
+                />
 
                 <YAxis
                   domain={[0, 500]}

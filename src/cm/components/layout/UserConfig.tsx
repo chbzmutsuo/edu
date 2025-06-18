@@ -6,6 +6,7 @@ import {LabelValue} from '@components/styles/common-components/ParameterCard'
 import MyPopover from '@components/utils/popover/MyPopover'
 import {UserCircleIcon} from '@heroicons/react/20/solid'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import useWindowSize from '@hooks/useWindowSize'
 import {HREF} from '@lib/methods/urls'
 import {signOut} from 'next-auth/react'
 import React, {useMemo} from 'react'
@@ -29,7 +30,8 @@ interface UserConfigProps {
 const STYLING_CONFIG = {styles: {wrapper: {padding: 0, width: '100%'}}} as const
 
 export const UserConfig = React.memo(() => {
-  const {roles, accessScopes, session, rootPath, query, width, router} = useGlobal()
+  const {roles, accessScopes, session, rootPath, query, router} = useGlobal()
+  const {width} = useWindowSize()
 
   // 幅計算をメモ化
   const dimensions = useMemo(() => {

@@ -12,6 +12,7 @@ import Link from 'next/link'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import MonthlySummaryTable from '@app/(apps)/health/(components)/MonthlySummaryTable'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import useWindowSize from '@hooks/useWindowSize'
 
 // useGlobalの型定義（実際の実装に合わせて調整してください）
 interface User {
@@ -20,7 +21,8 @@ interface User {
 }
 
 export default function MonthlyPage() {
-  const {session, query, addQuery, PC} = useGlobal()
+  const {session, query, addQuery} = useGlobal()
+  const {PC} = useWindowSize()
 
   const year = query.year ? parseInt(query.year) : new Date().getFullYear()
   const month = query.month ? parseInt(query.month) : new Date().getMonth() + 1
@@ -86,13 +88,15 @@ export default function MonthlyPage() {
       const dateStr = formatDate(currentDate, 'YYYY-MM-DD')
 
       // その日の6:00から翌日6:00までのレコードを抽出
-      const dayStart = new Date(dateStr + ' 06:00:00')
+      const dayStart = new Date(dateStr + ' 07:00:00')
       const dayEnd = new Date(dayStart)
       dayEnd.setDate(dayEnd.getDate() + 1)
 
       const dayRecords = records.filter(record => {
-        const recordDate = new Date(record.recordDate)
-        return recordDate >= dayStart && recordDate < dayEnd
+        const recordDateTime = new Date(`${formatDate(record.recordDate, 'YYYY-MM-DD')} ${record.recordTime}`)
+        return recordDateTime >= dayStart && recordDateTime < dayEnd
+        // const recordDate = new Date(record.recordDate)
+        // return recordDate >= dayStart && recordDate < dayEnd
       })
 
       // 血糖値の統計計算

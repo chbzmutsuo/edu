@@ -20,7 +20,7 @@ type SortHandler = {
 }
 const SortHandler = React.memo((props: SortHandler) => {
   const {dataModelName, useGlobalProps, sortableCols} = props
-  const {toggleLoad, query, addQuery, device} = useGlobalProps
+  const {toggleLoad, query, addQuery} = useGlobalProps
   const [tableSortModalOpen, settableSortModalOpen] = useJotaiByKey<atomTypes[`tableSortModalOpen`]>(`tableSortModalOpen`, false)
 
   /**modal Memo */

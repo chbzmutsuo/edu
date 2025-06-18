@@ -4,9 +4,11 @@ import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitche
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 
 import {DetailPagePropType} from '@cm/types/types'
+import useWindowSize from '@hooks/useWindowSize'
 
 const GenbaDayShiftEmptyStuffSearcher = (props: DetailPagePropType) => {
-  const {query, PC} = props.useGlobalProps
+  const {query} = props.useGlobalProps
+  const {PC} = useWindowSize()
 
   if (!PC) return null
 

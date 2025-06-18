@@ -21,9 +21,11 @@ import {twMerge} from 'tailwind-merge'
 import {C_Stack} from '@components/styles/common-components/common-components'
 
 import {HREF} from '@lib/methods/urls'
+import useWindowSize from '@hooks/useWindowSize'
 
 export default function TemplateBottomButton() {
-  const {toggleLoad, PC, pathname, query} = useGlobal()
+  const {toggleLoad, pathname, query} = useGlobal()
+  const {PC} = useWindowSize()
 
   const theDate = toUtc(query.from ?? new Date())
 

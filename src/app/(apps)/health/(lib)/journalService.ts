@@ -1,6 +1,24 @@
+export const journalDefaultValue = `≪目標≫
+
+早番：
+
+遅番：
+
+深夜：
+
+
+
+≪振り返り≫
+
+早番：
+
+遅番：
+
+深夜：`
+
 // 日誌機能のデータアクセスサービス
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {HealthJournal, HealthJournalEntry, JournalFormData, HOUR_SLOTS} from '../(constants)/types'
+import {HealthJournal, HealthJournalEntry, HOUR_SLOTS} from '../(constants)/types'
 
 export class JournalService {
   // 7:00起点の日付を取得（前日7:00から当日7:00まで）
@@ -45,6 +63,7 @@ export class JournalService {
       // 新規作成
       const createResult = await doStandardPrisma('healthJournal', 'create', {
         data: {
+          goalAndReflection: journalDefaultValue,
           userId,
           journalDate,
           templateApplied: false,

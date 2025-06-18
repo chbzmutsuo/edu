@@ -8,10 +8,7 @@ import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStan
 import {updateAlgorithm} from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
 import {StockCl} from 'src/non-common/EsCollection/(stock)/StockCl'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'
-import {ColBuilder} from '@app/(apps)/stock/(builders)/ColBuilder'
-import {Fields} from '@cm/class/Fields/Fields'
 import StockChart from '@app/(apps)/stock/(components)/StockChart'
-import {NumHandler} from '@class/NumHandler'
 import {QueryBuilder} from '@app/(apps)/stock/(builders)/QueryBuilder'
 
 interface StockWithSignals {

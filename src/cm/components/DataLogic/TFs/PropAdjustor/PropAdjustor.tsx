@@ -14,6 +14,7 @@ import EasySearcher from '@components/DataLogic/TFs/MyTable/components/EasySearc
 
 import {usePropAdjustorLogic} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/usePropAdjustorLogic'
 import {PropAdjustorPropsType, SurroundingComponentProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import useWindowSize from '@hooks/useWindowSize'
 
 const SurroundingComponent = React.memo<SurroundingComponentProps>(({type, ClientProps2}) => {
   const {PageBuilder, dataModelName} = ClientProps2
@@ -41,7 +42,7 @@ const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
   const {serverFetchProps} = props
   const {ClientProps2, UseRecordsReturn, modelData, easySearchPrismaDataOnServer, useGlobalProps} = usePropAdjustorLogic(props)
 
-  const {appbarHeight} = useGlobalProps
+  const {appbarHeight} = useWindowSize()
 
   const hasEasySearch = useMemo(
     () => Object.keys(easySearchPrismaDataOnServer?.availableEasySearchObj || {}).length > 0,

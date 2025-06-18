@@ -1,13 +1,14 @@
 'use client'
 
+import {formatDate} from '@class/Days/date-utils/formatters'
 import {HEALTH_CATEGORY_LABELS, HEALTH_CATEGORY_COLORS} from '../(constants)/types'
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import {Paper} from '@components/styles/common-components/paper'
 import {COLORS} from '@lib/constants/constants'
 
 interface HealthRecord {
   id: number
   category: string
+  recordDate: string
   recordTime: string
   bloodSugarValue?: number
   Medicine?: {
@@ -84,7 +85,7 @@ export default function DailyRecords({userId, date, records, onEdit, onDelete, r
                         background: COLORS.table.thead,
                       },
                       className: tdBorderClass,
-                      cellValue: record.recordTime,
+                      cellValue: formatDate(new Date(`${formatDate(record.recordDate)} ${record.recordTime}`), 'M/D(ddd) HH:mm'),
                     },
                     {
                       label: 'カテゴリ',

@@ -9,7 +9,8 @@ import React from 'react'
 
 import {getServerSession, Session} from 'next-auth'
 import {authOptions} from '@app/api/auth/[...nextauth]/constants/authOptions'
-import SessionContextProvider from '@hooks/useGlobalContext/providers/SessionContextProvider'
+
+import AppRootProvider from '@providers/AppRootProvider'
 
 const title = process.env.NEXT_PUBLIC_TITLE
 export const metadata: Metadata = {title: title}
@@ -24,15 +25,12 @@ export default async function AppRootLayout(props) {
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body suppressHydrationWarning>
-        {/* <StrictMode> */}
-
         <Suspense>
-          <SessionContextProvider {...{session}}>
+          <AppRootProvider {...{session}}>
             <GlobalToast></GlobalToast>
             {props.children}
-          </SessionContextProvider>
+          </AppRootProvider>
         </Suspense>
-        {/* </StrictMode> */}
       </body>
     </html>
   )

@@ -33,7 +33,6 @@ export const PAGES: any = {
         tabId: '',
         label: '経費管理',
         children: [
-          {tabId: '', label: '経費一覧', ROOT: [rootPath]},
           {tabId: 'new', label: '新規登録', ROOT: [rootPath]},
           {tabId: 'new/bulk', label: '一括登録', ROOT: [rootPath]},
         ],
@@ -117,7 +116,7 @@ export const PAGES: any = {
         label: 'データ',
         children: [
           {tabId: 'user', label: 'ユーザー'},
-          // {tabId: 'healthRecord', label: '健康記録'},
+          {tabId: 'dashboard', label: 'ダッシュボード'},
         ],
       },
     ].map((item, i) => {

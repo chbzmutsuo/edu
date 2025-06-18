@@ -1,5 +1,6 @@
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {getMidnight} from '@class/Days/date-utils/calculations'
+import {isDev} from '@lib/methods/common'
 
 // 薬IDのマッピング（実際のDBから取得した値に調整してください）
 const MEDICINE_IDS = {
@@ -313,12 +314,14 @@ export const seedHealthRecords = async (userId: number) => {
     const startDate = getMidnight(new Date('2025-06-01'))
     const endDate = getMidnight(new Date('2025-07-01'))
 
-    await doStandardPrisma('healthRecord', 'deleteMany', {
-      where: {
-        userId,
-        recordDate: {gte: startDate, lt: endDate},
-      },
-    })
+    if (isDev) {
+      await doStandardPrisma('healthRecord', 'deleteMany', {
+        where: {
+          userId,
+          recordDate: {gte: startDate, lt: endDate},
+        },
+      })
+    }
 
     console.log('既存の6月データを削除しました')
 

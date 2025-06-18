@@ -5,6 +5,7 @@ import {NumHandler} from '@class/NumHandler'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
 import {R_Stack} from '@components/styles/common-components/common-components'
+import useWindowSize from '@hooks/useWindowSize'
 
 const custom_showSummaryInTd = (cols, SP, props) => {
   return cols
@@ -29,11 +30,9 @@ export const getTbmOperationGroupBaseCols = ({session}) => [
 ]
 
 export const TbmOperationGroupColBuilder = (props: columnGetterType) => {
-  const register = {validate: (value, formValues) => formValues.id && '必須です'}
-
   const {useGlobalProps} = props
-  const {SP} = useGlobalProps
   const {session} = useGlobalProps
+  const {SP} = useWindowSize()
   return new Fields([
     ...new Fields([
       //basics

@@ -3,18 +3,12 @@
 import {useState, useEffect} from 'react'
 import {useParams, useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
-import {
-  getExpenseById,
-  updateExpense,
-  analyzeMultipleReceipts,
-  uploadAttachment,
-  linkAttachmentsToExpense,
-  generateInsightsDraft,
-  generateInsights,
-} from '../../../../actions/expense-actions'
+import {getExpenseById, updateExpense, uploadAttachment, linkAttachmentsToExpense} from '../../../../actions/expense-actions'
 import CameraUpload from '../../../../components/CameraUpload'
 import {useAllOptions} from '../../../../hooks/useOptions'
-import {Loader2, Save, ArrowLeft, Sparkles, Eye, X} from 'lucide-react'
+import {Eye, X} from 'lucide-react'
+import {analyzeMultipleReceipts} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
+import {generateInsights, generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 
 interface ExpenseDetail {
   id: string

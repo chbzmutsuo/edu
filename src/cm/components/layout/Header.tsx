@@ -6,6 +6,7 @@ import {HREF} from '@lib/methods/urls'
 import {T_LINK} from '@components/styles/common-components/links'
 import {adminContext} from '@components/layout/Admin/hooks/useAdminContext'
 import {R_Stack} from '@components/styles/common-components/common-components'
+import useWindowSize from '@hooks/useWindowSize'
 
 // 動的インポートで軽量化
 const AppLogo = React.lazy(() => import('src/cm/components/layout/Navigation/AppLogo'))
@@ -40,9 +41,8 @@ const Header = React.memo<HeaderProps>(({adminContext}) => {
     menuContext: {MenuButton},
   } = adminContext
 
-  const {device, query, rootPath, appbarHeight, session} = useGlobalProps ?? {}
-
-  const {PC} = device ?? {}
+  const {query, rootPath} = useGlobalProps ?? {}
+  const {device, appbarHeight, PC} = useWindowSize()
 
   // GlobalIdSelectorのメモ化を改善
   const GlobalIdSelector = useMemo(() => {

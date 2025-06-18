@@ -5,6 +5,7 @@ import {HOUR_SLOT_LABELS, HEALTH_CATEGORY_LABELS, HEALTH_CATEGORY_COLORS, Health
 import {addJournalImage, deleteJournalImage} from '../../(lib)/journalActions'
 import {FileHandler} from '@cm/class/FileHandler'
 import ContentPlayer from '@components/utils/ContentPlayer'
+import {R_Stack} from '@components/styles/common-components/common-components'
 
 interface HealthRecord {
   id: number
@@ -190,9 +191,12 @@ export default function JournalTimelineEntry({
     }
 
     return (
-      <div key={record.id} className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+      <div key={record.id} className="flex items-center gap-2 p-2 bg-gray-100 rounded h ">
         <span className="text-xs font-medium text-gray-600">{record.recordTime}</span>
-        <span className="px-2 py-1 rounded text-xs font-medium text-white" style={{backgroundColor: categoryColor}}>
+        <span
+          className="px-2 py-1 rounded text-xs font-medium text-white print-health-badge"
+          style={{backgroundColor: categoryColor}}
+        >
           {categoryLabel}
         </span>
         <span className="text-sm text-gray-700">{details}</span>
@@ -210,108 +214,113 @@ export default function JournalTimelineEntry({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 border-l-4 border-blue-500">
-      {/* 時間帯ヘッダー */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-800">{HOUR_SLOT_LABELS[hourSlot]}</h3>
-      </div>
+    <div className={``}>
+      <div className="bg-white rounded-lg shadow px-4 border-l-4 border-blue-500 print-timeline-entry avoid-break">
+        {/* 時間帯ヘッダー */}
+        <div className="flex items-center justify-between mb-4 print-timeline-header">
+          <h3 className="text-lg font-semibold text-gray-800 print-time-label">{HOUR_SLOT_LABELS[hourSlot]}</h3>
+        </div>
 
-      {/* 健康記録 */}
-      {healthRecords.length > 0 && (
+        {/* 健康記録 */}
+        {healthRecords.length > 0 && (
+          <div className="mb-4">
+            <R_Stack className=" print-health-records">{healthRecords.map(renderHealthRecord)}</R_Stack>
+          </div>
+        )}
+
+        {/* コメント入力 */}
         <div className="mb-4">
-          <h4 className="text-sm font-medium text-gray-700 mb-2">健康記録</h4>
-          <div className="space-y-2">{healthRecords.map(renderHealthRecord)}</div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">コメント</label>
+          <div className="print-comment-box">
+            <textarea
+              value={comment}
+              onChange={e => handleCommentChange(e.target.value)}
+              placeholder="この時間帯の出来事や感想を記入してください..."
+              className="w-full h-20 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none print-textarea"
+            />
+          </div>
         </div>
-      )}
 
-      {/* コメント入力 */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">コメント</label>
-        <textarea
-          value={comment}
-          onChange={e => handleCommentChange(e.target.value)}
-          placeholder="この時間帯の出来事や感想を記入してください..."
-          className="w-full h-20 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
-        />
-      </div>
+        {/* 画像アップロード */}
+        <div className="mb-4 ">
+          {/* プレビュー画像 */}
+          <section className={`no-print`}>
+            {/* ファイル選択 */}
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleFileSelect}
+              className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
 
-      {/* 画像アップロード */}
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-2">画像</label>
-
-        {/* ファイル選択 */}
-        <input
-          type="file"
-          multiple
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-        />
-
-        {/* プレビュー画像 */}
-        {previewUrls.length > 0 && (
-          <div className="mt-3">
-            <p className="text-sm text-gray-600 mb-2">プレビュー（未保存）:</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {previewUrls.map((url, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={url}
-                    alt={`プレビュー ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-md border-2 border-yellow-300"
-                  />
-                  <button
-                    onClick={() => removePreviewImage(index)}
-                    className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                  >
-                    ×
-                  </button>
+            {previewUrls.length > 0 && (
+              <div className="mt-3">
+                <p className="text-sm text-gray-600 mb-2">プレビュー（未保存）:</p>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {previewUrls.map((url, index) => (
+                    <div key={index} className="relative">
+                      <img
+                        src={url}
+                        alt={`プレビュー ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-md border-2 border-yellow-300"
+                      />
+                      <button
+                        onClick={() => removePreviewImage(index)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+          </section>
+          {/* 既存画像 */}
+          {entry.images && entry.images.length > 0 && (
+            <div className="mt-3">
+              {/* 画面表示用 */}
+              <R_Stack className=" justify-start    items-start gap-0">
+                {entry.images.map(image => (
+                  <div key={image.id} className=" w-1/4 relative  p-1.5">
+                    <div className={` t-paper p-1 mx-auto w-fit`}>
+                      <ContentPlayer
+                        src={image.filePath}
+                        {...{
+                          styles: {thumbnail: {width: undefined, height: 120}},
+                          options: {download: true},
+                        }}
+                      />
+                      <button
+                        onClick={() => removeExistingImage(image.id)}
+                        className="absolute -top-2 -right-2 bg-red-500 cursor-pointer text-white rounded-full w-6 h-6 z-50 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </R_Stack>
             </div>
+          )}
+        </div>
+
+        {/* 確定ボタン */}
+        {(hasChanges || selectedFiles.length > 0) && (
+          <div className="flex justify-end no-print">
+            <button
+              onClick={handleConfirm}
+              disabled={uploading}
+              className={`px-4 py-2 rounded-md text-white font-medium ${
+                uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {uploading ? '保存中...' : '確定'}
+            </button>
           </div>
         )}
-
-        {/* 既存画像 */}
-        {entry.images && entry.images.length > 0 && (
-          <div className="mt-3">
-            <p className="text-sm text-gray-600 mb-2">保存済み画像:</p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {entry.images.map(image => (
-                <div key={image.id} className="relative w-fit  t-paper">
-                  <ContentPlayer src={image.filePath} {...{options: {download: true}}} />
-                  {/* <img
-                    src={image.filePath}
-                    alt={image.description || image.fileName}
-                    className="w-full h-24 object-cover rounded-md border"
-                  /> */}
-                  <button
-                    onClick={() => removeExistingImage(image.id)}
-                    className="absolute -top-2 -right-2 bg-red-500 cursor-pointer text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
-
-      {/* 確定ボタン */}
-      {(hasChanges || selectedFiles.length > 0) && (
-        <div className="flex justify-end">
-          <button
-            onClick={handleConfirm}
-            disabled={uploading}
-            className={`px-4 py-2 rounded-md text-white font-medium ${
-              uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-            }`}
-          >
-            {uploading ? '保存中...' : '確定'}
-          </button>
-        </div>
-      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import dynamic from 'next/dynamic'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import {adminContext, menuContext} from '../hooks/useAdminContext'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
+import useWindowSize from '@hooks/useWindowSize'
 
 // 動的インポートでコード分割
 const NavBar = dynamic(() => import('src/cm/components/layout/Navigation/NavBar'), {
@@ -23,8 +24,7 @@ type AdminLayoutProps = {
 }
 
 export const AdminLayout = React.memo(({children, adminContext, menuContext, useGlobalProps}: AdminLayoutProps) => {
-  const {device} = useGlobalProps
-  const {PC} = device ?? {}
+  const {PC} = useWindowSize()
   const {horizontalMenu, pathItemObject} = adminContext
 
   const MainDisplay = React.memo(() => <div>{children}</div>)

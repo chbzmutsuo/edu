@@ -10,6 +10,7 @@ import {useGenbaDayBasicEditor} from '@app/(apps)/sohken/hooks/useGenbaDayBasicE
 import {chechIsHoliday} from '@app/(apps)/sohken/api/cron/refreshGoogleCalendar/chechIsHoliday'
 import useGDS_DND from '@app/(apps)/sohken/hooks/useGDS_DND'
 import {ButtonDisplay} from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/ButtonDisplay'
+import useWindowSize from '@hooks/useWindowSize'
 
 const GenbaDaySummary = (props: {
   GenbaDayBasicEditor_HK: ReturnType<typeof useGenbaDayBasicEditor>
@@ -28,7 +29,8 @@ const GenbaDaySummary = (props: {
     GenbaDayTaskMidTable: GenbaDayTaskMidTable[]
   }
 
-  const {toggleLoad, PC, pathname, query, session} = useGlobal()
+  const {toggleLoad, pathname, query, session} = useGlobal()
+  const {PC} = useWindowSize()
   const [GDS_DND, setGDS_DND] = useGDS_DND()
 
   const commonProps = {GDS_DND, setGDS_DND, GenbaDay}

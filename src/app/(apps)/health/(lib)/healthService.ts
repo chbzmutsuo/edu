@@ -1,10 +1,28 @@
 // 健康記録のデータアクセスサービス
-import { PrismaClient} from '@prisma/client'
+import {PrismaClient} from '@prisma/client'
 import {HealthRecordFormData, DailySummary, WALKING_MULTIPLIERS} from '../(constants)/types'
+import {Days} from '@class/Days/Days'
+import {toUtc} from '@class/Days/date-utils/calculations'
 
 const prisma = new PrismaClient()
 
 export class HealthService {
+  static async getRecordDateWhere(selectedDate: string) {
+    // 指定日の範囲を計算（前日7:00〜当日7:00）
+    const selectedDateObj = new Date(selectedDate)
+
+    // 前日の7:00（UTC）
+    const startDate = Days.hour.add(toUtc(selectedDateObj), 0)
+
+    // 当日の7:00（UTC）
+    const endDate = Days.hour.add(startDate, 24)
+
+    return {
+      startDate,
+      endDate,
+    }
+  }
+
   // 健康記録を作成
   static async createHealthRecord(userId: number, data: HealthRecordFormData) {
     return await prisma.healthRecord.create({

@@ -1,7 +1,16 @@
 'use client'
-import {fetcher} from 'src/cm/lib/swr'
-const swrConfig = {
-  fetcher,
+import 'src/cm/styles/globals.css'
+
+import React from 'react'
+
+import NavigationContextProvider from '@providers/NavigationContextProvider'
+import LoaderContextProvider from '@providers/LoaderContextProvider'
+import SessionContextProvider from '@providers/SessionContextProvider'
+// import {fetcher} from '@lib/swr'
+import {SWRConfig} from 'swr'
+import {SessionProvider} from 'next-auth/react'
+const config = {
+  // fetcher,
   revalidateOnFocus: false, // フォーカス時の再検証を無効化（必要に応じて）
   revalidateOnReconnect: true, // 再接続時の再検証
   dedupingInterval: 2000, // 重複リクエストの防止間隔
@@ -9,12 +18,16 @@ const swrConfig = {
   errorRetryInterval: 5000, // リトライ間隔
 }
 
-import {SWRConfig} from 'swr'
-import {SessionProvider} from 'next-auth/react'
 export default function AppRootProvider({children}: {children: React.ReactNode}) {
   return (
     <SessionProvider>
-      <SWRConfig value={swrConfig}>{children}</SWRConfig>
+      <SWRConfig value={config}>
+        <SessionContextProvider>
+          <NavigationContextProvider>
+            <LoaderContextProvider>{children}</LoaderContextProvider>
+          </NavigationContextProvider>
+        </SessionContextProvider>
+      </SWRConfig>
     </SessionProvider>
   )
 }

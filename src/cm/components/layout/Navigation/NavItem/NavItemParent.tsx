@@ -12,7 +12,7 @@ const NavItemParent = React.memo((props: navItemProps) => {
 
   const {isParent, hasChildren, label, childrenCount} = getItemProps({item, nestLevel})
 
-  const {PC, pathname, query} = useGlobalProps
+  const {pathname, query} = useGlobalProps
   const queryOnPath = item.link?.query
 
   const href = getHref({item, childrenCount, query, queryOnPath})

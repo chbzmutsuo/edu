@@ -19,9 +19,7 @@ export default function ParentDashboard() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    if (user?.type === 'parent') {
-      loadDashboardData()
-    }
+    loadDashboardData()
   }, [status, user])
 
   const loadDashboardData = async () => {
@@ -92,29 +90,29 @@ export default function ParentDashboard() {
     return 'お疲れさまです'
   }
 
-  // if (status === 'loading' || isLoading) {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-  //         <p className="text-gray-600">読み込み中...</p>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if (status === 'loading' || isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">読み込み中...</p>
+        </div>
+      </div>
+    )
+  }
 
-  // if (status === 'unauthenticated' || user?.type !== 'parent') {
-  //   return (
-  //     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
-  //       <div className="text-center">
-  //         <p className="text-gray-600 mb-4">親としてログインしてください</p>
-  //         <Link href="/sara/auth/parent/login" className="text-blue-600 hover:text-blue-800">
-  //           ログインページへ
-  //         </Link>
-  //       </div>
-  //     </div>
-  //   )
-  // }
+  if (status === 'unauthenticated' || user?.type !== 'parent') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600 mb-4">親としてログインしてください</p>
+          <Link href="/sara/auth/login" className="text-blue-600 hover:text-blue-800">
+            ログインページへ
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">

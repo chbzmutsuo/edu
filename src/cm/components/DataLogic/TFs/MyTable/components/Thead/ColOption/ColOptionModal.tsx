@@ -8,6 +8,7 @@ import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 
 import React from 'react'
 import {atomTypes, useJotaiByKey} from '@hooks/useJotai'
+import useWindowSize from '@hooks/useWindowSize'
 
 export default function ColOptionModal() {
   const [colConfigModal, setcolConfigModal] = useJotaiByKey<atomTypes[`colConfigModal`]>(`colConfigModal`, null)
@@ -28,7 +29,8 @@ export default function ColOptionModal() {
 }
 
 const SearchForm = ({dataModelName, col, query, addQuery}) => {
-  const {SP, toggleLoad} = useGlobal()
+  const {toggleLoad} = useGlobal()
+  const {SP} = useWindowSize()
   const columns = Sub.makeSearchColumns({columns: new Fields([col ?? {}]).transposeColumns(), dataModelName, SP})
   const currentSearchedQuerys = SearchQuery.getSearchDefaultObject({dataModelName, query})
   const FormHook = useBasicFormProps({columns, formData: currentSearchedQuerys})

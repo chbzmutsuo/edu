@@ -5,6 +5,7 @@ import {colType, MyTableType} from '@cm/types/types'
 import {TableConfigPropsType} from '@components/DataLogic/TFs/MyTable/components/TableConfig'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 import {COLORS} from '@lib/constants/constants'
+import useWindowSize from '@hooks/useWindowSize'
 
 // 型定義を改善
 interface TheadPropsType {
@@ -41,7 +42,7 @@ const filterHeaderColumns = (tableColumns: colType[][]): colType[] => {
 const Thead = React.memo<TheadProps>(props => {
   const {TableConfigProps, TheadProps, ClientProps2} = props
   const {myTable, columns, useGlobalProps} = TheadProps
-  const {width} = useGlobalProps
+  const {width} = useWindowSize()
 
   const tableColumns = useMemo(() => filterVisibleColumns(columns), [columns])
 

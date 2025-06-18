@@ -8,6 +8,7 @@ import useDateSwitcherFunc from '@components/utils/dates/DateSwitcher/useDateSwi
 
 import {colType} from '@cm/types/types'
 import {FitMargin} from '@components/styles/common-components/common-components'
+import useWindowSize from '@hooks/useWindowSize'
 
 const NewDateSwitcher = (props: {
   yearOnly?: boolean
@@ -16,7 +17,8 @@ const NewDateSwitcher = (props: {
   selectMonth?: boolean
   additionalCols?: colType[]
 }) => {
-  const {query, width} = useGlobal()
+  const {query} = useGlobal()
+  const {width} = useWindowSize()
   const {
     FormHook: {BasicForm, ReactHookForm, latestFormData},
     from,
