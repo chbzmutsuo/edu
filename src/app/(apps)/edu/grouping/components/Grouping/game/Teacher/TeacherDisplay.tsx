@@ -3,24 +3,24 @@ import {GroupTypeSetting} from './GroupTypeSetting'
 import Loader from '@cm/components/utils/loader/Loader'
 import QuestionHandler from './QuestionHandler/QuestionHandler'
 import {useMemo} from 'react'
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
 
-import ActiveGroupViwer from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/ActiveGroupViwer'
+import ActiveGroupViwer from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/ActiveGroupViwer'
 
-import TeacherDispChartWrapper from '@app/(apps)/edu/grouping/components/Grouping/game/Chart/TeacherDispChartWrapper'
+import TeacherDispChartWrapper from '@app/(apps)/edu/Grouping/components/Grouping/game/Chart/TeacherDispChartWrapper'
 
 import Redirector from '@cm/components/utils/Redirector'
 import {useDisplaySelector} from '@components/utils/tabs/displaySelector/useDisplaySelector'
-import SelectedItems from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/SelectedItems'
-import {DisplaySelector} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/DisplaySelector'
+import SelectedItems from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/SelectedItems'
+import {DisplaySelector} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/DisplaySelector'
 
 import useGroups, {
   groupConfigMaster,
   useGroupReturnObjType,
-} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/useGroups/useGroups'
+} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/useGroups/useGroups'
 
-import useGroupSettingForm from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/useGroups/useGroupSettingForm'
-import GameInformation from '@app/(apps)/edu/grouping/components/Grouping/game/GameInformation'
+import useGroupSettingForm from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/useGroups/useGroupSettingForm'
+import GameInformation from '@app/(apps)/edu/Grouping/components/Grouping/game/GameInformation'
 import {Paper} from '@components/styles/common-components/paper'
 import {C_Stack, R_Stack, Vr} from '@components/styles/common-components/common-components'
 

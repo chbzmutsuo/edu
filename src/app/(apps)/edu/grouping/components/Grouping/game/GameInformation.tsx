@@ -6,20 +6,20 @@ import {toast} from 'react-toastify'
 
 import ProcessVisualizer from '@cm/components/List/ProcessVisualizer'
 
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
-import {QueryBuilder} from '@app/(apps)/edu/grouping/class/QueryBuilder'
+import {QueryBuilder} from '@app/(apps)/edu/class/QueryBuilder'
 import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 import {Center, C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import RandomSamplingSwith from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/RandomSamplingSwith'
-import Award from '@app/(apps)/edu/grouping/components/Grouping/game/Award/Award'
+import RandomSamplingSwith from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/RandomSamplingSwith'
+import Award from '@app/(apps)/edu/Grouping/components/Grouping/game/Award/Award'
 
 export default function GameInformation({GameCtxValue, useGroupReturnObj, groupConfig}) {
   const {Game, GAME_CLASS, isNewPromptAvailabel, url, secretKey, players, activePrompt, useGlobalProps} = GameCtxValue

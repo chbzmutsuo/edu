@@ -1,4 +1,4 @@
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
 import {R_Stack} from '@components/styles/common-components/common-components'
 
 import React from 'react'

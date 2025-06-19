@@ -2,8 +2,8 @@ import {useState} from 'react'
 
 import React from 'react'
 
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
-import {ClassRoom} from '@app/(apps)/edu/grouping/class/Grouping'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
+import {ClassRoom} from '@app/(apps)/edu/class/Grouping'
 import SimpleTable from '@cm/components/utils/SimpleTable'
 import {CenterScreen} from '@cm/components/styles/common-components/common-components'
 import useGlobal from '@hooks/globalHooks/useGlobal'

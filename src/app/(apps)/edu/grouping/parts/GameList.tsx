@@ -7,7 +7,7 @@ import {HREF} from '@cm/lib/methods/urls'
 import {useState} from 'react'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 
-import GameCreateForm from '@app/(apps)/edu/grouping/parts/GameCreateForm'
+import GameCreateForm from '@app/(apps)/edu/Grouping/parts/GameCreateForm'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {Center, C_Stack, Flex, R_Stack} from '@components/styles/common-components/common-components'

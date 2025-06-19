@@ -1,4 +1,4 @@
-import {ColBuilder} from '@app/(apps)/edu/grouping/class/ColBuilder'
+import {ColBuilder} from '@app/(apps)/edu/class/ColBuilder'
 
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'

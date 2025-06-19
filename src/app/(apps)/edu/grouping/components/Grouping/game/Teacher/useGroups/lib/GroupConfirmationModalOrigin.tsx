@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 
 import BasicModal from '@cm/components/utils/modal/BasicModal'
-import GroupViewer from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/GroupViewer'
+import GroupViewer from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/GroupViewer'
 import {R_Stack} from '@components/styles/common-components/common-components'
 export const GroupConfirmationModalOrigin = ({
   groups,

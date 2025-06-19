@@ -1,12 +1,12 @@
 import React from 'react'
 
 import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import {ColBuilder} from '@app/(apps)/edu/grouping/class/ColBuilder'
+import {ColBuilder} from '@app/(apps)/edu/class/ColBuilder'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {ClipboardDocumentIcon} from '@heroicons/react/20/solid'
 
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
 import {CircledIcon} from '@components/styles/common-components/IconBtn'
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'

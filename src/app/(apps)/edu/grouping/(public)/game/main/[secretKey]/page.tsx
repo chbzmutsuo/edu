@@ -1,7 +1,7 @@
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
-import {QueryBuilder} from '@app/(apps)/edu/grouping/class/QueryBuilder'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
+import {QueryBuilder} from '@app/(apps)/edu/class/QueryBuilder'
 import {P_Query} from '@cm/class/PQuery'
-import GameMainPage from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
+import GameMainPage from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'

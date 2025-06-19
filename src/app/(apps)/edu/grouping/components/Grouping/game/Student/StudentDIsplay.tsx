@@ -1,7 +1,7 @@
 import PsychoQuestion from '../question/PsychoQuestion'
 import MainViewForStudent from './MainViewForStudent '
 
-import Waiting from '@app/(apps)/edu/grouping/components/Grouping/game/Student/Waiting'
+import Waiting from '@app/(apps)/edu/Grouping/components/Grouping/game/Student/Waiting'
 
 export default function StudentDisplay({GameCtxValue}) {
   const {randomSamplingInfo, Game, activePrompt, hasAnsweredToPrompt, player, playerInfo, activeGroup, useGlobalProps} =

@@ -1,5 +1,5 @@
-import {ClassRoom, Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
-import StudentAnswerHistory from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/QuestionHandler/StudentAnswerHistory'
+import {ClassRoom, Grouping} from '@app/(apps)/edu/class/Grouping'
+import StudentAnswerHistory from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/QuestionHandler/StudentAnswerHistory'
 import {Button} from '@components/styles/common-components/Button'
 
 import {Center, Circle, R_Stack} from '@components/styles/common-components/common-components'

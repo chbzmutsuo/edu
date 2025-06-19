@@ -1,5 +1,5 @@
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
 
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import BasicModal from '@cm/components/utils/modal/BasicModal'

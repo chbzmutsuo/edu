@@ -3,9 +3,9 @@ import React from 'react'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {toast} from 'react-toastify'
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
-import {Thead} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/QuestionHandler/AnswerTable/Thead'
-import {Tbody} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/QuestionHandler/AnswerTable/Tbody'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
+import {Thead} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/QuestionHandler/AnswerTable/Thead'
+import {Tbody} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/QuestionHandler/AnswerTable/Tbody'
 const AnswerTable = ({handleCreateGroup, GameCtxValue}) => {
   const {Game, players, GAME_CLASS, activePrompt, toggleLoad} = GameCtxValue as GameContextType
 

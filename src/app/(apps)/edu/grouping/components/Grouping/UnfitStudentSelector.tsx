@@ -1,7 +1,7 @@
 'use client'
 import MidTable from '@cm/components/DataLogic/RTs/MidTable/MidTable'
 
-import {StudentClass} from '@app/(apps)/edu/grouping/class/Grouping'
+import {StudentClass} from '@app/(apps)/edu/class/Grouping'
 
 import {useState} from 'react'
 import {toast} from 'react-toastify'

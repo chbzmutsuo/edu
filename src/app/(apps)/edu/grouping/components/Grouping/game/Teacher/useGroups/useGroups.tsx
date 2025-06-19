@@ -1,9 +1,9 @@
 import React, {useMemo} from 'react'
 import {useState} from 'react'
 
-import {confirmGroupOrigin} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/useGroups/lib/confirmGroupOrigin'
-import {GroupConfirmationModalOrigin} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/useGroups/lib/GroupConfirmationModalOrigin'
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {confirmGroupOrigin} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/useGroups/lib/confirmGroupOrigin'
+import {GroupConfirmationModalOrigin} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/useGroups/lib/GroupConfirmationModalOrigin'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 import {jotaiStudentGroups, useJotai} from '@hooks/useJotai'
 export type AnswerType = {
   id: string

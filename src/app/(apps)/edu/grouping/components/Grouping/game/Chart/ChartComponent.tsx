@@ -1,5 +1,5 @@
 import React from 'react'
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
 import {LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts'
 

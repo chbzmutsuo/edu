@@ -4,8 +4,8 @@ import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
 import prisma from '@cm/lib/prisma'
 
-import {QueryBuilder} from '@app/(apps)/edu/grouping/class/QueryBuilder'
-import GameList from '@app/(apps)/edu/grouping/parts/GameList'
+import {QueryBuilder} from '@app/(apps)/edu/class/QueryBuilder'
+import GameList from '@app/(apps)/edu/Grouping/parts/GameList'
 import Redirector from '@components/utils/Redirector'
 
 const Page = async props => {

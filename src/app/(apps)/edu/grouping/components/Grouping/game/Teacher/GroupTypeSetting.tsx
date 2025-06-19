@@ -1,7 +1,7 @@
 import React from 'react'
 
-import {useGroupReturnObjType} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/useGroups/useGroups'
-import {useGroupSettingFormReturnType} from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/useGroups/useGroupSettingForm'
+import {useGroupReturnObjType} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/useGroups/useGroups'
+import {useGroupSettingFormReturnType} from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/useGroups/useGroupSettingForm'
 
 import {Button} from '@components/styles/common-components/Button'
 import {C_Stack} from '@components/styles/common-components/common-components'

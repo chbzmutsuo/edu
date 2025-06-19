@@ -1,4 +1,4 @@
-import {Grouping, RoomClass} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping, RoomClass} from '@app/(apps)/edu/class/Grouping'
 import {Fields} from '@cm/class/Fields/Fields'
 
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
@@ -8,7 +8,7 @@ import React, {useState} from 'react'
 import {Days} from '@class/Days/Days'
 import {getMidnight} from '@class/Days/date-utils/calculations'
 
-import Time_Score_Chart from '@app/(apps)/edu/grouping/components/Grouping/game/Chart/Time_Score_Chart'
+import Time_Score_Chart from '@app/(apps)/edu/Grouping/components/Grouping/game/Chart/Time_Score_Chart'
 import {Button} from '@components/styles/common-components/Button'
 
 const RoomChartList = React.memo((props: any) => {

@@ -1,4 +1,4 @@
-import GroupViewer from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/GroupViewer'
+import GroupViewer from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/GroupViewer'
 
 const ActiveGroupViwer = ({GameCtxValue}) => {
   const {Game, GAME_CLASS, activeGroupsWithRoles} = GameCtxValue

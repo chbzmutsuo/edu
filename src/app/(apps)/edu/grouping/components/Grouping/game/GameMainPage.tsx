@@ -3,13 +3,13 @@
 import {useEffect, useState} from 'react'
 
 import Loader from '@cm/components/utils/loader/Loader'
-import {GameClass, Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {GameClass, Grouping} from '@app/(apps)/edu/class/Grouping'
 import {basePath} from '@cm/lib/methods/common'
-import TeacherDisplay from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/TeacherDisplay'
+import TeacherDisplay from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/TeacherDisplay'
 
-import StudentDisplay from '@app/(apps)/edu/grouping/components/Grouping/game/Student/StudentDIsplay'
+import StudentDisplay from '@app/(apps)/edu/Grouping/components/Grouping/game/Student/StudentDIsplay'
 
-import PlayerSelector from '@app/(apps)/edu/grouping/components/Grouping/game/PlayerSelector'
+import PlayerSelector from '@app/(apps)/edu/Grouping/components/Grouping/game/PlayerSelector'
 
 import useInterval from '@cm/hooks/useInterval'
 import useGlobal from '@hooks/globalHooks/useGlobal'
@@ -182,7 +182,15 @@ export default function GameMainPage({game, secretKey, prismaDataExtractionQuery
           ) : (
             <div>
               {/* 教員用画面 */}
-              {query?.as === 'teacher' && player && <div>{isTeacher && <TeacherDisplay {...{GameCtxValue, toggleLoad}} />}</div>}
+              {query?.as === 'teacher' && player && (
+                <div>
+                  {isTeacher && (
+                    <div>
+                      <TeacherDisplay {...{GameCtxValue, toggleLoad}} />
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* 児童・生徒用画面 */}
               {query?.as === 'student' && player && (

@@ -1,4 +1,4 @@
-import {ColBuilder} from '@app/(apps)/edu/grouping/class/ColBuilder'
+import {ColBuilder} from '@app/(apps)/edu/class/ColBuilder'
 import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'

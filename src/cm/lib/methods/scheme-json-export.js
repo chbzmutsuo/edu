@@ -181,282 +181,6 @@ model SystemChat {
 }
 
  
-model School {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
-
- active            Boolean             @default(true)
- sortOrder         Float               @default(0)
- name              String
- Classroom         Classroom[]
- Game              Game[]
- Student           Student[]
- SubjectNameMaster SubjectNameMaster[]
- Teacher           Teacher[]
- User              User[]
-}
-
-model LearningRoleMasterOnGame {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
- name      String
- color     String?
- maxCount  Int?
-
- Game        Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
- gameId      Int
- StudentRole StudentRole[]
-}
-
-model SubjectNameMaster {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
- name      String
- color     String?
- schoolId  Int
- Game      Game[]
- School    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-}
-
-model Teacher {
- id                   Int       @id @default(autoincrement())
- createdAt            DateTime  @default(now())
- updatedAt            DateTime? @default(now()) @updatedAt()
- active               Boolean   @default(true)
- sortOrder            Float     @default(0)
- name                 String
- kana                 String?
- schoolId             Int?
- email                String?   @unique
- password             String?
- role                 String?
- tempResetCode        String?
- tempResetCodeExpired DateTime?
- type                 String?
- Game                 Game[]
-
- School       School?        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
- TeacherClass TeacherClass[]
-}
-
-model Student {
- id               Int       @id @default(autoincrement())
- createdAt        DateTime  @default(now())
- updatedAt        DateTime? @default(now()) @updatedAt()
- active           Boolean   @default(true)
- sortOrder        Float     @default(0)
- name             String
- kana             String?
- gender           String?
- attendanceNumber Int?
- schoolId         Int
- classroomId      Int
- Answer           Answer[]
-
- Classroom   Classroom     @relation(fields: [classroomId], references: [id], onDelete: Cascade)
- School      School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
- Squad       Squad[]       @relation("SquadToStudent")
- UnfitFellow UnfitFellow[] @relation("StudentToUnfitFellow")
- GameStudent GameStudent[]
- StudentRole StudentRole[]
-
- @@unique([schoolId, classroomId, attendanceNumber], name: "unique_schoolId_classroomId_attendanceNumber")
-}
-
-model UnfitFellow {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
- Student   Student[] @relation("StudentToUnfitFellow")
-}
-
-model Classroom {
- id           Int            @id @default(autoincrement())
- createdAt    DateTime       @default(now())
- updatedAt    DateTime?      @default(now()) @updatedAt()
- active       Boolean        @default(true)
- sortOrder    Float          @default(0)
- grade        String?
- class        String?
- schoolId     Int
- School       School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
- Student      Student[]
- TeacherClass TeacherClass[]
-
- @@unique([schoolId, grade, class], name: "unique_schoolId_grade_class")
-}
-
-model TeacherClass {
- id          Int       @id @default(autoincrement())
- sortOrder   Float     @default(0)
- teacherId   Int
- classroomId Int
- Classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
- Teacher     Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
-
- @@unique([teacherId, classroomId], name: "unique_teacherId_classroomId")
-}
-
-model GameStudent {
- id        Int       @id @default(autoincrement())
- sortOrder Float     @default(0)
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- gameId    Int
- studentId Int
- Game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
- Student   Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
- @@unique([gameId, studentId], name: "unique_gameId_studentId")
-}
-
-model Game {
- id                       Int                        @id @default(autoincrement())
- createdAt                DateTime                   @default(now())
- updatedAt                DateTime?                  @default(now()) @updatedAt()
- active                   Boolean                    @default(true)
- sortOrder                Float                      @default(0)
- name                     String
- date                     DateTime
- secretKey                String                     @unique
- absentStudentIds         Int[]
- schoolId                 Int
- teacherId                Int
- subjectNameMasterId      Int?
- status                   String?
- activeGroupId            Int?
- activeQuestionPromptId   Int?
- nthTime                  Int?
- randomTargetStudentIds   Int[]
- learningContent          String?
- task                     String?
- Answer                   Answer[]
- School                   School                     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
- SubjectNameMaster        SubjectNameMaster?         @relation(fields: [subjectNameMasterId], references: [id], onDelete: Cascade)
- Teacher                  Teacher                    @relation(fields: [teacherId], references: [id], onDelete: Cascade)
- Group                    Group[]
- QuestionPrompt           QuestionPrompt[]
- GameStudent              GameStudent[]
- LearningRoleMasterOnGame LearningRoleMasterOnGame[]
- GroupCreateConfig        GroupCreateConfig?
-}
-
-model GroupCreateConfig {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
-
- groupCreationMode String?
- count             Int?
- criteria          String?
- genderConfig      String?
-
- Game   Game @relation(fields: [gameId], references: [id])
- gameId Int  @unique
-}
-
-model Group {
- id             Int             @id @default(autoincrement())
- createdAt      DateTime        @default(now())
- updatedAt      DateTime?       @default(now()) @updatedAt()
- active         Boolean         @default(true)
- sortOrder      Float           @default(0)
- name           String
- isSaved        Boolean
- Game           Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
- Squad          Squad[]
- QuestionPrompt QuestionPrompt? @relation(fields: [questionPromptId], references: [id], onDelete: Cascade)
-
- gameId           Int
- questionPromptId Int?
-}
-
-model Squad {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
- name      String
- groupId   Int
- Group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
- Student   Student[] @relation("SquadToStudent")
-
- StudentRole StudentRole[]
-}
-
-model StudentRole {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
-
- Squad Squad @relation(fields: [squadId], references: [id])
-
- Student Student @relation(fields: [studentId], references: [id])
-
- LearningRoleMasterOnGame   LearningRoleMasterOnGame @relation(fields: [learningRoleMasterOnGameId], references: [id])
- studentId                  Int
- learningRoleMasterOnGameId Int
- squadId                    Int
-}
-
-model QuestionPrompt {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
- gameId    Int
- asSummary Boolean   @default(false)
- Answer    Answer[]
- Group     Group[]
- Game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
-}
-
-model Answer {
- id                 Int             @id @default(autoincrement())
- createdAt          DateTime        @default(now())
- updatedAt          DateTime?       @default(now()) @updatedAt()
- active             Boolean         @default(true)
- sortOrder          Float           @default(0)
- curiocity1         Int?
- curiocity2         Int?
- curiocity3         Int?
- curiocity4         Int?
- curiocity5         Int?
- efficacy1          Int?
- efficacy2          Int?
- efficacy3          Int?
- efficacy4          Int?
- efficacy5          Int?
- impression         String?
- gameId             Int
- studentId          Int
- questionPromptId   Int?
- asSummary          Boolean         @default(false)
- lessonImpression   String?
- lessonSatisfaction Int?
- Game               Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
- QuestionPrompt     QuestionPrompt? @relation(fields: [questionPromptId], references: [id], onDelete: Cascade)
- Student            Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
- @@unique([gameId, studentId, questionPromptId], name: "unique_gameId_studentId_questionPromptId")
-}
-
- 
 model KaizenClient {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
@@ -1020,6 +744,375 @@ model AqInventoryByMonth {
  aqProductId Int
 
  @@unique([aqProductId, yearMonth], name: "unique_aqProductId_yearMonth")
+}
+
+ 
+// Colabo - Interactive Slide Teaching Support App Schema
+
+model Slide {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ title        String
+ templateType String // "normal", "psychology", "choice_quiz", "free_text_quiz", "summary_survey"
+ isActive     Boolean @default(false) // Currently displayed slide
+
+ gameId        Int
+ Game          Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+ SlideBlock    SlideBlock[]
+ SlideResponse SlideResponse[]
+}
+
+model SlideBlock {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ blockType String // "text", "image", "link", "quiz_question", "choice_option"
+ content   String? // Text content or markdown
+ imageUrl  String? // Image URL
+ linkUrl   String? // Link URL
+
+ // Layout and styling
+ alignment       String? // "left", "center", "right"
+ verticalAlign   String? // "top", "middle", "bottom"
+ textColor       String? // CSS color
+ backgroundColor String? // CSS color
+ fontWeight      String? // "normal", "bold"
+ textDecoration  String? // "none", "underline"
+
+ // Quiz-specific fields
+ isCorrectAnswer Boolean @default(false) // For choice quiz correct answers
+
+ slideId Int
+ Slide   Slide @relation(fields: [slideId], references: [id], onDelete: Cascade)
+}
+
+model SlideResponse {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ responseType String // "choice", "text", "psychology"
+ choiceAnswer String? // Selected choice for quiz
+ textAnswer   String? // Free text response
+ isCorrect    Boolean? // Whether the answer was correct (for quizzes)
+
+ // Psychology survey responses (same as Answer model)
+ curiocity1 Int?
+ curiocity2 Int?
+ curiocity3 Int?
+ curiocity4 Int?
+ curiocity5 Int?
+ efficacy1  Int?
+ efficacy2  Int?
+ efficacy3  Int?
+ efficacy4  Int?
+ efficacy5  Int?
+
+ slideId   Int
+ studentId Int
+ gameId    Int
+
+ Slide   Slide   @relation(fields: [slideId], references: [id], onDelete: Cascade)
+ Student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+ Game    Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+ @@unique([slideId, studentId, gameId], name: "unique_slideId_studentId_gameId")
+}
+
+// Extend existing Game model with slide relations
+// This would be added to the existing Game model in Grouping.prisma:
+// Slide             Slide[]
+// SlideResponse     SlideResponse[]
+
+// Extend existing Student model with slide response relation
+// This would be added to the existing Student model in Grouping.prisma:
+// SlideResponse     SlideResponse[]
+
+model School {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+
+ active            Boolean             @default(true)
+ sortOrder         Float               @default(0)
+ name              String
+ Classroom         Classroom[]
+ Game              Game[]
+ Student           Student[]
+ SubjectNameMaster SubjectNameMaster[]
+ Teacher           Teacher[]
+ User              User[]
+}
+
+model LearningRoleMasterOnGame {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+ name      String
+ color     String?
+ maxCount  Int?
+
+ Game        Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+ gameId      Int
+ StudentRole StudentRole[]
+}
+
+model SubjectNameMaster {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+ name      String
+ color     String?
+ schoolId  Int
+ Game      Game[]
+ School    School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+}
+
+model Teacher {
+ id                   Int       @id @default(autoincrement())
+ createdAt            DateTime  @default(now())
+ updatedAt            DateTime? @default(now()) @updatedAt()
+ active               Boolean   @default(true)
+ sortOrder            Float     @default(0)
+ name                 String
+ kana                 String?
+ schoolId             Int?
+ email                String?   @unique
+ password             String?
+ role                 String?
+ tempResetCode        String?
+ tempResetCodeExpired DateTime?
+ type                 String?
+ Game                 Game[]
+
+ School       School?        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+ TeacherClass TeacherClass[]
+}
+
+model Student {
+ id               Int             @id @default(autoincrement())
+ createdAt        DateTime        @default(now())
+ updatedAt        DateTime?       @default(now()) @updatedAt()
+ active           Boolean         @default(true)
+ sortOrder        Float           @default(0)
+ name             String
+ kana             String?
+ gender           String?
+ attendanceNumber Int?
+ schoolId         Int
+ classroomId      Int
+ Answer           Answer[]
+ SlideResponse    SlideResponse[]
+
+ Classroom   Classroom     @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+ School      School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+ Squad       Squad[]       @relation("SquadToStudent")
+ UnfitFellow UnfitFellow[] @relation("StudentToUnfitFellow")
+ GameStudent GameStudent[]
+ StudentRole StudentRole[]
+
+ @@unique([schoolId, classroomId, attendanceNumber], name: "unique_schoolId_classroomId_attendanceNumber")
+}
+
+model UnfitFellow {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+ Student   Student[] @relation("StudentToUnfitFellow")
+}
+
+model Classroom {
+ id           Int            @id @default(autoincrement())
+ createdAt    DateTime       @default(now())
+ updatedAt    DateTime?      @default(now()) @updatedAt()
+ active       Boolean        @default(true)
+ sortOrder    Float          @default(0)
+ grade        String?
+ class        String?
+ schoolId     Int
+ School       School         @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+ Student      Student[]
+ TeacherClass TeacherClass[]
+
+ @@unique([schoolId, grade, class], name: "unique_schoolId_grade_class")
+}
+
+model TeacherClass {
+ id          Int       @id @default(autoincrement())
+ sortOrder   Float     @default(0)
+ teacherId   Int
+ classroomId Int
+ Classroom   Classroom @relation(fields: [classroomId], references: [id], onDelete: Cascade)
+ Teacher     Teacher   @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+ @@unique([teacherId, classroomId], name: "unique_teacherId_classroomId")
+}
+
+model GameStudent {
+ id        Int       @id @default(autoincrement())
+ sortOrder Float     @default(0)
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ gameId    Int
+ studentId Int
+ Game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+ Student   Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+ @@unique([gameId, studentId], name: "unique_gameId_studentId")
+}
+
+model Game {
+ id                       Int                        @id @default(autoincrement())
+ createdAt                DateTime                   @default(now())
+ updatedAt                DateTime?                  @default(now()) @updatedAt()
+ active                   Boolean                    @default(true)
+ sortOrder                Float                      @default(0)
+ name                     String
+ date                     DateTime
+ secretKey                String                     @unique
+ absentStudentIds         Int[]
+ schoolId                 Int
+ teacherId                Int
+ subjectNameMasterId      Int?
+ status                   String?
+ activeGroupId            Int?
+ activeQuestionPromptId   Int?
+ nthTime                  Int?
+ randomTargetStudentIds   Int[]
+ learningContent          String?
+ task                     String?
+ Answer                   Answer[]
+ Slide                    Slide[]
+ SlideResponse            SlideResponse[]
+ School                   School                     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+ SubjectNameMaster        SubjectNameMaster?         @relation(fields: [subjectNameMasterId], references: [id], onDelete: Cascade)
+ Teacher                  Teacher                    @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+ Group                    Group[]
+ QuestionPrompt           QuestionPrompt[]
+ GameStudent              GameStudent[]
+ LearningRoleMasterOnGame LearningRoleMasterOnGame[]
+ GroupCreateConfig        GroupCreateConfig?
+}
+
+model GroupCreateConfig {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ groupCreationMode String?
+ count             Int?
+ criteria          String?
+ genderConfig      String?
+
+ Game   Game @relation(fields: [gameId], references: [id])
+ gameId Int  @unique
+}
+
+model Group {
+ id             Int             @id @default(autoincrement())
+ createdAt      DateTime        @default(now())
+ updatedAt      DateTime?       @default(now()) @updatedAt()
+ active         Boolean         @default(true)
+ sortOrder      Float           @default(0)
+ name           String
+ isSaved        Boolean
+ Game           Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+ Squad          Squad[]
+ QuestionPrompt QuestionPrompt? @relation(fields: [questionPromptId], references: [id], onDelete: Cascade)
+
+ gameId           Int
+ questionPromptId Int?
+}
+
+model Squad {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+ name      String
+ groupId   Int
+ Group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+ Student   Student[] @relation("SquadToStudent")
+
+ StudentRole StudentRole[]
+}
+
+model StudentRole {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ Squad Squad @relation(fields: [squadId], references: [id])
+
+ Student Student @relation(fields: [studentId], references: [id])
+
+ LearningRoleMasterOnGame   LearningRoleMasterOnGame @relation(fields: [learningRoleMasterOnGameId], references: [id])
+ studentId                  Int
+ learningRoleMasterOnGameId Int
+ squadId                    Int
+}
+
+model QuestionPrompt {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+ gameId    Int
+ asSummary Boolean   @default(false)
+ Answer    Answer[]
+ Group     Group[]
+ Game      Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+}
+
+model Answer {
+ id                 Int             @id @default(autoincrement())
+ createdAt          DateTime        @default(now())
+ updatedAt          DateTime?       @default(now()) @updatedAt()
+ active             Boolean         @default(true)
+ sortOrder          Float           @default(0)
+ curiocity1         Int?
+ curiocity2         Int?
+ curiocity3         Int?
+ curiocity4         Int?
+ curiocity5         Int?
+ efficacy1          Int?
+ efficacy2          Int?
+ efficacy3          Int?
+ efficacy4          Int?
+ efficacy5          Int?
+ impression         String?
+ gameId             Int
+ studentId          Int
+ questionPromptId   Int?
+ asSummary          Boolean         @default(false)
+ lessonImpression   String?
+ lessonSatisfaction Int?
+ Game               Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+ QuestionPrompt     QuestionPrompt? @relation(fields: [questionPromptId], references: [id], onDelete: Cascade)
+ Student            Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+ @@unique([gameId, studentId, questionPromptId], name: "unique_gameId_studentId_questionPromptId")
 }
 
  

@@ -3,8 +3,8 @@ import React from 'react'
 
 import {cl} from '@cm/lib/methods/common'
 import {Fragment} from 'react'
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
-import {ClassRoom, Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
+import {ClassRoom, Grouping} from '@app/(apps)/edu/class/Grouping'
 
 import MyPopover from '@cm/components/utils/popover/MyPopover'
 
@@ -12,8 +12,8 @@ import {Circle, C_Stack, R_Stack} from '@components/styles/common-components/com
 
 import {jotai_moveStudent, useJotai} from '@hooks/useJotai'
 
-import MemberSwitchTd from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/MemberSwitchTd'
-import RoleControll from '@app/(apps)/edu/grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/RoleControll'
+import MemberSwitchTd from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/MemberSwitchTd'
+import RoleControll from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/RoleControll'
 import {IconBtn} from '@components/styles/common-components/IconBtn'
 
 export default function GroupViewer(props: {

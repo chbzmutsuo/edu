@@ -1,4 +1,4 @@
-import {ClassRoom} from '@app/(apps)/edu/grouping/class/Grouping'
+import {ClassRoom} from '@app/(apps)/edu/class/Grouping'
 
 import useRecharts from '@cm/hooks/useRecharts'
 import {ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell, ReferenceLine, Label, Legend} from 'recharts'

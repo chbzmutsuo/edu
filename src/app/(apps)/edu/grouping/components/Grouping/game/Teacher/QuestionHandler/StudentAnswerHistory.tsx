@@ -1,4 +1,4 @@
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
 import {formatDate} from '@class/Days/date-utils/formatters'
 

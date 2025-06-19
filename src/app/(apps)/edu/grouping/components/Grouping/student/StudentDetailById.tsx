@@ -1,4 +1,4 @@
-import UnfitStudentSelector from '@app/(apps)/edu/grouping/components/Grouping/UnfitStudentSelector'
+import UnfitStudentSelector from '@app/(apps)/edu/Grouping/components/Grouping/UnfitStudentSelector'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 

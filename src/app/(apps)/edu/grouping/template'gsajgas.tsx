@@ -1,5 +1,5 @@
 'use client'
-import {PageBuilder} from '@app/(apps)/edu/grouping/class/PageBuilder'
+import {PageBuilder} from '@app/(apps)/edu/class/PageBuilder'
 
 import {Alert} from '@components/styles/common-components/Alert'
 import {CenterScreen} from '@components/styles/common-components/common-components'

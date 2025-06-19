@@ -1,7 +1,7 @@
 'use client'
 
-import {ClassRoom} from '@app/(apps)/edu/grouping/class/Grouping'
-import {createStudentDataFromCsv} from '@app/(apps)/edu/grouping/grouping-server-actions'
+import {ClassRoom} from '@app/(apps)/edu/class/Grouping'
+import {createStudentDataFromCsv} from '@app/(apps)/edu/Grouping/grouping-server-actions'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
 

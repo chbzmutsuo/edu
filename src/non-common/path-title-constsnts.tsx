@@ -10,12 +10,12 @@ import {apex_PAGES} from 'src/non-common/getPages/apex_PAGES'
 import {Grouping_PAGES} from 'src/non-common/getPages/Grouping_PAGES'
 import {KM_PAGES} from 'src/non-common/getPages/KM_PAGES'
 import {stock_PAGES} from 'src/non-common/getPages/stock_PAGES'
-import {CoLab_PAGES} from 'src/non-common/getPages/CoLab_PAGES'
+import {colabo_PAGES} from 'src/non-common/getPages/CoLab_PAGES'
 
 export const PAGES: any = {
   apex_PAGES,
   Grouping_PAGES,
-  CoLab_PAGES,
+  colabo_PAGES,
   Advantage_PAGES,
   tbm_PAGES,
   KM_PAGES,

@@ -1,9 +1,9 @@
 'use client'
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
-import C_E_PositionMap from '@app/(apps)/edu/grouping/components/Grouping/game/Chart/PositionMap/PositionMap'
-import Time_Score_Chart from '@app/(apps)/edu/grouping/components/Grouping/game/Chart/Time_Score_Chart'
-import {GameContextType} from '@app/(apps)/edu/grouping/components/Grouping/game/GameMainPage'
+import C_E_PositionMap from '@app/(apps)/edu/Grouping/components/Grouping/game/Chart/PositionMap/PositionMap'
+import Time_Score_Chart from '@app/(apps)/edu/Grouping/components/Grouping/game/Chart/Time_Score_Chart'
+import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
 
 import {Fields} from '@cm/class/Fields/Fields'
 

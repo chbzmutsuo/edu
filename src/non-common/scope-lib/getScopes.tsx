@@ -30,6 +30,7 @@ export const getScopes = (session: anyObject, options: getScopeOptionsProps) => 
     getGlobalUserId,
     getGroupieScopes: () => {
       const schoolId = !admin ? session?.schoolId : Number(query?.g_schoolId ?? 0)
+
       const teacherId = !admin ? session?.id : Number(query?.g_teacherId ?? 0)
       const isSchoolLeader = typeIs(['責任者'], session)
 

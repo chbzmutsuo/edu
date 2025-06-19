@@ -1,17 +1,17 @@
 'use client'
 
-import TeacherDetailPage from '@app/(apps)/edu/grouping/parts/TeacherDetailPage'
+import TeacherDetailPage from '@app/(apps)/edu/Grouping/parts/TeacherDetailPage'
 
 import {Fields} from '@cm/class/Fields/Fields'
 import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
 import {DetailPagePropType} from '@cm/types/types'
 
-import ClassroomDetailPage from '@app/(apps)/edu/grouping/parts/ClassroomDetailPage'
-import StudentDetailById from '@app/(apps)/edu/grouping/components/Grouping/student/StudentDetailById'
+import ClassroomDetailPage from '@app/(apps)/edu/Grouping/parts/ClassroomDetailPage'
+import StudentDetailById from '@app/(apps)/edu/Grouping/components/Grouping/student/StudentDetailById'
 import Accordion from '@cm/components/utils/Accordions/Accordion'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 
-import GameDetailPage from '@app/(apps)/edu/grouping/parts/GameDetailPage'
+import GameDetailPage from '@app/(apps)/edu/Grouping/parts/GameDetailPage'
 import {C_Stack} from '@components/styles/common-components/common-components'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 

@@ -1,4 +1,4 @@
-import {Grouping} from '@app/(apps)/edu/grouping/class/Grouping'
+import {Grouping} from '@app/(apps)/edu/class/Grouping'
 import React, {useEffect, useState} from 'react'
 
 import {colType} from '@cm/types/types'
@@ -9,7 +9,7 @@ import {toast} from 'react-toastify'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import SimpleTable from '@cm/components/utils/SimpleTable'
 
-import NormalQuestions from '@app/(apps)/edu/grouping/components/Grouping/game/question/NormalQuestion'
+import NormalQuestions from '@app/(apps)/edu/Grouping/components/Grouping/game/question/NormalQuestion'
 
 const PsychoQuestion = React.memo((props: any) => {
   const [sortedQuestions, setsortedQuestions] = useState<any[]>([])

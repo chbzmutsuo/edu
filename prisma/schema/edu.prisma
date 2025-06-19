@@ -1,3 +1,93 @@
+// Colabo - Interactive Slide Teaching Support App Schema
+
+model Slide {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ title        String
+ templateType String // "normal", "psychology", "choice_quiz", "free_text_quiz", "summary_survey"
+ isActive     Boolean @default(false) // Currently displayed slide
+
+ gameId        Int
+ Game          Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+ SlideBlock    SlideBlock[]
+ SlideResponse SlideResponse[]
+}
+
+model SlideBlock {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ blockType String // "text", "image", "link", "quiz_question", "choice_option"
+ content   String? // Text content or markdown
+ imageUrl  String? // Image URL
+ linkUrl   String? // Link URL
+
+ // Layout and styling
+ alignment       String? // "left", "center", "right"
+ verticalAlign   String? // "top", "middle", "bottom"
+ textColor       String? // CSS color
+ backgroundColor String? // CSS color
+ fontWeight      String? // "normal", "bold"
+ textDecoration  String? // "none", "underline"
+
+ // Quiz-specific fields
+ isCorrectAnswer Boolean @default(false) // For choice quiz correct answers
+
+ slideId Int
+ Slide   Slide @relation(fields: [slideId], references: [id], onDelete: Cascade)
+}
+
+model SlideResponse {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ active    Boolean   @default(true)
+ sortOrder Float     @default(0)
+
+ responseType String // "choice", "text", "psychology"
+ choiceAnswer String? // Selected choice for quiz
+ textAnswer   String? // Free text response
+ isCorrect    Boolean? // Whether the answer was correct (for quizzes)
+
+ // Psychology survey responses (same as Answer model)
+ curiocity1 Int?
+ curiocity2 Int?
+ curiocity3 Int?
+ curiocity4 Int?
+ curiocity5 Int?
+ efficacy1  Int?
+ efficacy2  Int?
+ efficacy3  Int?
+ efficacy4  Int?
+ efficacy5  Int?
+
+ slideId   Int
+ studentId Int
+ gameId    Int
+
+ Slide   Slide   @relation(fields: [slideId], references: [id], onDelete: Cascade)
+ Student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+ Game    Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+ @@unique([slideId, studentId, gameId], name: "unique_slideId_studentId_gameId")
+}
+
+// Extend existing Game model with slide relations
+// This would be added to the existing Game model in Grouping.prisma:
+// Slide             Slide[]
+// SlideResponse     SlideResponse[]
+
+// Extend existing Student model with slide response relation
+// This would be added to the existing Student model in Grouping.prisma:
+// SlideResponse     SlideResponse[]
+
 model School {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
@@ -64,11 +154,11 @@ model Teacher {
 }
 
 model Student {
- id               Int       @id @default(autoincrement())
- createdAt        DateTime  @default(now())
- updatedAt        DateTime? @default(now()) @updatedAt()
- active           Boolean   @default(true)
- sortOrder        Float     @default(0)
+ id               Int             @id @default(autoincrement())
+ createdAt        DateTime        @default(now())
+ updatedAt        DateTime?       @default(now()) @updatedAt()
+ active           Boolean         @default(true)
+ sortOrder        Float           @default(0)
  name             String
  kana             String?
  gender           String?
@@ -76,6 +166,7 @@ model Student {
  schoolId         Int
  classroomId      Int
  Answer           Answer[]
+ SlideResponse    SlideResponse[]
 
  Classroom   Classroom     @relation(fields: [classroomId], references: [id], onDelete: Cascade)
  School      School        @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -157,6 +248,8 @@ model Game {
  learningContent          String?
  task                     String?
  Answer                   Answer[]
+ Slide                    Slide[]
+ SlideResponse            SlideResponse[]
  School                   School                     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
  SubjectNameMaster        SubjectNameMaster?         @relation(fields: [subjectNameMasterId], references: [id], onDelete: Cascade)
  Teacher                  Teacher                    @relation(fields: [teacherId], references: [id], onDelete: Cascade)
