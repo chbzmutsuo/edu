@@ -158,7 +158,7 @@
     "**/stock/**": true,
     "**/tbm/**": true,
     "**/tmp/**": true,
-    "**/health/**": true
+    "**/keihi/**": true
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
     "Advantage",
@@ -168,7 +168,7 @@
     "achievement",
     "aquapot",
     "edu",
-    "health",
+    "keihi",
     "kickswrap",
     "page",
     "sara",
