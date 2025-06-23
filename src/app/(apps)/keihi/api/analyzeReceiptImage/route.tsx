@@ -12,7 +12,7 @@ export const POST = async (req: NextRequest) => {
 
   try {
     if (imageDataList.length === 0) {
-      return {success: false, error: '画像が選択されていません'}
+      return NextResponse.json({success: false, error: '画像が選択されていません'}, {status: 400})
     }
 
     // 各画像を並列で解析
@@ -33,7 +33,7 @@ export const POST = async (req: NextRequest) => {
     const validResults = analysisResults.filter(result => result !== null)
 
     if (validResults.length === 0) {
-      return {success: false, error: 'すべての画像の解析に失敗しました'}
+      return NextResponse.json({success: false, error: 'すべての画像の解析に失敗しました'}, {status: 400})
     }
 
     // 基本情報のみでレコードを作成し、画像も添付ファイルとして保存

@@ -1,10 +1,7 @@
 'use server'
 
 import {generatePersonalDevKeywords} from '@app/(apps)/keihi/actions/expense/generatePersonalDevKeywords'
-import {revalidatePath} from 'next/cache'
 import OpenAI from 'openai'
-import {FileHandler} from 'src/cm/class/FileHandler'
-import {S3_API_FormData} from '@pages/api/S3'
 import prisma from '@lib/prisma'
 import {MAJOR_ACCOUNTS} from '@app/(apps)/keihi/actions/expense/constants'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'

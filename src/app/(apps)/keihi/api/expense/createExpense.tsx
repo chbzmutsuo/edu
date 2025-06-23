@@ -1,7 +1,3 @@
-'use server'
-
-import {revalidatePath} from 'next/cache'
-
 import {FileHandler} from 'src/cm/class/FileHandler'
 
 import prisma from '@lib/prisma'
@@ -10,7 +6,7 @@ import {ExpenseFormData} from '@app/(apps)/keihi/types'
 import {generateInsights} from '@app/(apps)/keihi/actions/expense/insights'
 
 // 下書きを使用した経費記録作成
-export async function createExpenseWithDraft(
+export const createExpenseWithDraft = async (
   formData: ExpenseFormData,
   draft: {
     businessInsightDetail: string
@@ -25,7 +21,7 @@ export async function createExpenseWithDraft(
   success: boolean
   data?: {id: string}
   error?: string
-}> {
+}> => {
   try {
     // MF用の情報を生成
     const mfSubject = MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.account || formData.subject
@@ -75,9 +71,7 @@ export async function createExpenseWithDraft(
           // S3にアップロード
           const s3Result = await FileHandler.sendFileToS3({
             file,
-            formDataObj: {
-              backetKey: 'keihi',
-            },
+            formDataObj: {backetKey: 'keihi'},
           })
 
           if (!s3Result.success) {
@@ -103,7 +97,6 @@ export async function createExpenseWithDraft(
       }
     }
 
-    revalidatePath('/keihi')
     return {success: true, data: {id: expense.id}}
   } catch (error) {
     console.error('経費記録作成エラー:', error)
@@ -198,7 +191,6 @@ export const createExpense = async (
       }
     }
 
-    revalidatePath('/keihi')
     return {success: true, data: {id: expense.id}}
   } catch (error) {
     console.error('経費記録作成エラー:', error)
@@ -207,4 +199,20 @@ export const createExpense = async (
       error: error instanceof Error ? error.message : '作成に失敗しました',
     }
   }
+}
+
+export const fetchCreateExpenseApi = async (
+  formData: ExpenseFormData,
+  imageFiles?: File[],
+  useDraft?: boolean
+): Promise<{
+  success: boolean
+  data?: {id: string}
+  error?: string
+}> => {
+  const response = await fetch('/keihi/api/expense', {
+    method: 'POST',
+    body: JSON.stringify({formData, imageFiles}),
+  })
+  return await response.json()
 }

@@ -304,10 +304,7 @@ export const generateHealthRecordSeeds = (userId: number) => {
 
 // シーディング実行関数
 export const seedHealthRecords = async (userId: number) => {
-  console.log('健康記録のシーディングを開始します...')
-
   const seeds = generateHealthRecordSeeds(userId)
-  console.log(`${seeds.length}件のレコードを作成します`)
 
   try {
     // 既存の2025年6月のデータを削除
@@ -322,8 +319,6 @@ export const seedHealthRecords = async (userId: number) => {
         },
       })
     }
-
-    console.log('既存の6月データを削除しました')
 
     // 新しいデータを一括作成
     const result = await doStandardPrisma('healthRecord', 'createMany', {

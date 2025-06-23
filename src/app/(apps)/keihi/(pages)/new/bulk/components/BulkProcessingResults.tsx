@@ -1,8 +1,10 @@
 import {useRouter} from 'next/navigation'
 import {useState, useCallback} from 'react'
 import {toast} from 'react-toastify'
-import {generateInsightsForMultipleExpenses, revalidateKeihiPages} from '../../../../actions/expense-actions'
-import {AnalyzedReceipt, BulkProcessingSummary} from '../../../../types'
+
+import {AnalyzedReceipt, BulkProcessingSummary} from '@app/(apps)/keihi/types'
+import {generateInsightsForMultipleExpenses} from '@app/(apps)/keihi/actions/expense/insights'
+import {revalidateKeihiPages} from '@app/(apps)/keihi/actions/expense-actions'
 
 interface BulkProcessingResultsProps {
   uploadedImages: string[]

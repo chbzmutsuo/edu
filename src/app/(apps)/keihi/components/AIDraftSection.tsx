@@ -1,7 +1,7 @@
 'use client'
 
+import {ExpenseFormData} from '@app/(apps)/keihi/types'
 import {toast} from 'react-toastify'
-import {type ExpenseFormData} from '../actions/expense-actions'
 
 interface AIDraft {
   businessInsightDetail: string

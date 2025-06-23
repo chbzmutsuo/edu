@@ -276,97 +276,6 @@ model KaizenCMS {
 }
 
  
-// Sara App - おうちスタンプラリーアプリ
-// User統合版スキーマ
-
-model Family {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
-
- name String
-
- User     User[]     @relation("FamilyUsers")
- Activity Activity[]
-}
-
-model Activity {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
-
- title       String
- description String?
- order       Int     @default(0)
- active      Boolean @default(true)
-
- Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId Int
-
- ActivityScore             ActivityScore[]
- ActivityEvaluationRequest ActivityEvaluationRequest[]
-}
-
-model ActivityScore {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
-
- score             Int
- title             String
- description       String?
- iconUrl           String?
- achievementImgUrl String?
- animationLevel    String  @default("light") // light, medium, heavy
-
- Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
- activityId Int
-
- ActivityEvaluationRequest ActivityEvaluationRequest[]
-}
-
-model ActivityEvaluationRequest {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
-
- date          DateTime @default(now())
- status        String   @default("pending") // pending, approved, rejected
- comment       String?
- openedByChild Boolean  @default(false)
-
- RequestedBy   User @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
- requestedById Int // 申請者（子ども）
-
- Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
- activityId Int
-
- ActivityScore   ActivityScore @relation(fields: [activityScoreId], references: [id], onDelete: Cascade)
- activityScoreId Int
-
- ApprovedBy   User? @relation("ApprovedBy", fields: [approvedById], references: [id])
- approvedById Int? // 承認者（親）
-
- @@unique([requestedById, activityId, date], name: "user_activity_date_unique")
-}
-
-model MonthlySetting {
- id        Int      @id @default(autoincrement())
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
- year      Int
- month     Int
- key       String // 例: "walking_goal"
- value     String // 例: "650"（将来はJSONも可）
-
- @@unique([year, month, key])
-}
-
- 
 // 一回の購入
 model AqSaleCart {
  id Int @id @default(autoincrement())
@@ -1195,7 +1104,7 @@ model HealthJournal {
  templateApplied Boolean @default(false)
 
  // リレーション
- entries HealthJournalEntry[]
+ HealthJournalEntry HealthJournalEntry[]
 
  @@unique([userId, journalDate])
  @@index([userId, journalDate])
@@ -1209,8 +1118,8 @@ model HealthJournalEntry {
  sortOrder Float     @default(0)
 
  // 関連日誌
- HealthJournal HealthJournal @relation(fields: [journalId], references: [id], onDelete: Cascade)
- journalId     Int
+ healthJournalId Int
+ HealthJournal   HealthJournal @relation(fields: [healthJournalId], references: [id], onDelete: Cascade)
 
  // 時間帯（7, 8, 9, ..., 6）
  hourSlot Int // 7:00-8:00なら7、8:00-9:00なら8
@@ -1219,10 +1128,10 @@ model HealthJournalEntry {
  comment String?
 
  // リレーション
- images HealthJournalImage[]
+ HealthJournalImage HealthJournalImage[]
 
- @@unique([journalId, hourSlot])
- @@index([journalId, hourSlot])
+ @@unique([healthJournalId, hourSlot])
+ @@index([healthJournalId, hourSlot])
 }
 
 // 日誌画像
@@ -1233,8 +1142,8 @@ model HealthJournalImage {
  sortOrder Float     @default(0)
 
  // 関連エントリ
- HealthJournalEntry HealthJournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
- entryId            Int
+ HealthJournalEntry   HealthJournalEntry @relation(fields: [healthJournalEntryId], references: [id], onDelete: Cascade)
+ healthJournalEntryId Int
 
  // 画像情報
  fileName    String // ファイル名
@@ -1243,7 +1152,103 @@ model HealthJournalImage {
  mimeType    String? // MIMEタイプ
  description String? // 画像の説明
 
- @@index([entryId])
+ @@index([healthJournalEntryId])
+}
+
+// タスク管理アプリ用スキーマ
+model Task {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // 基本情報
+ title       String
+ description String?
+ dueDate     DateTime?
+ completed   Boolean   @default(false)
+ completedAt DateTime?
+
+ // 定期タスク関連
+ isRecurring         Boolean           @default(false)
+ RecurringPattern    RecurringPattern?
+ recurringEndDate    DateTime?
+ recurringWeekdays   Int[] // 曜日指定用 (0=日曜, 1=月曜, ...)
+ recurringDayOfMonth Int? // 月の日付指定用
+ recurringMonths     Int[] // 月指定用 (1=1月, 2=2月, ...)
+
+ // ユーザー情報
+ userId Int?
+
+ // ファイル添付
+ TaskAttachment TaskAttachment[]
+
+ // 定期タスクのマスター参照
+ RecurringTask   RecurringTask? @relation(fields: [recurringTaskId], references: [id], onDelete: Cascade)
+ recurringTaskId Int?
+
+ @@index([userId, dueDate])
+ @@index([completed, dueDate])
+ @@index([recurringTaskId])
+}
+
+model TaskAttachment {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+
+ filename     String
+ originalName String
+ mimeType     String
+ size         Int
+ url          String // S3 URL or local path
+
+ Task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+ taskId Int
+}
+
+model RecurringTask {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // 基本情報
+ title       String
+ description String?
+
+ // 定期設定
+ pattern    RecurringPattern
+ startDate  DateTime
+ endDate    DateTime // 必須フィールドに変更
+ weekdays   Int[] // 曜日指定用 (0=日曜, 1=月曜, ...)
+ dayOfMonth Int? // 月の日付指定用
+ months     Int[] // 月指定用 (1=1月, 2=2月, ...)
+ interval   Int              @default(1) // 間隔（毎週、隔週など）
+
+ // 次回生成日時
+ nextGenerationDate DateTime?
+
+ // 生成停止フラグ
+ isActive Boolean @default(true)
+
+ // ユーザー情報
+ userId Int?
+
+ // 生成されたタスク
+ Task Task[]
+
+ @@index([userId, isActive])
+ @@index([nextGenerationDate, isActive])
+}
+
+enum RecurringPattern {
+ WEEKLY // 毎週
+ MONTHLY // 毎月
+ YEARLY // 毎年
+ BIWEEKLY // 隔週
+ QUARTERLY // 四半期
+ CUSTOM // カスタム間隔
+ DAILY // 毎日
+ WEEKDAYS // 平日のみ
+ WEEKENDS // 週末のみ
 }
 
  
@@ -1343,6 +1348,97 @@ model KeihiOptionMaster {
 
  @@unique([category, value], name: "category_value_unique")
  @@index([category, isActive, sortOrder])
+}
+
+ 
+// Sara App - おうちスタンプラリーアプリ
+// User統合版スキーマ
+
+model Family {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ name String
+
+ User     User[]     @relation("FamilyUsers")
+ Activity Activity[]
+}
+
+model Activity {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ title       String
+ description String?
+ order       Int     @default(0)
+ active      Boolean @default(true)
+
+ Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+ familyId Int
+
+ ActivityScore             ActivityScore[]
+ ActivityEvaluationRequest ActivityEvaluationRequest[]
+}
+
+model ActivityScore {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ score             Int
+ title             String
+ description       String?
+ iconUrl           String?
+ achievementImgUrl String?
+ animationLevel    String  @default("light") // light, medium, heavy
+
+ Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+ activityId Int
+
+ ActivityEvaluationRequest ActivityEvaluationRequest[]
+}
+
+model ActivityEvaluationRequest {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date          DateTime @default(now())
+ status        String   @default("pending") // pending, approved, rejected
+ comment       String?
+ openedByChild Boolean  @default(false)
+
+ RequestedBy   User @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
+ requestedById Int // 申請者（子ども）
+
+ Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+ activityId Int
+
+ ActivityScore   ActivityScore @relation(fields: [activityScoreId], references: [id], onDelete: Cascade)
+ activityScoreId Int
+
+ ApprovedBy   User? @relation("ApprovedBy", fields: [approvedById], references: [id])
+ approvedById Int? // 承認者（親）
+
+ @@unique([requestedById, activityId, date], name: "user_activity_date_unique")
+}
+
+model MonthlySetting {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ year      Int
+ month     Int
+ key       String // 例: "walking_goal"
+ value     String // 例: "650"（将来はJSONも可）
+
+ @@unique([year, month, key])
 }
 
  

@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
 
         const entryResult = await doStandardPrisma('healthJournalEntry', 'create', {
           data: {
-            journalId: journal.id,
+            healthJournalId: journal.id,
             hourSlot,
             comment: comment || null,
           },

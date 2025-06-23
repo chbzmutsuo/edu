@@ -77,7 +77,7 @@ model HealthJournal {
  templateApplied Boolean @default(false)
 
  // リレーション
- entries HealthJournalEntry[]
+ HealthJournalEntry HealthJournalEntry[]
 
  @@unique([userId, journalDate])
  @@index([userId, journalDate])
@@ -91,8 +91,8 @@ model HealthJournalEntry {
  sortOrder Float     @default(0)
 
  // 関連日誌
- HealthJournal HealthJournal @relation(fields: [journalId], references: [id], onDelete: Cascade)
- journalId     Int
+ healthJournalId Int
+ HealthJournal   HealthJournal @relation(fields: [healthJournalId], references: [id], onDelete: Cascade)
 
  // 時間帯（7, 8, 9, ..., 6）
  hourSlot Int // 7:00-8:00なら7、8:00-9:00なら8
@@ -101,10 +101,10 @@ model HealthJournalEntry {
  comment String?
 
  // リレーション
- images HealthJournalImage[]
+ HealthJournalImage HealthJournalImage[]
 
- @@unique([journalId, hourSlot])
- @@index([journalId, hourSlot])
+ @@unique([healthJournalId, hourSlot])
+ @@index([healthJournalId, hourSlot])
 }
 
 // 日誌画像
@@ -115,8 +115,8 @@ model HealthJournalImage {
  sortOrder Float     @default(0)
 
  // 関連エントリ
- HealthJournalEntry HealthJournalEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
- entryId            Int
+ HealthJournalEntry   HealthJournalEntry @relation(fields: [healthJournalEntryId], references: [id], onDelete: Cascade)
+ healthJournalEntryId Int
 
  // 画像情報
  fileName    String // ファイル名
@@ -125,5 +125,101 @@ model HealthJournalImage {
  mimeType    String? // MIMEタイプ
  description String? // 画像の説明
 
- @@index([entryId])
+ @@index([healthJournalEntryId])
+}
+
+// タスク管理アプリ用スキーマ
+model Task {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // 基本情報
+ title       String
+ description String?
+ dueDate     DateTime?
+ completed   Boolean   @default(false)
+ completedAt DateTime?
+
+ // 定期タスク関連
+ isRecurring         Boolean           @default(false)
+ RecurringPattern    RecurringPattern?
+ recurringEndDate    DateTime?
+ recurringWeekdays   Int[] // 曜日指定用 (0=日曜, 1=月曜, ...)
+ recurringDayOfMonth Int? // 月の日付指定用
+ recurringMonths     Int[] // 月指定用 (1=1月, 2=2月, ...)
+
+ // ユーザー情報
+ userId Int?
+
+ // ファイル添付
+ TaskAttachment TaskAttachment[]
+
+ // 定期タスクのマスター参照
+ RecurringTask   RecurringTask? @relation(fields: [recurringTaskId], references: [id], onDelete: Cascade)
+ recurringTaskId Int?
+
+ @@index([userId, dueDate])
+ @@index([completed, dueDate])
+ @@index([recurringTaskId])
+}
+
+model TaskAttachment {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+
+ filename     String
+ originalName String
+ mimeType     String
+ size         Int
+ url          String // S3 URL or local path
+
+ Task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+ taskId Int
+}
+
+model RecurringTask {
+ id        Int      @id @default(autoincrement())
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // 基本情報
+ title       String
+ description String?
+
+ // 定期設定
+ pattern    RecurringPattern
+ startDate  DateTime
+ endDate    DateTime // 必須フィールドに変更
+ weekdays   Int[] // 曜日指定用 (0=日曜, 1=月曜, ...)
+ dayOfMonth Int? // 月の日付指定用
+ months     Int[] // 月指定用 (1=1月, 2=2月, ...)
+ interval   Int              @default(1) // 間隔（毎週、隔週など）
+
+ // 次回生成日時
+ nextGenerationDate DateTime?
+
+ // 生成停止フラグ
+ isActive Boolean @default(true)
+
+ // ユーザー情報
+ userId Int?
+
+ // 生成されたタスク
+ Task Task[]
+
+ @@index([userId, isActive])
+ @@index([nextGenerationDate, isActive])
+}
+
+enum RecurringPattern {
+ WEEKLY // 毎週
+ MONTHLY // 毎月
+ YEARLY // 毎年
+ BIWEEKLY // 隔週
+ QUARTERLY // 四半期
+ CUSTOM // カスタム間隔
+ DAILY // 毎日
+ WEEKDAYS // 平日のみ
+ WEEKENDS // 週末のみ
 }

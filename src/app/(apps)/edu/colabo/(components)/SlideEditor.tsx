@@ -1,15 +1,16 @@
 'use client'
 
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
-import {SlideBlock} from './SlideBlock'
 import {BlockEditor} from './BlockEditor'
+
+import {SlideBlock} from '@app/(apps)/edu/colabo/(components)/SlideBlock'
 
 export const SlideEditor = ({slide, onSave, onCancel}) => {
   const [title, setTitle] = useState(slide?.title || '')
   const [templateType, setTemplateType] = useState(slide?.templateType || 'normal')
   const [blocks, setBlocks] = useState(slide?.SlideBlock || [])
-  const [editingBlock, setEditingBlock] = useState(null)
+  const [editingBlock, setEditingBlock] = useState<any | null>(null)
   const [isPreview, setIsPreview] = useState(false)
 
   const templateOptions = [
@@ -20,45 +21,40 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
     {value: 'summary_survey', label: 'まとめアンケート', description: '授業のまとめアンケート'},
   ]
 
-  const addBlock = (blockType) => {
+  const addBlock = blockType => {
     const newBlock = {
       id: `temp_${Date.now()}`,
       blockType,
       content: '',
       alignment: 'left',
       sortOrder: blocks.length,
-      isNew: true
+      isNew: true,
     }
     setBlocks([...blocks, newBlock])
-    setEditingBlock(newBlock)
+    setEditingBlock(newBlock) // 新しいブロックを編集モードにする
   }
 
   const updateBlock = (blockId, updates) => {
-    setBlocks(blocks.map(block => 
-      block.id === blockId ? {...block, ...updates} : block
-    ))
+    setBlocks(blocks.map(block => (block.id === blockId ? {...block, ...updates} : block)))
   }
 
-  const deleteBlock = (blockId) => {
+  const deleteBlock = blockId => {
     setBlocks(blocks.filter(block => block.id !== blockId))
     setEditingBlock(null)
   }
 
   const moveBlock = (blockId, direction) => {
     const blockIndex = blocks.findIndex(b => b.id === blockId)
-    if (
-      (direction === 'up' && blockIndex > 0) ||
-      (direction === 'down' && blockIndex < blocks.length - 1)
-    ) {
+    if ((direction === 'up' && blockIndex > 0) || (direction === 'down' && blockIndex < blocks.length - 1)) {
       const newBlocks = [...blocks]
       const newIndex = direction === 'up' ? blockIndex - 1 : blockIndex + 1
       ;[newBlocks[blockIndex], newBlocks[newIndex]] = [newBlocks[newIndex], newBlocks[blockIndex]]
-      
+
       // Update sort orders
       newBlocks.forEach((block, index) => {
         block.sortOrder = index
       })
-      
+
       setBlocks(newBlocks)
     }
   }
@@ -69,8 +65,8 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
       templateType,
       blocks: blocks.map((block, index) => ({
         ...block,
-        sortOrder: index
-      }))
+        sortOrder: index,
+      })),
     }
     onSave(slideData)
   }
@@ -83,42 +79,29 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
           <div className="flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold">スライドエディター</h1>
             <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsPreview(!isPreview)}
-              >
-                {isPreview ? '編集モード' : 'プレビュー'}
-              </Button>
-              <Button variant="outline" onClick={onCancel}>
-                キャンセル
-              </Button>
-              <Button onClick={handleSave}>
-                保存
-              </Button>
+              <Button onClick={() => setIsPreview(!isPreview)}>{isPreview ? '編集モード' : 'プレビュー'}</Button>
+              <Button onClick={onCancel}>キャンセル</Button>
+              <Button onClick={handleSave}>保存</Button>
             </div>
           </div>
-          
+
           {/* スライド基本設定 */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                スライドタイトル
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">スライドタイトル</label>
               <input
                 type="text"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={e => setTitle(e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
                 placeholder="スライドのタイトルを入力"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                テンプレート
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">テンプレート</label>
               <select
                 value={templateType}
-                onChange={(e) => setTemplateType(e.target.value)}
+                onChange={e => setTemplateType(e.target.value)}
                 className="w-full border border-gray-300 rounded-md px-3 py-2"
               >
                 {templateOptions.map(option => (
@@ -137,46 +120,21 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
             <div className="w-64 border-r p-4">
               <h3 className="font-medium text-gray-900 mb-3">ブロックを追加</h3>
               <div className="space-y-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => addBlock('text')}
-                >
+                <Button size="sm" className="w-full justify-start" onClick={() => addBlock('text')}>
                   📝 テキスト
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => addBlock('image')}
-                >
+                <Button size="sm" className="w-full justify-start" onClick={() => addBlock('image')}>
                   🖼️ 画像
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-start"
-                  onClick={() => addBlock('link')}
-                >
+                <Button size="sm" className="w-full justify-start" onClick={() => addBlock('link')}>
                   🔗 リンク
                 </Button>
                 {templateType === 'choice_quiz' && (
                   <>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => addBlock('quiz_question')}
-                    >
+                    <Button size="sm" className="w-full justify-start" onClick={() => addBlock('quiz_question')}>
                       ❓ クイズ問題
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => addBlock('choice_option')}
-                    >
+                    <Button size="sm" className="w-full justify-start" onClick={() => addBlock('choice_option')}>
                       ☑️ 選択肢
                     </Button>
                   </>
@@ -218,34 +176,16 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
                             {block.blockType === 'choice_option' && '☑️ 選択肢'}
                           </span>
                           <div className="flex items-center space-x-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => moveBlock(block.id, 'up')}
-                              disabled={index === 0}
-                            >
+                            <Button size="sm" onClick={() => moveBlock(block.id, 'up')} disabled={index === 0}>
                               ↑
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => moveBlock(block.id, 'down')}
-                              disabled={index === blocks.length - 1}
-                            >
+                            <Button size="sm" onClick={() => moveBlock(block.id, 'down')} disabled={index === blocks.length - 1}>
                               ↓
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setEditingBlock(block)}
-                            >
+                            <Button size="sm" onClick={() => setEditingBlock(block)}>
                               編集
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => deleteBlock(block.id)}
-                            >
+                            <Button size="sm" onClick={() => deleteBlock(block.id)}>
                               削除
                             </Button>
                           </div>
@@ -255,7 +195,7 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
                         </div>
                       </div>
                     ))}
-                  
+
                   {blocks.length === 0 && (
                     <div className="text-center py-12 text-gray-500">
                       左のサイドバーからブロックを追加してスライドを作成しましょう
@@ -272,7 +212,7 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
       {editingBlock && (
         <BlockEditor
           block={editingBlock}
-          onSave={(updates) => {
+          onSave={updates => {
             updateBlock(editingBlock.id, updates)
             setEditingBlock(null)
           }}

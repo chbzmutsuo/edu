@@ -12,10 +12,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({success: false, error: 'ユーザーIDが必要です'}, {status: 400})
     }
 
-    console.log(`ユーザーID ${userId} の健康記録をシーディングします`)
-
     // シーディング実行
     await doStandardPrisma(`healthRecord`, `deleteMany`, {where: {id: {gte: 0}}})
+    // return
 
     const result = await seedHealthRecords(userId)
 

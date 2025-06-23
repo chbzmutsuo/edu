@@ -127,14 +127,14 @@ export interface HealthJournal {
   journalDate: string // YYYY-MM-DD形式
   goalAndReflection?: string
   templateApplied: boolean
-  entries: HealthJournalEntry[]
   createdAt: string
   updatedAt?: string
+  HealthJournalEntry: HealthJournalEntry[]
 }
 
 export interface HealthJournalEntry {
   id: number
-  journalId: number
+  healthJournalId: number
   hourSlot: number // 7, 8, 9, ..., 6
   comment?: string
   images: HealthJournalImage[]
@@ -144,7 +144,7 @@ export interface HealthJournalEntry {
 
 export interface HealthJournalImage {
   id: number
-  entryId: number
+  healthJournalEntryId: number
   fileName: string
   filePath: string
   fileSize?: number
@@ -157,7 +157,7 @@ export interface HealthJournalImage {
 // 日誌フォームデータ型
 export interface JournalFormData {
   goalAndReflection?: string
-  entries: {
+  HealthJournalEntry: {
     hourSlot: number
     comment?: string
     images?: File[]

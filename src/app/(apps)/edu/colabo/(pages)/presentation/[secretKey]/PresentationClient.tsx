@@ -8,7 +8,7 @@ import {Button} from '@cm/components/styles/common-components/Button'
 
 export const PresentationClient = ({game, userRole, currentStudent, session}) => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
-  const [responses, setResponses] = useState([])
+  const [responses, setResponses] = useState<any[]>([])
   const [showResults, setShowResults] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -23,7 +23,7 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
 
   const loadSlideResponses = async () => {
     if (!currentSlide) return
-    
+
     try {
       const slideResponses = await response_actions.getSlideResponses(currentSlide.id)
       setResponses(slideResponses)
@@ -46,22 +46,22 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
     }
   }
 
-  const handleGoToSlide = (index) => {
+  const handleGoToSlide = index => {
     setCurrentSlideIndex(index)
     setShowResults(false)
   }
 
-  const handleSubmitResponse = async (responseData) => {
+  const handleSubmitResponse = async responseData => {
     if (!currentStudent) return
-    
+
     setIsLoading(true)
     try {
       const newResponse = await response_actions.submitResponse({
         ...responseData,
         studentId: currentStudent.id,
-        gameId: game.id
+        gameId: game.id,
       })
-      
+
       setResponses(prev => [...prev.filter(r => r.studentId !== currentStudent.id), newResponse])
     } catch (error) {
       console.error('Failed to submit response:', error)
@@ -75,7 +75,7 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
     setShowResults(!showResults)
   }
 
-  const handleShareResponse = async (response) => {
+  const handleShareResponse = async response => {
     try {
       await presentation_actions.shareResponse(response.id)
       // リアルタイム更新の実装が必要
@@ -94,10 +94,9 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
             {userRole === 'teacher' ? 'スライドが見つかりません' : '授業を準備中です'}
           </h2>
           <p className="text-gray-600">
-            {userRole === 'teacher' 
+            {userRole === 'teacher'
               ? 'スライドを作成してから授業を開始してください。'
-              : '先生が授業を開始するまでお待ちください。'
-            }
+              : '先生が授業を開始するまでお待ちください。'}
           </p>
         </div>
       </div>
@@ -119,24 +118,17 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
                   スライド {currentSlideIndex + 1} / {slides.length}
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-2">
-                <Button
-                  variant="outline"
-                  onClick={handlePrevSlide}
-                  disabled={currentSlideIndex === 0}
-                >
+                <Button onClick={handlePrevSlide} disabled={currentSlideIndex === 0}>
                   ← 前へ
                 </Button>
-                <Button
-                  onClick={handleNextSlide}
-                  disabled={currentSlideIndex === slides.length - 1}
-                >
+                <Button onClick={handleNextSlide} disabled={currentSlideIndex === slides.length - 1}>
                   次へ →
                 </Button>
               </div>
             </div>
-            
+
             {/* スライド一覧（小さく表示） */}
             <div className="mt-4 flex space-x-2 overflow-x-auto">
               {slides.map((slide, index) => (
@@ -145,10 +137,7 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
                   onClick={() => handleGoToSlide(index)}
                   className={`
                     px-3 py-1 text-xs rounded whitespace-nowrap
-                    ${index === currentSlideIndex 
-                      ? 'bg-blue-500 text-white' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }
+                    ${index === currentSlideIndex ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
                   `}
                 >
                   {index + 1}. {slide.title}
@@ -170,7 +159,7 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
           onSubmitResponse: handleSubmitResponse,
           onShowResults: handleShowResults,
           onShareResponse: handleShareResponse,
-          showResults
+          showResults,
         })}
       </div>
 
@@ -185,13 +174,7 @@ export const PresentationClient = ({game, userRole, currentStudent, session}) =>
                   {game.Teacher?.name} • {game.SubjectNameMaster?.name}
                 </p>
               </div>
-              <div className="text-sm">
-                {currentStudent ? (
-                  <span>👋 {currentStudent.name}</span>
-                ) : (
-                  <span>ゲスト</span>
-                )}
-              </div>
+              <div className="text-sm">{currentStudent ? <span>👋 {currentStudent.name}</span> : <span>ゲスト</span>}</div>
             </div>
           </div>
         </div>

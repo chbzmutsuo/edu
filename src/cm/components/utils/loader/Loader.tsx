@@ -19,14 +19,14 @@ export default function Loader(props: any) {
         <LoadingBar ref={ref} height={4} />
         <Absolute>
           <C_Stack className={` items-center`}>
-            <Blocks
+            {/* <Blocks
               visible={true}
               height="80"
               width="80"
               ariaLabel="blocks-loading"
               wrapperStyle={{}}
               wrapperClass="blocks-wrapper"
-            />
+            /> */}
             {props.children}
           </C_Stack>
         </Absolute>

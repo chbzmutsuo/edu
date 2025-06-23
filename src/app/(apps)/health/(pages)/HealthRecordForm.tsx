@@ -188,6 +188,7 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
               <label className="block text-sm font-medium text-gray-700 mb-2">血糖値</label>
               <input
                 type="number"
+                required
                 value={formData.bloodSugarValue || ''}
                 onChange={e => handleInputChange('bloodSugarValue', parseInt(e.target.value) || undefined)}
                 placeholder="血糖値を入力"
@@ -379,153 +380,159 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
               </tr>
             </thead>
             <tbody>
-              {bulkData.items.map((item, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2">
-                    <input
-                      type="time"
-                      value={item.recordTime}
-                      onChange={e => handleBulkItemChange(index, 'recordTime', e.target.value)}
-                      className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </td>
-                  {bulkData.category === HEALTH_CATEGORIES.BLOOD_SUGAR && (
+              {bulkData.items.map((item, index) => {
+                const inputtedTime = item.recordTime
+                return (
+                  <tr key={index} className="hover:bg-gray-50">
                     <td className="border border-gray-300 p-2">
                       <input
-                        type="number"
-                        value={item.bloodSugarValue || ''}
-                        onChange={e => handleBulkItemChange(index, 'bloodSugarValue', parseInt(e.target.value) || undefined)}
-                        placeholder="血糖値"
+                        type="time"
+                        value={item.recordTime}
+                        onChange={e => handleBulkItemChange(index, 'recordTime', e.target.value)}
                         className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </td>
-                  )}
-                  {bulkData.category === HEALTH_CATEGORIES.MEDICINE && (
-                    <>
+                    {bulkData.category === HEALTH_CATEGORIES.BLOOD_SUGAR && (
                       <td className="border border-gray-300 p-2">
-                        <select
-                          value={item.medicineId || ''}
-                          onChange={e => handleBulkItemChange(index, 'medicineId', parseInt(e.target.value) || undefined)}
+                        <input
+                          type="number"
+                          value={item.bloodSugarValue || ''}
+                          onChange={e => handleBulkItemChange(index, 'bloodSugarValue', parseInt(e.target.value) || undefined)}
+                          placeholder="血糖値"
+                          required={inputtedTime !== ''}
                           className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="">選択</option>
-                          {medicines.map(medicine => (
-                            <option key={medicine.id} value={medicine.id}>
-                              {medicine.name}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </td>
-                      <td className="border border-gray-300 p-2">
-                        {(() => {
-                          const selectedMedicine = medicines.find(m => m.id === item.medicineId)
-                          if (!selectedMedicine) {
+                    )}
+                    {bulkData.category === HEALTH_CATEGORIES.MEDICINE && (
+                      <>
+                        <td className="border border-gray-300 p-2">
+                          <select
+                            value={item.medicineId || ''}
+                            onChange={e => handleBulkItemChange(index, 'medicineId', parseInt(e.target.value) || undefined)}
+                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="">選択</option>
+                            {medicines.map(medicine => (
+                              <option key={medicine.id} value={medicine.id}>
+                                {medicine.name}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="border border-gray-300 p-2">
+                          {(() => {
+                            const selectedMedicine = medicines.find(m => m.id === item.medicineId)
+                            if (!selectedMedicine) {
+                              return (
+                                <input
+                                  type="text"
+                                  value=""
+                                  disabled
+                                  placeholder="薬を選択"
+                                  className="w-full p-1 border border-gray-200 rounded bg-gray-100 text-gray-400"
+                                />
+                              )
+                            }
+                            if (!selectedMedicine.requireUnit) {
+                              return (
+                                <input
+                                  type="text"
+                                  value="不要"
+                                  disabled
+                                  className="w-full p-1 border border-gray-200 rounded bg-gray-100 text-gray-600"
+                                />
+                              )
+                            }
                             return (
                               <input
-                                type="text"
-                                value=""
-                                disabled
-                                placeholder="薬を選択"
-                                className="w-full p-1 border border-gray-200 rounded bg-gray-100 text-gray-400"
+                                type="number"
+                                step="0.1"
+                                value={item.medicineUnit || ''}
+                                onChange={e =>
+                                  handleBulkItemChange(index, 'medicineUnit', parseFloat(e.target.value) || undefined)
+                                }
+                                placeholder="単位"
+                                required
+                                className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                               />
                             )
-                          }
-                          if (!selectedMedicine.requireUnit) {
-                            return (
-                              <input
-                                type="text"
-                                value="不要"
-                                disabled
-                                className="w-full p-1 border border-gray-200 rounded bg-gray-100 text-gray-600"
-                              />
-                            )
-                          }
-                          return (
-                            <input
-                              type="number"
-                              step="0.1"
-                              value={item.medicineUnit || ''}
-                              onChange={e => handleBulkItemChange(index, 'medicineUnit', parseFloat(e.target.value) || undefined)}
-                              placeholder="単位"
-                              required
-                              className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                            />
-                          )
-                        })()}
-                      </td>
-                    </>
-                  )}
-                  {bulkData.category === HEALTH_CATEGORIES.WALKING && (
-                    <>
-                      <td className="border border-gray-300 p-2">
-                        <select
-                          value={item.walkingCasual || ''}
-                          onChange={e => handleBulkItemChange(index, 'walkingCasual', parseFloat(e.target.value) || 0)}
-                          className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="">選択</option>
-                          {Array.from({length: 50}, (_, i) => i).map(value => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <select
-                          value={item.walkingLightly || ''}
-                          onChange={e => handleBulkItemChange(index, 'walkingLightly', parseFloat(e.target.value) || 0)}
-                          className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="">選択</option>
-                          {Array.from({length: 50}, (_, i) => i).map(value => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <select
-                          value={item.walkingQuickly || ''}
-                          onChange={e => handleBulkItemChange(index, 'walkingQuickly', parseFloat(e.target.value) || 0)}
-                          className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="">選択</option>
-                          {Array.from({length: 50}, (_, i) => i).map(value => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="border border-gray-300 p-2">
-                        <select
-                          value={item.walkingStrenuous || ''}
-                          onChange={e => handleBulkItemChange(index, 'walkingStrenuous', parseFloat(e.target.value) || 0)}
-                          className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                          <option value="">選択</option>
-                          {Array.from({length: 50}, (_, i) => i).map(value => (
-                            <option key={value} value={value}>
-                              {value}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                    </>
-                  )}
-                  <td className="border border-gray-300 p-2">
-                    <input
-                      type="text"
-                      value={item.memo || ''}
-                      onChange={e => handleBulkItemChange(index, 'memo', e.target.value)}
-                      placeholder="メモ"
-                      className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </td>
-                </tr>
-              ))}
+                          })()}
+                        </td>
+                      </>
+                    )}
+                    {bulkData.category === HEALTH_CATEGORIES.WALKING && (
+                      <>
+                        <td className="border border-gray-300 p-2">
+                          <select
+                            value={item.walkingCasual || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingCasual', parseFloat(e.target.value) || 0)}
+                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="">選択</option>
+                            {Array.from({length: 50}, (_, i) => i).map(value => (
+                              <option key={value} value={value}>
+                                {value}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="border border-gray-300 p-2">
+                          <select
+                            value={item.walkingLightly || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingLightly', parseFloat(e.target.value) || 0)}
+                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="">選択</option>
+                            {Array.from({length: 50}, (_, i) => i).map(value => (
+                              <option key={value} value={value}>
+                                {value}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="border border-gray-300 p-2">
+                          <select
+                            value={item.walkingQuickly || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingQuickly', parseFloat(e.target.value) || 0)}
+                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="">選択</option>
+                            {Array.from({length: 50}, (_, i) => i).map(value => (
+                              <option key={value} value={value}>
+                                {value}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="border border-gray-300 p-2">
+                          <select
+                            value={item.walkingStrenuous || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingStrenuous', parseFloat(e.target.value) || 0)}
+                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                          >
+                            <option value="">選択</option>
+                            {Array.from({length: 50}, (_, i) => i).map(value => (
+                              <option key={value} value={value}>
+                                {value}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                      </>
+                    )}
+                    <td className="border border-gray-300 p-2">
+                      <input
+                        type="text"
+                        value={item.memo || ''}
+                        onChange={e => handleBulkItemChange(index, 'memo', e.target.value)}
+                        placeholder="メモ"
+                        className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>

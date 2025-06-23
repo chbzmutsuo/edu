@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useRef} from 'react'
 import {toast} from 'react-toastify'
 
-import {AnalyzedReceipt, BulkProcessingSummary} from '../../../../types'
+import {AnalyzedReceipt, BulkProcessingSummary} from '@app/(apps)/keihi/types'
 import {BulkUploadSection} from './BulkUploadSection'
 import {BulkProcessingResults} from './BulkProcessingResults'
 import {BulkProcessingStatus} from './BulkProcessingStatus'

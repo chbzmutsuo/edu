@@ -4,6 +4,7 @@ import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStan
 import {HOUR_SLOTS} from '../(constants)/types'
 import {HealthService} from '@app/(apps)/health/(lib)/healthService'
 import {journalDefaultValue} from '@app/(apps)/health/(lib)/journalService'
+import {HealthJournal, HealthJournalEntry, HealthJournalImage} from '@prisma/client'
 
 // 日誌を取得または作成
 export async function getOrCreateJournal(userId: number, date: string) {
@@ -17,8 +18,8 @@ export async function getOrCreateJournal(userId: number, date: string) {
         userId_journalDate: {userId, journalDate},
       },
       include: {
-        entries: {
-          include: {images: true},
+        HealthJournalEntry: {
+          include: {HealthJournalImage: true},
           orderBy: {hourSlot: 'asc'},
         },
       },
@@ -35,10 +36,8 @@ export async function getOrCreateJournal(userId: number, date: string) {
     const createResult = await doStandardPrisma('healthJournal', 'create', {
       data: {userId, journalDate, templateApplied: false, goalAndReflection: journalDefaultValue},
       include: {
-        entries: {
-          include: {
-            images: true,
-          },
+        HealthJournalEntry: {
+          include: {HealthJournalImage: true},
           orderBy: {
             hourSlot: 'asc',
           },
@@ -69,13 +68,13 @@ export async function getOrCreateJournal(userId: number, date: string) {
 // テンプレートを適用
 export async function applyJournalTemplate(journalId: number) {
   try {
-    const entries = HOUR_SLOTS.map(hourSlot => ({
-      journalId,
+    const HealthJournalEntry = HOUR_SLOTS.map(hourSlot => ({
+      healthJournalId: journalId,
       hourSlot,
     }))
 
     const createResult = await doStandardPrisma('healthJournalEntry', 'createMany', {
-      data: entries,
+      data: HealthJournalEntry,
       skipDuplicates: true,
     })
 
@@ -115,9 +114,9 @@ export async function updateJournal(journalId: number, goalAndReflection: string
       where: {id: journalId},
       data: {goalAndReflection},
       include: {
-        entries: {
+        HealthJournalEntry: {
           include: {
-            images: true,
+            HealthJournalImage: true,
           },
           orderBy: {
             hourSlot: 'asc',
@@ -147,13 +146,13 @@ export async function updateJournal(journalId: number, goalAndReflection: string
 }
 
 // エントリを更新
-export async function updateJournalEntry(entryId: number, comment: string) {
+export async function updateJournalEntry(healthJournalEntryId: number, comment: string) {
   try {
     const result = await doStandardPrisma('healthJournalEntry', 'update', {
-      where: {id: entryId},
+      where: {id: healthJournalEntryId},
       data: {comment},
       include: {
-        images: true,
+        HealthJournalImage: true,
       },
     })
 
@@ -256,7 +255,7 @@ export async function getHealthRecordsForTimeSlot(userId: number, journalDate: s
 
 // 画像を追加
 export async function addJournalImage(
-  entryId: number,
+  healthJournalEntryId: number,
   imageData: {
     fileName: string
     filePath: string
@@ -268,7 +267,7 @@ export async function addJournalImage(
   try {
     const result = await doStandardPrisma('healthJournalImage', 'create', {
       data: {
-        entryId,
+        healthJournalEntryId,
         ...imageData,
       },
     })
@@ -308,29 +307,31 @@ export async function deleteJournalImage(imageId: number) {
 }
 
 // データフォーマット関数
-function formatJournalData(journal: any) {
-  return {
-    id: journal.id,
-    userId: journal.userId,
-    journalDate: journal.journalDate.toISOString().split('T')[0],
-    goalAndReflection: journal.goalAndReflection || '',
-    templateApplied: journal.templateApplied,
-    entries: journal.entries.map(formatEntryData),
-    createdAt: journal.createdAt.toISOString(),
-    updatedAt: journal.updatedAt?.toISOString(),
+function formatJournalData(HealthJournal: HealthJournal & {HealthJournalEntry: HealthJournalEntry[]}) {
+  const data = {
+    id: HealthJournal.id,
+    userId: HealthJournal.userId,
+    journalDate: HealthJournal.journalDate.toISOString().split('T')[0],
+    goalAndReflection: HealthJournal.goalAndReflection || '',
+    templateApplied: HealthJournal.templateApplied,
+    HealthJournalEntry: HealthJournal.HealthJournalEntry.map(formatEntryData),
+    createdAt: HealthJournal.createdAt.toISOString(),
+    updatedAt: HealthJournal.updatedAt?.toISOString(),
   }
+
+  return data
 }
 
-function formatEntryData(entry: any) {
+function formatEntryData(HealthJournalEntry: HealthJournalEntry & {HealthJournalImage: HealthJournalImage[]}) {
   return {
-    id: entry.id,
-    journalId: entry.journalId,
-    hourSlot: entry.hourSlot,
-    comment: entry.comment || '',
+    id: HealthJournalEntry.id,
+    healthJournalId: HealthJournalEntry.healthJournalId,
+    hourSlot: HealthJournalEntry.hourSlot,
+    comment: HealthJournalEntry.comment || '',
     images:
-      entry.images?.map((image: any) => ({
+      HealthJournalEntry.HealthJournalImage?.map((image: any) => ({
         id: image.id,
-        entryId: image.entryId,
+        healthJournalEntryId: image.healthJournalEntryId,
         fileName: image.fileName,
         filePath: image.filePath,
         fileSize: image.fileSize,
@@ -339,7 +340,7 @@ function formatEntryData(entry: any) {
         createdAt: image.createdAt.toISOString(),
         updatedAt: image.updatedAt?.toISOString(),
       })) || [],
-    createdAt: entry.createdAt.toISOString(),
-    updatedAt: entry.updatedAt?.toISOString(),
+    createdAt: HealthJournalEntry.createdAt.toISOString(),
+    updatedAt: HealthJournalEntry.updatedAt?.toISOString(),
   }
 }

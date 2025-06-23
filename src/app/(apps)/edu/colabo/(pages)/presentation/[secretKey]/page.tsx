@@ -1,15 +1,14 @@
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import prisma from '@cm/lib/prisma'
-import Redirector from '@cm/components/utils/Redirector'
 import {PresentationClient} from './PresentationClient'
 
-const Page = async (props) => {
+const Page = async props => {
   const {secretKey} = await props.params
   const query = await props.searchParams
   const {session} = await initServerComopnent({query})
-  
+
   const userRole = query.as || 'student' // 'teacher' or 'student'
-  
+
   // Get game with slides and student data
   const game = await prisma.game.findUnique({
     where: {secretKey},
@@ -21,25 +20,25 @@ const Page = async (props) => {
         orderBy: {sortOrder: 'asc'},
         include: {
           SlideBlock: {
-            orderBy: {sortOrder: 'asc'}
+            orderBy: {sortOrder: 'asc'},
           },
           SlideResponse: {
             include: {
-              Student: true
-            }
-          }
-        }
+              Student: true,
+            },
+          },
+        },
       },
       GameStudent: {
         include: {
           Student: {
             include: {
-              Classroom: true
-            }
-          }
-        }
-      }
-    }
+              Classroom: true,
+            },
+          },
+        },
+      },
+    },
   })
 
   if (!game) {
@@ -66,28 +65,23 @@ const Page = async (props) => {
   }
 
   // For student access, check if they're registered for this game
-  let currentStudent = null
+  let currentStudent: any = null
   if (userRole === 'student' && session?.id) {
     const gameStudent = await prisma.gameStudent.findFirst({
       where: {
         gameId: game.id,
-        studentId: session.id
+        studentId: session.id,
       },
       include: {
-        Student: true
-      }
+        Student: true,
+      },
     })
     currentStudent = gameStudent?.Student
   }
 
   return (
     <div className="min-h-screen">
-      <PresentationClient 
-        game={game} 
-        userRole={userRole}
-        currentStudent={currentStudent}
-        session={session}
-      />
+      <PresentationClient game={game} userRole={userRole} currentStudent={currentStudent} session={session} />
     </div>
   )
 }

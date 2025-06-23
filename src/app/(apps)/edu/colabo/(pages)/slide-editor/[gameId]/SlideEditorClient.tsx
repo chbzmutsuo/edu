@@ -8,7 +8,7 @@ import {slide_actions} from '@app/(apps)/edu/colabo/actions/slide_actions'
 
 export const SlideEditorClient = ({game}) => {
   const [slides, setSlides] = useState(game.Slide || [])
-  const [selectedSlide, setSelectedSlide] = useState(null)
+  const [selectedSlide, setSelectedSlide] = useState<any>(null)
   const [isCreating, setIsCreating] = useState(false)
   const router = useRouter()
 
@@ -17,28 +17,28 @@ export const SlideEditorClient = ({game}) => {
       gameId: game.id,
       title: '',
       templateType: 'normal',
-      SlideBlock: []
+      SlideBlock: [],
     })
     setIsCreating(true)
   }
 
-  const handleEditSlide = (slide) => {
+  const handleEditSlide = slide => {
     setSelectedSlide(slide)
     setIsCreating(false)
   }
 
-  const handleSaveSlide = async (slideData) => {
+  const handleSaveSlide = async slideData => {
     try {
       let result
       if (isCreating) {
         result = await slide_actions.createSlide({
           ...slideData,
-          gameId: game.id
+          gameId: game.id,
         })
         setSlides(prev => [...prev, result])
       } else {
         result = await slide_actions.updateSlide(selectedSlide.id, slideData)
-        setSlides(prev => prev.map(s => s.id === selectedSlide.id ? result : s))
+        setSlides(prev => prev.map(s => (s.id === selectedSlide.id ? result : s)))
       }
       setSelectedSlide(null)
       setIsCreating(false)
@@ -48,9 +48,9 @@ export const SlideEditorClient = ({game}) => {
     }
   }
 
-  const handleDeleteSlide = async (slideId) => {
+  const handleDeleteSlide = async slideId => {
     if (!confirm('このスライドを削除しますか？')) return
-    
+
     try {
       await slide_actions.deleteSlide(slideId)
       setSlides(prev => prev.filter(s => s.id !== slideId))
@@ -60,7 +60,7 @@ export const SlideEditorClient = ({game}) => {
     }
   }
 
-  const handleDuplicateSlide = async (slide) => {
+  const handleDuplicateSlide = async slide => {
     try {
       const duplicatedSlide = await slide_actions.duplicateSlide(slide.id)
       setSlides(prev => [...prev, duplicatedSlide])
@@ -95,15 +95,8 @@ export const SlideEditorClient = ({game}) => {
             </p>
           </div>
           <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              onClick={() => router.push('/edu/colabo')}
-            >
-              ダッシュボードに戻る
-            </Button>
-            <Button onClick={handleCreateSlide}>
-              新しいスライドを作成
-            </Button>
+            <Button onClick={() => router.push('/edu/colabo')}>ダッシュボードに戻る</Button>
+            <Button onClick={handleCreateSlide}>新しいスライドを作成</Button>
           </div>
         </div>
       </div>
@@ -113,7 +106,7 @@ export const SlideEditorClient = ({game}) => {
         <div className="p-6 border-b">
           <h2 className="text-xl font-semibold">スライド一覧 ({slides.length}枚)</h2>
         </div>
-        
+
         {slides.length > 0 ? (
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -121,16 +114,20 @@ export const SlideEditorClient = ({game}) => {
                 <div key={slide.id} className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="p-4 bg-gray-50 border-b">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-gray-600">
-                        スライド {index + 1}
-                      </span>
-                      <span className={`px-2 py-1 text-xs rounded ${
-                        slide.templateType === 'normal' ? 'bg-blue-100 text-blue-800' :
-                        slide.templateType === 'psychology' ? 'bg-purple-100 text-purple-800' :
-                        slide.templateType === 'choice_quiz' ? 'bg-green-100 text-green-800' :
-                        slide.templateType === 'free_text_quiz' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
+                      <span className="text-sm font-medium text-gray-600">スライド {index + 1}</span>
+                      <span
+                        className={`px-2 py-1 text-xs rounded ${
+                          slide.templateType === 'normal'
+                            ? 'bg-blue-100 text-blue-800'
+                            : slide.templateType === 'psychology'
+                              ? 'bg-purple-100 text-purple-800'
+                              : slide.templateType === 'choice_quiz'
+                                ? 'bg-green-100 text-green-800'
+                                : slide.templateType === 'free_text_quiz'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
                         {slide.templateType === 'normal' && 'ノーマル'}
                         {slide.templateType === 'psychology' && '心理アンケート'}
                         {slide.templateType === 'choice_quiz' && '選択クイズ'}
@@ -139,32 +136,19 @@ export const SlideEditorClient = ({game}) => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="p-4">
                     <h3 className="font-medium text-gray-900 mb-2">{slide.title}</h3>
-                    <p className="text-sm text-gray-600 mb-3">
-                      ブロック数: {slide.SlideBlock?.length || 0}
-                    </p>
-                    
+                    <p className="text-sm text-gray-600 mb-3">ブロック数: {slide.SlideBlock?.length || 0}</p>
+
                     <div className="flex space-x-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleEditSlide(slide)}
-                      >
+                      <Button size="sm" onClick={() => handleEditSlide(slide)}>
                         編集
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDuplicateSlide(slide)}
-                      >
+                      <Button size="sm" onClick={() => handleDuplicateSlide(slide)}>
                         複製
                       </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteSlide(slide.id)}
-                      >
+                      <Button size="sm" onClick={() => handleDeleteSlide(slide.id)}>
                         削除
                       </Button>
                     </div>
@@ -175,18 +159,10 @@ export const SlideEditorClient = ({game}) => {
           </div>
         ) : (
           <div className="p-12 text-center">
-            <div className="mx-auto h-12 w-12 text-gray-400 mb-4">
-              📄
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              スライドがありません
-            </h3>
-            <p className="text-gray-500 mb-6">
-              最初のスライドを作成して授業を始めましょう
-            </p>
-            <Button onClick={handleCreateSlide}>
-              スライドを作成
-            </Button>
+            <div className="mx-auto h-12 w-12 text-gray-400 mb-4">📄</div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">スライドがありません</h3>
+            <p className="text-gray-500 mb-6">最初のスライドを作成して授業を始めましょう</p>
+            <Button onClick={handleCreateSlide}>スライドを作成</Button>
           </div>
         )}
       </div>

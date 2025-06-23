@@ -65,7 +65,7 @@ export async function seedJournalData() {
 
         const entryResult = await doStandardPrisma('healthJournalEntry', 'create', {
           data: {
-            journalId: journal.id,
+            healthJournalId: journal.id,
             hourSlot,
             comment: comment || null,
           },

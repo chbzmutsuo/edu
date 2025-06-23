@@ -1,6 +1,6 @@
 'use client'
 
-import {type ExpenseFormData} from '../actions/expense-actions'
+import {ExpenseFormData} from '@app/(apps)/keihi/types'
 
 interface ConversationSummaryProps {
   formData: ExpenseFormData

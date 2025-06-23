@@ -23,9 +23,6 @@ export default function useInitMySelect(props: ControlProps) {
   const {controlContextValue} = props
   const {col, currentValue, Cached_Option_Props} = controlContextValue
 
-  // const jotaiKey = [`isOptionsVisible`, col?.id, JSON.stringify(props.latestFormData)].join(`_`)
-  // const [isOptionsVisible, setIsOptionsVisible] = useJotaiByKey(jotaiKey as any, false)
-
   const [isOptionsVisible, setIsOptionsVisible] = useState(false)
 
   const [filteredOptions, setFilteredOptions] = useState<optionType[]>([])

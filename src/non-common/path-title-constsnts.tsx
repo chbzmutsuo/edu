@@ -85,23 +85,11 @@ export const PAGES: any = {
 
     const {login, admin} = getScopes(session, {query, roles})
     const loginPaths = [
-      {
-        tabId: '',
-        label: '入力・閲覧',
-        children: [
-          {tabId: 'daily', label: '日別ページ', ROOT: [rootPath]},
-          {tabId: 'monthly', label: '月別ページ', ROOT: [rootPath]},
-          {tabId: 'journal', label: '日誌', ROOT: [rootPath]},
-        ],
-      },
-      {
-        tabId: '',
-        label: '薬マスタ',
-        children: [
-          {tabId: 'medicine', label: '薬マスタ'},
-          // {tabId: 'healthRecord', label: '健康記録'},
-        ],
-      },
+      {tabId: 'daily', label: '日別ページ', ROOT: [rootPath]},
+      {tabId: 'monthly', label: '月別ページ', ROOT: [rootPath]},
+      {tabId: 'journal', label: '日誌', ROOT: [rootPath]},
+      {tabId: 'task', label: 'タスク管理', ROOT: [rootPath]},
+      {tabId: 'medicine', label: '薬マスタ', ROOT: [rootPath]},
     ].map((item, i) => {
       return {
         ...item,
@@ -113,7 +101,7 @@ export const PAGES: any = {
     const adminPaths = [
       {
         tabId: '管理者メニュー',
-        label: 'データ',
+        label: '管理者メニュー',
         children: [
           {tabId: 'user', label: 'ユーザー'},
           {tabId: 'dashboard', label: 'ダッシュボード'},
@@ -128,6 +116,41 @@ export const PAGES: any = {
     })
 
     const pathSource: pathItemType[] = [...loginPaths, ...adminPaths]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      session,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
+  task_PAGES: (props: PageGetterType) => {
+    const {roles, query, session, rootPath, pathname} = props
+
+    const {login, admin} = getScopes(session, {query, roles})
+
+    const loginPaths = [
+      {
+        tabId: '',
+        label: 'タスク管理',
+        children: [{tabId: '', label: 'タスク一覧', ROOT: [rootPath]}],
+      },
+    ].map((item, i) => {
+      return {
+        ...item,
+        ROOT: [rootPath],
+        exclusiveTo: !!login,
+      }
+    })
+
+    const pathSource: pathItemType[] = [...loginPaths]
 
     const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
       rootPath,

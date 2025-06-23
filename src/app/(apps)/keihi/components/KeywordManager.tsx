@@ -1,7 +1,7 @@
 'use client'
 
+import {ExpenseFormData} from '@app/(apps)/keihi/types'
 import {useState, useCallback} from 'react'
-import {type ExpenseFormData} from '../actions/expense-actions'
 
 interface KeywordManagerProps {
   formData: ExpenseFormData

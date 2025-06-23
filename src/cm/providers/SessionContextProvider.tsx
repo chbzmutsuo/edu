@@ -21,7 +21,7 @@ const SessionContextProvider = ({children, session}: {children: ReactNode; sessi
   const sessionData = useMySession({session})
 
   if (sessionData.sessionLoading) {
-    return <Loader>Session Loading...</Loader>
+    return <Loader></Loader>
   }
 
   return <SessionContext.Provider value={sessionData}>{children}</SessionContext.Provider>

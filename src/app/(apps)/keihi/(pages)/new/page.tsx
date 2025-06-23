@@ -3,22 +3,21 @@
 import {useState, useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
-import {
-  analyzeReceiptImage,
-  createExpenseWithDraft,
-  generateInsightsDraft,
-  type ExpenseFormData,
-} from '../../actions/expense-actions'
-import {useExpenseForm} from '../../hooks/useExpenseForm'
-import {useImageUpload} from '../../hooks/useImageUpload'
-import {usePreviewModal} from '../../hooks/usePreviewModal'
-import {ImageUploadSection} from './components/ImageUploadSection'
-import BasicInfoForm from '../../components/BasicInfoForm'
-import AIDraftSection from '../../components/AIDraftSection'
-import FormActions from '../../components/FormActions'
-import {PreviewModal} from '../../components/ui/PreviewModal'
-import {ProcessingStatus} from '../../components/ui/ProcessingStatus'
+import {createExpenseWithDraft, fetchCreateExpenseApi} from '@app/(apps)/keihi/api/expense/createExpense'
+
+import {useExpenseForm} from '@app/(apps)/keihi/hooks/useExpenseForm'
+import {useImageUpload} from '@app/(apps)/keihi/hooks/useImageUpload'
+import {usePreviewModal} from '@app/(apps)/keihi/hooks/usePreviewModal'
+import {ImageUploadSection} from '@app/(apps)/keihi/(pages)/new/components/ImageUploadSection'
+import BasicInfoForm from '@app/(apps)/keihi/components/BasicInfoForm'
+import AIDraftSection from '@app/(apps)/keihi/components/AIDraftSection'
+import FormActions from '@app/(apps)/keihi/components/FormActions'
+import {PreviewModal} from '@app/(apps)/keihi/components/ui/PreviewModal'
+import {ProcessingStatus} from '@app/(apps)/keihi/components/ui/ProcessingStatus'
 import {T_LINK} from '@components/styles/common-components/links'
+import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
+import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
+import {ExpenseFormData} from '@app/(apps)/keihi/types'
 
 const NewExpensePage = () => {
   const router = useRouter()
@@ -142,7 +141,7 @@ const NewExpensePage = () => {
     setIsSubmitting(true)
 
     try {
-      const result = await createExpenseWithDraft(formData, aiDraft, capturedImageFiles)
+      const result = await fetchCreateExpenseApi(formData, capturedImageFiles, true)
 
       if (result.success) {
         toast.success('経費記録を作成しました')
@@ -180,11 +179,13 @@ const NewExpensePage = () => {
 
             {/* 画像アップロードセクション */}
             <ImageUploadSection
-              uploadedImages={uploadedImages}
-              onImageCapture={handleImageCapture}
-              onPreviewImage={openModal}
-              isAnalyzing={isAnalyzing || isImageProcessing}
-              analysisStatus={analysisStatus}
+              {...{
+                uploadedImages,
+                analysisStatus,
+                onImageCapture: handleImageCapture,
+                onPreviewImage: openModal,
+                isAnalyzing: isAnalyzing || isImageProcessing,
+              }}
             />
 
             {/* 基本情報フォーム */}
@@ -235,37 +236,41 @@ const NewExpensePage = () => {
 
             {/* AIインサイトセクション */}
             <AIDraftSection
-              formData={formData}
-              setFormData={newData => {
-                if (typeof newData === 'function') {
-                  const updated = newData(formData)
-                  Object.keys(updated).forEach(key => {
-                    updateFormData(key as keyof ExpenseFormData, updated[key as keyof ExpenseFormData])
-                  })
-                } else {
-                  Object.keys(newData).forEach(key => {
-                    updateFormData(key as keyof ExpenseFormData, newData[key as keyof ExpenseFormData])
-                  })
-                }
+              {...{
+                formData,
+                aiDraft,
+                setAiDraft,
+                showDraft,
+                setShowDraft,
+                isAnalyzing,
+                additionalInstruction: '',
+                setAdditionalInstruction: () => {},
+                onGenerateDraft: () => handleGenerateInsights(),
+                onRegenerateDraft: () => handleGenerateInsights(),
+                setFormData: newData => {
+                  if (typeof newData === 'function') {
+                    const updated = newData(formData)
+                    Object.keys(updated).forEach(key => {
+                      updateFormData(key as keyof ExpenseFormData, updated[key as keyof ExpenseFormData])
+                    })
+                  } else {
+                    Object.keys(newData).forEach(key => {
+                      updateFormData(key as keyof ExpenseFormData, newData[key as keyof ExpenseFormData])
+                    })
+                  }
+                },
               }}
-              aiDraft={aiDraft}
-              setAiDraft={setAiDraft}
-              showDraft={showDraft}
-              setShowDraft={setShowDraft}
-              isAnalyzing={isGenerating}
-              additionalInstruction=""
-              setAdditionalInstruction={() => {}}
-              onGenerateDraft={() => handleGenerateInsights()}
-              onRegenerateDraft={() => handleGenerateInsights()}
             />
 
             {/* フォームアクション */}
             <FormActions
-              isLoading={isSubmitting}
-              isAnalyzing={isGenerating}
-              aiDraft={aiDraft}
-              showDraft={showDraft}
-              onSubmit={handleSubmit}
+              {...{
+                isLoading: isSubmitting,
+                isAnalyzing: isGenerating,
+                aiDraft,
+                showDraft,
+                onSubmit: handleSubmit,
+              }}
             />
           </div>
         </div>

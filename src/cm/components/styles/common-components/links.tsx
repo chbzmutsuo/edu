@@ -17,9 +17,9 @@ export const T_LINK = React.memo((props: htmlProps & {href: string; target?: '_b
 
   const handleNavigate = useCallback(
     async e => {
-      setglobalLoaderAtom(true)
-      await sleep(200)
-      setglobalLoaderAtom(false)
+      // setglobalLoaderAtom(true)
+      // await sleep(200)
+      // setglobalLoaderAtom(false)
     },
     [setglobalLoaderAtom]
   )

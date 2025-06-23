@@ -1,6 +1,5 @@
 'use client'
 
-import {useState} from 'react'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 export const SlideBlock = ({block, isPreview = false}) => {

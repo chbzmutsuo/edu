@@ -5,14 +5,23 @@ import {SlideBlock} from '../SlideBlock'
 import {Button} from '@cm/components/styles/common-components/Button'
 
 export const FreeTextQuizTemplate = ({
-  slide, 
-  blocks = [], 
-  isTeacher = false, 
+  slide,
+  blocks = [],
+  isTeacher = false,
   isPreview = false,
   responses = [],
   onSubmitResponse,
   onShareResponse,
-  showResults = false
+  showResults = false,
+}: {
+  slide: any
+  blocks: any[]
+  isTeacher: boolean
+  isPreview: boolean
+  responses: any[]
+  onSubmitResponse: (response: any) => void
+  onShareResponse: (response: any) => void
+  showResults: boolean
 }) => {
   const [textAnswer, setTextAnswer] = useState('')
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -25,7 +34,7 @@ export const FreeTextQuizTemplate = ({
       onSubmitResponse({
         slideId: slide.id,
         responseType: 'text',
-        textAnswer: textAnswer.trim()
+        textAnswer: textAnswer.trim(),
       })
       setHasSubmitted(true)
     }
@@ -34,23 +43,15 @@ export const FreeTextQuizTemplate = ({
   return (
     <div className="max-w-4xl mx-auto p-8">
       {/* スライドタイトル */}
-      {slide?.title && (
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-          {slide.title}
-        </h1>
-      )}
-      
+      {slide?.title && <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">{slide.title}</h1>}
+
       {/* その他のブロック */}
       {otherBlocks.length > 0 && (
         <div className="space-y-6 mb-8">
           {otherBlocks
             .sort((a, b) => a.sortOrder - b.sortOrder)
             .map(block => (
-              <SlideBlock 
-                key={block.id || block.tempId} 
-                block={block} 
-                isPreview={isPreview}
-              />
+              <SlideBlock key={block.id || block.tempId} block={block} isPreview={isPreview} />
             ))}
         </div>
       )}
@@ -72,23 +73,17 @@ export const FreeTextQuizTemplate = ({
       {!isTeacher && !isPreview && !hasSubmitted && (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              あなたの回答
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">あなたの回答</label>
             <textarea
               value={textAnswer}
-              onChange={(e) => setTextAnswer(e.target.value)}
+              onChange={e => setTextAnswer(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-4 py-3 h-32 resize-none"
               placeholder="こちらに自由に回答を入力してください..."
             />
           </div>
-          
+
           <div className="text-center">
-            <Button
-              onClick={handleSubmit}
-              disabled={!textAnswer.trim()}
-              size="lg"
-            >
+            <Button onClick={handleSubmit} disabled={!textAnswer.trim()} size="lg">
               回答を送信
             </Button>
           </div>
@@ -99,9 +94,7 @@ export const FreeTextQuizTemplate = ({
       {!isTeacher && hasSubmitted && (
         <div className="text-center p-6 bg-green-50 rounded-lg">
           <div className="text-green-800 font-medium">回答を送信しました</div>
-          <div className="text-green-600 text-sm mt-1">
-            先生が回答を共有するまでお待ちください
-          </div>
+          <div className="text-green-600 text-sm mt-1">先生が回答を共有するまでお待ちください</div>
         </div>
       )}
 
@@ -114,18 +107,10 @@ export const FreeTextQuizTemplate = ({
               <div key={response.id || index} className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="text-sm text-gray-500 mb-1">
-                      生徒 {index + 1}
-                    </div>
-                    <div className="text-gray-900">
-                      {response.textAnswer}
-                    </div>
+                    <div className="text-sm text-gray-500 mb-1">生徒 {index + 1}</div>
+                    <div className="text-gray-900">{response.textAnswer}</div>
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onShareResponse && onShareResponse(response)}
-                  >
+                  <Button size="sm" onClick={() => onShareResponse && onShareResponse(response)}>
                     共有
                   </Button>
                 </div>
@@ -151,30 +136,17 @@ export const FreeTextQuizTemplate = ({
         <div className="mt-8 p-4 bg-gray-100 rounded-lg">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-medium text-gray-700">教師用コントロール</h3>
-            <div className="text-sm text-gray-600">
-              回答数: {responses.length}人
-            </div>
+            <div className="text-sm text-gray-600">回答数: {responses.length}人</div>
           </div>
-          
+
           <div className="flex space-x-2">
-            <Button
-              onClick={() => showResults = !showResults}
-              variant={showResults ? "default" : "outline"}
-            >
-              {showResults ? '回答を隠す' : '回答を表示'}
-            </Button>
-            <Button variant="outline">
-              締切
-            </Button>
-            <Button variant="outline">
-              次のスライドへ
-            </Button>
+            <Button onClick={() => (showResults = !showResults)}>{showResults ? '回答を隠す' : '回答を表示'}</Button>
+            <Button>締切</Button>
+            <Button>次のスライドへ</Button>
           </div>
-          
+
           {showResults && (
-            <div className="mt-4 text-sm text-gray-600">
-              回答を選択して「共有」ボタンを押すと、生徒の画面に表示されます。
-            </div>
+            <div className="mt-4 text-sm text-gray-600">回答を選択して「共有」ボタンを押すと、生徒の画面に表示されます。</div>
           )}
         </div>
       )}

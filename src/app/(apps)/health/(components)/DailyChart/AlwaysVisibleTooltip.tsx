@@ -24,10 +24,7 @@ export const AlwaysVisibleTooltip = ({chartData, timeLabels}: {chartData: any[];
 
               const categoryHeight = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[category]
               const data = categoryHeight - DAILY_CHART_MARGIN.top - DAILY_CHART_MARGIN.bottom
-              // const ratio = categoryHeight / chartWrapperHeight
-              // const data = Math.max(ratio * 100, 0)
 
-              // console.log(data, category, {chartWrapperHeight, categoryHeight, ratio})
               return data
             }
 

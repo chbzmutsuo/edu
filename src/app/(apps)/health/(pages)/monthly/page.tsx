@@ -60,12 +60,8 @@ export default function MonthlyPage() {
       })
 
       if (result.success) {
-        console.log('取得した健康記録:', result.result.length, '件')
-        console.log('サンプル記録:', result.result.slice(0, 3))
-
         // 日別サマリーを生成
         const summary = generateMonthlySummary(result.result, startDate, endDate)
-        console.log('生成されたサマリー:', summary.slice(0, 5))
 
         setSummaryData(summary)
       } else {

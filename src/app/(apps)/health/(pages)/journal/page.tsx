@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useEffect, useRef, Fragment} from 'react'
+import {useState, useEffect, useRef, Fragment, useCallback} from 'react'
 import {useReactToPrint} from 'react-to-print'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {HOUR_SLOTS, HealthJournal} from '../../(constants)/types'
@@ -17,8 +17,8 @@ import {C_Stack, R_Stack} from '@components/styles/common-components/common-comp
 
 import {getMidnight} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
-import {Days} from '@class/Days/Days'
 import {BreakBefore} from '@components/styles/common-components/print-components'
+import {HealthJournalEntry} from '@prisma/client'
 
 export default function JournalPage() {
   const global = useGlobal()
@@ -27,15 +27,25 @@ export default function JournalPage() {
   const selectedDate = query.date ? query.date : formatDate(getMidnight())
   const setSelectedDate = value => addQuery({date: value})
 
-  const [journal, setJournal] = useState<HealthJournal | null>(null)
+  const [journal, setJournal] = useState<(HealthJournal & {HealthJournalEntry: HealthJournalEntry[]}) | null>(null)
   const [loading, setLoading] = useState(false)
   const [goalAndReflection, setGoalAndReflection] = useState('')
   const [originalGoalAndReflection, setOriginalGoalAndReflection] = useState('')
+
   const [goalHasChanges, setGoalHasChanges] = useState(false)
   const [healthRecords, setHealthRecords] = useState<any[]>([])
 
+  // 健康記録の時間帯別キャッシュ
+  const [healthRecordsByHour, setHealthRecordsByHour] = useState<Map<number, any[]>>(new Map())
+
+  // Timeline表示制御
+  const [showAllEntries, setShowAllEntries] = useState(false)
+
   // 印刷用のref
   const printRef = useRef<HTMLDivElement>(null)
+
+  // debounce用のtimer ref
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   // 印刷処理
   const reactToPrintFn = useReactToPrint({
@@ -244,6 +254,21 @@ export default function JournalPage() {
 
   // 印刷実行関数
   const handlePrint = () => {
+    // 印刷時は全エントリを表示
+    const wasShowingAll = showAllEntries
+    if (!showAllEntries) {
+      setShowAllEntries(true)
+      // 全エントリ表示後に少し待ってから印刷処理を開始
+      setTimeout(() => {
+        executePrint(wasShowingAll)
+      }, 100)
+      return
+    }
+
+    executePrint(wasShowingAll)
+  }
+
+  const executePrint = (wasShowingAll: boolean) => {
     // 印刷前に全てのtextareaの高さを自動調整
     const adjustTextareaHeights = () => {
       const textareas = printRef.current?.querySelectorAll('textarea')
@@ -317,32 +342,47 @@ export default function JournalPage() {
       // さらに遅延してから印刷実行
       setTimeout(() => {
         reactToPrintFn()
+        // 印刷後、必要に応じて表示状態を元に戻す
+        if (!wasShowingAll) {
+          setTimeout(() => setShowAllEntries(false), 1000)
+        }
       }, 100)
     }, 100)
   }
 
-  // 指定時間帯の健康記録をフィルタリング
-  const getHealthRecordsForHourSlot = (hourSlot: number) => {
-    const startHour = hourSlot
-    const endHour = hourSlot === 6 ? 7 : (hourSlot + 1) % 24
-    const startTime = `${startHour.toString().padStart(2, '0')}:00`
-    const endTime = `${endHour.toString().padStart(2, '0')}:00`
+  // 健康記録を時間帯別にプリプロセッシング
+  const preprocessHealthRecords = useCallback((records: any[]) => {
+    const recordsByHour = new Map<number, any[]>()
 
-    return healthRecords.filter(record => {
-      let date = new Date(selectedDate)
-      if (startTime > '00:00' && endTime <= '07:00') {
-        date = Days.day.add(selectedDate, 1)
+    // 全ての時間帯を初期化
+    for (let hour = 0; hour < 24; hour++) {
+      recordsByHour.set(hour, [])
+    }
+
+    // 記録を時間帯別に分類
+    records.forEach(record => {
+      try {
+        const recordHour = parseInt(record.recordTime.split(':')[0], 10)
+        if (recordHour >= 0 && recordHour < 24) {
+          const hourRecords = recordsByHour.get(recordHour) || []
+          hourRecords.push(record)
+          recordsByHour.set(recordHour, hourRecords)
+        }
+      } catch (error) {
+        console.warn('記録時刻の解析に失敗:', record.recordTime, error)
       }
-
-      const recordDateTime = new Date(`${formatDate(record.recordDate, 'YYYY-MM-DD')} ${record.recordTime}`)
-
-      const from = new Date(`${formatDate(date, 'YYYY-MM-DD')} ${startTime}`)
-      const to = new Date(`${formatDate(date, 'YYYY-MM-DD')} ${endTime}`)
-
-      return recordDateTime >= from && recordDateTime < to
-      // return record.recordTime >= startTime && record.recordTime < endTime
     })
-  }
+
+    return recordsByHour
+  }, [])
+
+  // 指定時間帯の健康記録を取得（キャッシュ使用）
+  const getHealthRecordsForHourSlot = useCallback(
+    (hourSlot: number) => {
+      return healthRecordsByHour.get(hourSlot) || []
+    },
+    [healthRecordsByHour]
+  )
 
   // 日誌データを取得
   const fetchJournal = async () => {
@@ -358,7 +398,7 @@ export default function JournalPage() {
       ])
 
       if (journalResult.success && journalResult.data) {
-        setJournal(journalResult.data)
+        setJournal(journalResult.data as any)
         const goalText = journalResult.data.goalAndReflection || ''
         setGoalAndReflection(goalText)
         setOriginalGoalAndReflection(goalText)
@@ -369,9 +409,13 @@ export default function JournalPage() {
 
       if (healthRecordsResult.success) {
         setHealthRecords(healthRecordsResult.data)
+        // 健康記録をプリプロセッシングしてキャッシュ
+        const processedRecords = preprocessHealthRecords(healthRecordsResult.data)
+        setHealthRecordsByHour(processedRecords)
       } else {
         console.error('健康記録の取得に失敗しました:', healthRecordsResult.error)
         setHealthRecords([])
+        setHealthRecordsByHour(new Map())
       }
     } catch (error) {
       console.error('データの取得に失敗しました:', error)
@@ -401,11 +445,23 @@ export default function JournalPage() {
     }
   }
 
-  // 目標と振り返りの変更を検知
-  const handleGoalAndReflectionChange = (value: string) => {
-    setGoalAndReflection(value)
-    setGoalHasChanges(value !== originalGoalAndReflection)
-  }
+  // 目標と振り返りの変更を検知（debounce処理付き）
+  const handleGoalAndReflectionChange = useCallback(
+    (value: string) => {
+      // 即座にUIを更新（レスポンシブ性を保つ）
+      setGoalAndReflection(value)
+
+      // debounceで変更検知処理を遅延実行
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+
+      debounceTimerRef.current = setTimeout(() => {
+        setGoalHasChanges(value !== originalGoalAndReflection)
+      }, 500) // 500ms後に変更を検知（重いデータセット対応）
+    },
+    [originalGoalAndReflection]
+  )
 
   // 目標と振り返りを保存
   const saveGoalAndReflection = async () => {
@@ -415,7 +471,7 @@ export default function JournalPage() {
       const result = await updateJournal(journal.id, goalAndReflection)
 
       if (result.success && result.data) {
-        setJournal(result.data)
+        setJournal(result.data as any)
         setOriginalGoalAndReflection(goalAndReflection)
         setGoalHasChanges(false)
       } else {
@@ -426,32 +482,44 @@ export default function JournalPage() {
     }
   }
 
-  // エントリを更新
-  const updateEntry = async (entryId: number, comment: string) => {
-    if (!journal) return
+  // エントリを更新（メモ化）
+  const updateEntry = useCallback(
+    async (entryId: number, comment: string) => {
+      if (!journal) return
 
-    try {
-      const result = await updateJournalEntry(entryId, comment)
+      try {
+        const result = await updateJournalEntry(entryId, comment)
 
-      if (result.success && result.data) {
-        // ローカル状態を更新
-        const updatedEntries = journal.entries.map(entry => (entry.id === entryId ? result.data : entry))
+        if (result.success && result.data) {
+          // ローカル状態を更新
+          const updatedEntries = journal.HealthJournalEntry.map(entry => (entry.id === entryId ? result.data : entry))
 
-        setJournal({
-          ...journal,
-          entries: updatedEntries,
-        })
-      } else {
-        console.error('エントリの更新に失敗しました:', result.error)
+          setJournal({
+            ...journal,
+            HealthJournalEntry: updatedEntries as any,
+          })
+        } else {
+          console.error('エントリの更新に失敗しました:', result.error)
+        }
+      } catch (error) {
+        console.error('エントリの更新に失敗しました:', error)
       }
-    } catch (error) {
-      console.error('エントリの更新に失敗しました:', error)
-    }
-  }
+    },
+    [journal]
+  )
 
   useEffect(() => {
     fetchJournal()
   }, [selectedDate, session?.id])
+
+  // クリーンアップ処理
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current)
+      }
+    }
+  }, [])
 
   if (!session?.id) {
     return <div className="p-4">ログインが必要です</div>
@@ -542,6 +610,7 @@ export default function JournalPage() {
                   className="w-full h-32 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                 />
               </div>
+
               {goalHasChanges && (
                 <div className="flex justify-end mt-3 no-print">
                   <button
@@ -559,7 +628,7 @@ export default function JournalPage() {
             {journal?.templateApplied && (
               <div className="space-y-4 ">
                 {HOUR_SLOTS.map((hourSlot, i) => {
-                  const entry = journal.entries.find(e => e.hourSlot === hourSlot)
+                  const entry = journal.HealthJournalEntry.find(e => e.hourSlot === hourSlot)
                   const hourHealthRecords = getHealthRecordsForHourSlot(hourSlot)
 
                   const even = i % 2 === 1
