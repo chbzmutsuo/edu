@@ -86,7 +86,7 @@ export const createExpenseWithDraft = async (
               originalName: file.name,
               mimeType: file.type,
               size: file.size,
-              url: s3Result.result.url,
+              url: s3Result.result?.url || '',
               keihiExpenseId: expense.id,
             },
           })
@@ -180,7 +180,7 @@ export const createExpense = async (
               originalName: file.name,
               mimeType: file.type,
               size: file.size,
-              url: s3Result.message || '', // S3のURLを保存
+              url: s3Result.result?.url || '',
               keihiExpenseId: expense.id,
             },
           })
@@ -201,18 +201,66 @@ export const createExpense = async (
   }
 }
 
+// クライアント側API呼び出し関数
 export const fetchCreateExpenseApi = async (
   formData: ExpenseFormData,
   imageFiles?: File[],
-  useDraft?: boolean
+  useDraft?: boolean,
+  draft?: {
+    businessInsightDetail: string
+    businessInsightSummary: string
+    techInsightDetail: string
+    techInsightSummary: string
+    autoTags: string[]
+    generatedKeywords?: string[]
+  }
 ): Promise<{
   success: boolean
   data?: {id: string}
   error?: string
 }> => {
-  const response = await fetch('/keihi/api/expense', {
-    method: 'POST',
-    body: JSON.stringify({formData, imageFiles}),
-  })
-  return await response.json()
+  try {
+    const requestFormData = new FormData()
+
+    // フォームデータをJSONとして追加
+    requestFormData.append('formData', JSON.stringify(formData))
+
+    // 下書きデータがある場合は追加
+    if (draft) {
+      requestFormData.append('draft', JSON.stringify(draft))
+    }
+
+    // useDraftフラグを追加
+    requestFormData.append('useDraft', JSON.stringify(useDraft || false))
+
+    // 画像ファイルがある場合は追加
+    if (imageFiles && imageFiles.length > 0) {
+      imageFiles.forEach((file, index) => {
+        requestFormData.append(`imageFile_${index}`, file)
+      })
+      requestFormData.append('imageFileCount', imageFiles.length.toString())
+    }
+
+    const response = await fetch('/keihi/api/expense', {
+      method: 'POST',
+      body: requestFormData,
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      return {
+        success: false,
+        error: errorData.error || 'サーバーエラーが発生しました',
+      }
+    }
+
+    const result = await response.json()
+    return result
+  } catch (error) {
+    console.error('API呼び出しエラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'API呼び出しに失敗しました',
+    }
+  }
 }

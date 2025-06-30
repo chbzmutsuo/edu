@@ -9,6 +9,9 @@ import {useAllOptions} from '../../../../hooks/useOptions'
 import {Eye, X} from 'lucide-react'
 import {analyzeMultipleReceipts} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {generateInsights, generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
+import {R_Stack} from '@components/styles/common-components/common-components'
+import Image from 'next/image'
+import ContentPlayer from '@components/utils/ContentPlayer'
 
 interface ExpenseDetail {
   id: string
@@ -651,6 +654,24 @@ export default function ExpenseEditPage() {
                   </select>
                 </div>
               </div>
+            </section>
+            <section>
+              {attachments.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-medium text-gray-700 mb-2">既存の画像</h3>
+                  <R_Stack>
+                    {attachments.map(attachment => (
+                      <div key={attachment.id} className="w-[280px] p-3 bg-gray-50 rounded-lg border">
+                        <ContentPlayer
+                          {...{
+                            src: attachment.url,
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </R_Stack>
+                </div>
+              )}
             </section>
 
             {/* キーワード */}

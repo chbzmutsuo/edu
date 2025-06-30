@@ -1,4 +1,3 @@
-
 import {Code} from '@class/Code'
 import {stockConfig_name, stockConfig_type} from 'src/non-common/EsCollection/(stock)/getStockConfig'
 

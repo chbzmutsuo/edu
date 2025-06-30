@@ -22,6 +22,7 @@ import {C_Stack} from '@components/styles/common-components/common-components'
 
 import {HREF} from '@lib/methods/urls'
 import useWindowSize from '@hooks/useWindowSize'
+import {sleep} from '@lib/methods/common'
 
 export default function TemplateBottomButton() {
   const {toggleLoad, pathname, query} = useGlobal()
@@ -124,9 +125,11 @@ export default function TemplateBottomButton() {
                 toggleLoad(async () => {
                   const days = Days.day.getDaysBetweenDates(theDate, new Date())
 
-                  days.forEach(async date => {
+                  for (let i = 0; i < days.length; i++) {
+                    const date = days[i]
                     await updateFunc({date})
-                  })
+                    await sleep(1000)
+                  }
 
                   return
                 })
@@ -158,6 +161,7 @@ export default function TemplateBottomButton() {
 }
 
 const updateFunc = async ({date}) => {
-  await upsertStockHistory({date})
-  // await updateAlgorithm({date})
+  const res = await fetch(`/stock/api/cron/4_dailyBatchAll?date=${formatDate(date)}`)
+
+  console.log(res.json())
 }

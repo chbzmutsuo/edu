@@ -14,8 +14,6 @@ export async function getStockConfig() {
   const conifgObject = {}
   config.forEach((data: StockConfig) => {
     const {type, name, value} = data
-    // const typeLabel = STOCK_CODE.STOCK_CONFIG.TYPE[type].label
-    // const nameLabel = STOCK_CODE.STOCK_CONFIG.NAME[name].label
 
     obj__initializeProperty(conifgObject, type, {})
     obj__initializeProperty(conifgObject[type], name, value)

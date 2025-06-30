@@ -227,8 +227,8 @@ const BasicInfo = ({work}) => {
     <div className={`p-1`}>
       <section>
         <small className={`w-full   text-base`}>
-          <R_Stack className={`  w-full items-start justify-between`}>
-            {date && <p>{formatDate(new Date(date), 'YYYY年MM月')}</p>}
+          <R_Stack className={`  w-full items-start justify-end`}>
+            {/* {date && <p>{formatDate(new Date(date), 'YYYY年MM月')}</p>} */}
 
             {work.allowShowClient && KaizenClient ? (
               <div className={`flex  justify-end  px-4 text-sm leading-5`}>

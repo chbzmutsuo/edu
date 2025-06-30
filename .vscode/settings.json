@@ -150,15 +150,15 @@
     "**/achievement/**": true,
     "**/aquapot/**": true,
     "**/edu/**": true,
+    "**/health/**": true,
+    "**/keihi/**": true,
     "**/kickswrap/**": true,
     "**/page/**": true,
     "**/sara/**": true,
     "**/shinsei/**": true,
-    "**/sohken/**": true,
     "**/stock/**": true,
     "**/tbm/**": true,
-    "**/tmp/**": true,
-    "**/keihi/**": true
+    "**/tmp/**": true
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
     "Advantage",
@@ -168,12 +168,12 @@
     "achievement",
     "aquapot",
     "edu",
+    "health",
     "keihi",
     "kickswrap",
     "page",
     "sara",
     "shinsei",
-    "sohken",
     "stock",
     "tbm",
     "tmp"

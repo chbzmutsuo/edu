@@ -43,27 +43,37 @@ interface InsightGenerationResult {
 const generateInsightPrompt = (formData: ExpenseFormData, options: InsightGenerationOptions = {}): string => {
   const {isDraft = false, additionalInstruction, includeMoneyForwardData = false} = options
 
-  // 個人開発関連キーワードを生成（下書きモードの場合）
+  // キーワード処理
   let generatedKeywords: string[] = []
   let allKeywords: string[] = []
   let uniqueKeywords: string[] = []
 
-  if (isDraft) {
+  // キーワードが未設定または空の場合は自動生成
+  const hasManualKeywords = formData.keywords && formData.keywords.length > 0
+
+  if (!hasManualKeywords || isDraft) {
     generatedKeywords = generatePersonalDevKeywords(formData)
-    allKeywords = [...(formData.keywords || []), ...generatedKeywords]
-    uniqueKeywords = [...new Set(allKeywords)]
   }
+
+  if (hasManualKeywords) {
+    allKeywords = [...formData.keywords, ...generatedKeywords]
+  } else {
+    allKeywords = generatedKeywords
+  }
+
+  uniqueKeywords = [...new Set(allKeywords)]
 
   const additionalPrompt = additionalInstruction
     ? `\n\n**追加指示：**\n${additionalInstruction}\n上記の追加指示も考慮してインサイトを生成してください。`
     : ''
 
-  const keywordSection = isDraft
-    ? `
+  const keywordSection =
+    isDraft || !hasManualKeywords
+      ? `
 - 入力済みキーワード: ${formData.keywords?.join(', ') || 'なし'}
 - 生成されたキーワード: ${generatedKeywords.join(', ')}
 - 全キーワード: ${uniqueKeywords.join(', ')}`
-    : `
+      : `
 - キーワード: ${formData.keywords?.join(', ') || 'なし'}`
 
   const contextDescription = isDraft

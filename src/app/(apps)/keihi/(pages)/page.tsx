@@ -3,39 +3,45 @@
 import {useState, useEffect, useCallback} from 'react'
 import {toast} from 'react-toastify'
 import {getExpenses, deleteExpenses, exportExpensesToCsv} from '../actions/expense-actions'
-import {ExpenseRecord, ExpenseListState} from '../types'
+import {ExpenseRecord} from '../types'
 import {ExpenseListHeader} from './components/ExpenseListHeader'
 import {ExpenseListItem} from './components/ExpenseListItem'
+import {Pagination} from './components/Pagination'
 import {LoadingSpinner} from '../components/ui/LoadingSpinner'
 import {ProcessingStatus} from '../components/ui/ProcessingStatus'
+import useGlobal from '@hooks/globalHooks/useGlobal'
 
 const ExpenseListPage = () => {
-  const [state, setState] = useState<ExpenseListState>({
-    expenses: [],
+  const {query, shallowAddQuery} = useGlobal()
+
+  // URLパラメータからページネーション情報を取得
+  const currentPage = parseInt(query.page as string) || 1
+  const limit = parseInt(query.limit as string) || 20
+
+  const [state, setState] = useState({
+    expenses: [] as ExpenseRecord[],
     loading: true,
-    selectedIds: [],
-    pagination: {page: 1, limit: 20, total: 0, totalPages: 0},
+    selectedIds: [] as string[],
+    totalCount: 0,
+    totalPages: 0,
   })
 
   const [isExporting, setIsExporting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   // データ取得
-  const fetchExpenses = useCallback(async () => {
+  const fetchExpenses = useCallback(async (page: number, pageLimit: number) => {
     try {
       setState(prev => ({...prev, loading: true}))
-      const result = await getExpenses()
+      const result = await getExpenses(page, pageLimit)
 
-      if (result.success && result.data) {
+      if (result.success && result.data && result.pagination) {
         setState(prev => ({
           ...prev,
           expenses: result.data as ExpenseRecord[],
           loading: false,
-          pagination: {
-            ...prev.pagination,
-            total: result.data.length,
-            totalPages: Math.ceil(result.data.length / prev.pagination.limit),
-          },
+          totalCount: result.pagination.total,
+          totalPages: result.pagination.totalPages,
         }))
       } else {
         toast.error(result.error || '経費記録の取得に失敗しました')
@@ -50,8 +56,33 @@ const ExpenseListPage = () => {
 
   // 初期データ取得
   useEffect(() => {
-    fetchExpenses()
-  }, [fetchExpenses])
+    fetchExpenses(currentPage, limit)
+  }, [currentPage, limit, fetchExpenses])
+
+  // ページ変更
+  const handlePageChange = useCallback(
+    (page: number) => {
+      if (page < 1 || page > state.totalPages) return
+
+      shallowAddQuery({
+        ...query,
+        page: page.toString(),
+      })
+    },
+    [query, shallowAddQuery, state.totalPages]
+  )
+
+  // 表示件数変更
+  const handleLimitChange = useCallback(
+    (newLimit: number) => {
+      shallowAddQuery({
+        ...query,
+        page: '1', // ページを1に戻す
+        limit: newLimit.toString(),
+      })
+    },
+    [query, shallowAddQuery]
+  )
 
   // 選択状態の切り替え
   const toggleSelect = useCallback((id: string) => {
@@ -157,7 +188,8 @@ const ExpenseListPage = () => {
           ...prev,
           selectedIds: [],
         }))
-        await fetchExpenses() // データを再取得
+        // 現在のページでデータを再取得
+        await fetchExpenses(currentPage, limit)
       } else {
         toast.error(result.error || '削除に失敗しました')
       }
@@ -167,7 +199,11 @@ const ExpenseListPage = () => {
     } finally {
       setIsDeleting(false)
     }
-  }, [state.selectedIds, fetchExpenses])
+  }, [state.selectedIds, fetchExpenses, currentPage, limit])
+
+  // ページネーション用の計算
+  const currentFrom = (currentPage - 1) * limit + 1
+  const currentTo = Math.min(currentPage * limit, state.totalCount)
 
   if (state.loading) {
     return (
@@ -186,7 +222,7 @@ const ExpenseListPage = () => {
         <div className="bg-white shadow-sm">
           {/* ヘッダー */}
           <ExpenseListHeader
-            totalCount={state.expenses.length}
+            totalCount={state.totalCount}
             selectedCount={state.selectedIds.length}
             onExportAll={handleExportAll}
             onExportSelected={handleExportSelected}
@@ -199,22 +235,39 @@ const ExpenseListPage = () => {
             <ProcessingStatus isVisible={isDeleting} message="削除処理中..." variant="info" />
           </div>
 
-          {/* 一覧ヘッダー（全選択チェックボックス） */}
-          {state.expenses.length > 0 && (
-            <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
+          {/* 表示件数選択 */}
+          <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <input
-                  type="checkbox"
-                  checked={state.selectedIds.length === state.expenses.length}
-                  onChange={toggleSelectAll}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <span className="text-sm text-gray-600">
-                  {state.selectedIds.length === state.expenses.length ? '全解除' : '全選択'}
-                </span>
+                {state.expenses.length > 0 && (
+                  <>
+                    <input
+                      type="checkbox"
+                      checked={state.selectedIds.length === state.expenses.length}
+                      onChange={toggleSelectAll}
+                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-600">
+                      {state.selectedIds.length === state.expenses.length ? '全解除' : '全選択'}
+                    </span>
+                  </>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-sm text-gray-600">表示件数:</label>
+                <select
+                  value={limit}
+                  onChange={e => handleLimitChange(parseInt(e.target.value))}
+                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value={10}>10件</option>
+                  <option value={20}>20件</option>
+                  <option value={50}>50件</option>
+                  <option value={100}>100件</option>
+                </select>
               </div>
             </div>
-          )}
+          </div>
 
           {/* 経費記録一覧 */}
           <div className="divide-y divide-gray-200">
@@ -244,6 +297,16 @@ const ExpenseListPage = () => {
               ))
             )}
           </div>
+
+          {/* ページネーション */}
+          <Pagination
+            currentPage={currentPage}
+            totalPages={state.totalPages}
+            onPageChange={handlePageChange}
+            totalCount={state.totalCount}
+            currentFrom={currentFrom}
+            currentTo={currentTo}
+          />
         </div>
       </div>
     </div>

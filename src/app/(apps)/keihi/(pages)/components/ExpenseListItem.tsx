@@ -58,17 +58,17 @@ export const ExpenseListItem = ({expense, isSelected, onToggleSelect}: ExpenseLi
 
               {/* アクションボタン */}
               <div className="flex items-center gap-2 ml-4">
-                <T_LINK
+                {/* <T_LINK
                   href={`/keihi/expense/${expense.id}`}
                   className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
                 >
                   詳細
-                </T_LINK>
+                </T_LINK> */}
                 <T_LINK
                   href={`/keihi/expense/${expense.id}/edit`}
-                  className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded"
+                  className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-100 rounded"
                 >
-                  編集
+                  詳細 / 編集
                 </T_LINK>
               </div>
             </div>

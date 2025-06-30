@@ -568,6 +568,7 @@ export default function CameraUpload({onImageCapture, isAnalyzing, analysisStatu
       {!isCameraOpen && (
         <C_Stack className="flex gap-3 mb-4">
           <button
+            type="button"
             onClick={startCamera}
             disabled={isAnalyzing || isStartingCamera}
             className="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -588,6 +589,7 @@ export default function CameraUpload({onImageCapture, isAnalyzing, analysisStatu
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isAnalyzing}
+            type="button"
             className="flex-1 px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

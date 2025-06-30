@@ -4,7 +4,6 @@ export type codeItemContent = {
   onCreate?: boolean
 }
 export type codeItem = {code: string} & codeItemContent
-
 export type codeObjectArgs = {[key: string]: codeItemContent}
 
 export class Code {

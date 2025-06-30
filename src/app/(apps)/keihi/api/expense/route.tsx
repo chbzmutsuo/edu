@@ -4,38 +4,42 @@ import {ExpenseFormData} from '@app/(apps)/keihi/types'
 
 export const POST = async (req: NextRequest) => {
   try {
-    const body = await req.json()
-    const {
-      formData,
-      draft,
-      imageFiles,
-      useDraft = false,
-    }: {
-      formData: ExpenseFormData
-      draft?: {
-        businessInsightDetail: string
-        businessInsightSummary: string
-        techInsightDetail: string
-        techInsightSummary: string
-        autoTags: string[]
-        generatedKeywords?: string[]
-      }
-      imageFiles?: File[]
-      useDraft?: boolean
-    } = body
+    const formData = await req.formData()
 
-    if (!formData) {
+    // フォームデータを取得
+    const formDataJson = formData.get('formData') as string
+    const draftJson = formData.get('draft') as string
+    const useDraftJson = formData.get('useDraft') as string
+    const imageFileCount = formData.get('imageFileCount') as string
+
+    if (!formDataJson) {
       return NextResponse.json({success: false, error: 'フォームデータが提供されていません'}, {status: 400})
+    }
+
+    const expenseFormData: ExpenseFormData = JSON.parse(formDataJson)
+    const draft = draftJson ? JSON.parse(draftJson) : undefined
+    const useDraft = useDraftJson ? JSON.parse(useDraftJson) : false
+
+    // 画像ファイルを取得
+    const imageFiles: File[] = []
+    if (imageFileCount) {
+      const count = parseInt(imageFileCount)
+      for (let i = 0; i < count; i++) {
+        const file = formData.get(`imageFile_${i}`) as File
+        if (file) {
+          imageFiles.push(file)
+        }
+      }
     }
 
     let result
 
     if (useDraft && draft) {
       // 下書きを使用した経費記録作成
-      result = await createExpenseWithDraft(formData, draft, imageFiles)
+      result = await createExpenseWithDraft(expenseFormData, draft, imageFiles)
     } else {
       // 通常の経費記録作成
-      result = await createExpense(formData, imageFiles)
+      result = await createExpense(expenseFormData, imageFiles)
     }
 
     if (result.success) {

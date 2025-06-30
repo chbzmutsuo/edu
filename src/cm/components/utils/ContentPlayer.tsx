@@ -9,12 +9,13 @@ import {anyObject} from '@cm/types/utility-types'
 
 import useWindowSize from 'src/cm/hooks/useWindowSize'
 
-import {Absolute, Center} from 'src/cm/components/styles/common-components/common-components'
+import {Absolute, Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {cl} from 'src/cm/lib/methods/common'
 import {pathToNoImage} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
 import {ArrowDownTrayIcon} from '@heroicons/react/20/solid'
 import {T_LINK} from '@components/styles/common-components/links'
 import {useMemo, memo} from 'react'
+import {Download, FileDown, ZoomIn} from 'lucide-react'
 
 const ReactPlayer = dynamic(() => import('react-player'), {
   ssr: false,
@@ -57,7 +58,7 @@ export default function ContentPlayer(props: ContentPlayerProps) {
       fileType = 'image'
     }
 
-    const thumbnailStyle = {width: 100, height: 70, ...styles.thumbnail}
+    const thumbnailStyle = {width: '100%', height: '100%', ...styles.thumbnail}
     const mainStyle = {
       width: WD.width * 0.85 - 50,
       minHeight: WD.height * 0.9 - 50,
@@ -118,44 +119,67 @@ export default function ContentPlayer(props: ContentPlayerProps) {
         style={fileTypeAndStyles.thumbnailStyle}
         className={cl('relative overflow-hidden bg-white', rest.className)}
       >
-        {
-          <Absolute className={`z-10`}>
-            <BasicModal
-              {...{
-                style: {
-                  maxHeight: '90vh',
-                  maxWidth: '90vw',
-                },
-                btnComponent: (
-                  <Center
-                    style={{
-                      zIndex: 200,
-                      ...fileTypeAndStyles.thumbnailStyle,
-                      margin: `auto`,
-                      cursor: 'zoom-in',
-                    }}
-                  ></Center>
-                ),
-                alertOnClose: false,
-              }}
-            >
-              <Center style={{...styles.main, overflow: 'hidden'}}>{main}</Center>
-            </BasicModal>
-          </Absolute>
-        }
+        <div className={`z-10 absolute !right-2 !bottom-2 `}>
+          <R_Stack className={`gap-3`}>
+            <DownloadBtn src={src} options={options} />
+            <ZoomInBtn fileTypeAndStyles={fileTypeAndStyles} styles={styles} main={main} />
+          </R_Stack>
+        </div>
 
-        {options?.download && !String(src).includes('data:') && (
-          <T_LINK href={src} target="_blank" simple>
-            <ArrowDownTrayIcon className={`${btnClass}  left-0 bottom-0  h-4  `} />
-          </T_LINK>
-        )}
-
-        <Center style={{...styles.thumbnail}}>
-          <div>{thumbnail}</div>
-        </Center>
-        {/* <Absolute className={`position-center  h-full w-full `}>
-        </Absolute> */}
+        <div>
+          <Center style={{...styles.thumbnail}}>
+            <div>{thumbnail}</div>
+          </Center>
+        </div>
       </main>
     )
   }
 }
+
+const ZoomInBtn = ({
+  fileTypeAndStyles,
+  styles,
+  main,
+}: {
+  fileTypeAndStyles: anyObject
+  styles: anyObject
+  main: React.ReactNode
+}) => {
+  return (
+    <BasicModal
+      {...{
+        style: {
+          maxHeight: '90vh',
+          maxWidth: '90vw',
+        },
+        btnComponent: (
+          <Center
+            style={{
+              zIndex: 200,
+              ...fileTypeAndStyles.thumbnailStyle,
+              margin: `auto`,
+              cursor: 'zoom-in',
+            }}
+          >
+            <ZoomIn className="w-7 h-7 bg-gray-500 text-white rounded-full p-1 shadow-lg" />
+          </Center>
+        ),
+        alertOnClose: false,
+      }}
+    >
+      <Center style={{...styles.main, overflow: 'hidden'}}>{main}</Center>
+    </BasicModal>
+  )
+}
+
+const DownloadBtn = ({src, options}: {src: string; options?: {download?: boolean}}) => {
+  if (options?.download && !String(src).includes('data:')) {
+    return (
+      <T_LINK href={src} target="_blank" simple>
+        <ArrowDownTrayIcon className={`${btnClass}    h-4  `} />
+      </T_LINK>
+    )
+  }
+  return null
+}
+const btnClass = 'w-7 h-7 bg-gray-500 text-white rounded-full p-1 shadow-lg'

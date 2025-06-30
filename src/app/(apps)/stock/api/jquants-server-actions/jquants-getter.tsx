@@ -61,31 +61,6 @@ export const jquants__getStockPrice = async ({
   }
 }
 
-export const jquants__getHistory = async ({date}) => {
-  const dateStr = formatDate(date, 'YYYYMMDD')
-  console.log(`${dateStr}の履歴を取得`)
-
-  let continueFlag = true
-  let pagination_key = undefined
-  let daily_quotes_list: any[] = []
-  while (continueFlag) {
-    const stockRes = await jquants__getStockPrice({
-      date: dateStr,
-      pagination_key: pagination_key,
-    })
-    const {daily_quotes, pagination_key: newPagination_key} = stockRes.result
-
-    daily_quotes_list = [...daily_quotes_list, ...daily_quotes]
-    if (newPagination_key) {
-      pagination_key = newPagination_key
-    } else {
-      continueFlag = false
-    }
-  }
-
-  return {daily_quotes_list}
-}
-
 export const upsertStockHistory = async ({date}) => {
   // 銘柄リストをMapに変換してO(1)検索を可能にする
   const stockList = await prisma.stock.findMany({
@@ -93,6 +68,31 @@ export const upsertStockHistory = async ({date}) => {
     orderBy: {Code: 'asc'},
   })
   const stockMap = new Map(stockList.map(stock => [stock.Code, stock]))
+
+  const jquants__getHistory = async ({date}) => {
+    const dateStr = formatDate(date, 'YYYYMMDD')
+    console.log(`${dateStr}の履歴を取得`)
+
+    let continueFlag = true
+    let pagination_key = undefined
+    let daily_quotes_list: any[] = []
+    while (continueFlag) {
+      const stockRes = await jquants__getStockPrice({
+        date: dateStr,
+        pagination_key: pagination_key,
+      })
+      const {daily_quotes, pagination_key: newPagination_key} = stockRes.result
+
+      daily_quotes_list = [...daily_quotes_list, ...daily_quotes]
+      if (newPagination_key) {
+        pagination_key = newPagination_key
+      } else {
+        continueFlag = false
+      }
+    }
+
+    return {daily_quotes_list}
+  }
 
   const {daily_quotes_list} = await jquants__getHistory({date})
   console.log(`取得した履歴データ数: ${daily_quotes_list.length}`)
@@ -156,12 +156,11 @@ export const upsertStockHistory = async ({date}) => {
       await processBatchWithRetry({
         soruceList: transactionQueryList,
         mainProcess: async batch => {
-          await doTransaction({transactionQueryList: batch, transaction: false})
+          await doTransaction({transactionQueryList: batch})
         },
       })
 
       processedCount += batch.length
-      console.log(`処理済み: ${processedCount} / ${daily_quotes_list.length}`)
     }
 
     // メモリ解放のための明示的なガベージコレクション促進
@@ -182,14 +181,12 @@ export const updateAlgorithm = async ({date}) => {
   const stockCount = await prisma.stock.count()
   console.log(`処理対象銘柄数: ${stockCount}`)
 
-  const BATCH_SIZE = 50 // バッチサイズを小さくしてメモリ使用量を削減
+  const BATCH_SIZE = 100 // バッチサイズを小さくしてメモリ使用量を削減
   let processedCount = 0
   let totalTransactions = 0
 
   // バッチ処理でメモリ使用量を削減
   for (let offset = 0; offset < stockCount; offset += BATCH_SIZE) {
-    console.log(`処理中: ${offset + 1} - ${Math.min(offset + BATCH_SIZE, stockCount)} / ${stockCount}`)
-
     // 小さなバッチで銘柄を取得
     const stockBatch = await prisma.stock.findMany({
       skip: offset,
@@ -264,7 +261,7 @@ export const updateAlgorithm = async ({date}) => {
       await processBatchWithRetry({
         soruceList: transactionQueryList,
         mainProcess: async batch => {
-          await doTransaction({transactionQueryList: batch, transaction: false})
+          await doTransaction({transactionQueryList: batch})
         },
       })
 

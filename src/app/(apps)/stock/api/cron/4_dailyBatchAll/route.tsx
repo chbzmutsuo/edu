@@ -1,13 +1,26 @@
 import {updateAlgorithm, upsertStockHistory} from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
 import {toUtc} from '@class/Days/date-utils/calculations'
+import {isDev} from '@lib/methods/common'
 import {NextRequest, NextResponse} from 'next/server'
 
 export const GET = async (req: NextRequest) => {
   const params = await req.nextUrl.searchParams
   const date = toUtc(params.get('date') ?? new Date())
-  await upsertStockHistory({date})
+  try {
+    if (!isDev) {
+      await upsertStockHistory({date})
+    }
 
-  await updateAlgorithm({date})
-
-  return NextResponse.json({date})
+    await updateAlgorithm({date})
+    return NextResponse.json({
+      date,
+      message: '更新が完了しました。',
+    })
+  } catch (error) {
+    console.error(error) //////////
+    return NextResponse.json({
+      date,
+      message: '更新に失敗しました。',
+    })
+  }
 }

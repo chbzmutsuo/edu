@@ -14,7 +14,7 @@ type processBatchWithRetryType = (props: {
 export const processBatchWithRetry: processBatchWithRetryType = async ({
   soruceList,
   mainProcess,
-  options = {batchSize: 500, retries: 2},
+  options = {batchSize: 500, retries: 1},
 }) => {
   try {
     const {batchSize, retries} = options
@@ -23,6 +23,7 @@ export const processBatchWithRetry: processBatchWithRetryType = async ({
     for (let i = 0; i < retries; i++) {
       try {
         for (let i = 0; i < soruceList.length; i += batchSize) {
+          const now = new Date()
           console.info(`バッチ処理: ${i + 1}/${soruceList.length}件目`)
           const chunk = soruceList.slice(i, i + batchSize)
           chunks.push(chunk)
@@ -31,6 +32,9 @@ export const processBatchWithRetry: processBatchWithRetryType = async ({
           if (res?.message) {
             console.debug(res.message)
           }
+
+          const time = (new Date().getTime() - now.getTime()) / 1000
+          console.info(`${i + 1}/${soruceList.length}件目, 所要時間: ${time}秒`)
           await sleep(30)
         }
 

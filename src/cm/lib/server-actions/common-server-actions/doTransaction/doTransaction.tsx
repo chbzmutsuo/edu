@@ -1,66 +1,75 @@
 'use server'
 
-import prisma, {handlePrismaError} from 'src/cm/lib/prisma'
-import {dataModelNameType, requestResultType} from '@cm/types/types'
-import {anyObject} from '@cm/types/utility-types'
-import {prismaMethodType} from '@cm/types/prisma-types'
+import {requestResultType} from '@cm/types/types'
+import prisma from '@lib/prisma'
 
-export const doTransaction = async (props: {transactionQueryList: transactionQuery[]; transaction?: boolean}) => {
+export type transactionQuery = {
+  model: any
+  method: any
+  queryObject: any
+  transactiondb?: any
+}
+
+type mode = 'transaction' | 'parallel' | 'sequential'
+export const doTransaction = async (props: {transactionQueryList: transactionQuery[]; mode?: mode; uniqueKey?: string}) => {
+  const {transactionQueryList, mode = 'parallel'} = props
+  const message = `${transactionQueryList.length}件を一括更新しました。`
+  const timeKey = [
+    //
+    props.transactionQueryList[0].model,
+    props.uniqueKey ?? new Date().getTime(),
+    transactionQueryList.length + '件',
+  ]
+    .filter(d => d)
+    .join('_')
+  console.time(timeKey)
+
+  const errorItemList: (transactionQuery & {error: string})[] = []
+
   try {
-    const {transactionQueryList, transaction = true} = props
-
-    const models = {}
-
     let data: any[] = []
-    if (transaction) {
-      data = await prisma.$transaction(
-        transactionQueryList.map(q => {
-          const {model, method, queryObject} = q
-          models[model] = true
-          return prisma[model][method](queryObject)
+    if (mode === 'transaction') {
+      data = await prisma.$transaction(async tx => {
+        const promises = transactionQueryList.map(async q => {
+          try {
+            const {model, method, queryObject} = q
+            return await tx[model][method](queryObject)
+          } catch (error) {
+            errorItemList.push({...q, error: error.message})
+            throw new Error(error.message)
+          }
         })
-      )
-    } else {
-      for (let i = 0; i < transactionQueryList.length; i++) {
-        const {model, method, queryObject} = transactionQueryList[i]
-        models[model] = true
+        return await Promise.all(promises)
+      })
+    } else if (mode === 'parallel') {
+      const promises = transactionQueryList.map(async q => {
+        try {
+          const {model, method, queryObject} = q
+          return prisma[model][method](queryObject)
+        } catch (error) {
+          errorItemList.push({...q, error: error.message})
+          return null
+        }
+      })
+      data = await Promise.all(promises)
+      data = data.filter(d => d !== null)
+    } else if (mode === 'sequential') {
+      for (const q of transactionQueryList) {
+        const {model, method, queryObject} = q
         data.push(await prisma[model][method](queryObject))
       }
     }
 
-    // const message = `トランザクション---${Object.keys(models)
-    //   .map(d => `【${d}】`)
-    //   .join(', ')}の更新---${data.length}件`
-    const message = `${data.length}件を一括更新しました。`
-
-    if (transactionQueryList.length > 0) {
-      console.debug(message)
-    }
-
-    const result = {
-      success: true,
-      result: data,
-      message,
-    }
-    return result as requestResultType
+    const result: requestResultType = {success: true, result: data, message}
+    console.timeEnd(timeKey)
+    return result
   } catch (error) {
     console.error(error.stack)
-    const errorMessage = handlePrismaError(error)
-    const message = `トランザクションエラー:【${errorMessage}】`
-
-    return {success: false, message: message, result: null} as requestResultType
+    const result: requestResultType = {
+      success: false,
+      message: error.message,
+      result: errorItemList,
+    }
+    return result
   }
-}
-
-export type transactionQuery = {
-  model: dataModelNameType
-  method: prismaMethodType
-  queryObject: anyObject
-  transactionPrisma?: any
-}
-
-export const testTransaction = async cb => {
-  // return await prisma.$transaction(async prisma => {
-  //   await cb()
-  // })
 }

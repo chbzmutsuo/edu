@@ -8,101 +8,38 @@ import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStan
 import {updateAlgorithm} from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
 import {StockCl} from 'src/non-common/EsCollection/(stock)/StockCl'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'
-import StockChart from '@app/(apps)/stock/(components)/StockChart'
+
 import {QueryBuilder} from '@app/(apps)/stock/(builders)/QueryBuilder'
-
-interface StockWithSignals {
-  id: number
-  Code: string
-  CompanyName: string
-  last_Close: number
-  last_riseRate: number
-  last_josho: boolean
-  last_dekidakaJosho: boolean
-  last_renzokuJosho: boolean
-  last_takaneBreakout: boolean
-  last_goldenCross: boolean
-  last_rsiOversold: boolean
-  last_crashAndRebound: boolean
-  last_consecutivePositiveCloses: boolean
-  last_macdBullish: boolean
-  last_spikeRise: boolean
-  profit: number
-}
-
-// StockCardコンポーネント
-function StockCard({stock, config, signalOptions}: {stock: StockWithSignals; config: any; signalOptions: any[]}) {
-  if (!config) return null
-
-  const stockInstance = new StockCl(stock as any, config)
-  const activeSignals = signalOptions.filter(option => stock[`last_${option.key}` as keyof StockWithSignals])
-
-  return (
-    <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-3">
-        <div>
-          <div className="font-bold text-lg">{stock.Code}</div>
-          <div className="text-sm text-gray-600 truncate">{stock.CompanyName}</div>
-        </div>
-        <div className="text-right">
-          <div className="font-mono text-lg">{stock.last_Close?.toLocaleString()}円</div>
-          <div className={`font-mono text-sm ${(stock.last_riseRate || 0) >= 0 ? 'text-red-600' : 'text-blue-600'}`}>
-            {stock.last_riseRate > 0 ? '+' : ''}
-            {stock.last_riseRate?.toFixed(2)}%
-          </div>
-        </div>
-      </div>
-
-      {/* チャート */}
-      <div className="mb-3">
-        <StockChart data={stockInstance.prevListAsc as any} macdData={stockInstance.getMacdValues()} height={80} />
-      </div>
-
-      {/* アクティブシグナル */}
-      <div className="flex flex-wrap gap-1">
-        {activeSignals.slice(0, 3).map(signal => (
-          <span key={signal.key} className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-            {signal.label}
-          </span>
-        ))}
-        {activeSignals.length > 3 && (
-          <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">+{activeSignals.length - 3}</span>
-        )}
-      </div>
-    </div>
-  )
-}
+import {Stock} from '@prisma/client'
+import {StockCard} from '@app/(apps)/stock/(pages)/signal-screening/StockCard'
 
 export default function SignalScreeningPage() {
-  const [stocks, setStocks] = useState<StockWithSignals[]>([])
+  const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
+  const [stocks, setStocks] = useState<Stock[]>([])
   const [loading, setLoading] = useState(false)
   const [selectedSignals, setSelectedSignals] = useState<string[]>(['josho', 'dekidakaJosho'])
   const [sortBy, setSortBy] = useState<'riseRate' | 'profit' | 'signalCount'>('riseRate')
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
+
   const [config, setConfig] = useState<any>(null)
   const [barometerOptions, setBarometerOptions] = useState<any[]>([])
-  const [viewMode, setViewMode] = useState<'table' | 'cards'>('cards')
 
-  // 設定とバロメータオプションを初期化
-  useEffect(() => {
-    const initializeConfig = async () => {
-      try {
-        const stockConfig = await getStockConfig()
-        setConfig(stockConfig)
+  const initializeConfig = async () => {
+    try {
+      const stockConfig = await getStockConfig()
+      setConfig(stockConfig)
 
-        const barometerObj = StockCl.getBarometerObject(stockConfig)
-        const options = Object.values(barometerObj).map(d => ({
-          key: d.id,
-          label: d.label,
-          description: d.description,
-        }))
-        setBarometerOptions(options)
-      } catch (error) {
-        console.error('設定取得エラー:', error)
-      }
+      const barometerObj = StockCl.getBarometerObject(stockConfig)
+      const options = Object.values(barometerObj).map(d => ({
+        key: d.id,
+        label: d.label,
+        description: d.description,
+      }))
+      setBarometerOptions(options)
+    } catch (error) {
+      console.error('設定取得エラー:', error)
     }
-    initializeConfig()
-  }, [])
+  }
 
   // StockClクラスから動的にシグナルオプションを取得
   const signalOptions = barometerOptions.length > 0 ? barometerOptions : []
@@ -122,7 +59,7 @@ export default function SignalScreeningPage() {
       })
 
       if (result.success && result.result) {
-        setStocks(result.result as StockWithSignals[])
+        setStocks(result.result as Stock[])
         setLastUpdated(new Date())
       }
     } catch (error) {
@@ -144,7 +81,9 @@ export default function SignalScreeningPage() {
     }
   }
 
+  // 設定とバロメータオプションを初期化
   useEffect(() => {
+    initializeConfig()
     fetchStocks()
   }, [])
 
@@ -154,7 +93,7 @@ export default function SignalScreeningPage() {
 
   const filteredStocks = stocks.filter(stock => {
     if (selectedSignals.length === 0) return true
-    return selectedSignals.some(signal => stock[`last_${signal}` as keyof StockWithSignals])
+    return selectedSignals.some(signal => stock[`last_${signal}` as keyof Stock])
   })
 
   const sortedStocks = [...filteredStocks].sort((a, b) => {
@@ -164,8 +103,8 @@ export default function SignalScreeningPage() {
       case 'profit':
         return (b.profit || 0) - (a.profit || 0)
       case 'signalCount': {
-        const aCount = selectedSignals.filter(s => a[`last_${s}` as keyof StockWithSignals]).length
-        const bCount = selectedSignals.filter(s => b[`last_${s}` as keyof StockWithSignals]).length
+        const aCount = selectedSignals.filter(s => a[`last_${s}` as keyof Stock]).length
+        const bCount = selectedSignals.filter(s => b[`last_${s}` as keyof Stock]).length
         return bCount - aCount
       }
       default:
@@ -173,12 +112,12 @@ export default function SignalScreeningPage() {
     }
   })
 
-  const getSignalCount = (stock: StockWithSignals) => {
-    return signalOptions.filter(option => stock[`last_${option.key}` as keyof StockWithSignals]).length
+  const getSignalCount = (stock: Stock) => {
+    return signalOptions.filter(option => stock[`last_${option.key}` as keyof Stock]).length
   }
 
-  const getActiveSignals = (stock: StockWithSignals) => {
-    return signalOptions.filter(option => stock[`last_${option.key}` as keyof StockWithSignals]).map(option => option.label)
+  const getActiveSignals = (stock: Stock) => {
+    return signalOptions.filter(option => stock[`last_${option.key}` as keyof Stock]).map(option => option.label)
   }
 
   return (
@@ -302,7 +241,7 @@ export default function SignalScreeningPage() {
                               (stock.last_riseRate || 0) >= 0 ? 'text-red-600' : 'text-blue-600'
                             }`}
                           >
-                            {stock.last_riseRate > 0 ? '+' : ''}
+                            {stock.last_riseRate && stock.last_riseRate > 0 ? '+' : ''}
                             {stock.last_riseRate?.toFixed(2)}%
                           </td>
                           <td

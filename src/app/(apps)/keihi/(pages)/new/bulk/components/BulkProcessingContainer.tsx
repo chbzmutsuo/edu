@@ -1,3 +1,4 @@
+'use client'
 import React, {useState, useCallback, useRef} from 'react'
 import {toast} from 'react-toastify'
 
@@ -7,6 +8,7 @@ import {BulkProcessingResults} from './BulkProcessingResults'
 import {BulkProcessingStatus} from './BulkProcessingStatus'
 
 import {fetchAnalyzeReceiptImage} from '@app/(apps)/keihi/api/analyzeReceiptImage/fetchAnalyzeReceiptImage'
+import useLogOnRender from '@hooks/useLogOnRender'
 
 interface BulkProcessingContainerProps {
   onComplete?: () => void
@@ -14,6 +16,7 @@ interface BulkProcessingContainerProps {
 
 export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerProps) => {
   // 状態管理
+  useLogOnRender()
   const [uploadedImages, setUploadedImages] = useState<string[]>([])
   const [analyzedReceipts, setAnalyzedReceipts] = useState<AnalyzedReceipt[]>([])
   const [processingResults, setProcessingResults] = useState<BulkProcessingSummary | null>(null)

@@ -3,7 +3,7 @@
 import {useState, useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
-import {createExpenseWithDraft, fetchCreateExpenseApi} from '@app/(apps)/keihi/api/expense/createExpense'
+import {fetchCreateExpenseApi} from '@app/(apps)/keihi/api/expense/createExpense'
 
 import {useExpenseForm} from '@app/(apps)/keihi/hooks/useExpenseForm'
 import {useImageUpload} from '@app/(apps)/keihi/hooks/useImageUpload'
@@ -45,6 +45,7 @@ const NewExpensePage = () => {
   const [isGenerating, setIsGenerating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [analysisStatus, setAnalysisStatus] = useState('')
+  const [additionalInstruction, setAdditionalInstruction] = useState('')
 
   // 画像アップロード処理
   const handleImageCapture = useCallback(
@@ -97,34 +98,31 @@ const NewExpensePage = () => {
   )
 
   // AIインサイト生成
-  const handleGenerateInsights = useCallback(
-    async (additionalInstruction?: string) => {
-      if (!isFormValid()) {
-        toast.error('必須項目（日付、金額、科目）を入力してください')
-        return
+  const handleGenerateInsights = useCallback(async () => {
+    if (!isFormValid()) {
+      toast.error('必須項目（日付、金額、科目）を入力してください')
+      return
+    }
+
+    setIsGenerating(true)
+
+    try {
+      const result = await generateInsightsDraft(formData, additionalInstruction || undefined)
+
+      if (result.success && result.data) {
+        setAiDraft(result.data)
+        setShowDraft(true)
+        toast.success('AIインサイトを生成しました')
+      } else {
+        toast.error(result.error || 'AIインサイト生成に失敗しました')
       }
-
-      setIsGenerating(true)
-
-      try {
-        const result = await generateInsightsDraft(formData, additionalInstruction)
-
-        if (result.success && result.data) {
-          setAiDraft(result.data)
-          setShowDraft(true)
-          toast.success('AIインサイトを生成しました')
-        } else {
-          toast.error(result.error || 'AIインサイト生成に失敗しました')
-        }
-      } catch (error) {
-        console.error('AIインサイト生成エラー:', error)
-        toast.error('AIインサイト生成に失敗しました')
-      } finally {
-        setIsGenerating(false)
-      }
-    },
-    [formData, isFormValid, setAiDraft, setShowDraft]
-  )
+    } catch (error) {
+      console.error('AIインサイト生成エラー:', error)
+      toast.error('AIインサイト生成に失敗しました')
+    } finally {
+      setIsGenerating(false)
+    }
+  }, [formData, additionalInstruction, isFormValid, setAiDraft, setShowDraft])
 
   // フォーム送信
   const handleSubmit = useCallback(async () => {
@@ -141,7 +139,7 @@ const NewExpensePage = () => {
     setIsSubmitting(true)
 
     try {
-      const result = await fetchCreateExpenseApi(formData, capturedImageFiles, true)
+      const result = await fetchCreateExpenseApi(formData, capturedImageFiles, true, aiDraft)
 
       if (result.success) {
         toast.success('経費記録を作成しました')
@@ -242,11 +240,11 @@ const NewExpensePage = () => {
                 setAiDraft,
                 showDraft,
                 setShowDraft,
-                isAnalyzing,
-                additionalInstruction: '',
-                setAdditionalInstruction: () => {},
-                onGenerateDraft: () => handleGenerateInsights(),
-                onRegenerateDraft: () => handleGenerateInsights(),
+                isAnalyzing: isGenerating,
+                additionalInstruction,
+                setAdditionalInstruction,
+                onGenerateDraft: handleGenerateInsights,
+                onRegenerateDraft: handleGenerateInsights,
                 setFormData: newData => {
                   if (typeof newData === 'function') {
                     const updated = newData(formData)
