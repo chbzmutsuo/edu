@@ -52,7 +52,7 @@ const FileUploader = (props: props) => {
     }
   }, [isDragActive])
 
-  const wrapperAlertClass = twMerge(`shadow-sm p-2 rounded-sm`, fileErrorState.length > 0 && 't-alert-error')
+  const wrapperAlertClass = twMerge(`shadow-sm p-2 rounded-sm`)
 
   return (
     <div className={` mx-auto w-fit  ${wrapperAlertClass} `}>

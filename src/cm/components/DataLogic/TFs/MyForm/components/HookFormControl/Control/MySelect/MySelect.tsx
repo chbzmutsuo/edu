@@ -27,9 +27,9 @@ const MySelect = React.memo((props: ControlProps) => {
       <div className={`relative`}>
         <ShadPopover
           {...{
+            PopoverTrigger: <BaseDisplay {...{contexts}} />,
             open: isOptionsVisible,
             onOpenChange: setIsOptionsVisible,
-            PopoverTrigger: <BaseDisplay {...{contexts}} />,
           }}
         >
           <OptionSelector {...{contexts}} />

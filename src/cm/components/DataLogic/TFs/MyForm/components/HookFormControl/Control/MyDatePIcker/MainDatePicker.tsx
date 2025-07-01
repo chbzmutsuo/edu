@@ -122,7 +122,7 @@ const MainDatePicker = (props: anyObject) => {
 
       <DatePicker inline {...displayProps} {...varingProps} {...dateProps} {...customStyleProps} dropdownMode="select" />
       {isValid === false && (
-        <div className={` t-alert  absolute left-1/2 top-12 w-full -translate-x-1/2 text-center`}>
+        <div className={`   absolute left-1/2 top-12 w-full -translate-x-1/2 text-center`}>
           <p>YYYY-MM-DDまたは8桁の数字で入力</p>
           <ul>
             <li></li>

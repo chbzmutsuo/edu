@@ -10,7 +10,6 @@ import {Eye, X} from 'lucide-react'
 import {analyzeMultipleReceipts} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {generateInsights, generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 import {R_Stack} from '@components/styles/common-components/common-components'
-import Image from 'next/image'
 import ContentPlayer from '@components/utils/ContentPlayer'
 
 interface ExpenseDetail {

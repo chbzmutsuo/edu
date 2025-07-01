@@ -18,7 +18,6 @@ import {Wrapper} from '@components/styles/common-components/paper'
 import BasicTabs from '@components/utils/tabs/BasicTabs'
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
 
-import {HREF} from '@lib/methods/urls'
 import {Prisma} from '@prisma/client'
 
 export class PageBuilder {
@@ -33,9 +32,9 @@ export class PageBuilder {
       const {query, router} = props.useGlobalProps
       return (
         <div>
-          <div className={`t-link`} onClick={() => router.back()}>
-            <T_LINK href={HREF(`/aquapot/aqCustomer`, {}, query)}>一覧に戻る</T_LINK>
-          </div>
+          <T_LINK href="#" onClick={() => router.back()}>
+            一覧に戻る
+          </T_LINK>
           <MyForm {...{...props}} />
         </div>
       )
@@ -174,9 +173,10 @@ export class PageBuilder {
 
       return (
         <C_Stack>
-          <div className={`t-link`} onClick={() => router.back()}>
-            <T_LINK href={HREF(`/aquapot/aqCustomer`, {}, query)}>一覧に戻る</T_LINK>
-          </div>
+          <T_LINK href="#" onClick={() => router.back()}>
+            一覧に戻る
+          </T_LINK>
+
           <BasicTabs
             {...{
               id: `aqCustomerDetailPage`,

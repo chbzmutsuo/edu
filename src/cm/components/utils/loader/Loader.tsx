@@ -2,7 +2,6 @@
 import {Absolute, C_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {Z_INDEX} from 'src/cm/lib/constants/constants'
 
-import {Blocks} from 'react-loader-spinner'
 import LoadingBar from 'react-top-loading-bar'
 import {useRef} from 'react'
 
@@ -11,7 +10,13 @@ export default function Loader(props: any) {
 
   return (
     <>
-      <div className={`fixed inset-0 h-full w-full bg-white/50`} style={{zIndex: Z_INDEX.loader}}>
+      <div
+        className={`fixed inset-0 h-full w-full`}
+        style={{
+          zIndex: Z_INDEX.loader,
+          background: 'linear-gradient(135deg,  var(--color-primary-light) , var(--color-white) )',
+        }}
+      >
         {/* <div className={`progress-container`}>
           <div className={`progress-bar`}></div>
         </div> */}

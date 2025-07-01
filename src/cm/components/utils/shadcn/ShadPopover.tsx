@@ -22,7 +22,7 @@ const ShadPopover = React.memo(
         <Popover.Portal>
           <Popover.Content
             onOpenAutoFocus={onOpenAutoFocus}
-            className="PopoverContent  rounded-lg    bg-white p-0.5  shadow-md "
+            className="PopoverContent  rounded-lg  bg-white p-0.5  shadow-md "
             sideOffset={5}
             style={{zIndex: Z_INDEX.max}}
           >

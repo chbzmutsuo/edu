@@ -1,6 +1,6 @@
+import {cn} from '@cm/shadcn-ui/utils'
 import {htmlProps} from '@components/styles/common-components/type'
 import {colorVariants} from '@lib/methods/colors'
-import {twMerge} from 'tailwind-merge'
 
 import {tv} from 'tailwind-variants'
 
@@ -14,7 +14,7 @@ export const Button = (
   const {className, style, color, active, size = 'md', ...rest} = props
 
   const buttonVariants = tv({
-    base: twMerge(
+    base: cn(
       `t-btn transition-all duration-300 ease-in-out transform shadow-md`,
       `ring-1 `,
       `focus:outline-none focus:ring-2  focus:ring-opacity-50`,

@@ -10,6 +10,7 @@ import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStan
 import SimpleTable from '@cm/components/utils/SimpleTable'
 
 import NormalQuestions from '@app/(apps)/edu/Grouping/components/Grouping/game/question/NormalQuestion'
+import {Alert} from '@components/styles/common-components/Alert'
 
 const PsychoQuestion = React.memo((props: any) => {
   const [sortedQuestions, setsortedQuestions] = useState<any[]>([])
@@ -104,7 +105,7 @@ const PsychoQuestion = React.memo((props: any) => {
   }
 
   return (
-    <div className={`mx-auto w-fit text-center ${readyToSend ? 't-alert-success' : 'bg-pink-50'}`}>
+    <Alert color={readyToSend ? 'green' : 'red'} className={`mx-auto w-fit text-center `}>
       <div className={`mb-4`}>
         <button className={`t-btn bg-error-main text-lg`} onClick={() => setshowFurigana(prev => !prev)}>
           {showFurigana ? '漢字のみ' : 'かなを表示'}
@@ -141,7 +142,7 @@ const PsychoQuestion = React.memo((props: any) => {
       <button className={`t-btn rounded-lg px-4 py-2 text-lg`} disabled={!readyToSend} type="button" onClick={onSubmit}>
         送信
       </button>
-    </div>
+    </Alert>
   )
 })
 export default PsychoQuestion

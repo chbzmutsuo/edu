@@ -2,8 +2,6 @@ import {targetUsers} from '@app/(apps)/sohken/api/cron/targetUsers'
 import {GoogleCalendar_Get} from '@app/api/google/actions/calendarAPI'
 import {Days} from '@class/Days/Days'
 import {getMidnight} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {isDev} from '@lib/methods/common'
 
 import {createUpdate} from '@lib/methods/createUpdate'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'

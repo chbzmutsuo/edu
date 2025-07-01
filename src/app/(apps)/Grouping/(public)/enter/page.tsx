@@ -15,7 +15,7 @@ export default function GameRoomSelectPage() {
     <Center className={``}>
       <form className={`col-stack items-center justify-around gap-10`}>
         <label>
-          <p className={`t-heading`}>プロジェクトキーを入力してください</p>
+          <strong>プロジェクトキーを入力してください</strong>
           <input
             value={key}
             onChange={e => {

@@ -74,36 +74,34 @@ export const aggregateOnSingleTd = (
 
   // subColsにはformを追加し、tdを削除する
 
-  const processedData = useMemo(() => {
-    return cols.reduce(
-      (acc, col) => {
-        // subColsの処理
-        if (col.id !== mainTd.id) {
-          const processedCol = {
-            ...col,
-            td: {...col.td, hidden: true},
-            ...(subColForceProps ?? {}),
-          }
-          acc.subCols.push(processedCol)
+  const processedData = cols.reduce(
+    (acc, col) => {
+      // subColsの処理
+      if (col.id !== mainTd.id) {
+        const processedCol = {
+          ...col,
+          td: {...col.td, hidden: true},
+          ...(subColForceProps ?? {}),
         }
-
-        // theaderColsの処理
-        if (!col.td?.hidden) {
-          acc.theaderCols.push(col)
-        }
-
-        // allColisHiddenの処理
-        acc.allColisHidden = acc.allColisHidden && !!col.td?.hidden
-
-        return acc
-      },
-      {
-        subCols: [] as colType[],
-        theaderCols: [] as colType[],
-        allColisHidden: true,
+        acc.subCols.push(processedCol)
       }
-    )
-  }, [cols, mainTd.id, subColForceProps])
+
+      // theaderColsの処理
+      if (!col.td?.hidden) {
+        acc.theaderCols.push(col)
+      }
+
+      // allColisHiddenの処理
+      acc.allColisHidden = acc.allColisHidden && !!col.td?.hidden
+
+      return acc
+    },
+    {
+      subCols: [] as colType[],
+      theaderCols: [] as colType[],
+      allColisHidden: true,
+    }
+  )
 
   const {subCols, theaderCols, allColisHidden} = processedData
 
@@ -170,13 +168,10 @@ export const aggregateOnSingleTd = (
   }
 
   // 改善案
-  const shouldUseRStack = useMemo(
-    () => mainTd.th?.stack || (theaderCols?.length ?? 0) > 3,
-    [mainTd.th?.stack, theaderCols?.length]
-  )
+  const shouldUseRStack = mainTd.th?.stack || (theaderCols?.length ?? 0) > 3
   const Stack = shouldUseRStack ? R_Stack : C_Stack
 
-  const thCols = useMemo(() => cols.filter(col => col.th?.hidden !== true), [cols.map(col => col.th?.hidden).join(',')])
+  const thCols = cols.filter(col => col.th?.hidden !== true)
 
   NewCol.th = {
     format: () => {

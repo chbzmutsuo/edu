@@ -2,7 +2,7 @@
 
 import {DetailPagePropType} from '@cm/types/types'
 
-import Accordion from '@cm/components/utils/Accordions/Accordion'
+import MyAccordion from '@components/utils/Accordions/MyAccordion'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/sohken/class/ColBuilder'
@@ -106,7 +106,7 @@ const TaskAndSchedule = ({genba, allTasks}) => {
       <div></div>
       <R_Stack className={`items-stretch`}>
         <div className={`max-w-[1000px]`}>
-          <Accordion {...{label: `タスク一覧設定`, defaultOpen: true, closable: false}}>
+          <MyAccordion {...{label: `タスク一覧設定`, defaultOpen: true, closable: false}}>
             <FitMargin>
               <C_Stack>
                 <Alert color={`red`}>
@@ -160,10 +160,10 @@ const TaskAndSchedule = ({genba, allTasks}) => {
                 </R_Stack>
               </C_Stack>
             </FitMargin>
-          </Accordion>
+          </MyAccordion>
         </div>
         <div className={`max-w-[600px]`}>
-          <Accordion {...{label: `現場詳細スケジュール`, defaultOpen: true, closable: false}}>
+          <MyAccordion {...{label: `現場詳細スケジュール`, defaultOpen: true, closable: false}}>
             <FitMargin>
               <C_Stack>
                 <HiddenToggler {...{showPast, addQuery, toggleLoad, genba}} />
@@ -194,7 +194,7 @@ const TaskAndSchedule = ({genba, allTasks}) => {
                 />
               </C_Stack>
             </FitMargin>
-          </Accordion>
+          </MyAccordion>
         </div>
       </R_Stack>
     </>

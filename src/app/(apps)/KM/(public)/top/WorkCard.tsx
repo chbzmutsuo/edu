@@ -1,7 +1,6 @@
 'use client'
 import {Kaizen, KM} from '@app/(apps)/KM/class/Kaizen'
 import {PartnerBasicInfo} from '@app/(apps)/KM/components/Partner'
-import {formatDate} from '@class/Days/date-utils/formatters'
 import SlateEditor from '@cm/components/SlateEditor/SlateEditor'
 
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'

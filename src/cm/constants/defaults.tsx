@@ -117,13 +117,11 @@ export const myFormDefault: MyFormType = {
 
 /**モーダルでoverflowはせずに、中のコンポーネントで制御する */
 export const myModalDefault: CSSProperties = {
-  borderRadius: 10,
-  // backgroundColor: 'white',
-  position: 'absolute',
-  top: 0,
-  marginTop: 30,
-  // padding: '10px 10px',
-  // minWidth: 280,
+  // borderRadius: 10,
+  // position: 'absolute',
+  // top: 0,
+  // marginTop: 30,
+
   width: 'fit-content',
   height: 'fit-content',
   maxHeight: '80vh', //スマホ時に、アドレスバーで隠れてしまうので、これ以上上げない
@@ -151,7 +149,7 @@ export const limitEditting = (props: {exclusiveTo?: boolean; myTable?: MyTableTy
 }
 
 export const controlDefaultStyle: CSSProperties = {
-  width: 190,
+  width: 240,
   minHeight: 30,
   maxWidth: '85vw',
   margin: `auto 0`,

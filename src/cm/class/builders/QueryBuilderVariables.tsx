@@ -1,4 +1,4 @@
-import {AccordiongPropType} from '@components/utils/Accordions/Accordion'
+import {AccordiongPropType} from '@components/utils/Accordions/MyAccordion'
 import {getRelationalModels, getSchema} from 'src/cm/lib/methods/prisma-schema'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'

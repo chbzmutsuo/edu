@@ -84,7 +84,7 @@ const Page = () => {
               <Alert className={`w-fit text-sm`} color={`red`}>
                 以下は送信前リストの為、まだデータ未登録です。 一括送信ボタンでデータ登録を必ず行って下さい。
               </Alert>
-              <div className={`sticky-table-wrapper  max-h-[600px] max-w-[600px] text-center [&_tr]:border-b-[1px]!`}>
+              <div className={`table-wrapper  max-h-[600px] max-w-[600px] text-center [&_tr]:border-b-[1px]!`}>
                 <table>
                   <thead>
                     <tr className={`text-sm md:text-base`}>

@@ -1,6 +1,6 @@
 'use client'
 
-import Accordion from '@cm/components/utils/Accordions/Accordion'
+import MyAccordion from '@components/utils/Accordions/MyAccordion'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 
 import {DetailPagePropType} from '@cm/types/types'
@@ -11,9 +11,9 @@ export const GenbaDayShiftForm = (props: DetailPagePropType) => {
   const {useGlobalProps} = props
   return (
     <R_Stack className={`items-start`}>
-      <Accordion {...{label: `現場・日付`, defaultOpen: true, closable: false}}>
+      <MyAccordion {...{label: `現場・日付`, defaultOpen: true, closable: false}}>
         <MyForm {...props} />
-      </Accordion>
+      </MyAccordion>
     </R_Stack>
   )
 }

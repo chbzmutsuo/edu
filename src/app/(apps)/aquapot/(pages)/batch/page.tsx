@@ -1,5 +1,6 @@
 'use client'
 import {Absolute} from '@components/styles/common-components/common-components'
+import {Paper} from '@components/styles/common-components/paper'
 import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {fetchAlt} from '@lib/http/fetch-client'
@@ -38,7 +39,7 @@ export default function Page() {
 
   return (
     <Absolute>
-      <div className={`t-paper `}>
+      <Paper>
         <table className={twMerge(`[&_td]:p-1! `, `[&_th]:p-1! `, `w-[1000px]`)}>
           <thead>
             <tr>
@@ -74,7 +75,7 @@ export default function Page() {
             })}
           </tbody>
         </table>
-      </div>
+      </Paper>
     </Absolute>
   )
 }

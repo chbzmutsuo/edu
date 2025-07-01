@@ -1,8 +1,8 @@
 import {COLORS} from 'src/cm/lib/constants/constants'
 
-import {cl} from 'src/cm/lib/methods/common'
 import {CSS} from '@dnd-kit/utilities'
 import {useSortable} from '@dnd-kit/sortable'
+import {cn} from '@cm/shadcn-ui/utils'
 
 export const createRowColor = ({myTable, recIdx, record, rows}) => {
   const allColumns = rows.flat()
@@ -26,12 +26,25 @@ export const createRowColor = ({myTable, recIdx, record, rows}) => {
   return rowColor
 }
 
+// roundedTrClassをTailwind CSSのクラスとして定義
+const roundedTrClass = [
+  // テーブル行全体のスタイル
+  'shadow-md border  rounded-[10px]',
+  // th, tdの共通: 上ボーダー
+  '[&>th]:border-t [&>td]:border-t',
+  // 先頭セル: 左丸み・左ボーダー
+  '[&>td:first-child]:rounded-l-[8px] [&>td:first-child]:border-l [&>th:first-child]:rounded-l-[8px] [&>th:first-child]:border-l',
+  // 最後セル: 右丸み・右ボーダー
+  '[&>td:last-child]:rounded-r-[8px] [&>td:last-child]:border-r [&>th:last-child]:rounded-r-[8px] [&>th:last-child]:border-r',
+].join(' ')
+
 export const createTrClassName = ({myTable, record, formData}) =>
-  cl(
+  cn(
+    //
     `relative `,
     formData?.id === record?.id ? 'bg-sub-light' : '',
-    // rowIdx === rows.length - 1 ? 'border-b-[.0625rem] border-solid!' : '',
-    myTable?.showHeader ? '' : `roundedTr`
+    myTable?.showHeader ? '' : roundedTrClass,
+    'odd:bg-gray-100 even:bg-gray-200'
   )
 
 export const getDndProps = ({dndId, rowColor, myTable}) => {

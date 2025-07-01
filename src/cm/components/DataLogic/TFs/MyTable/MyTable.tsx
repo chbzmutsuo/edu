@@ -10,6 +10,7 @@ import {MyTableInfiniteScroll} from './MyTableInfiniteScroll'
 import {MyTableControls} from './components/MyTableControls/MyTableControls'
 import {useMyTableLogic} from './hooks/useMyTableLogic'
 import {MainTable} from './components/MainTable'
+import useLogOnRender from '@hooks/useLogOnRender'
 
 // 型定義
 interface MyTableProps {
@@ -30,6 +31,7 @@ const MyTable = React.memo<MyTableProps>(props => {
 
   const {sectionStyle, TableConfigProps, mainTableProps, paginationProps} = styleData
   const mainTable = useMemo(() => <MainTable {...mainTableProps} />, [mainTableProps])
+  useLogOnRender('')
 
   // 🔧 条件分岐による表示切り替え
   const renderTableContent = () => {

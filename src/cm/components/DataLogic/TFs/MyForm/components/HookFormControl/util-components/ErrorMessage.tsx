@@ -8,8 +8,8 @@ const ErrorMessage = ({controlContextValue}) => {
 
   if (message && showErrorMessage) {
     return (
-      <div className={`min-w-[50px] text-start  leading-3`}>
-        <small className="text-error-main  text-xs font-bold">{message}</small>
+      <div className={`min-w-[50px]  text-end`}>
+        <small className="text-error-main  text-xs ">{message}</small>
       </div>
     )
   } else return <></>

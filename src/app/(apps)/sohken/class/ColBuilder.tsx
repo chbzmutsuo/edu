@@ -439,7 +439,7 @@ export class ColBuilder {
   }
   static user = (props: columnGetterType) => {
     const data: colType[] = [
-      {id: 'name', label: '氏名', form: {}},
+      {id: 'name', label: '氏名', form: {...defaultRegister}},
       {id: 'email', label: 'メールアドレス', form: {register}, type: 'email'},
       {id: 'password', label: 'パスワード', form: {}, type: 'password'},
       {

@@ -11,7 +11,7 @@ export default function MonthlyCalendar({arrays, currentMonth, peroidType = 'mon
       <div className="container mx-auto mt-10  ">
         {peroidType === 'monthly' && shapeType === 'vertical' && (
           <>
-            <div className={` sticky-table-wrapper   h-[600px] w-[75vw]   overflow-auto  `}>
+            <div className={` table-wrapper   h-[600px] w-[75vw]   overflow-auto  `}>
               <table>
                 <thead>
                   <tr className={`bg-gray-500  text-white`}>

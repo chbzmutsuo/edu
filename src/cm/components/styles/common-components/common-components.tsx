@@ -63,7 +63,7 @@ export const CenterScreen = (props: htmlProps) => {
   return (
     <div
       {...{
-        className: cl(`alignJustCenter`, className),
+        className: cn(`flex justify-center items-center`, className),
         style,
         ...rest,
       }}
@@ -78,7 +78,7 @@ export const Center = (props: htmlProps) => {
   return (
     <div
       {...{
-        className: cl(`alignJustCenter`, className),
+        className: cn(`flex justify-center items-center`, className),
         style,
         ...rest,
       }}
@@ -155,6 +155,7 @@ import {CssString} from 'src/cm/components/styles/cssString'
 import {Z_INDEX} from '@lib/constants/constants'
 import {colorVariants} from '@lib/methods/colors'
 import {iconBtnColorVariants} from '@components/styles/common-components/IconBtn'
+import {cn} from '@cm/shadcn-ui/utils'
 
 export const ParseJSON = ({json}) => {
   const jsonStyle = {

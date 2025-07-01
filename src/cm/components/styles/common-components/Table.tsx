@@ -11,7 +11,7 @@ export const TableWrapper = (props: htmlProps) => {
         className: cl(
           //
           className,
-          `sticky-table-wrapper overflow-auto border-collapse `,
+          `table-wrapper overflow-auto border-collapse `,
           `w-fit  h-fit `
         ),
         style,

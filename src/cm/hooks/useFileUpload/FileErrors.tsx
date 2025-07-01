@@ -1,3 +1,4 @@
+import {Alert} from '@components/styles/common-components/Alert'
 import {FileRejection} from 'react-dropzone'
 
 const FileErrors = ({maxFiles, fileErrorState}) => {
@@ -7,7 +8,7 @@ const FileErrors = ({maxFiles, fileErrorState}) => {
 
   const breakWordCl = `w-[150px]  break-words text-sm`
   return (
-    <div className={`t-alert`}>
+    <Alert>
       <p className={`text-center font-bold text-error-main`}>ファイル入力エラー</p>
       <table className={`simple-table`}>
         <tbody>
@@ -45,7 +46,7 @@ const FileErrors = ({maxFiles, fileErrorState}) => {
           })}
         </tbody>
       </table>
-    </div>
+    </Alert>
   )
 }
 export default FileErrors

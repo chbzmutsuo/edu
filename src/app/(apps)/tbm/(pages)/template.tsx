@@ -10,6 +10,8 @@ import {createUpdate} from '@lib/methods/createUpdate'
 import useUnchinChildCreator from '@app/(apps)/tbm/(globalHooks)/useUnchinChildCreator'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import ShadPopover from '@cm/components/utils/shadcn/ShadPopover'
+import {C_Stack} from '@components/styles/common-components/common-components'
 export default function Template({children}) {
   const HK_OdometerInputGMF = useOdometerInputGMF()
   const HK_GasolineGMF = useGasolineGMF()
@@ -28,15 +30,13 @@ export default function Template({children}) {
     await seedCar()
     await seedCustomer()
   }
+
   if (!g_tbmBaseId) {
     return <div>営業所が設定されていません。</div>
   }
 
   return (
     <div>
-      {/* <button className={` t-btn`} onClick={batch}>
-        テスト
-      </button> */}
       <HK_ProductMidEditor.Modal />
       <HK_GasolineGMF.Modal />
 

@@ -4,7 +4,7 @@ import MidTable from '@cm/components/DataLogic/RTs/MidTable/MidTable'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {Prisma} from '@prisma/client'
-import Accordion from '@cm/components/utils/Accordions/Accordion'
+
 import {HREF} from '@cm/lib/methods/urls'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
@@ -13,6 +13,7 @@ import {Paper} from '@components/styles/common-components/paper'
 import TaskScoring from '@app/(apps)/Grouping/parts/TaskScoring'
 import {Button} from '@components/styles/common-components/Button'
 import Link from 'next/link'
+import MyAccordion from '@components/utils/Accordions/MyAccordion'
 
 export default function GameDetailPage(props) {
   const useGlobalProps = useGlobal()
@@ -38,34 +39,19 @@ export default function GameDetailPage(props) {
       <Link href={gamePath}>
         <Button color={`blue`}>PLAY</Button>
       </Link>
-      <>
-        {/* <Button>Play</Button>
-        <Button onClick={() => settaskScoringOpen(true)}>学習内容添削</Button>
-        <BasicModal
-          {...{
-            open: taskScoringOpen,
-            handleClose: () => settaskScoringOpen(false),
-            style: {maxWidth: `95vw`, maxHeight: `95vh`},
-          }}
-        >
-          <div className={`w-[90vw]`}>
-            <TaskScoring {...{game}} />
-          </div>
-        </BasicModal> */}
-        {/* <Accordion {...{className: ``, label: `学習内容添削`, defaultOpen: true, closable: false}}></Accordion> */}
-      </>
+      <></>
 
       <R_Stack className={`items-start gap-10`}>
         <C_Stack>
-          <Accordion {...{className: `min-w-[350px]`, label: `プロジェクト情報`, defaultOpen: true, closable: false}}>
+          <MyAccordion {...{className: `min-w-[350px]`, label: `プロジェクト情報`, defaultOpen: true, closable: false}}>
             <Paper>
               <MyForm {...props} />
             </Paper>
-          </Accordion>
+          </MyAccordion>
         </C_Stack>
 
         <C_Stack>
-          <Accordion {...{className: `min-w-[350px]`, label: `参加者設定`, defaultOpen: true, closable: false}}>
+          <MyAccordion {...{className: `min-w-[350px]`, label: `参加者設定`, defaultOpen: true, closable: false}}>
             <Paper>
               <MidTable
                 {...{
@@ -89,12 +75,12 @@ export default function GameDetailPage(props) {
                 }}
               />
             </Paper>
-          </Accordion>
-          <Accordion {...{className: `min-w-[280px]`, label: `役割設定`, defaultOpen: true, closable: false}}>
+          </MyAccordion>
+          <MyAccordion {...{className: `min-w-[280px]`, label: `役割設定`, defaultOpen: true, closable: false}}>
             <Paper>
               <RoleSetting {...{Game: game, useGlobalProps}} />
             </Paper>
-          </Accordion>
+          </MyAccordion>
         </C_Stack>
       </R_Stack>
       <TaskScoring {...{game}} />

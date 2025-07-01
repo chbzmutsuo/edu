@@ -1,4 +1,5 @@
 import GroupViewer from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/GroupViewer'
+import {Alert} from '@components/styles/common-components/Alert'
 
 const ActiveGroupViwer = ({GameCtxValue}) => {
   const {Game, GAME_CLASS, activeGroupsWithRoles} = GameCtxValue
@@ -19,10 +20,10 @@ const ActiveGroupViwer = ({GameCtxValue}) => {
         <h2>{activeGroup?.name}</h2>
       </div>
       {!activeGroup && (
-        <div className={`t-alert text-error-main h-full text-start`}>
+        <Alert color="red" className={` text-error-main h-full text-start`}>
           グループが選択されていません。 <br />
           アンケート結果から、自動グルーピングを適応してください。
-        </div>
+        </Alert>
       )}
 
       {activeGroup && <GroupViewer GameCtxValue={GameCtxValue} groupsWithRoles={groupsWithRoles} />}

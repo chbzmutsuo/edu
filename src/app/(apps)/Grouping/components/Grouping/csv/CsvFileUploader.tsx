@@ -17,6 +17,7 @@ import {Button} from '@components/styles/common-components/Button'
 import {toastByResult} from '@lib/ui/notifications'
 import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
 import useFileUploadPropsOptimized from '@hooks/useFileUpload/useFileUploadPropsOptimized'
+import {Alert} from '@components/styles/common-components/Alert'
 
 const CsvFileUploader = () => {
   const {toggleLoad, session, query, accessScopes} = useGlobal()
@@ -79,13 +80,15 @@ const CsvFileUploader = () => {
     <div className={`p-4`}>
       <C_Stack className={`items-start gap-4`}>
         <R_Stack className={`t-paper items-stretch`}>
-          <section className={`t-alert-warning  w-fit`}>
-            必ず、テンプレートファイルを
-            <CSVLink data={template} className={`t-link`} filename={`データ作成テンプレート`}>
-              ダウンロード
-            </CSVLink>{' '}
-            した上で、CSVファイルを作成してください。
-            <MarkDownDisplay>{md}</MarkDownDisplay>
+          <section className={`w-fit`}>
+            <Alert>
+              必ず、テンプレートファイルを
+              <CSVLink data={template} className={`t-link`} filename={`データ作成テンプレート`}>
+                ダウンロード
+              </CSVLink>{' '}
+              した上で、CSVファイルを作成してください。
+              <MarkDownDisplay>{md}</MarkDownDisplay>
+            </Alert>
           </section>
 
           <section className={`w-[350px]`}>
@@ -131,7 +134,7 @@ const Success = ({successes}) => {
   return (
     <div>
       {successes.length > 0 && (
-        <div className={`t-alert-blue`}>
+        <Alert color="blue">
           <h2>更新済みデータ</h2>
           <SimpleTable
             {...{
@@ -145,7 +148,7 @@ const Success = ({successes}) => {
               }),
             }}
           />
-        </div>
+        </Alert>
       )}
     </div>
   )
@@ -157,7 +160,7 @@ const Error = ({errors}) => {
   return (
     <C_Stack>
       {emptyValueStudents?.length > 1 && (
-        <div className={`t-alert`}>
+        <Alert>
           <h2>データ不足エラー</h2>
           <SimpleTable
             {...{
@@ -168,10 +171,10 @@ const Error = ({errors}) => {
               }),
             }}
           />
-        </div>
+        </Alert>
       )}
       {doubledStudents?.length > 0 && (
-        <div className={`t-alert`}>
+        <div>
           <h2>学年・組・番号重複エラー</h2>
           <SimpleTable
             {...{
@@ -190,7 +193,7 @@ const Error = ({errors}) => {
 
 const ReadTable = ({csvContents}) => {
   return (
-    <div className={` sticky-table-wrapper max-h-[300px] [&_td]:border-y-[1px]! [&_th]:border-y-[1px]! w-[300px]`}>
+    <div className={` table-wrapper max-h-[300px] [&_td]:border-y-[1px]! [&_th]:border-y-[1px]! w-[300px]`}>
       <table>
         <thead>
           <tr>

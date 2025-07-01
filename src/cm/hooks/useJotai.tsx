@@ -23,7 +23,6 @@ export type atomKey =
   | `showpopover`
   | `globalCurrentTabIdx`
   | `globalLoader`
-  | `globalAccordionOpen`
   | `torokuDateApplicationForm`
   | `torokuMikomiApplicationForm`
   | `globalModalOpen`

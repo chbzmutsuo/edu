@@ -6,7 +6,7 @@ import Label from '@components/DataLogic/TFs/MyForm/components/HookFormControl/u
 import Control from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
 
 import {ControlContextType, ControlWrapperPropType} from '@cm/types/form-control-type'
-import {getFormProps} from 'src/cm/hooks/useBasicForm/hookformMethods'
+import {getFormProps, getStyleProps} from 'src/cm/hooks/useBasicForm/hookformMethods'
 import {liftUpNewValueOnChange} from 'src/cm/components/DataLogic/TFs/MyForm/MyForm'
 
 import {R_Stack} from '@components/styles/common-components/common-components'
@@ -16,11 +16,11 @@ export const ControlContext = createContext({})
 
 const ControlWrapper = React.memo((props: ControlWrapperPropType) => {
   const {
-    wrapperId,
-    flexDirection,
-    wrapperClass,
-    ControlStyle,
-    isBooleanType,
+    // wrapperId,
+    // flexDirection,
+    // wrapperClass,
+    // ControlStyle,
+    // isBooleanType,
     formId,
     col,
     Register,
@@ -33,20 +33,23 @@ const ControlWrapper = React.memo((props: ControlWrapperPropType) => {
     errorMessage,
   } = props
 
+  const {id: wrapperId, flexDirection, wrapperClass, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col})
+
   const currentValue = props.ReactHookForm?.getValues(col.id)
 
   const type = DH__switchColType({type: col.type})
   const pointerClass = type === `boolean` ? ' cursor-pointer' : ''
 
   const required = !!col?.form?.register?.required
+
   col.inputProps = {
     ...col.inputProps,
     placeholder: col.inputProps?.placeholder ?? (required ? '必須です' : ''),
     required,
   }
+
   const controlContextValue: ControlContextType = {
     ...props,
-
     formId,
     col,
     wrapperId,
@@ -90,7 +93,7 @@ const ControlWrapper = React.memo((props: ControlWrapperPropType) => {
   }, [col, controlContextValue])
 
   const MEMO_Description = useMemo(() => {
-    if (props.ControlOptions.showDescription !== false && col.form?.descriptionNoteAfter) {
+    if (ControlOptions?.showDescription !== false && col.form?.descriptionNoteAfter) {
       return (
         <div style={ControlStyle}>
           <small style={{marginTop: 5, width: ControlStyle.width, maxWidth: ControlStyle.maxWidth}}>
@@ -101,7 +104,7 @@ const ControlWrapper = React.memo((props: ControlWrapperPropType) => {
         </div>
       )
     }
-  }, [col, currentValue, formData, latestFormData, props.ControlOptions.showDescription])
+  }, [col, currentValue, formData, latestFormData, ControlOptions?.showDescription])
 
   const wrapperClassName = cl(wrapperClass, col.id)
 

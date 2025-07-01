@@ -1,7 +1,7 @@
 export const Z_INDEX = {
   below: -1,
   base: 0,
-  thead: 100,
+  thead: 0,
   theadKado: 130,
   theadleft: 10,
   EasySearcher: 190,

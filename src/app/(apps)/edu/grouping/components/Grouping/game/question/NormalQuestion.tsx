@@ -1,8 +1,8 @@
 import React from 'react'
 
 import {anyObject} from '@cm/types/utility-types'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {PaperLarge} from '@components/styles/common-components/paper'
+import {Center, C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {Paper, PaperLarge} from '@components/styles/common-components/paper'
 
 const NormalQuestions = (props: anyObject) => {
   const {sortedQuestions, setanswers, answers, showFurigana, BasicForm, headerClass} = props
@@ -106,21 +106,23 @@ const NormalQuestions = (props: anyObject) => {
 
 const Question = ({answers, setanswers, questionKey, value}) => {
   return (
-    <span
-      onClick={() => {
-        setanswers(prev => {
-          return {
-            ...prev,
-            [questionKey]: value,
-          }
-        })
-      }}
-      className={`t-paper alignJustCenter detectHover h-10 w-10 rounded-sm text-2xl  font-bold
-     ${answers[questionKey] === value ? ' bg-primary-main  text-2xl text-white opacity-100' : ''}
-`}
-    >
-      {value}
-    </span>
+    <Paper>
+      <Center
+        onClick={() => {
+          setanswers(prev => {
+            return {
+              ...prev,
+              [questionKey]: value,
+            }
+          })
+        }}
+        className={`  detectHover h-10 w-10 rounded-sm text-2xl  font-bold
+       ${answers[questionKey] === value ? ' bg-primary-main  text-2xl text-white opacity-100' : ''}
+  `}
+      >
+        {value}
+      </Center>
+    </Paper>
   )
 }
 

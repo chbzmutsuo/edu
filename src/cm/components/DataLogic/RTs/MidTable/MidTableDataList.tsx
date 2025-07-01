@@ -37,7 +37,7 @@ export default function MidTableDataList(props: TableProps) {
   return (
     <>
       <div>{label}</div>
-      <div className={`sticky-table-wrapper `} style={tableStyle}>
+      <div className={`table-wrapper `} style={tableStyle}>
         <table className={`[&_td]:px-2! [&_th]:p-1!`}>
           {Object.keys(GROUPED_LIST_OBJECT).map(gropupKey => {
             const IconComponent = type === 'linked' ? MinusIcon : PlusIcon

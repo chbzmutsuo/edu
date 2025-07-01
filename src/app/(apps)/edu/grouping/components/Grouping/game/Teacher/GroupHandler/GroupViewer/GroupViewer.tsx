@@ -72,10 +72,7 @@ export default function GroupViewer(props: {
           return (
             <div className={`   w-[420px]  max-w-[90vw]   p-1 py-4`} key={i}>
               <div
-                className={cl(
-                  `t-paper  sticky-table-wrapper w-full  overflow-auto `,
-                  `[&_td]:border-y-[1px]! [&_th]:border-y-[1px]!`
-                )}
+                className={cl(`t-paper  table-wrapper w-full  overflow-auto `, `[&_td]:border-y-[1px]! [&_th]:border-y-[1px]!`)}
               >
                 <div
                   onClick={() => switchStudent(i)}
@@ -159,7 +156,7 @@ export default function GroupViewer(props: {
                               isMoveCandidate ? `bg-orange-400 font-bold` : ``,
                               `text-center`,
                               studentId === Student.id ? `bg-primary-main text-white` : ``,
-                              absent ? `showOnly  bg-sub-main/50 ` : '',
+                              absent ? `opacity-50 pointer-events-none  bg-sub-main/50 ` : '',
                               teacherOnly && isOutSideClass
                             )}
                           >

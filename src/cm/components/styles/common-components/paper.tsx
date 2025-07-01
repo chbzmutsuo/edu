@@ -1,3 +1,4 @@
+import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@cm/shadcn-ui/components/ui/card'
 import {cl} from '@lib/methods/common'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
 export const Wrapper = (props: htmlProps) => {
@@ -9,11 +10,29 @@ export const WrapperRounded = (props: htmlProps) => {
   return <Wrapper className={cl('rounded-sm', className)}>{props.children}</Wrapper>
 }
 
-export const Paper = (props: htmlProps) => {
-  const {className, ...rest} = props
-  return <div className={`t-paper ${className}`} {...rest} />
+export const Paper = (
+  props: htmlProps & {
+    title?: string
+    description?: string
+    action?: React.ReactNode
+    children: React.ReactNode
+    footer?: React.ReactNode
+  }
+) => {
+  const showHeader = props.title || props.description || props.action
+
+  return (
+    <Card {...props}>
+      {showHeader && (
+        <CardHeader>
+          <CardTitle>{props.title}</CardTitle>
+          <CardDescription>{props.description}</CardDescription>
+          <CardAction>{props.action}</CardAction>
+        </CardHeader>
+      )}
+      <CardContent>{props.children}</CardContent>
+      <CardFooter className="flex-col gap-2">{props.footer}</CardFooter>
+    </Card>
+  )
 }
-export const PaperLarge = (props: htmlProps) => {
-  const {className, ...rest} = props
-  return <div className={`t-paper m-3 p-3 ${className}`} {...rest} />
-}
+export const PaperLarge = Paper

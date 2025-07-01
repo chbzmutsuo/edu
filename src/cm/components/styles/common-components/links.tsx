@@ -4,7 +4,7 @@ import React, {useCallback} from 'react'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
 import {PencilSquareIcon} from '@heroicons/react/20/solid'
 
-import {cl, sleep} from 'src/cm/lib/methods/common'
+import {cl} from 'src/cm/lib/methods/common'
 import Link from 'next/link'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 
@@ -28,7 +28,7 @@ export const T_LINK = React.memo((props: htmlProps & {href: string; target?: '_b
     <Link
       {...{
         onNavigate: handleNavigate,
-        className: twMerge(className, simple ? '' : 't-link'),
+        className: twMerge(className, simple ? '' : 't-link  w-fit'),
         target,
         href,
         style,

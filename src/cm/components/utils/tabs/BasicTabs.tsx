@@ -1,16 +1,16 @@
 'use client'
 
-import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import PlaceHolder from 'src/cm/components/utils/loader/PlaceHolder'
 import {JSX} from 'react'
 import useWindowSize from 'src/cm/hooks/useWindowSize'
 import {cl} from 'src/cm/lib/methods/common'
 import {CSSProperties, useEffect} from 'react'
 
-import {TitleDescription} from 'src/cm/components/styles/common-components/Notation'
 import {anyObject} from '@cm/types/utility-types'
 
 import {useJotaiByKey, atomTypes} from '@hooks/useJotai'
+import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn-ui/components/ui/tabs'
+import {Card} from '@cm/shadcn-ui/components/ui/card'
 
 export type tabComponent = {
   style?: CSSProperties
@@ -30,7 +30,15 @@ type BasicTabsType = {
 }
 export default function BasicTabs(props: BasicTabsType) {
   const {width} = useWindowSize()
-  const {headingText, id = '', showAll = width > 768, TabComponentArray: tempTabComponentArray, ...otherProps} = props
+  const {
+    headingText,
+    id = '',
+    showAll = width > 768,
+    TabComponentArray: tempTabComponentArray,
+    className,
+    style,
+    ...otherProps
+  } = props
 
   const [value, setValue] = useJotaiByKey<atomTypes[`globalCurrentTabIdx`]>(`globalCurrentTabIdx`, {})
 
@@ -39,8 +47,6 @@ export default function BasicTabs(props: BasicTabsType) {
   const setcurrentTabIdx = newValue => {
     setValue({...value, [id]: newValue})
   }
-
-  // const [currentTabIdx, setcurrentTabIdx] = useState(0)
 
   const filteredTabComponentArray = props.TabComponentArray.filter(obj => obj?.exclusiveTo !== false)
   const anyTabIsActive = filteredTabComponentArray.some((obj, idx) => currentTabIdx === idx)
@@ -57,88 +63,95 @@ export default function BasicTabs(props: BasicTabsType) {
 
   if (!width) return <PlaceHolder />
 
+  // shadcn/uiのTabsを使用する場合は、文字列のvalueが必要
+  const currentTabValue = String(currentTabIdx)
+  const handleTabChange = (value: string) => {
+    setcurrentTabIdx(parseInt(value))
+  }
+
   return (
-    <R_Stack style={{minWidth: maxComponentWidth}} className={'  mx-auto items-stretch justify-around gap-x-2'} {...otherProps}>
+    <div style={{minWidth: maxComponentWidth, ...style}} className={cl('mx-auto', className)} {...otherProps}>
+      {headingText && (
+        <div className="mb-4">
+          {typeof headingText === 'string' ? <h2 className="text-xl font-semibold text-gray-800">{headingText}</h2> : headingText}
+        </div>
+      )}
+
       {showAll
-        ? renderShowAll({filteredTabComponentArray, currentTabIdx, setcurrentTabIdx, otherProps})
-        : renderShowEachComponent({filteredTabComponentArray, currentTabIdx, setcurrentTabIdx, otherProps})}
-    </R_Stack>
+        ? renderShowAll({filteredTabComponentArray})
+        : renderTabsComponent({filteredTabComponentArray, currentTabValue, handleTabChange})}
+    </div>
   )
 }
 
-// const [maxWidth, setmaxWidth] = useState(null)
 /**全てのコンポーネントをflexで表示 */
-const renderShowAll = ({filteredTabComponentArray, currentTabIdx, setcurrentTabIdx, otherProps}) => {
+const renderShowAll = ({filteredTabComponentArray}) => {
   return (
-    <>
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {filteredTabComponentArray.map((obj, idx) => {
         const {containerClass, label, description} = obj ?? {}
 
         return (
-          <div key={idx} className={containerClass + '  p-1 '}>
-            <C_Stack className={``}>
-              <TitleDescription
-                {...{
-                  title: label,
-                  description: (
-                    <div>
-                      <hr />
-                      {description}
-                    </div>
-                  ),
-                }}
-              />
+          <div
+            key={idx}
+            className={cl('rounded-lg border bg-white p-4 shadow-sm transition-shadow hover:shadow-md', containerClass)}
+          >
+            <div className="space-y-3">
+              {label && <h3 className="text-lg font-medium text-gray-900">{label}</h3>}
 
-              <div>{obj?.component}</div>
-            </C_Stack>
-          </div>
-        )
-      })}
-    </>
-  )
-}
+              {description && (
+                <div className="text-sm text-gray-600">
+                  <hr className="mb-2" />
+                  {description}
+                </div>
+              )}
 
-const renderShowEachComponent = ({filteredTabComponentArray, currentTabIdx, setcurrentTabIdx, otherProps}) => {
-  const singleTabWidth = Math.floor(100 / filteredTabComponentArray.length) //labelの横幅比率
-
-  const Label = ({obj, i}) => {
-    const selected = i === currentTabIdx
-    return (
-      <div style={{width: singleTabWidth + '%', textAlign: 'center'}}>
-        <div
-          onClick={e => setcurrentTabIdx(i)}
-          className={cl(
-            `cursor-pointer`,
-            ' mx-auto max-w-[300px] rounded-lg p-1 text-[16px]    ',
-            selected ? 'bg-gray-300' : 'hover:bg-gray-200'
-          )}
-        >
-          {obj?.label}
-        </div>
-      </div>
-    )
-  }
-
-  return (
-    <div {...{...otherProps}}>
-      <R_Stack className={cl(`mx-auto mb-2  w-full min-w-[280px]  justify-around gap-0   border-b-2   p-1  `)}>
-        {filteredTabComponentArray
-          .filter(obj => obj?.label)
-          .map((obj, i) => {
-            return <Label {...{obj, i}} key={i} />
-          })}
-      </R_Stack>
-
-      {filteredTabComponentArray.map((obj, i) => {
-        const {containerClass = `mx-auto w-fit`} = obj ?? {}
-        if (i !== currentTabIdx) return null
-
-        return (
-          <div key={i} className={`${containerClass} `}>
-            {obj?.component}
+              <div className="mt-4">{obj?.component}</div>
+            </div>
           </div>
         )
       })}
     </div>
+  )
+}
+
+const renderTabsComponent = ({filteredTabComponentArray, currentTabValue, handleTabChange}) => {
+  return (
+    <Card>
+      <Tabs value={currentTabValue} onValueChange={handleTabChange} className="w-full ">
+        <TabsList
+          className="grid w-full bg-gray-100 "
+          style={{gridTemplateColumns: `repeat(${filteredTabComponentArray.length}, 1fr)`}}
+        >
+          {filteredTabComponentArray
+            .filter(obj => obj?.label)
+            .map((obj, i) => (
+              <TabsTrigger
+                key={i}
+                value={String(i)}
+                className=" font-medium transition-all duration-200 data-[state=active]:bg-white  data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
+              >
+                {obj?.label}
+              </TabsTrigger>
+            ))}
+        </TabsList>
+
+        {filteredTabComponentArray.map((obj, i) => {
+          const {containerClass = 'mx-auto w-fit'} = obj ?? {}
+
+          return (
+            <TabsContent
+              key={i}
+              value={String(i)}
+              className="mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+            >
+              <div className={cl('animate-in fade-in-50 duration-300', containerClass)}>
+                <Card>{obj?.component}</Card>
+              </div>
+            </TabsContent>
+          )
+        })}
+      </Tabs>
+    </Card>
   )
 }

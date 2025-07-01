@@ -3,7 +3,7 @@ import React, {Fragment} from 'react'
 
 // import Accordion from 'src/cm/components/utils/Accordions/Accordion'
 import {useState} from 'react'
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@app/components/ui/accordion'
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn-ui/components/ui/accordion'
 
 type ItemType = {
   trigger: React.ReactNode

@@ -5,22 +5,13 @@ import MyFileControl from '@components/DataLogic/TFs/MyForm/components/HookFormC
 
 import {ControlContextType, ControlOptionType, formPropType} from '@cm/types/form-control-type'
 
-import dynamic from 'next/dynamic'
 import {colType} from '@cm/types/types'
-
-const MyDatepicker = dynamic(
-  () => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker')
-)
-const MyCheckBox = dynamic(
-  () => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox')
-)
-const MyMdEditor = dynamic(() => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'))
-const MyMultipleChoice = dynamic(
-  () => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice')
-)
-const MyTextarea = dynamic(() => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyTextarea'))
-const MySelect = dynamic(() => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'))
-const MyRating = dynamic(() => import('@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyRating'))
+import MyMdEditor from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'
+import MyTextarea from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyTextarea'
+import MyCheckBox from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox'
+import MyDatepicker from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
+import MyMultipleChoice from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'
+import MySelect from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
 
 export type ControlProps = {
   field: string
@@ -49,6 +40,7 @@ const Control = ({controlContextValue}) => {
     currentValue,
     field,
     formProps,
+    ControlStyle,
   } = controlContextValue
 
   const shownButDisabled = ControlOptions?.shownButDisabled ?? false
@@ -71,6 +63,16 @@ const Control = ({controlContextValue}) => {
     ControlOptions,
   }
 
+  return (
+    <div style={{...ControlStyle}}>
+      <Main {...{type, col, props}} />
+    </div>
+  )
+}
+
+export default Control
+
+const Main = ({type, col, props}) => {
   if (type === 'slate') {
     return <MyMdEditor {...props} />
   }
@@ -92,9 +94,6 @@ const Control = ({controlContextValue}) => {
   } else if (col.forSelect) {
     return <MySelect {...{...props}} />
   }
-  if (type === 'rating') {
-    return <MyRating {...props} />
-  }
 
   if (type === 'file') {
     return <MyFileControl {...props} />
@@ -102,5 +101,3 @@ const Control = ({controlContextValue}) => {
 
   return <MyInput {...props} />
 }
-
-export default Control

@@ -89,7 +89,7 @@ const MyForm = React.memo<DetailPagePropType>(props => {
           ControlOptions={myForm?.basicFormControlOptions}
         >
           <div className="sticky bottom-0 w-full pt-2 text-center">
-            <Button color="red" disabled={uploading} className="w-[200px] max-w-[80vw] p-1" type="submit">
+            <Button color="blue" disabled={uploading} className="w-[200px] max-w-[80vw] p-1" type="submit">
               {buttonText}
             </Button>
           </div>

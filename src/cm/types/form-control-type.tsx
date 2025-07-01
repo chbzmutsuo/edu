@@ -18,17 +18,18 @@ export type ControlWrapperPropType = {
   formId: string
   formData: anyObject
   setformData: any
-  wrapperId
-  flexDirection
-  wrapperClass
-  ControlStyle
+  // wrapperId
+  // flexDirection
+  // wrapperClass
+  ControlStyle?: CSSProperties
+  // isBooleanType: boolean
   errorMessage: string | undefined
 
   field: any
   columns?: colType[][]
   col: colType
   ReactHookForm: UseFormReturn
-  ControlOptions: ControlOptionType
+  ControlOptions?: ControlOptionType
   latestFormData: anyObject
   extraFormState: extraFormStateType
   setextraFormState: React.Dispatch<React.SetStateAction<extraFormStateType>>
@@ -36,12 +37,12 @@ export type ControlWrapperPropType = {
   useResetValue: useResetValueType
   // useGlobalProps: useGlobalPropType
   Register?: any
-  isBooleanType: boolean
   currentValue?: any
   alignMode?: `row` | `col`
 }
 
 export type ControlContextType = ControlWrapperPropType & {
+  ControlStyle: CSSProperties
   formId: string
   col: colType
   liftUpNewValueOnChange: liftUpNewValueOnChangeType

@@ -83,7 +83,7 @@ export default function SalesNewCC() {
   if (loading) return <PlaceHolder />
 
   return (
-    <FitMargin>
+    <FitMargin className={`py-4`}>
       <PaperLarge>
         <>
           <C_Stack className={`items-center gap-4`}>

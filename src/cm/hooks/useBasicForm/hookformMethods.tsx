@@ -101,11 +101,19 @@ export const getStyleProps = ({ControlOptions, col}) => {
   const wrapperClass = getWrapperClass(controlWrapperClassBuilder, col, ControlOptions)
   const id = `controlWrapper-${col.id}`
 
-  const ControlStyle = {
+  let ControlStyle = {
     ...(isBooleanType ? {} : controlDefaultStyle),
     ...ControlOptions?.ControlStyle,
     ...col?.form?.style,
     ...(isBooleanType ? {width: `100%`} : {}),
+  }
+
+  const offsetWidth = 20
+  ControlStyle = {
+    ...ControlStyle,
+    width: isNaN(ControlStyle.width) ? ControlStyle.width : ControlStyle.width - offsetWidth,
+    maxWidth: isNaN(ControlStyle.width) ? ControlStyle.maxWidth : ControlStyle.width - offsetWidth,
+    overflow: `hidden`,
   }
 
   return {id, flexDirection, wrapperClass, ControlStyle, isBooleanType}
@@ -137,7 +145,7 @@ export const getStyleProps = ({ControlOptions, col}) => {
 
 export const getFormProps = ({ControlOptions, isBooleanType, Register, col, errorMessage, currentValue}) => {
   const defaultControlClassName = 'myFormControl  text-[18px]'
-  const {controllClassName} = ControlOptions
+  const {controllClassName} = ControlOptions ?? {}
 
   const normalInputClass = cl(controllClassName ? controllClassName : defaultControlClassName)
 

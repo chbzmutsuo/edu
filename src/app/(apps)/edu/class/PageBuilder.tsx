@@ -8,7 +8,7 @@ import {DetailPagePropType} from '@cm/types/types'
 
 import ClassroomDetailPage from '@app/(apps)/edu/Grouping/parts/ClassroomDetailPage'
 import StudentDetailById from '@app/(apps)/edu/Grouping/components/Grouping/student/StudentDetailById'
-import Accordion from '@cm/components/utils/Accordions/Accordion'
+import MyAccordion from '@components/utils/Accordions/MyAccordion'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 
 import GameDetailPage from '@app/(apps)/edu/Grouping/parts/GameDetailPage'
@@ -22,9 +22,9 @@ export class PageBuilder {
       const {formData = {}} = props
       return (
         <C_Stack className={`gap-8 `}>
-          <Accordion {...{label: `学校基本情報`, defaultOpen: true}}>
+          <MyAccordion {...{label: `学校基本情報`, defaultOpen: true}}>
             <MyForm {...props} />
-          </Accordion>
+          </MyAccordion>
         </C_Stack>
       )
     },

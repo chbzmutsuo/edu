@@ -52,7 +52,7 @@ const SimpleTable = React.memo((props: Props) => {
 
   return (
     <div className={`my-2`}>
-      <div className={`sticky-table-wrapper border-[1px]  shadow-xs`} style={style}>
+      <div className={`table-wrapper border-[1px]  shadow-xs`} style={style}>
         <table className={` table-fixed`}>
           <thead>
             {headerArr?.map((row, idx) => {

@@ -156,8 +156,8 @@
     "**/page/**": true,
     "**/sara/**": true,
     "**/shinsei/**": true,
+    "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
     "**/tmp/**": true
   },
   "typescript.preferences.autoImportFileExcludePatterns": [
@@ -174,8 +174,8 @@
     "page",
     "sara",
     "shinsei",
+    "sohken",
     "stock",
-    "tbm",
     "tmp"
   ],
   "editor.stickyScroll.enabled": false,

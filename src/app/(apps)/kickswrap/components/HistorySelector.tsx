@@ -24,7 +24,7 @@ const HistorySelector = ({history, registerdItems, setregisterdItems}) => {
           },
         }}
       >
-        <div className={`sticky-table-wrapper [&_td]:p-1!`}>
+        <div className={`table-wrapper [&_td]:p-1!`}>
           <table>
             <thead>
               <tr>

@@ -11,12 +11,12 @@ import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFor
 import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 import {cl} from 'src/cm/lib/methods/common'
 
-import FormSecLabel from 'src/cm/hooks/useBasicForm/FormSecLabel'
+import FormSection from 'src/cm/hooks/useBasicForm/FormSection'
 import {makeFormsByColumnObj} from '@hooks/useBasicForm/lib/makeFormsByColumnObj'
-
 import dynamic from 'next/dynamic'
-const ColForm = dynamic(() => import('@hooks/useBasicForm/ColForm'))
+
 import {adjustBasicFormProps} from '@hooks/useBasicForm/lib/createBasicFormProps'
+import ControlGroup from '@hooks/useBasicForm/ControlGroup'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -75,15 +75,15 @@ const BasicForm = (props: BasicFormType) => {
               {transposedRowsForForm.map((columns, i) => {
                 return (
                   <div key={i} className={`formSec `}>
-                    <FormSecLabel {...{columns, ControlOptions}}>
+                    <FormSection {...{columns, ControlOptions}}>
                       <div className={`${wrapperClass}   `}>
                         {columns.map((col: colType, formItemIndex) => {
                           const uniqueKey = `${i}-${formItemIndex}`
-                          return <ColForm key={uniqueKey} {...{...props, col, formItemIndex}} />
+                          return <ControlGroup key={uniqueKey} {...{...props, col, formItemIndex}} />
                         })}
                         {alignMode === `row` && <ChildComponent />}
                       </div>
-                    </FormSecLabel>
+                    </FormSection>
                   </div>
                 )
               })}

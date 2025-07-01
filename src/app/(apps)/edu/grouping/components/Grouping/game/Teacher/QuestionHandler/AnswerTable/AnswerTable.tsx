@@ -72,7 +72,7 @@ const AnswerTable = ({handleCreateGroup, GameCtxValue}) => {
   const btnClass = `onHover  rounded-full p-0.5 w-5  `
   return (
     <div className={` w-fit max-w-[300px] overflow-auto `}>
-      <div className={`sticky-table-wrapper   max-h-[700px] border-2 border-gray-400 shadow-sm `}>
+      <div className={`table-wrapper   max-h-[700px] border-2 border-gray-400 shadow-sm `}>
         <table className={`table-fixed`}>
           <Thead {...{Game, activePrompt, handleDeletePrompt, isSummary, btnClass}} />
           <Tbody {...{GameCtxValue, players, toggleAttendance, deleteAnswer}} />

@@ -151,7 +151,7 @@ export const DataDownLoaderCC = () => {
         <Button onClick={onSubmit}>検索</Button>
         <Button onClick={exportToExcel}>抽出</Button>
       </R_Stack>
-      <div className={cl(table.borderCerllsY, `sticky-table-wrapper max-h-[70vh] [&_td]:min-w-[110px]!`, `text-center`)}>
+      <div className={cl(table.borderCerllsY, `table-wrapper max-h-[70vh] [&_td]:min-w-[110px]!`, `text-center`)}>
         <table>
           <thead>
             <tr>

@@ -198,7 +198,7 @@ export const TableOfContents = ({firstLayerMenus}) => {
         </Button>
         {showMenuInSP && (
           <>
-            <div className={` overlay`} onClick={() => setshowMenuInSP(prev => !prev)}></div>
+            <div className="fixed inset-0 bg-black opacity-40 z-40" onClick={() => setshowMenuInSP(prev => !prev)}></div>
             <div className={`  center-x fixed top-[100px]  z-100  w-[90vw]    opacity-100 `}>
               <div>{renderContents()}</div>
             </div>

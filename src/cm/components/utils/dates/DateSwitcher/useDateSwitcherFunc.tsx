@@ -177,21 +177,7 @@ const getColumnBase = ({
         },
       },
     },
-    month: {
-      //   id: 'month',
-      //   label: (
-      //     <R_Stack className={`gap-0`}>
-      //       <ChevronsLeft className={`onHover text-primary-main w-7`} onClick={() => addMinusMonth(-1)} />
-      //       月指定
-      //       <ChevronsRight className={`onHover text-primary-main w-7`} onClick={() => addMinusMonth(1)} />
-      //     </R_Stack>
-      //   ),
-      //   type: 'month',
-      //   form: {
-      //     style: {width: 100},
-      //     reverseLabelTitle: true,
-      //   },
-    },
+    month: {},
   }
 
   if (!selectPeriod) {

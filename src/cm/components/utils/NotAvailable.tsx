@@ -1,3 +1,5 @@
+import {Alert} from '@components/styles/common-components/Alert'
+
 export default function NotAvailable(props: {isAvailable?: boolean; reason?: any; alertOnClick?: string; children}) {
   const {isAvailable = false, reason, alertOnClick, children} = props
   if (isAvailable) {
@@ -13,7 +15,9 @@ export default function NotAvailable(props: {isAvailable?: boolean; reason?: any
           }
         }}
       >
-        <div className={`t-alert border-sub-main    bg-sub-light pointer-events-none opacity-30`}>{children}</div>
+        <Alert color="gray" className={` pointer-events-none opacity-30`}>
+          {children}
+        </Alert>
         <div className={`absolute-center    w-full  bg-opacity-100`}>
           <div className={` mx-auto w-fit`}>{reason ?? <p className={`text-error-main `}>現在利用できません</p>}</div>
         </div>

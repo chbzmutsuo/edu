@@ -10,8 +10,8 @@ import {useSearchForm} from '@components/DataLogic/TFs/MyForm/components/HookFor
 // import Accordion from 'src/cm/components/utils/Accordions/Accordion'
 import CreateForm from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Create/CreateForm'
 import OptionSearcher from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/OptionSearcher'
-import {useEffect, useState} from 'react'
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@app/components/ui/accordion'
+import {useEffect, useState, useRef} from 'react'
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn-ui/components/ui/accordion'
 
 import {MagnifyingGlassIcon} from '@heroicons/react/20/solid'
 export const optionTakeCount = 20
@@ -26,7 +26,6 @@ const OptionSelector = (props: {contexts: contextsType}) => {
     messageWhenNoHit,
     setFilteredOptions,
     options,
-    selectId,
   } = contexts.MySelectContextValue
 
   const ctxValue = contexts.controlContextValue
@@ -37,7 +36,6 @@ const OptionSelector = (props: {contexts: contextsType}) => {
   const optionWidth = (col?.forSelect?.option?.style.width ?? 220) as number
 
   const nohit = filteredOptions?.length === 0
-  const creatable = !!allowCreateOptions
 
   const SearchFormHook = useSearchForm({contexts})
   useEffect(() => {
@@ -53,8 +51,36 @@ const OptionSelector = (props: {contexts: contextsType}) => {
     }
   }, [nohit])
 
+  // ホイールスクロール用のref
+  const scrollableRef = useRef<HTMLDivElement>(null)
+
+  // ホイールイベントハンドラ
+  const handleWheel = (e: React.WheelEvent) => {
+    e.stopPropagation()
+    if (scrollableRef.current) {
+      scrollableRef.current.scrollTop += e.deltaY
+    }
+  }
+
+  // // 直接的なホイールイベントリスナーを追加
+  // useEffect(() => {
+  //   const element = scrollableRef.current
+  //   if (!element) return
+
+  //   const handleWheelEvent = (e: WheelEvent) => {
+  //     // e.stopPropagation()
+  //     element.scrollTop += e.deltaY
+  //   }
+
+  //   element.addEventListener('wheel', handleWheelEvent, {passive: false})
+
+  //   return () => {
+  //     element.removeEventListener('wheel', handleWheelEvent)
+  //   }
+  // }, [isOptionsVisible])
+
   return (
-    <>
+    <div>
       <Accordion
         type="single"
         collapsible={false}
@@ -69,7 +95,7 @@ const OptionSelector = (props: {contexts: contextsType}) => {
             <section className={`p-2 `}>
               <OptionSearcher {...{SearchFormHook, contexts, optionsISFromArray, allowCreateOptions}} />
               {nohit && <small>{messageWhenNoHit}</small>}
-              <C_Stack className={`max-h-[35vh] items-center  overflow-auto p-2 `}>
+              <C_Stack className={`items-center  overflow-auto p-2 `}>
                 {/* {!isNaN(currentValue) && currentValue && ( */}
                 <button
                   className={`onHover text-gray-500`}
@@ -82,7 +108,16 @@ const OptionSelector = (props: {contexts: contextsType}) => {
                 </button>
                 {/* )} */}
 
-                <C_Stack className={` gap-3`}>
+                <div
+                  ref={scrollableRef}
+                  data-scrollable="true"
+                  className={`flex flex-col gap-3 overflow-y-auto max-h-[35vh]`}
+                  onWheel={handleWheel}
+                  style={{
+                    overflowY: 'auto',
+                    WebkitOverflowScrolling: 'touch',
+                  }}
+                >
                   {filteredOptions?.map((option: optionType, i) => {
                     const optionStyle = col?.forSelect?.option?.style ?? {width: optionWidth}
 
@@ -92,7 +127,7 @@ const OptionSelector = (props: {contexts: contextsType}) => {
                       </div>
                     )
                   })}
-                </C_Stack>
+                </div>
                 <div>
                   {!optionsISFromArray && options?.length >= optionTakeCount && (
                     <div className=" text-sm text-gray-500">
@@ -155,7 +190,7 @@ const OptionSelector = (props: {contexts: contextsType}) => {
           />
         </section>
       </div> */}
-    </>
+    </div>
   )
 }
 

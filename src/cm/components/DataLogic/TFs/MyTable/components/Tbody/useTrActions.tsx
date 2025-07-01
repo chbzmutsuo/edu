@@ -11,7 +11,7 @@ import {useCallback} from 'react'
 import {toastByResult} from '@lib/ui/notifications'
 import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
-export const TrActionIconClassName = ` onHover  scaleOnHover `
+export const TrActionIconClassName = `onHover`
 
 const useTrActions = props => {
   const {

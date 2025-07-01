@@ -22,7 +22,7 @@ const Waiting = ({Game, GameCtxValue}) => {
   return (
     <div className={` mx-auto  `}>
       <h1>今日のクラスメートの感想・意気込み</h1>
-      <div className={`sticky-table-wrapper  text-xl`}>
+      <div className={`table-wrapper  text-xl`}>
         <table className={` `}>
           {Object.keys(allAnswerObject).map((key, i) => {
             const data = allAnswerObject[key] ?? []

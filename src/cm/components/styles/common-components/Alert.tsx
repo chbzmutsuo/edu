@@ -33,7 +33,7 @@ export const Alert = (props: htmlProps & {color?: colorVariants}) => {
   const {className, style, color = 'sub', ...rest} = props
 
   const alertVariants = tv({
-    base: 't-alert border',
+    base: 'border p-2 rounded-md shadow',
     variants: {color: alertColorVariants},
   })
 

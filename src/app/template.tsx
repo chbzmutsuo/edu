@@ -26,6 +26,7 @@ export default function template({children}) {
       )
     }
   }
+
   return (
     <GlobalTemplate>
       {children}
