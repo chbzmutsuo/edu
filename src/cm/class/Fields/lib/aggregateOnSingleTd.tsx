@@ -3,7 +3,7 @@ import {colType, colTypeOptional, dataFormatterType} from '@cm/types/types'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {cl} from 'src/cm/lib/methods/common'
-import React, {Fragment, useMemo} from 'react'
+import React, {Fragment} from 'react'
 
 import TdContent from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
 import {Fields} from 'src/cm/class/Fields/Fields'
@@ -12,6 +12,7 @@ import {defaultFormat} from 'src/cm/class/Fields/lib/defaultFormat'
 import {CssString} from 'src/cm/components/styles/cssString'
 import {twMerge} from 'tailwind-merge'
 import {getColMinWidth} from '@class/Fields/lib/transposeColumns'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 const {table, border} = CssString
 const defaultStyle = {
   width: '100%',
@@ -138,7 +139,14 @@ export const aggregateOnSingleTd = (
 
       return (
         <Fragment>
-          <C_Stack className={cl(`stretching-in-td  justify-start gap-0  leading-[20px]`, stackClassName)}>
+          <C_Stack
+            className={cn(
+              //
+              `bg-gradient-to-b from-gray-50 to-white`,
+              `  justify-start gap-0  leading-[20px]`,
+              stackClassName
+            )}
+          >
             {processedCols.map((item, i) => {
               const style = {
                 ...defaultStyle,

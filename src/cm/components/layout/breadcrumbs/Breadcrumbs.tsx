@@ -7,7 +7,7 @@ import {HREF} from 'src/cm/lib/methods/urls'
 import useDetailedModelData from 'src/cm/components/layout/breadcrumbs/useDetailedModelData'
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 import {R_Stack} from '@components/styles/common-components/common-components'
-import {ChevronDoubleRightIcon} from '@heroicons/react/20/solid'
+import {ChevronsRightIcon} from 'lucide-react'
 import {useParams} from 'next/navigation'
 import {T_LINK} from '@components/styles/common-components/links'
 
@@ -53,7 +53,7 @@ const Breadcrumbs = React.memo(({breads, ModelBuilder}: BreadcrumbsProps) => {
             </R_Stack>
             {i !== processes.length - 1 && (
               <div>
-                <ChevronDoubleRightIcon className="font-bold w-4 h-4" />
+                <ChevronsRightIcon className="font-bold w-4 h-4" />
               </div>
             )}
           </Fragment>

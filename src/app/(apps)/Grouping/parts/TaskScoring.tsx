@@ -9,7 +9,7 @@ import {Paper} from '@components/styles/common-components/paper'
 
 import Loader from '@components/utils/loader/Loader'
 import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {ChevronDoubleDownIcon} from '@heroicons/react/20/solid'
+import {ChevronsDownIcon} from 'lucide-react'
 import {Prisma} from '@prisma/client'
 import React, {useState} from 'react'
 
@@ -65,9 +65,9 @@ export default function TaskScoring({game}) {
 
   const Arrow = () => (
     <R_Stack className={`text-primary-main    mx-auto gap-0 font-bold `}>
-      <ChevronDoubleDownIcon className={`w-8`} />
-      <ChevronDoubleDownIcon className={`w-8`} />
-      <ChevronDoubleDownIcon className={`w-8`} />
+      <ChevronsDownIcon className={`w-8`} />
+      <ChevronsDownIcon className={`w-8`} />
+      <ChevronsDownIcon className={`w-8`} />
     </R_Stack>
   )
 

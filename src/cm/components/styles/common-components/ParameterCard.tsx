@@ -1,3 +1,4 @@
+import {cn} from '@cm/shadcn-ui/lib/utils'
 import {R_Stack} from '@components/styles/common-components/common-components'
 import EmptyPlaceholder from '@components/utils/loader/EmptyPlaceHolder'
 import {ReactNode} from 'react'
@@ -9,7 +10,17 @@ const getStyles = styling => {
   return {wrapper, label, value}
 }
 const getClasses = styling => {
-  const {wrapper = `p-1 leading-4 col-stack gap-0.5`, label = `text-[.75rem]  text-gray-400`, value = ``} = styling?.classes ?? {}
+  const {
+    wrapper = `p-1 leading-4 col-stack gap-0.5`,
+    label = cn(
+      //
+      `text-xs  text-gray-500 px-1 py-0.5`,
+      `bg-gradient-to-r from-gray-100 to-gray-50`,
+      `rounded-lg shadow-sm`,
+      `transition-all duration-200 hover:shadow-md`
+    ),
+    value = ``,
+  } = styling?.classes ?? {}
   return {wrapper, label, value}
 }
 

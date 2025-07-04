@@ -11,6 +11,7 @@ import {anyObject} from '@cm/types/utility-types'
 import {useJotaiByKey, atomTypes} from '@hooks/useJotai'
 import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn-ui/components/ui/tabs'
 import {Card} from '@cm/shadcn-ui/components/ui/card'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 
 export type tabComponent = {
   style?: CSSProperties
@@ -69,8 +70,10 @@ export default function BasicTabs(props: BasicTabsType) {
     setcurrentTabIdx(parseInt(value))
   }
 
+  const wrapperStyle = {minWidth: maxComponentWidth, ...style}
+
   return (
-    <div style={{minWidth: maxComponentWidth, ...style}} className={cl('mx-auto', className)} {...otherProps}>
+    <div style={wrapperStyle} className={cn('mx-auto', className)} {...otherProps}>
       {headingText && (
         <div className="mb-4">
           {typeof headingText === 'string' ? <h2 className="text-xl font-semibold text-gray-800">{headingText}</h2> : headingText}

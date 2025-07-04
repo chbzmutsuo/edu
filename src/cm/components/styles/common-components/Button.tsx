@@ -1,4 +1,4 @@
-import {cn} from '@cm/shadcn-ui/utils'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 import {htmlProps} from '@components/styles/common-components/type'
 import {colorVariants} from '@lib/methods/colors'
 

@@ -1,22 +1,17 @@
 'use client'
-import React, {useEffect, useState} from 'react'
 
+import React, {Fragment, useEffect, useState} from 'react'
 import {colType, onFormItemBlurType} from '@cm/types/types'
-
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {FormProvider, UseFormReturn} from 'react-hook-form'
-
 import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFormProps'
-
 import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 import {cl} from 'src/cm/lib/methods/common'
-
-import FormSection from 'src/cm/hooks/useBasicForm/FormSection'
 import {makeFormsByColumnObj} from '@hooks/useBasicForm/lib/makeFormsByColumnObj'
-import dynamic from 'next/dynamic'
 
 import {adjustBasicFormProps} from '@hooks/useBasicForm/lib/createBasicFormProps'
-import ControlGroup from '@hooks/useBasicForm/ControlGroup'
+import ControlGroup from '@hooks/useBasicForm/molecules/ControlGroup'
+import {Card} from '@cm/shadcn-ui/components/ui/card'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -43,6 +38,26 @@ export type BasicFormType = {
   useResetValue: useResetValueType
   onFormItemBlur?: onFormItemBlurType
 } & AdditionalBasicFormPropType
+
+const FormSection = React.memo(
+  ({columns, ControlOptions, children}: {columns: colType[]; ControlOptions: any; children: React.ReactNode}) => {
+    const colFormIndexGroupName = ControlOptions?.showLabel === false ? undefined : columns[0]?.form?.colIndex
+    return (
+      <>
+        {isNaN(colFormIndexGroupName) && colFormIndexGroupName ? (
+          <>
+            <Card variant="outline">
+              <div className={`  text-primary-main text-center text-lg font-bold `}>{colFormIndexGroupName}</div>
+              {children}
+            </Card>
+          </>
+        ) : (
+          children
+        )}
+      </>
+    )
+  }
+)
 
 const BasicForm = (props: BasicFormType) => {
   const {formRef, useGlobalProps, formId, alignMode, style, wrapperClass, ControlOptions, columns} = adjustBasicFormProps(props)
@@ -74,7 +89,7 @@ const BasicForm = (props: BasicFormType) => {
             <R_Stack style={style} className={cl(` mx-auto w-full items-stretch gap-8  gap-y-24`, justifyDirection)}>
               {transposedRowsForForm.map((columns, i) => {
                 return (
-                  <div key={i} className={`formSec `}>
+                  <Fragment key={i}>
                     <FormSection {...{columns, ControlOptions}}>
                       <div className={`${wrapperClass}   `}>
                         {columns.map((col: colType, formItemIndex) => {
@@ -84,10 +99,11 @@ const BasicForm = (props: BasicFormType) => {
                         {alignMode === `row` && <ChildComponent />}
                       </div>
                     </FormSection>
-                  </div>
+                  </Fragment>
                 )
               })}
             </R_Stack>
+
             {alignMode !== `row` && <ChildComponent />}
           </C_Stack>
         </form>

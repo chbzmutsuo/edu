@@ -10,6 +10,11 @@ import {columnGetterType} from '@cm/types/types'
 
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 
+const defaultSummaryInTdArgs = {
+  hideUndefinedValue: false,
+  labelWidthPx: 70,
+  wrapperWidthPx: 170,
+}
 export const aqCustomer = (props: columnGetterType) => {
   const alignTdWidth = () => ({
     td: {
@@ -24,28 +29,21 @@ export const aqCustomer = (props: columnGetterType) => {
         // {id: 'id', label: `ID`},
         {id: 'customerNumber', label: '顧客番号', type: 'string', form: {}, search: {}},
         {id: 'name', label: '氏名', type: 'string', form: {}, search: {}},
-      ])
-        .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
-      ...new Fields([
         {id: 'companyName', label: '会社名', type: 'string', form: {}, search: {}},
         {id: 'jobTitle', label: '役職', type: 'string', form: {}},
       ])
         .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
+        .showSummaryInTd(defaultSummaryInTdArgs).plain,
+
       ...new Fields([
         {id: 'email', label: 'メール', type: 'string', form: {}},
         {id: 'fax', label: 'FAX', type: 'string', form: {}, search: {}},
-      ])
-        .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
-      ...new Fields([
         {id: 'tel', label: '電話番号1', type: 'string', form: {}, search: {}},
         {id: 'tel2', label: '電話番号2', type: 'string', form: {}, search: {}},
         {id: 'invoiceNumber', label: '適格事業者番号', type: 'string', form: {}, search: {}},
       ])
         .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
+        .showSummaryInTd(defaultSummaryInTdArgs).plain,
     ]).buildFormGroup({groupName: `基本情報①`}).plain,
     ...new Fields([
       ...new Fields([
@@ -62,16 +60,15 @@ export const aqCustomer = (props: columnGetterType) => {
           forSelect: {
             optionsOrOptionFetcher: obj__objectToArray(AQ_CONST.BANK_LIST).map(d => {
               const op = {id: d.key, name: d.value.abbriviation}
-
               return op
             }),
           },
         },
-        {id: `firstVisitDate`, label: `サービス利用開始日`, type: `date`, form: {}},
-        {id: `lastVisitDate`, label: `サービス利用終了日`, type: `date`, form: {}},
+        {id: `firstVisitDate`, label: `サービス開始`, type: `date`, form: {}},
+        {id: `lastVisitDate`, label: `サービス終了`, type: `date`, form: {}},
       ])
         .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
+        .showSummaryInTd(defaultSummaryInTdArgs).plain,
       ...new Fields([
         {
           id: `maintananceYear`,
@@ -99,25 +96,20 @@ export const aqCustomer = (props: columnGetterType) => {
         },
       ])
         .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
+        .showSummaryInTd(defaultSummaryInTdArgs).plain,
     ]).buildFormGroup({groupName: `基本情報②`}).plain,
 
     ...new Fields([
       ...new Fields([
-        {id: 'domestic', label: '国内', type: 'boolean', form: {}},
+        // {id: 'domestic', label: '国内', type: 'boolean', form: {}},
         {id: 'postal', label: '郵便番号', type: 'string', form: {}},
         {id: 'state', label: '都道府県', type: 'string', form: {}},
-      ])
-        .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
-
-      ...new Fields([
         {id: 'city', label: '市区町村', type: 'string', form: {}},
         {id: 'street', label: '町名', type: 'string', form: {}},
         {id: 'building', label: '建物名', type: 'string', form: {}},
       ])
         .customAttributes(alignTdWidth)
-        .aggregateOnSingleTd().plain,
+        .showSummaryInTd(defaultSummaryInTdArgs).plain,
     ]).buildFormGroup({groupName: `住所`}).plain,
 
     ...new Fields([
@@ -170,38 +162,39 @@ export const aqCustomer = (props: columnGetterType) => {
           td: {...col.td, style: {width: 120}},
           form: {...col.form, style: {width: 500}},
         }))
-        .aggregateOnSingleTd().plain,
-      {
-        id: 'remarks',
-        label: '備考',
-        type: 'textarea',
-        form: {
-          style: {minWidth: 480, margin: 'auto'},
+        .showSummaryInTd(defaultSummaryInTdArgs).plain,
+      ...new Fields([
+        {
+          id: 'remarks',
+          label: '備考',
+          type: 'textarea',
+          form: {
+            style: {minWidth: 480, margin: 'auto'},
+          },
+          td: {style: {minWidth: 250}},
+          search: {},
         },
-        td: {style: {minWidth: 250}},
-        search: {},
-      },
+        {
+          id: `AqCustomerPriceOption`,
+          label: `設定価格一覧`,
+          form: {hidden: true},
+          format: (value, row) => {
+            return CsvTable({
+              headerRecords: [],
+              bodyRecords: row.AqCustomerPriceOption.map(d => {
+                const {AqProduct, AqPriceOption} = d ?? {}
+                const truncate = `truncate w-[60px] text-xs`
+                return {
+                  csvTableRow: [AqProduct?.name, AqPriceOption?.name, AqPriceOption?.price].map(d => ({
+                    cellValue: <div {...{className: truncate}}>{d} </div>,
+                  })),
+                }
+              }),
+            }).WithWrapper({...{className: `max-h-[200px]`}})
+          },
+        },
+      ]).showSummaryInTd({...defaultSummaryInTdArgs, labelWidthPx: 80, wrapperWidthPx: 300}).plain,
     ]).buildFormGroup({groupName: `その他`}).plain,
-
-    {
-      id: `AqCustomerPriceOption`,
-      label: `設定価格一覧`,
-      form: {hidden: true},
-      format: (value, row) => {
-        return CsvTable({
-          headerRecords: [],
-          bodyRecords: row.AqCustomerPriceOption.map(d => {
-            const {AqProduct, AqPriceOption} = d ?? {}
-            const truncate = `truncate w-[60px] text-xs`
-            return {
-              csvTableRow: [AqProduct?.name, AqPriceOption?.name, AqPriceOption?.price].map(d => ({
-                cellValue: <div {...{className: truncate}}>{d} </div>,
-              })),
-            }
-          }),
-        }).WithWrapper({...{className: `max-h-[200px]`}})
-      },
-    },
   ]).transposeColumns()
 }
 

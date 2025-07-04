@@ -1,6 +1,6 @@
 'use client'
 import React, {useMemo} from 'react'
-import {getMyTableDefault, myFormDefault, myModalDefault} from 'src/cm/constants/defaults'
+import {getMyTableDefault, myFormDefault} from 'src/cm/constants/defaults'
 
 import BasicModal from '@components/utils/modal/BasicModal'
 import MyTable from '@components/DataLogic/TFs/MyTable/MyTable'
@@ -34,10 +34,7 @@ const convertProps = (props: ClientPropsType2): ClientPropsType2 => {
         ...props.myTable?.style,
       },
     },
-    myModal: {
-      ...myModalDefault,
-      ...props.myModal,
-    },
+    myModal: {...props.myModal},
   } as ClientPropsType2
 }
 

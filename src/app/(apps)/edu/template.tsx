@@ -1,21 +1,18 @@
 'use client'
 
-import AdminClient from '@components/layout/Admin/AdminClient'
 import {Alert} from '@components/styles/common-components/Alert'
 import {CenterScreen} from '@components/styles/common-components/common-components'
 import {Metadata} from 'next'
 
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {PageBuilder} from '@app/(apps)/edu/class/PageBuilder'
+import Admin from '@components/layout/Admin/Admin'
 
 export const metadata: Metadata = {title: 'Grouping   |Colabo'}
 
 export default function ColaboTemplate(props) {
   const {session, pathname, accessScopes} = useGlobal()
   const {schoolId} = accessScopes().getGroupieScopes()
-
-  // const excludePaths = ['/config/school', '/game/main', 'config/user', 'enter']
-  // const exclude = excludePaths.some(path => pathname.immncludes(path))
 
   const secondRootPath = pathname.split('/')[2]
   let PagesMethod, appName
@@ -32,7 +29,7 @@ export default function ColaboTemplate(props) {
   }
 
   return (
-    <AdminClient
+    <Admin
       {...{
         navBarPosition: `left`,
         AppName: appName,
@@ -50,6 +47,6 @@ export default function ColaboTemplate(props) {
           props.children
         )}
       </div>
-    </AdminClient>
+    </Admin>
   )
 }

@@ -22,7 +22,8 @@ export default function DriveScheduleCC({days, tbmBase, whereQuery}) {
 
   const {pathname, query, toggleLoad} = useGlobalProps
   const {width, PC} = useWindowSize()
-  const minWidth = width * 0.95
+  const minWidth = 1000
+  const maxWidth = width * 0.95
   const ColBuiderProps = {
     useGlobalProps,
     ColBuilderExtraProps: {tbmBaseId: tbmBase?.id},
@@ -52,6 +53,7 @@ export default function DriveScheduleCC({days, tbmBase, whereQuery}) {
         {...{
           style: {
             minWidth: minWidth,
+            maxWidth: maxWidth,
             margin: 'auto',
           },
           id: 'driveSchedule',

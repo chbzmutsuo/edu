@@ -3,7 +3,7 @@
 import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
-import {UserCircleIcon} from '@heroicons/react/20/solid'
+import {UserCircleIcon} from 'lucide-react'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'

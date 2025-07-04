@@ -1,6 +1,6 @@
 'use client'
 
-import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/24/outline'
+import {ChevronsLeftIcon, ChevronsRightIcon} from 'lucide-react'
 
 interface PaginationProps {
   currentPage: number
@@ -94,7 +94,7 @@ export const Pagination = ({currentPage, totalPages, onPageChange, totalCount, c
               className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="sr-only">前へ</span>
-              <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+              <ChevronsLeftIcon className="h-5 w-5" aria-hidden="true" />
             </button>
 
             {/* ページ番号ボタン */}
@@ -133,7 +133,7 @@ export const Pagination = ({currentPage, totalPages, onPageChange, totalCount, c
               className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <span className="sr-only">次へ</span>
-              <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+              <ChevronsRightIcon className="h-5 w-5" aria-hidden="true" />
             </button>
           </nav>
         </div>

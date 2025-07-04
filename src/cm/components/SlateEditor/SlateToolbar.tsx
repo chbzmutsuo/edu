@@ -9,7 +9,7 @@ import {useSlate} from 'slate-react'
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {Fragment} from 'react'
 import {key_toolHandlerObjType} from '@cm/types/slate-types'
-import {LinkIcon} from '@heroicons/react/20/solid'
+import {LinkIcon} from 'lucide-react'
 
 export const SlateToolbar = ({editor, children}) => {
   const {slateKeyDownParams, getUniquedSlateKeyDownParams} = getSlateKeyDownParams()

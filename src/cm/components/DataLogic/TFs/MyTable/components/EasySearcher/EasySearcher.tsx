@@ -13,11 +13,11 @@ import useInitEasySearcher from '@components/DataLogic/TFs/MyTable/components/Ea
 
 import EsGroupClient from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EsGroupClient'
 import {CircledIcon, IconBtn} from '@components/styles/common-components/IconBtn'
-import {ArrowTopRightOnSquareIcon} from '@heroicons/react/20/solid'
+import {SquareArrowRight} from 'lucide-react'
 import {Wrapper} from '@components/styles/common-components/paper'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
-import {FilterIcon} from 'lucide-react'
+import {Filter} from 'lucide-react'
 import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 import useWindowSize from '@hooks/useWindowSize'
 
@@ -107,10 +107,10 @@ export default function EasySearcher(props: {
     return (
       <GlobalModal
         id={`${dataModelName}-Es-Modal`}
-        btnComponent={
+        toggle={
           <IconBtn className={`onHover`} color={filterIsActive ? `yellow` : `gray`}>
             <R_Stack>
-              <FilterIcon />
+              <Filter />
             </R_Stack>
           </IconBtn>
         }
@@ -194,10 +194,10 @@ const ShowAllFilterBtn = ({dataModelName, RowGroups, activeExGroup, createNextQu
       <Center>
         <GlobalModal
           id={`${dataModelName}-Es-Modal`}
-          btnComponent={
+          toggle={
             <span className={`t-link pb-1 text-xs `}>
               <CircledIcon>
-                <ArrowTopRightOnSquareIcon />
+                <SquareArrowRight />
               </CircledIcon>
             </span>
           }

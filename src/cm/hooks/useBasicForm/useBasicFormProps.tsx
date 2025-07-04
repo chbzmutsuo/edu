@@ -7,7 +7,7 @@ import {colType, extraFormStateType, onFormItemBlurType} from '@cm/types/types'
 
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 import BasicForm from 'src/cm/hooks/useBasicForm/BaiscForm'
-import {getLatestFormData, initColumns, makeDefaultValues} from 'src/cm/hooks/useBasicForm/hookformMethods'
+import {getLatestFormData, initColumns, makeDefaultValues} from '@hooks/useBasicForm/lib/hookformMethods'
 import useCacheSelectOptions, {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 
 import {ControlOptionType} from '@cm/types/form-control-type'

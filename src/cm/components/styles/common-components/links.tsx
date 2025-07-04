@@ -2,7 +2,7 @@
 
 import React, {useCallback} from 'react'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
-import {PencilSquareIcon} from '@heroicons/react/20/solid'
+import {SquarePen} from 'lucide-react'
 
 import {cl} from 'src/cm/lib/methods/common'
 import Link from 'next/link'
@@ -46,14 +46,4 @@ export const ShallowLink = React.memo((props: htmlProps & {href: string; target?
   const handleClick = useCallback(() => shallowPush(href), [shallowPush, href])
 
   return <span onClick={handleClick} {...{target, href, className: cl(className), style, ...rest}} />
-})
-
-export const T_LINK_Pencil = React.memo((props: htmlProps & {href: string; target?: '_blank'}) => {
-  const {className, style, href = '#', target, ...rest} = props
-
-  return (
-    <T_LINK {...{target, href, className, style, ...rest}}>
-      <PencilSquareIcon className={`h-5 w-5`} />
-    </T_LINK>
-  )
 })

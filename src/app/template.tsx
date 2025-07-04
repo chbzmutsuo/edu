@@ -10,6 +10,8 @@ import React from 'react'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {isDev} from '@lib/methods/common'
 
+import useModal from '@components/utils/modal/useModal'
+
 export default function template({children}) {
   const {session} = useGlobal()
 
@@ -26,6 +28,8 @@ export default function template({children}) {
       )
     }
   }
+
+  const {Modal, setopen} = useModal()
 
   return (
     <GlobalTemplate>

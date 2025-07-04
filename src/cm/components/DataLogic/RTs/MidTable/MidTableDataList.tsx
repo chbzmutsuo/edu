@@ -1,7 +1,7 @@
 import React, {CSSProperties, useState} from 'react'
 import {NestHandler} from 'src/cm/class/NestHandler'
 
-import {MinusIcon, PlusIcon} from '@heroicons/react/20/solid'
+import {MinusIcon, PlusIcon} from 'lucide-react'
 import SimpleTable from 'src/cm/components/utils/SimpleTable'
 import MidTableRowGroup from 'src/cm/components/DataLogic/RTs/MidTable/MidTableRowGroup'
 

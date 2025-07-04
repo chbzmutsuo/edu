@@ -7,7 +7,7 @@ import {NumHandler} from '@class/NumHandler'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
 import {R_Stack} from '@components/styles/common-components/common-components'
-import {PencilSquareIcon} from '@heroicons/react/20/solid'
+import {SquarePen} from 'lucide-react'
 
 export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) => {
   const HK_UnchinChildCreator = useUnchinChildCreator()
@@ -23,7 +23,7 @@ export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) =>
 
         return (
           <R_Stack className={`gap-0 flex-nowrap w-[160px]`}>
-            <PencilSquareIcon
+            <SquarePen
               {...{className: `mr-4 h-5 t-link onHover`, onClick: () => HK_UnchinChildCreator.setGMF_OPEN({TbmRouteGroup: row})}}
             />
             <div className={` min-w-[60px]`}>{NumHandler.WithUnit(futaiFee ?? 0, '')}</div>

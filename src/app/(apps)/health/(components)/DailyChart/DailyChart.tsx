@@ -277,11 +277,12 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                 <XAxis
                   dataKey="time"
                   tick={{fontSize: 12}}
-                  interval={3}
+                  interval={0}
                   tickFormatter={value => {
-                    // 主要な時刻のみ表示（3時間間隔）
+                    // 偶数時ごとにtick表示
                     const hour = parseInt(value.split(':')[0])
-                    if (hour % 3 === 0 || value === '07:00') {
+                    const minute = parseInt(value.split(':')[1])
+                    if (minute === 0 && hour % 2 === 0) {
                       return value
                     }
                     return ''

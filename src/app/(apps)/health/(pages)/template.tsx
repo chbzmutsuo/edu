@@ -3,6 +3,7 @@
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {medicineSeeds} from '../seed/medicine'
 import React from 'react'
+import {Button} from '@components/styles/common-components/Button'
 export default function Template({children}) {
   return (
     <div>

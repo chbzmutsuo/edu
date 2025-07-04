@@ -5,7 +5,7 @@ import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 
-import {PencilSquareIcon, PlusCircleIcon, TruckIcon} from '@heroicons/react/20/solid'
+import {SquarePen, PlusCircleIcon, TruckIcon} from 'lucide-react'
 import {OdometerInput, TbmDriveSchedule, TbmRouteGroup, TbmVehicle, TbmBase, UserWorkStatus} from '@prisma/client'
 import {TextRed, TextSub} from '@components/styles/common-components/Alert'
 import Link from 'next/link'
@@ -107,7 +107,7 @@ const ScheduleArea = ({scheduleListOnDate, user, date, tbmBase, setModalOpen, fe
                     <RouteDisplay className={` text-[12px] `}>{TbmRouteGroup.name}</RouteDisplay>
                     <R_Stack className={` justify-end `}>
                       <CarDispaly className={`text-end text-sm`}>({TbmVehicle?.vehicleNumber})</CarDispaly>
-                      <PencilSquareIcon
+                      <SquarePen
                         className={`text-blue-main onHover h-5 w-5`}
                         onClick={() => {
                           setModalOpen({tbmDriveSchedule, user, date, tbmBase})

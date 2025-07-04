@@ -1,7 +1,7 @@
 import TableConfig from '@components/DataLogic/TFs/MyTable/components/TableConfig'
 import {IconBtn} from 'src/cm/components/styles/common-components/IconBtn'
 import MyPopover from 'src/cm/components/utils/popover/MyPopover'
-import {Cog8ToothIcon} from '@heroicons/react/20/solid'
+import {Settings} from 'lucide-react'
 import React, {useMemo} from 'react'
 
 // 型定義を追加
@@ -15,7 +15,7 @@ const PopoverConfig = React.memo<PopoverConfigProps>(({TableConfigProps, ClientP
   const buttonElement = useMemo(
     () => (
       <IconBtn className="mx-auto h-8 w-8 rounded-full">
-        <Cog8ToothIcon className="onHover text-center text-gray-500" />
+        <Settings className="onHover text-center text-gray-500" />
       </IconBtn>
     ),
     []

@@ -9,12 +9,8 @@ import TextAccordion from '@cm/components/utils/Accordions/TextAccordiong./TextA
 import BasicCarousel from '@cm/components/utils/Carousel/BasicCarousel'
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
-import {
-  ChatBubbleLeftEllipsisIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
-  ComputerDesktopIcon,
-  HandThumbUpIcon,
-} from '@heroicons/react/20/solid'
+import {MessageCircleIcon, MessageSquareIcon, MonitorIcon, ThumbsUpIcon} from 'lucide-react'
+
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {cl} from '@cm/lib/methods/common'
 
@@ -261,7 +257,7 @@ const Description = ({sectionClassName, description, points, impression, reply})
             <C_Stack className={`gap-4`}>
               <div>
                 <h3 className={`row-stack`}>
-                  <ComputerDesktopIcon className={`w-5`} />
+                  <MonitorIcon className={`w-5`} />
                   こんなツール
                 </h3>
                 <SlateEditor {...{readOnly: true}}>{description}</SlateEditor>
@@ -270,7 +266,7 @@ const Description = ({sectionClassName, description, points, impression, reply})
               {points && (
                 <div className={`border-kaizen-cool-main rounded-md border-2 p-1`}>
                   <h3 className={`row-stack text-kaizen-cool-main`}>
-                    <HandThumbUpIcon className={` w-5`} />
+                    <ThumbsUpIcon className={` w-5`} />
                     ポイント
                   </h3>
                   <SlateEditor {...{readOnly: true}}>{points}</SlateEditor>
@@ -292,7 +288,7 @@ const Description = ({sectionClassName, description, points, impression, reply})
           >
             <C_Stack>
               <h3 className={`row-stack text-kaizen-warm-main `}>
-                <ChatBubbleOvalLeftEllipsisIcon className={`w-5`} />
+                <MessageCircleIcon className={`w-5`} />
                 ご依頼者様のコメント
               </h3>
 
@@ -306,7 +302,7 @@ const Description = ({sectionClassName, description, points, impression, reply})
                 >
                   <div className={` text-[15px]`}>
                     <div className={`row-stack text-start font-bold`}>
-                      <ChatBubbleLeftEllipsisIcon className={`text-kaizen-warm-main w-5`} />
+                      <MessageCircleIcon className={`text-kaizen-warm-main w-5`} />
                       ひとこと解説
                     </div>
 

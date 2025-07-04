@@ -1,31 +1,20 @@
 'use client'
-import React, {JSX} from 'react'
+import React, {CSSProperties, JSX} from 'react'
 
-import {myModalDefault} from 'src/cm/constants/defaults'
-
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-  DialogFooter,
-} from '@cm/shadcn-ui/components/ui/dialog'
+import ShadModal from '@cm/shadcn-ui/components/ShadModal'
 
 export type basicModalPropType = {
-  closeBtn?: boolean | JSX.Element
+  toggle?: JSX.Element
   open?: any
   handleClose?: any
-  title?: any
-  description?: any
-  btnComponent?: JSX.Element
-  style?: object
-  children: any
-  alertOnClose?: string | boolean
-
   withPaper?: boolean
+  title?: React.ReactNode
+  description?: React.ReactNode
+  children: React.ReactNode
+  footer?: React.ReactNode
+  style?: object
+  alertOnClose?: string | boolean
+  closeBtn?: boolean | JSX.Element
 }
 export type ModalCorePropType = basicModalPropType & {
   show: boolean
@@ -51,13 +40,13 @@ const getOpen = (props: ModalCorePropType) => {
 }
 
 export const ModalCore = React.memo((props: ModalCorePropType) => {
-  const {btnComponent, style, children, handleClose, title, description, withPaper = true, show, setshow} = props
-
+  const {toggle, style, children, handleClose, title, description, withPaper = true, show, setshow} = props
   const alertOnClose = getAlertOnClose(props)
   const {open, simpleModalMode} = getOpen(props)
 
-  const customeHandleClose = () => {
+  const customHandleClose = () => {
     let newHadnleClose = handleClose
+
     if (simpleModalMode) {
       newHadnleClose = () => setshow(false)
     }
@@ -69,42 +58,50 @@ export const ModalCore = React.memo((props: ModalCorePropType) => {
   }
 
   const modalStyle = {
-    ...myModalDefault,
+    width: 'fit-content',
+    height: 'fit-content',
+    maxHeight: '80vh', //スマホ時に、アドレスバーで隠れてしまうので、これ以上上げない
+    maxWidth: '95vw',
+    overflow: 'auto',
     ...style,
-    // ...(withPaper
-    //   ? {
-    //       backgroundColor: `white`,
-    //       borderRadius: `10px`,
-    //       padding: `10px`,
-    //     }
-    //   : {}),
   }
 
   return (
-    <Dialog open={btnComponent ? undefined : Boolean(open)} onOpenChange={customeHandleClose}>
-      <div>
-        {btnComponent && (
-          <DialogTrigger asChild>
-            <div onClick={() => setshow(prev => !prev)}>{btnComponent}</div>
-          </DialogTrigger>
-        )}
-        <DialogContent style={modalStyle}>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            <DialogDescription>{description}</DialogDescription>
-          </DialogHeader>
-
-          <div>{children}</div>
-
-          <DialogFooter>
-            <R_Stack className={`justify-start`}>
-              {/* <DialogClose asChild>
-                <Button size="sm">閉じる</Button>
-              </DialogClose> */}
-            </R_Stack>
-          </DialogFooter>
-        </DialogContent>
-      </div>
-    </Dialog>
+    <ShadModal
+      {...{
+        open,
+        onOpenChange: customHandleClose,
+        DialogTrigger: toggle,
+        style: modalStyle,
+        children,
+        handleClose,
+        title,
+        description,
+        withPaper,
+        show,
+        setshow,
+      }}
+    />
   )
+  // return (
+  //   <Dialog open={toggle ? undefined : Boolean(open)} onOpenChange={customHandleClose}>
+  //     {toggle && (
+  //       <DialogTrigger asChild>
+  //         <div onClick={() => setshow(prev => !prev)}>{toggle}</div>
+  //       </DialogTrigger>
+  //     )}
+  //     <DialogPortal>
+  //       <DialogContent style={modalStyle} className={`bg-white rounded-2xl shadow-lg shadow-gray-500 border border-gray-200 p-2`}>
+  //         <DialogHeader>
+  //           <DialogTitle>{title}</DialogTitle>
+  //           <DialogDescription>{description}</DialogDescription>
+  //         </DialogHeader>
+
+  //         <div>{children}</div>
+
+  //         <DialogFooter></DialogFooter>
+  //       </DialogContent>
+  //     </DialogPortal>
+  //   </Dialog>
+  // )
 })

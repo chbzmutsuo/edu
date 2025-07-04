@@ -3,7 +3,7 @@
 import * as React from 'react'
 import {useState, useEffect} from 'react'
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from 'src/cm/shadcn-ui/components/ui/accordion'
-import {cn} from 'src/cm/shadcn-ui/utils'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 
 export type AccordiongPropType = {
   // styling?: styling

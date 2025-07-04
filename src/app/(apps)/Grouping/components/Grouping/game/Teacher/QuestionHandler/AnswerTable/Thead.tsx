@@ -1,6 +1,6 @@
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {TrashIcon} from '@heroicons/react/20/solid'
+import {Trash2} from 'lucide-react'
 import {cl} from '@cm/lib/methods/common'
 
 export const Thead = ({Game, activePrompt, handleDeletePrompt, isSummary, btnClass}) => {
@@ -14,7 +14,7 @@ export const Thead = ({Game, activePrompt, handleDeletePrompt, isSummary, btnCla
         <th className={`w-[40px]`}>児童・生徒</th>
 
         {Game?.QuestionPrompt?.map((prompt, i) => {
-          const {createdAt, active, asSummary} = prompt
+          const {createdAt, active, asSummary} = prompt ?? {}
           const isActivePrompt = activePrompt?.id === prompt.id
 
           return (
@@ -28,7 +28,7 @@ export const Thead = ({Game, activePrompt, handleDeletePrompt, isSummary, btnCla
                     </div>
                     <R_Stack className={`justify-around gap-0`}>
                       {/* <AnsweredIcon {...{isActivePrompt, prompt}} /> */}
-                      <TrashIcon
+                      <Trash2
                         className={`${btnClass} `}
                         onClick={async e => {
                           await handleDeletePrompt(prompt)

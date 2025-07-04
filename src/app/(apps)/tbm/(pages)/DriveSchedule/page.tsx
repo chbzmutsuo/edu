@@ -31,7 +31,7 @@ export default async function Page(props) {
   const tbmBase = await prisma.tbmBase.findUnique({where: {id: tbmBaseId}})
 
   return (
-    <div className="print-target">
+    <div className="print-target ">
       <DriveScheduleCC {...{tbmBase, days: MONTH.days, tbmBaseId, whereQuery}} />
     </div>
   )

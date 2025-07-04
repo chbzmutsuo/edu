@@ -6,6 +6,7 @@ import {Absolute, Vr} from 'src/cm/components/styles/common-components/common-co
 
 import {LabelValue} from '@components/styles/common-components/ParameterCard'
 import {getColorStyles} from '@lib/methods/colors'
+import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
 
 export const defaultRegister = {register: {required: '必須'}}
 export const textAreaDefaultStyle = {width: 600, height: 150}
@@ -68,9 +69,10 @@ export const dividerCol = ({label, color}) => {
 }
 
 export const TableInfoWrapper = (props: {showShadow?: boolean; label?: any; children: any}) => {
-  const {showShadow, label, children} = props
+  const {showShadow = true, label, children} = props
+
   return (
-    <div className={showShadow ? `shadow-2xs px-1.5` : ``}>
+    <div className={showShadow ? `shadow-md p-1.5  rounded-lg bg-white  border border-gray-200` : ``}>
       {label && <small className={`text-sm font-bold  text-gray-900`}>{label}</small>}
       <div>{children}</div>
     </div>
@@ -98,7 +100,7 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
             whiteSpace: 'nowrap',
           }}
         >
-          {children ?? value}
+          <ShadPopover PopoverTrigger={<div>{children ?? value}</div>}>{children ?? value}</ShadPopover>
         </div>
         {/* <EllipsisPopover maxWidth={valueWidth}>{children ?? value}</EllipsisPopover> */}
       </div>

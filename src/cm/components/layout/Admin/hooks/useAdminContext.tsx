@@ -1,24 +1,11 @@
-import {useState, useEffect, useMemo, JSX} from 'react'
+import {useState, useEffect, useMemo} from 'react'
 import {MenuButton} from 'src/cm/components/layout/MenuButton'
-import {getPathItemRelatedProps} from '@components/layout/Admin/getPathItemRelatedProps'
+
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
-import {adminProps} from '@components/layout/Admin/Admin'
+
 import useWindowSize from '@hooks/useWindowSize'
-
-export type menuContext = {
-  isOpen: boolean
-  setIsOpen: (isOpen: boolean) => void
-  toggleMenu: () => void
-  MenuButton: JSX.Element
-}
-
-export type adminContext = adminProps & {
-  horizontalMenu: boolean
-  pathItemObject: ReturnType<typeof getPathItemRelatedProps>
-  useGlobalProps: useGlobalPropType
-  getTopPageLink?: (props: {session: any}) => string
-  menuContext: menuContext
-}
+import {adminContext, adminProps, menuContext} from '@components/layout/Admin/type'
+import {identifyPathItem, PAGES} from 'src/non-common/path-title-constsnts'
 
 export const useAdminContext = (props: adminProps, useGlobalProps: useGlobalPropType) => {
   const {pathname, query} = useGlobalProps
@@ -69,4 +56,16 @@ export const useAdminContext = (props: adminProps, useGlobalProps: useGlobalProp
     pathItemObject,
     horizontalMenu,
   }
+}
+
+export function getPathItemRelatedProps({PagesMethod, useGlobalProps}) {
+  const {roles, session, pathname, rootPath, query, dynamicRoutingParams} = useGlobalProps
+
+  const pageGetterprops = {session, pathname, rootPath, query, dynamicRoutingParams, roles}
+  const pages = PAGES[PagesMethod]?.(pageGetterprops)
+  const {allPathsPattenrs} = pages ?? {}
+  const matchedPathItem = identifyPathItem({allPathsPattenrs, pathname})
+  const {navItems} = pages ?? {}
+
+  return {matchedPathItem, navItems, pages}
 }

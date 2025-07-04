@@ -5,7 +5,8 @@ import {R_Stack} from '@components/styles/common-components/common-components'
 
 import {CircledIcon} from '@components/styles/common-components/IconBtn'
 
-import {PencilSquareIcon, TrashIcon} from '@heroicons/react/20/solid'
+import {SquarePen, Trash2} from 'lucide-react'
+
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import React from 'react'
@@ -18,7 +19,7 @@ export const Cell = ({rec}) => {
       <CircledIcon
         {...{
           onClick: () => HK_SaleEditor.setGMF_OPEN({saleRecordId: rec.sale_record_id}),
-          icon: <PencilSquareIcon className={`onHover`} />,
+          icon: <SquarePen className={`onHover`} />,
         }}
       />
       <CircledIcon
@@ -36,7 +37,7 @@ export const Cell = ({rec}) => {
               })
             }
           },
-          icon: <TrashIcon className={`onHover`} />,
+          icon: <Trash2 className={`onHover`} />,
         }}
       />
     </R_Stack>

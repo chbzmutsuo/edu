@@ -212,6 +212,18 @@
     padding-top: 0.625rem;
     padding-bottom: 0.625rem;
   }
+  .table-wrapper table tbody tr:first-child td {
+    border-top-width: 0.5px;
+  }
+  .table-wrapper table tbody tr:first-child th {
+    border-top-width: 0.5px;
+  }
+  .table-wrapper table tbody tr:last-child td {
+    border-bottom-width: 0;
+  }
+  .table-wrapper table tbody tr:last-child th {
+    border-bottom-width: 0;
+  }
   .table-wrapper table th {
     border-bottom-width: 0.5px;
     border-left-width: 0;

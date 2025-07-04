@@ -1,4 +1,4 @@
-// import {MinusIcon} from '@heroicons/react/20/solid'
+// import {MinusIcon} from 'lucide-react'
 // import {showResetBtn} from '@hooks/useBasicForm/hookformMethods'
 // import {useCallback} from 'react'
 // import {DH__switchColType} from '@class/DataHandler/type-converter'

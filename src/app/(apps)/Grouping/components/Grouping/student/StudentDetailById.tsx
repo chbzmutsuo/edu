@@ -1,6 +1,6 @@
 import UnfitStudentSelector from '@app/(apps)/Grouping/components/Grouping/UnfitStudentSelector'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import BasicTabs from '@components/utils/tabs/BasicTabs'
 
 import React from 'react'
 import {DetailPagePropType} from '@cm/types/types'

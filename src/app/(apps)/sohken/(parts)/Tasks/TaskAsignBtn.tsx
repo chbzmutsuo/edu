@@ -57,7 +57,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
           alertOnClose: `反映確定していない情報は、リセットされますがよろしいですか？`,
           open: open,
           handleClose,
-          btnComponent: (
+          toggle: (
             <div className={` text-center text-xs`}>
               <Button onClick={handleOpen}>マスタから登録</Button>
             </div>

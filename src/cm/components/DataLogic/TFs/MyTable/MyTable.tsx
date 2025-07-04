@@ -54,7 +54,18 @@ const MyTable = React.memo<MyTableProps>(props => {
     // 🔧 無限スクロールモードの条件分岐
     if (isInfiniteScrollMode) {
       return (
-        <MyTableInfiniteScroll recordCount={recordCount} fetchNextPage={fetchNextPage} hasMore={hasMore} totalCount={totalCount}>
+        <MyTableInfiniteScroll
+          {...{
+            tableStyle: mainTableProps.tableStyle,
+            recordCount,
+            fetchNextPage,
+            hasMore,
+            totalCount,
+            mainTableProps,
+            paginationProps,
+            sectionStyle,
+          }}
+        >
           {mainTable}
         </MyTableInfiniteScroll>
       )

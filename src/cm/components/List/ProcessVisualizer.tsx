@@ -1,9 +1,9 @@
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
-import {ChevronDoubleRightIcon} from '@heroicons/react/20/solid'
+import {ChevronsRightIcon} from 'lucide-react'
 import {Fragment} from 'react'
 const ProcessVisualizer = ({
   processes,
-  divider = <ChevronDoubleRightIcon className={`  font-bold`} />,
+  divider = <ChevronsRightIcon className={`  font-bold`} />,
   gapClass = `gap-1`,
   ...rest
 }) => {

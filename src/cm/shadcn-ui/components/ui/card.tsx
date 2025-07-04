@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import {cn} from '@cm/shadcn-ui/utils'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 import {cva} from 'class-variance-authority'
 
 function Card({
@@ -16,12 +16,16 @@ function Card({
           default: 'bg-white text-card-foreground flex flex-col gap-6 rounded-xl border border-gray-200 py-3 px-2 shadow-md',
 
           accent: 'bg-gradient-to-br from-bg-gray-100 to-white rounded-2xl border-0 py-4 px-4 shadow-lg',
-          outline: 'bg-white  bg-inherit shadow-lg  border-2 border-gray  rounded-xl  py-3 px-2 ',
+          outline: 'bg-white   shadow-lg  border-2 border-gray-200  rounded-xl  py-3 px-2 ',
         },
       },
     }
   )
-  return <div data-slot="card" className={cn(cardVariantClass({variant}), className)} {...props} />
+  return (
+    <div data-slot="card" className={cn(cardVariantClass({variant}), className)} {...props}>
+      <div className={`bg-white`}>{props.children}</div>
+    </div>
+  )
 }
 
 function CardHeader({className, ...props}: React.ComponentProps<'div'>) {

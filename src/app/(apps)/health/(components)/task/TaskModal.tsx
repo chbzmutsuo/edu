@@ -1,9 +1,10 @@
 'use client'
 
 import React, {useState, useEffect, useRef} from 'react'
-import {createTask, updateTask, uploadTaskAttachment} from '../../(lib)/task-actions'
+import {createTask, updateTask} from '../../(lib)/task-actions'
 import {Task} from '../../(lib)/task-actions'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import {uploadTaskAttachment} from './uploadTaskAttachment'
 
 type Props = {
   task?: Task | null

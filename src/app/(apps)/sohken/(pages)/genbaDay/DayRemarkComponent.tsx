@@ -386,7 +386,7 @@ const FileUploader = ({ParentData}) => {
         <div className={` text-error-main text-center`}>{ParentData.DayRemarksFile.length}件のファイルが登録されています。</div>
       )}
 
-      <BasicModal {...{btnComponent: <Button>添付ファイル</Button>}}>
+      <BasicModal {...{toggle: <Button>添付ファイル</Button>}}>
         <ChildCreator
           {...{
             ...{ParentData, useGlobalProps},

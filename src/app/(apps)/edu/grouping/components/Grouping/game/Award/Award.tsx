@@ -7,9 +7,9 @@ import Rank from './Rank'
 import {anyObject} from '@cm/types/utility-types'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
-import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import BasicTabs from '@components/utils/tabs/BasicTabs'
 import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
-import {TrophyIcon} from '@heroicons/react/20/solid'
+import {TrophyIcon} from 'lucide-react'
 import {Alert} from '@components/styles/common-components/Alert'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 

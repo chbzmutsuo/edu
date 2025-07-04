@@ -14,7 +14,8 @@ export default function Loader(props: any) {
         className={`fixed inset-0 h-full w-full`}
         style={{
           zIndex: Z_INDEX.loader,
-          background: 'linear-gradient(135deg,  var(--color-primary-light) , var(--color-white) )',
+          background: 'var(--color-white)',
+          // background: 'linear-gradient(135deg,  var(--color-primary-light) , var(--color-white) )',
         }}
       >
         {/* <div className={`progress-container`}>

@@ -6,7 +6,7 @@ import {Fields} from '@cm/class/Fields/Fields'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {useState} from 'react'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
-import {MagnifyingGlassCircleIcon} from '@heroicons/react/20/solid'
+import {Search} from 'lucide-react'
 
 export const Works = ({works}) => {
   works = works.filter(row => row.isPublic)
@@ -71,9 +71,9 @@ export const Works = ({works}) => {
     })
     return (
       <BasicModal
-        btnComponent={
+        toggle={
           <div className={`text-kaizen-cool-main  absolute left-0 w-[60px] cursor-pointer`}>
-            <MagnifyingGlassCircleIcon className={` text-[20px] `} />
+            <Search className={` text-[20px] `} />
           </div>
           // <Button className={`  absolute right-0 top-0`} color="gray">
           //   実績検索

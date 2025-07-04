@@ -1,7 +1,7 @@
 'use client'
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {EyeDropperIcon} from '@heroicons/react/20/solid'
+import {Pipette} from 'lucide-react'
 
 import {twMerge} from 'tailwind-merge'
 import {IconBtn} from '@components/styles/common-components/IconBtn'
@@ -37,7 +37,7 @@ export const DSBM_List = ({
             <R_Stack className={` flex-nowrap gap-0.5`}>
               {editable && (
                 <>
-                  <EyeDropperIcon
+                  <Pipette
                     style={{
                       ...(isSelectedType
                         ? {

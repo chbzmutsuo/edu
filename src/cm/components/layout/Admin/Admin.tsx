@@ -1,24 +1,56 @@
-import React, {JSX} from 'react'
-import {PageBuilderGetterType} from '@cm/types/types'
+'use client'
 
-import AdminClient from '@components/layout/Admin/AdminClient'
+import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
+import Redirector from 'src/cm/components/utils/Redirector'
+import React, {useMemo} from 'react'
+import {HREF} from 'src/cm/lib/methods/urls'
+import {MetaData} from '@components/layout/MetaData'
 
-export type adminProps = {
-  AppName: string | JSX.Element
-  Logo?: any
-  PagesMethod: string
-  children?: JSX.Element
-  additionalHeaders?: JSX.Element[]
-  PageBuilderGetter?: PageBuilderGetterType
-  showLogoOnly?: boolean
-  ModelBuilder?: any
-  getTopPageLink?: getTopPageLinkType
-  navBarPosition?: 'left' | 'top'
-}
+import {obj__cleanObject} from '@class/ObjHandler/transformers'
 
-export type getTopPageLinkType = (props: {session: any}) => string
-const Admin = (props: adminProps) => {
-  return <AdminClient {...props} />
-}
+// 分離したフックとコンポーネント
+import {useAdminContext} from './hooks/useAdminContext'
+import {useAccessValidation} from './hooks/useAccessValidation'
+import {AdminLayout} from './components/AdminLayout'
+
+import {adminProps} from '@components/layout/Admin/type'
+
+const Admin = React.memo((props: adminProps) => {
+  const useGlobalProps = useGlobal()
+
+  const {AppName, children} = props
+  const {pathname, query} = useGlobalProps
+
+  // カスタムフックを使用してロジックを
+  const {adminContext, menuContext} = useAdminContext(props, useGlobalProps)
+
+  const {isValid, redirectPath, needsRedirect} = useAccessValidation(useGlobalProps)
+
+  // 不要なクエリパラメータのクリーンアップ
+  const cleanedQuery = useMemo(() => obj__cleanObject({...query}), [query])
+  const shouldRedirectForQuery = useMemo(() => {
+    return Object.keys(query).some(key => !cleanedQuery[key])
+  }, [query, cleanedQuery])
+
+  // アクセス検証によるリダイレクト
+  if (!isValid && needsRedirect && redirectPath) {
+    return <Redirector redirectPath={redirectPath} />
+  }
+
+  if (shouldRedirectForQuery) {
+    console.warn('Redirected because of undefined query parameter')
+    const redirectPath = HREF(pathname, cleanedQuery, query)
+    return <Redirector redirectPath={redirectPath} />
+  }
+
+  return (
+    <div>
+      <MetaData pathItemObject={adminContext.pathItemObject} AppName={AppName} />
+      <AdminLayout adminContext={adminContext} menuContext={menuContext} useGlobalProps={useGlobalProps}>
+        {children}
+      </AdminLayout>
+    </div>
+  )
+})
 
 export default Admin

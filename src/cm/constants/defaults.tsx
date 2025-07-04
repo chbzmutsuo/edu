@@ -116,20 +116,6 @@ export const myFormDefault: MyFormType = {
 }
 
 /**モーダルでoverflowはせずに、中のコンポーネントで制御する */
-export const myModalDefault: CSSProperties = {
-  // borderRadius: 10,
-  // position: 'absolute',
-  // top: 0,
-  // marginTop: 30,
-
-  width: 'fit-content',
-  height: 'fit-content',
-  maxHeight: '80vh', //スマホ時に、アドレスバーで隠れてしまうので、これ以上上げない
-  maxWidth: '95vw',
-  overflow: 'auto',
-
-  ...stylesByDevice?.[GetDevice(getWindow().width)]?.Modal,
-}
 
 export const limitEditting = (props: {exclusiveTo?: boolean; myTable?: MyTableType; myForm?: MyFormType}) => {
   const {

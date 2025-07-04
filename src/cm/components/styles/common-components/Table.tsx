@@ -1,20 +1,15 @@
 import {NumHandler} from '@class/NumHandler'
+import {ScrollArea} from '@cm/shadcn-ui/components/ui/scroll-area'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
-import {cl} from 'src/cm/lib/methods/common'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 
-export const TableWrapper = (props: htmlProps) => {
-  const {className, style, children, ...rest} = props
+export const TableWrapper = (props: any & {className?: string; children: React.ReactNode}) => {
+  const {className, children, ...rest} = props
 
   return (
     <div
       {...{
-        className: cl(
-          //
-          className,
-          `table-wrapper overflow-auto border-collapse `,
-          `w-fit  h-fit `
-        ),
-        style,
+        className: cn(className, `table-wrapper overflow-auto border-collapse `, `w-fit  h-fit `),
         ...rest,
       }}
     >

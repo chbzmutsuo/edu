@@ -288,13 +288,13 @@ export default function JournalTimelineEntry({
                       <ContentPlayer
                         src={image.filePath}
                         {...{
-                          styles: {thumbnail: {width: undefined, height: 120}},
+                          styles: {thumbnail: {width: undefined}},
                           options: {download: true},
                         }}
                       />
                       <button
                         onClick={() => removeExistingImage(image.id)}
-                        className="absolute -top-2 -right-2 bg-red-500 cursor-pointer text-white rounded-full w-6 h-6 z-50 flex items-center justify-center text-xs hover:bg-red-600"
+                        className="absolute -top-2 -right-2 m cursor-pointer text-white rounded-full w-6 h-6 z-50 flex items-center justify-center text-xs hover:bg-red-600"
                       >
                         ×
                       </button>

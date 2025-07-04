@@ -4,12 +4,13 @@ import {Paper} from '@components/styles/common-components/paper'
 import {LabelValue} from '@components/styles/common-components/ParameterCard'
 
 import MyPopover from '@components/utils/popover/MyPopover'
-import {UserCircleIcon} from '@heroicons/react/20/solid'
+import {CircleUserIcon} from 'lucide-react'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import useWindowSize from '@hooks/useWindowSize'
 import {HREF} from '@lib/methods/urls'
 import {signOut} from 'next-auth/react'
 import React, {useMemo} from 'react'
+import {sleep} from '@lib/methods/common'
 
 // 型定義を改善
 interface UserConfigSession {
@@ -30,7 +31,7 @@ interface UserConfigProps {
 const STYLING_CONFIG = {styles: {wrapper: {padding: 0, width: '100%'}}} as const
 
 export const UserConfig = React.memo(() => {
-  const {roles, accessScopes, session, rootPath, query, router} = useGlobal()
+  const {roles, accessScopes, session, rootPath, query, router, toggleLoad} = useGlobal()
   const {width} = useWindowSize()
 
   // 幅計算をメモ化
@@ -53,7 +54,7 @@ export const UserConfig = React.memo(() => {
 
   return (
     <div>
-      <MyPopover mode="click" button={<UserCircleIcon className="w-7 text-gray-700 onHover" />}>
+      <MyPopover mode="click" button={<CircleUserIcon className=" text-gray-500 onHover" />}>
         <Paper>
           <R_Stack style={dimensions}>
             <LabelValue styling={STYLING_CONFIG} label="氏名" value={session?.name} />
@@ -63,8 +64,14 @@ export const UserConfig = React.memo(() => {
               <button
                 className={`t-link`}
                 onClick={async () => {
-                  await signOut({redirect: false})
-                  router.refresh()
+                  toggleLoad(
+                    async () => {
+                      await signOut({redirect: false})
+                      await sleep(500)
+                      router.push(`/login`)
+                    },
+                    {refresh: false, mutate: false}
+                  )
                 }}
               >
                 ログアウト

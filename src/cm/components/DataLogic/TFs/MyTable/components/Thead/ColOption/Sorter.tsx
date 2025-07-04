@@ -1,7 +1,7 @@
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import {ChevronDownIcon, ChevronUpIcon} from '@heroicons/react/20/solid'
+import {ChevronDownIcon, ChevronUpIcon} from 'lucide-react'
 
 export const Sorter = ({col, addQuery, query}) => {
   const set = key => {

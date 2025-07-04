@@ -6,7 +6,7 @@ import {Days} from '@class/Days/Days'
 import {formatDate, TimeFormatType} from '@class/Days/date-utils/formatters'
 import {ControlContextType} from '@cm/types/form-control-type'
 import {Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
-import ShadPopover from '@components/utils/shadcn/ShadPopover'
+import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
 
 const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -67,13 +67,19 @@ const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
 
   return (
     <>
-      <R_Stack className={`  justify-between gap-1`}>
-        <DateInputter {...{col, currentValue, formProps, selectedDate, toggleCalendar, timeFormat, ControlStyle}} />
-        {col.type === `datetime` && <TimeInputter {...{col, selectedDate, setDate, formProps}} />}
-      </R_Stack>
-
-      <div>
-        <ShadPopover {...{open: isOpen, onOpenChange: setIsOpen}}>
+      <>
+        <ShadPopover
+          {...{
+            PopoverTrigger: (
+              <R_Stack className={`  justify-between gap-1`}>
+                <DateInputter {...{col, currentValue, formProps, selectedDate, toggleCalendar, timeFormat, ControlStyle}} />
+                {col.type === `datetime` && <TimeInputter {...{col, selectedDate, setDate, formProps}} />}
+              </R_Stack>
+            ),
+            open: isOpen,
+            handleClose: setIsOpen,
+          }}
+        >
           <MainDatePicker
             {...{
               ControlStyle,
@@ -88,21 +94,7 @@ const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
             }}
           />
         </ShadPopover>
-        {/* <BasicModal closeBtn={false} alertOnClose={false} open={isOpen} handleClose={e => setIsOpen(false)}>
-          <MainDatePicker
-            {...{
-              ...props,
-              field,
-              useResetValue,
-              selectedDate,
-              setSelectedDate,
-              handleDateChange: (date, e) => {
-                setDate({date, timeStr: ''})
-              },
-            }}
-          />
-        </BasicModal> */}
-      </div>
+      </>
     </>
   )
 })
@@ -115,9 +107,7 @@ const DateInputter = ({col, currentValue, formProps, selectedDate, toggleCalenda
       <Center style={{fontSize: 18, justifyContent: `start`}}>
         <div>
           {selectedDate && Days.validate.isDate(selectedDate) ? (
-            <>
-              <div {...{...formProps, style: {...ControlStyle}}}>{formatDate(selectedDate, timeFormat)}</div>
-            </>
+            <div {...{...formProps, style: {...ControlStyle}}}>{formatDate(selectedDate, timeFormat)}</div>
           ) : (
             <input
               {...{

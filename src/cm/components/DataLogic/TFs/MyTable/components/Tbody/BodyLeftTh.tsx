@@ -4,7 +4,7 @@ import {Circle, R_Stack} from 'src/cm/components/styles/common-components/common
 
 import {cl} from 'src/cm/lib/methods/common'
 
-import {ArrowsUpDownIcon} from '@heroicons/react/20/solid'
+import {ArrowUpDownIcon} from 'lucide-react'
 import useWindowSize from '@hooks/useWindowSize'
 import {getColorStyles} from '@lib/methods/colors'
 
@@ -21,10 +21,10 @@ export const BodyLeftTh = ({myTable, showHeader, rowColor, dndProps, rowSpan, co
         {...{rowSpan, colSpan, className: ' p-0.5!    '}}
         {...dndProps}
       >
-        <R_Stack className={`mx-auto w-fit  flex-nowrap justify-around  gap-0`}>
+        <R_Stack className={`mx-auto px-1  flex-nowrap justify-around  gap-0`}>
           {myTable?.showRecordIndex === false ? <></> : <Circle width={24}>{recordIndex}</Circle>}
           <div className={className}>
-            {dndProps && PC && <ArrowsUpDownIcon className={`w-4`} />}
+            {dndProps && PC && <ArrowUpDownIcon className={`w-4`} />}
             {children}
           </div>
         </R_Stack>

@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react'
 import {NestHandler} from 'src/cm/class/NestHandler'
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
-import {MagnifyingGlassCircleIcon} from '@heroicons/react/20/solid'
+import {Search} from 'lucide-react'
 import {cl} from 'src/cm/lib/methods/common'
 
 import {T_LINK} from '@components/styles/common-components/links'
@@ -60,7 +60,7 @@ const MidTableRowGroup = ({
                   </R_Stack>
 
                   <R_Stack>
-                    <MagnifyingGlassCircleIcon className={`w-5`} />
+                    <Search className={`w-5`} />
                     <input
                       value={searchInput}
                       onChange={e => setsearchInput(e.target.value)}

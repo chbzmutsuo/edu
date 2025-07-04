@@ -117,6 +117,27 @@
     padding-bottom: 0.625rem;
    }
 
+   tbody {
+    tr {
+     &:first-child {
+      td {
+       border-top-width: 0.5px;
+      }
+      th {
+       border-top-width: 0.5px;
+      }
+     }
+     &:last-child {
+      td {
+       border-bottom-width: 0;
+      }
+      th {
+       border-bottom-width: 0;
+      }
+     }
+    }
+   }
+
    th {
     border-bottom-width: 0.5px;
     border-left-width: 0;

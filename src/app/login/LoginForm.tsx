@@ -8,6 +8,7 @@ import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {Fields} from 'src/cm/class/Fields/Fields'
 import {Button} from '@components/styles/common-components/Button'
 import {CheckLogin} from '@app/api/prisma/login/checkLogin'
+import {sleep} from '@lib/methods/common'
 
 export default function LoginForm(props) {
   const {error} = props
@@ -47,30 +48,33 @@ export default function LoginForm(props) {
                 ControlStyle: {width: 250},
               },
               onSubmit: async data => {
-                toggleLoad(async () => {
-                  const user = await CheckLogin({authId: data.email, authPw: data.password})
+                toggleLoad(
+                  async () => {
+                    const user = await CheckLogin({authId: data.email, authPw: data.password})
 
-                  if (!user) {
-                    toast.error(`正しい認証情報を入力してください。`)
-                    return
-                  }
+                    if (!user) {
+                      toast.error(`正しい認証情報を入力してください。`)
+                      return
+                    }
+                    // const result = await toggleLoad(async () => {
+                    const result = await signIn('credentials', {
+                      email: data.email,
+                      password: data.password,
+                      redirect: false,
+                    })
 
-                  // const result = await toggleLoad(async () => {
-                  const result = await signIn('credentials', {
-                    email: data.email,
-                    password: data.password,
-                    redirect: false,
-                  })
+                    if (result?.ok) {
+                      // const session = await getSession()
+                      toast.success(`ログインしました。`)
 
-                  if (result?.ok) {
-                    // const session = await getSession()
-                    toast.success(`ログインしました。`)
-                    router.refresh()
-                  } else if (result?.error) {
-                    toast.error(`ログインに失敗しました。:${result.error}`)
-                  }
-                  // })
-                })
+                      await sleep(500)
+                      router.push(`/`)
+                    } else if (result?.error) {
+                      toast.error(`ログインに失敗しました。:${result.error}`)
+                    }
+                  },
+                  {refresh: false, mutate: false}
+                )
               },
             }}
           >

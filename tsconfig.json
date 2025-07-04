@@ -4,6 +4,7 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
@@ -16,7 +17,6 @@
     "jsx": "preserve",
     "sourceMap": false,
     "incremental": true,
-    "noImplicitAny": false, //anyを許容する
     "baseUrl": ".",
     "paths": {
       "@app/*": ["src/app/*"],
@@ -39,7 +39,57 @@
     ],
     "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "postcss.config.cjs", "src/app/(apps)/newCar/api/seed/calendar", "src/cm/hooks/useBasicForm/lib/useResetValue", "src/app/(apps)/tbm/(builders)/ColBuilders/TbmBillingAddressColBuilder.tsｘ"],
-
-  "exclude": ["node_modules"]
+  "include": ["next-env.d.ts", "postcss.config.cjs", "src/**/*", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", ".next", "dist", "coverage", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
 }
+// {
+//   "compilerOptions": {
+//     "target": "ESNext",
+//     "lib": ["dom", "dom.iterable", "esnext"],
+//     "allowJs": true,
+//     "skipLibCheck": true,
+//     "strict": false,
+//     "forceConsistentCasingInFileNames": true,
+//     "experimentalDecorators": true,
+//     "noEmit": true,
+//     "esModuleInterop": true,
+//     "module": "ESNext",
+//     "moduleResolution": "node",
+//     "resolveJsonModule": true,
+//     "isolatedModules": true,
+//     "jsx": "preserve",
+//     "sourceMap": false,
+//     "incremental": true,
+//     "noImplicitAny": false, //anyを許容する
+//     "baseUrl": ".",
+//     "paths": {
+//       "@app/*": ["src/app/*"],
+//       "@providers/*": ["src/cm/providers/*"],
+//       "@constants/*": ["src/cm/constants/*"],
+//       "@class/*": ["src/cm/class/*"],
+//       "@components/*": ["src/cm/components/*"],
+//       "@styles/*": ["src/cm/styles/*"],
+//       "@hooks/*": ["src/cm/hooks/*"],
+//       "@lib/*": ["src/cm/lib/*"],
+//       "@fonts/*": ["src/fonts/*"],
+//       "@context/*": ["src/cm/context/*"],
+//       "@cm/*": ["src/cm/*"]
+//     },
+//     "plugins": [
+//       {
+//         "name": "next"
+//       }
+//     ],
+//     "strictNullChecks": true
+//   },
+//   "include": [
+//     "next-env.d.ts",
+//     "**/*.js",
+//     "**/*.jsx",
+//     "**/*.ts",
+//     "**/*.tsx",
+//     ".next/types/**/*.ts",
+//     "postcss.config.cjs",
+//   ],
+//   "exclude": ["node_modules"]
+// }

@@ -14,7 +14,7 @@ const StudentAnswerHistory = ({student, GameCtxValue}) => {
       <BasicModal
         {...{
           alertOnClose: false,
-          btnComponent: <button className={`icon-btn p-0.5 py-1  `}>{student.name}</button>,
+          toggle: <button className={`icon-btn p-0.5 py-1  `}>{student.name}</button>,
         }}
       >
         <div>

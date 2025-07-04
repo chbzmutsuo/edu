@@ -1,20 +1,11 @@
 import React from 'react'
-import dynamic from 'next/dynamic'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {adminContext, menuContext} from '../hooks/useAdminContext'
+
+import {adminContext, menuContext} from '@components/layout/Admin/type'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 import useWindowSize from '@hooks/useWindowSize'
-
-// 動的インポートでコード分割
-const NavBar = dynamic(() => import('src/cm/components/layout/Navigation/NavBar'), {
-  loading: () => <PlaceHolder />,
-})
-const Header = dynamic(() => import('src/cm/components/layout/Header'), {
-  loading: () => <PlaceHolder />,
-})
-const Drawer = dynamic(() => import('src/cm/components/layout/Navigation/Drawer'), {
-  loading: () => <PlaceHolder />,
-})
+import Header from '@components/layout/Header'
+import Drawer from '@components/layout/Navigation/Drawer'
+import NavBar from '@components/layout/Navigation/NavBar'
 
 type AdminLayoutProps = {
   children: React.ReactNode

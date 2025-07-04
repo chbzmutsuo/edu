@@ -7,8 +7,8 @@ import OptionSelector from '@components/DataLogic/TFs/MyForm/components/HookForm
 import useInitMySelect from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
 import MyRadio from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyRadio'
 
-import ShadPopover from '@components/utils/shadcn/ShadPopover'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
+import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
 
 const MySelect = React.memo((props: ControlProps) => {
   const {contexts} = useInitMySelect(props)
@@ -27,9 +27,10 @@ const MySelect = React.memo((props: ControlProps) => {
       <div className={`relative`}>
         <ShadPopover
           {...{
+            mode: 'click',
             PopoverTrigger: <BaseDisplay {...{contexts}} />,
             open: isOptionsVisible,
-            onOpenChange: setIsOptionsVisible,
+            handleClose: setIsOptionsVisible,
           }}
         >
           <OptionSelector {...{contexts}} />

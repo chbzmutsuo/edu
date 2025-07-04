@@ -1,6 +1,6 @@
 'use client'
 
-import {XCircleIcon} from '@heroicons/react/20/solid'
+import {XCircle} from 'lucide-react'
 import useWindowSize from 'src/cm/hooks/useWindowSize'
 import {Z_INDEX} from 'src/cm/lib/constants/constants'
 
@@ -116,11 +116,11 @@ const MyPopover = React.memo(
               <div className={`h-fit  `}>
                 <div className={` flex justify-end`}>
                   {!positionFree && (
-                    <XCircleIcon
+                    <XCircle
                       onClick={close}
                       style={{zIndex: Number(overlayZindex) + 10}}
                       className={` w-10 rounded-full text-gray-600 shadow-md`}
-                    ></XCircleIcon>
+                    ></XCircle>
                   )}
                 </div>
                 <div>{children}</div>

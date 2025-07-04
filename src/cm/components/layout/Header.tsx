@@ -4,14 +4,13 @@ import React, {Fragment, useMemo} from 'react'
 import {Z_INDEX} from '@cm/lib/constants/constants'
 import {HREF} from '@lib/methods/urls'
 import {T_LINK} from '@components/styles/common-components/links'
-import {adminContext} from '@components/layout/Admin/hooks/useAdminContext'
+
 import {R_Stack} from '@components/styles/common-components/common-components'
 import useWindowSize from '@hooks/useWindowSize'
-
-// 動的インポートで軽量化
-const AppLogo = React.lazy(() => import('src/cm/components/layout/Navigation/AppLogo'))
-const NavBar = React.lazy(() => import('src/cm/components/layout/Navigation/NavBar'))
-const Breadcrumbs = React.lazy(() => import('src/cm/components/layout/breadcrumbs/Breadcrumbs'))
+import {adminContext} from '@components/layout/Admin/type'
+import AppLogo from '@components/layout/Navigation/AppLogo'
+import Breadcrumbs from '@components/layout/breadcrumbs/Breadcrumbs'
+import NavBar from '@components/layout/Navigation/NavBar'
 
 // 型定義を改善
 export interface HeaderProps {
@@ -83,16 +82,7 @@ const Header = React.memo<HeaderProps>(({adminContext}) => {
 
           <R_Stack className="ml-auto items-center gap-2">
             <div>
-              {horizontalMenu && (
-                <React.Suspense fallback={<div>Loading...</div>}>
-                  <NavBar
-                    useGlobalProps={useGlobalProps}
-                    // appbarHeight={appbarHeight}
-                    horizontalMenu={horizontalMenu}
-                    navItems={navItems}
-                  />
-                </React.Suspense>
-              )}
+              {horizontalMenu && <NavBar useGlobalProps={useGlobalProps} horizontalMenu={horizontalMenu} navItems={navItems} />}
             </div>
           </R_Stack>
           {!PC && MenuButton}

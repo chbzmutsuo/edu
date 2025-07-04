@@ -93,7 +93,7 @@ export default function EtcConnectHistoryTable({
                     {
                       label: '紐付先の運行',
                       cellValue: (
-                        <BasicModal btnComponent={<Route />}>
+                        <BasicModal toggle={<Route />}>
                           {TbmDriveSchedule ? (
                             <HimodukeKaijo {...{TbmDriveSchedule}} />
                           ) : (

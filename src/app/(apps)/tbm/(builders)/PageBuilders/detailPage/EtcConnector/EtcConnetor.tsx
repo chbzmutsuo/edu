@@ -9,7 +9,7 @@ export default function EtcConnetor({useGlobalProps, tbmVehicleId}) {
 
   return (
     <>
-      <BasicModal {...{btnComponent: <Button>連携</Button>}}>
+      <BasicModal {...{toggle: <Button>連携</Button>}}>
         <EtcConnectForm />
       </BasicModal>
       <EtcConnectHistoryTable {...{tbmVehicleId}} />

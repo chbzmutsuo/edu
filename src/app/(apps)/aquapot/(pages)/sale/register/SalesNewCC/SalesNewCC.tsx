@@ -10,7 +10,7 @@ import useGlobal from '@hooks/globalHooks/useGlobal'
 import React, {useState} from 'react'
 
 import {AqPriceOption, AqProduct} from '@prisma/client'
-import {ShoppingCartIcon} from '@heroicons/react/20/solid'
+import {ShoppingCartIcon} from 'lucide-react'
 
 import {useCustomerSelector} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/useCustomerSelector'
 

@@ -13,7 +13,7 @@ import OptionSearcher from '@components/DataLogic/TFs/MyForm/components/HookForm
 import {useEffect, useState, useRef} from 'react'
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn-ui/components/ui/accordion'
 
-import {MagnifyingGlassIcon} from '@heroicons/react/20/solid'
+import {Search} from 'lucide-react'
 export const optionTakeCount = 20
 const OptionSelector = (props: {contexts: contextsType}) => {
   const contexts = props.contexts
@@ -62,32 +62,9 @@ const OptionSelector = (props: {contexts: contextsType}) => {
     }
   }
 
-  // // 直接的なホイールイベントリスナーを追加
-  // useEffect(() => {
-  //   const element = scrollableRef.current
-  //   if (!element) return
-
-  //   const handleWheelEvent = (e: WheelEvent) => {
-  //     // e.stopPropagation()
-  //     element.scrollTop += e.deltaY
-  //   }
-
-  //   element.addEventListener('wheel', handleWheelEvent, {passive: false})
-
-  //   return () => {
-  //     element.removeEventListener('wheel', handleWheelEvent)
-  //   }
-  // }, [isOptionsVisible])
-
   return (
     <div>
-      <Accordion
-        type="single"
-        collapsible={false}
-        // defaultValue="item-1"
-        value={openAccodionIndex}
-        onValueChange={setOpenAccodionIndex}
-      >
+      <Accordion type="single" collapsible={false} value={openAccodionIndex} onValueChange={setOpenAccodionIndex}>
         <AccordionItem value="1">
           {allowCreateOptions && <AccordionTrigger className={accordionTriggerClass}>検索</AccordionTrigger>}
 
@@ -137,7 +114,7 @@ const OptionSelector = (props: {contexts: contextsType}) => {
                         </R_Stack>
                         <R_Stack className={`gap-0`}>
                           <span>検索してください</span>
-                          <MagnifyingGlassIcon className={`h-4 w-4`} />
+                          <Search className={`h-4 w-4`} />
                         </R_Stack>
                       </C_Stack>
                     </div>

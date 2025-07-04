@@ -1,4 +1,4 @@
-import {TrashIcon} from '@heroicons/react/20/solid'
+import {Trash2} from 'lucide-react'
 
 import {cl} from 'src/cm/lib/methods/common'
 import {useMemo} from 'react'
@@ -99,17 +99,8 @@ const FileUploader = (props: props) => {
             return (
               <li key={idx} className={cl(`t-paper  relative overflow-hidden`)}>
                 <C_Stack className={`relative`}>
-                  {/* <TrashIcon
-                    onClick={e => {
-                      const oldArr = [...fileArrState]
-                      oldArr.splice(idx, 1)
-                      setfileArrState(oldArr)
-                    }}
-                    className={`icon-btn absolute left-1   top-1 z-10 w-6 bg-error-main text-white  opacity-50 hover:opacity-100`}
-                  /> */}
-
                   <R_Stack>
-                    <TrashIcon
+                    <Trash2
                       onClick={e => {
                         const oldArr = [...fileArrState]
                         oldArr.splice(idx, 1)
@@ -119,11 +110,6 @@ const FileUploader = (props: props) => {
                     />
                     <small>{obj.fileName}</small>
                   </R_Stack>
-                  {/* <div style={thumbnailStyle}>
-                    {typeof obj.content === 'string' && (
-                      <ContentPlayer src={obj.content} styles={{thumbnail: thumbnailStyle}} />
-                    )}
-                  </div> */}
                 </C_Stack>
               </li>
             )

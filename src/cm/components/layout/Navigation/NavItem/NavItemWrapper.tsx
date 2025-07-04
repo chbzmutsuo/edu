@@ -5,6 +5,7 @@ import useNavMenu from '@components/layout/Navigation/useNavMenu'
 import React from 'react'
 import NavItemParent from '@components/layout/Navigation/NavItem/NavItemParent'
 import NavItemChildren from '@components/layout/Navigation/NavItem/NavItemChildren'
+import ShadAccordion from '@cm/shadcn-ui/components/ShadAccordion'
 
 export type navItemProps = {
   useGlobalProps: any

@@ -4,6 +4,8 @@ import NavItemWrapper, {getItemProps, navItemProps} from 'src/cm/components/layo
 
 import {anyObject} from '@cm/types/utility-types'
 import {C_Stack} from '@components/styles/common-components/common-components'
+import {Card} from '@cm/shadcn-ui/components/ui/card'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 
 const NavItemChildren = React.memo((props: navItemProps) => {
   const {HK_NAV, item, nestLevel = 1, navWrapperIdx, horizontalMenu} = props
@@ -20,27 +22,30 @@ const NavItemChildren = React.memo((props: navItemProps) => {
   if (horizontalMenu) {
     return (
       <div>
-        <div
-          className={`
-            absolute -left-[70px] top-full min-w-[180px]  bg-white
-            px-1 shadow-lg  transition-all duration-200
-          `}
+        <Card
+          variant="outline"
+          className={cn(
+            //
+            `absolute -right-1/2  top-[35px] `,
+            `min-w-[180px] shadow-lg  transition-all duration-200 p-2`,
+            `transition-all duration-300   animate-in fade-in-0 zoom-in-95`
+          )}
           style={menuStyle}
         >
-          <C_Stack className={`gap-0 `}>
+          <C_Stack className={`gap-2 `}>
             {item?.children
               ?.filter(child => child.exclusiveTo !== false)
               .map((child, i) => {
                 const nextLevel = nestLevel + 1
 
                 return (
-                  <div key={i} className="">
+                  <div key={i} className="[&:not(:last-child)]:border-b ">
                     <NavItemWrapper {...{...props, item: child, nestLevel: nextLevel}} />
                   </div>
                 )
               })}
           </C_Stack>
-        </div>
+        </Card>
       </div>
     )
   } else {

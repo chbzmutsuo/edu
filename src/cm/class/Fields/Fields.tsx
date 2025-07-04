@@ -54,7 +54,7 @@ export class Fields {
       return this.cache.get(cacheKey)
     }
 
-    const {hideUndefinedValue = false, wrapperWidthPx = 200, labelWidthPx = 80, showShadow = false} = props
+    const {hideUndefinedValue = false, wrapperWidthPx = 200, labelWidthPx = 80, showShadow = true} = props
     const id = `readOnly_${columns.map(d => d.id).join('_')}`
 
     const SummaryRow = React.memo(({value, row}: {value: any; row: any}) => {
@@ -80,10 +80,19 @@ export class Fields {
       })
 
       return (
-        <MemoizedTableInfoWrapper {...{showShadow, label: props.wrapperLabel ?? ''}}>
+        <MemoizedTableInfoWrapper
+          {...{
+            showShadow,
+            label: props.wrapperLabel ?? '',
+          }}
+        >
           {existingValues.map((d, i) => (
             <div key={i}>
-              <div className="border-b border-dashed py-0.5">
+              <div
+                className={`
+              ${i !== existingValues.length - 1 ? 'border-b border-dashed border-gray-300 py-1' : ''}
+              `}
+              >
                 <MemoizedTableInfo {...{...d, wrapperWidthPx, labelWidthPx}} />
               </div>
             </div>

@@ -1,20 +1,18 @@
 'use client'
 
 import {BasicFormType} from '@hooks/useBasicForm/BaiscForm'
-import {getFormProps, getStyleProps} from '@hooks/useBasicForm/hookformMethods'
-import React, {Fragment, useMemo} from 'react'
+import {getFormProps, getStyleProps} from '@hooks/useBasicForm/lib/hookformMethods'
+import React, {Fragment} from 'react'
 import {Controller} from 'react-hook-form'
-import ControlWrapper from '@components/DataLogic/TFs/MyForm/components/HookFormControl/ControlWrapper'
 import {ControlContextType} from '@cm/types/form-control-type'
-import {R_Stack} from '@components/styles/common-components/common-components'
 import {liftUpNewValueOnChange} from '@components/DataLogic/TFs/MyForm/MyForm'
 import {DH__switchColType} from '@class/DataHandler/type-converter'
 import Label from '@components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/Label'
-import {funcOrVar} from '@lib/methods/common'
-import Control from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
-import {cn} from '@cm/shadcn-ui/utils'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 import ErrorMessage from '@components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/ErrorMessage'
 import {Alert} from '@components/styles/common-components/Alert'
+import LeftControlRight from './LeftControlRight'
+import Description from './Description'
 
 export type ControlGroupPropType = BasicFormType & {
   col
@@ -25,7 +23,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
   const {ReactHookForm, formData, useResetValue, latestFormData, formId, ControlOptions, col, columns} = props
 
   const messages = ReactHookForm?.formState?.errors
-  const {Register, shownButDisabled} = col
+  const {Register} = col
 
   if (!col?.id && col?.label) {
     return (
@@ -77,38 +75,20 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
           }
           const horizontal = props.alignMode === `row`
 
-          const MEMO_MainControlComponent = useMemo(() => {
-            const shownButDisabled = ControlOptions?.shownButDisabled ?? false
-            return (
-              <div className={shownButDisabled ? 'pointer-events-none' : ''}>
-                <R_Stack className={`w-full flex-nowrap gap-0.5 `}>
-                  {/* left  */}
-                  {funcOrVar(col.surroundings?.form?.left)}
+          // // const MEMO_MainControlComponent = useMemo(
+          // //   () => (
+          // //     <LeftControlRight
+          // //       {...{
+          // //         col,
+          // //         controlContextValue,
+          // //         shownButDisabled: ControlOptions?.shownButDisabled ?? false,
+          // //       }}
+          // //     />
+          // //   ),
+          // //   [col, controlContextValue]
+          // )
 
-                  {/* main */}
-                  {col.form?.editFormat?.({...controlContextValue}) ?? <Control {...{controlContextValue}} />}
-
-                  {/* right */}
-                  {funcOrVar(col.surroundings?.form?.right)}
-                </R_Stack>
-              </div>
-            )
-          }, [col, controlContextValue])
-
-          const MEMO_Description = useMemo(() => {
-            if (ControlOptions?.showDescription !== false && col.form?.descriptionNoteAfter) {
-              return (
-                <div style={ControlStyle}>
-                  <small style={{marginTop: 5, width: ControlStyle.width, maxWidth: ControlStyle.maxWidth}}>
-                    {typeof col?.form?.descriptionNoteAfter === `function`
-                      ? col?.form?.descriptionNoteAfter?.(currentValue, {...formData, ...latestFormData}, col)
-                      : col.form?.descriptionNoteAfter}
-                  </small>
-                </div>
-              )
-            }
-          }, [col, currentValue, formData, latestFormData, ControlOptions?.showDescription])
-
+          const showDescription = ControlOptions?.showDescription !== false && col.form?.descriptionNoteAfter
           const wrapperClassName = cn(wrapperClass, col.id)
 
           return (
@@ -127,8 +107,26 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
                     <section className={horizontal ? 'mr-1' : `mb-2`}>
                       <div>{!col?.form?.reverseLabelTitle && <Label {...{controlContextValue}} />}</div>
                     </section>
-                    <section>{MEMO_MainControlComponent}</section>
-                    <section>{MEMO_Description}</section>
+
+                    <LeftControlRight
+                      {...{
+                        col,
+                        controlContextValue,
+                        shownButDisabled: ControlOptions?.shownButDisabled ?? false,
+                      }}
+                    />
+
+                    {showDescription && (
+                      <Description
+                        {...{
+                          col,
+                          ControlStyle,
+                          currentValue,
+                          formData,
+                          latestFormData,
+                        }}
+                      />
+                    )}
 
                     {col?.form?.reverseLabelTitle && <Label {...{controlContextValue}} />}
                   </div>
@@ -137,30 +135,6 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
               </div>
             </div>
           )
-
-          // return (
-          //   <ControlWrapper
-          //     {...{
-          //       errorMessage: errorMessage ?? '',
-          //       formId,
-          //       formItemIndex,
-          //       col,
-          //       formData,
-          //       setformData,
-          //       useResetValue,
-          //       field,
-          //       Register,
-          //       ReactHookForm,
-          //       latestFormData,
-          //       ControlOptions: {...ControlOptions, shownButDisabled},
-          //       extraFormState,
-          //       setextraFormState,
-          //       Cached_Option_Props,
-          //       useGlobalProps,
-          //       alignMode,
-          //     }}
-          //   />
-          // )
         }}
       />
     )

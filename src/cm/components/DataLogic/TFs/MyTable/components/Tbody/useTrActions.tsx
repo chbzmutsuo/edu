@@ -1,10 +1,8 @@
 import {FileHandler} from 'src/cm/class/FileHandler'
-import {PencilSquareIcon, TrashIcon} from '@heroicons/react/20/solid'
+import {SquarePen, Trash2} from 'lucide-react'
 
 import {cl} from 'src/cm/lib/methods/common'
-
 import {HREF} from 'src/cm/lib/methods/urls'
-
 import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
 import {T_LINK} from '@components/styles/common-components/links'
 import {useCallback} from 'react'
@@ -112,7 +110,7 @@ const useTrActions = props => {
               onClick: () => handleOnClickRow({record}),
             }}
           >
-            <PencilSquareIcon className={`w-6`} />
+            <SquarePen className={`w-6`} />
           </div>
         )
       } else {
@@ -120,7 +118,7 @@ const useTrActions = props => {
 
         return (
           <T_LINK {...{className, href}}>
-            <PencilSquareIcon className={`w-6`} />
+            <SquarePen className={`w-6`} />
           </T_LINK>
         )
       }
@@ -137,17 +135,13 @@ const useTrActions = props => {
         }}
         className={cl('text-sub-main  opacity-60', TrActionIconClassName, `w-5 `)}
       >
-        <TrashIcon />
+        <Trash2 />
       </div>
     )
   }
 
   const RowActionButtonComponent = useCallback(
     ({record, myTable}) => {
-      // const {showHeader} = myTable
-
-      // const className = cl(`p-0.5    gap-1 ${showHeader ? `row-stack` : `col-stack`}`)
-
       if (Object?.keys(ActionButtonObject)?.length === 0) return null
 
       return (

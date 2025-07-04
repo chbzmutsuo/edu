@@ -6,7 +6,7 @@ import {DetailPagePropType} from '@cm/types/types'
 
 import CalendarSetter from '@app/(apps)/tbm/(pages)/DriveSchedule/CalendarSetter'
 import {Days} from '@class/Days/Days'
-import { toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@class/Days/date-utils/calculations'
 import {TextBlue} from '@components/styles/common-components/Alert'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {createUpdate} from '@lib/methods/createUpdate'

@@ -12,6 +12,7 @@ import {Calendar} from '@prisma/client'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {DateInput} from '@class/Days/date-utils/date-utils-type'
 import {toJst, toUtc} from '@class/Days/date-utils/calculations'
+import {getMidnight} from '@class/Days/date-utils/calculations'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)
@@ -312,6 +313,21 @@ export class Days {
     add: (date: Date, amount: number): Date => {
       return dayjs(date).add(amount, 'month').toDate()
     },
+
+    addMonthWithAdjustment: (date: Date, amount: number): Date => {
+      const originalDate = dayjs(date)
+      const isEndOfMonth = originalDate.endOf('month').isSame(originalDate, 'day')
+
+      const addedDate = originalDate.add(amount, 'month')
+
+      if (isEndOfMonth) {
+        // 元の日付が月末の場合、追加後も月末に調整
+        return getMidnight(addedDate.endOf('month').toDate())
+      } else {
+        return addedDate.toDate()
+      }
+    },
+
     subtract: (date: Date, amount: number): Date => {
       return dayjs(date).subtract(amount, 'month').toDate()
     },

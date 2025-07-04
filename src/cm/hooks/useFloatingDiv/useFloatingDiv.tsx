@@ -1,8 +1,10 @@
 import {C_Stack, Center, R_Stack} from '@components/styles/common-components/common-components'
-import {CursorArrowRaysIcon} from '@heroicons/react/20/solid'
+
 import {judgeIfOutside} from '@hooks/useFloatingDiv/judgeIfOutside'
-import {setDivPosition} from '@hooks/useFloatingDiv/nn'
+import {setDivPosition} from '@hooks/useFloatingDiv/setDivPosition'
+
 import {Z_INDEX} from '@lib/constants/constants'
+import {GridIcon} from 'lucide-react'
 import {useState, useCallback, useRef, CSSProperties, useEffect} from 'react'
 
 const useFloatingDiv = (props?: {defaultPosition?: {x: number; y: number}}) => {
@@ -65,7 +67,7 @@ const useFloatingDiv = (props?: {defaultPosition?: {x: number; y: number}}) => {
   const AreaX = () => {
     return (
       <button {...eventHandler}>
-        <CursorArrowRaysIcon className={` h-10 w-10 text-gray-700`} />
+        <GridIcon className={` h-10 w-10 text-gray-700`} />
       </button>
     )
   }

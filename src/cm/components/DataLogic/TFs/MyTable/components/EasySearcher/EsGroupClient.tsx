@@ -98,7 +98,7 @@ export default function EsGroupClient(props: {
         {showAsModal ? (
           <div className={` ${stackClass}   `}>
             <R_Stack>
-              <BasicModal btnComponent={<LabelDisplay />}>
+              <BasicModal toggle={<LabelDisplay />}>
                 <C_Stack>
                   <Main />
                 </C_Stack>

@@ -86,7 +86,6 @@ const Main = ({type, col, props}) => {
 
   if (type === 'date' || type === 'month' || type === 'datetime' || type === 'year') {
     return <MyDatepicker {...props} />
-    return <></>
   }
 
   if (col.multipleSelect) {

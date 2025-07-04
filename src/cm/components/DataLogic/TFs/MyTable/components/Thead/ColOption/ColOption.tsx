@@ -1,5 +1,5 @@
 import Sorter, {SortIcon} from '@components/DataLogic/TFs/MyTable/components/Thead/ColOption/Sorter'
-import {MagnifyingGlassIcon} from '@heroicons/react/20/solid'
+import {Search} from 'lucide-react'
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import MyPopover from 'src/cm/components/utils/popover/MyPopover'
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
@@ -21,7 +21,7 @@ export default function ColOption({col, dataModelName, children}) {
       <R_Stack className={`gap-0`}>
         {col.search && (
           <>
-            <MyPopover {...{mode: `click`, button: <MagnifyingGlassIcon className={`onHover h-3 text-gray-500`} />}}>
+            <MyPopover {...{mode: `click`, button: <Search className={`onHover h-3 text-gray-500`} />}}>
               <div className={popOverContentClass}>
                 <Searcher {...{dataModelName, col, useGlobalProps}} />
               </div>

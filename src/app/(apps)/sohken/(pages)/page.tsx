@@ -79,7 +79,7 @@ const Top = async props => {
                           <R_Stack className={`justify-between`}>
                             <span>{file.name}</span>
                             <div>
-                              <BasicModal {...{btnComponent: <div className={`t-link`}>表示</div>}}>
+                              <BasicModal {...{toggle: <div className={`t-link`}>表示</div>}}>
                                 <ContentPlayer
                                   {...{
                                     src: file.url,

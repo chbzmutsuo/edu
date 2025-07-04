@@ -71,6 +71,7 @@ export const MainTable = React.memo<MainTableProps>(props => {
     () => ({getPaginationProps, RowActionButtonComponent}),
     [getPaginationProps, RowActionButtonComponent]
   )
+
   return (
     <>
       {typeof myTable?.header === 'function' && myTable?.header()}

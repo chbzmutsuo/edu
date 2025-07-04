@@ -6,7 +6,7 @@ import {C_Stack, R_Stack} from '@components/styles/common-components/common-comp
 import {CircledIcon} from '@components/styles/common-components/IconBtn'
 import {Paper} from '@components/styles/common-components/paper'
 
-import {PencilSquareIcon, TrashIcon} from '@heroicons/react/20/solid'
+import {SquarePen, Trash2} from 'lucide-react'
 
 import {NumHandler} from '@class/NumHandler'
 import React from 'react'
@@ -39,10 +39,10 @@ export const Cart = ({cartItems, setcartItems, setformOpen}) => {
                       }
                     }}
                   >
-                    <TrashIcon />
+                    <Trash2 />
                   </CircledIcon>
                   <CircledIcon onClick={() => setformOpen({...item})}>
-                    <PencilSquareIcon />
+                    <SquarePen />
                   </CircledIcon>
                 </R_Stack>
                 <div>

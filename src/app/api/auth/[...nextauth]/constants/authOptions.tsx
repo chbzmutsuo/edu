@@ -1,6 +1,7 @@
 import prisma from '@lib/prisma'
 import {normalCredentialsProvider} from '@app/api/auth/[...nextauth]/constants/next-auth-providers'
 import {googleProvider} from '@app/api/auth/[...nextauth]/constants/GoogleProvider'
+
 const maxAge = process.env.NEXT_PUBLIC_ROOTPATH === 'Grouping' ? 60 * 60 : 30 * 24 * 60 * 60
 
 export const authOptions: any = {

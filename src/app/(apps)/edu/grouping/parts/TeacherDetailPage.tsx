@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
 import MidTable from '@cm/components/DataLogic/RTs/MidTable/MidTable'
-import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import BasicTabs from '@components/utils/tabs/BasicTabs'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'

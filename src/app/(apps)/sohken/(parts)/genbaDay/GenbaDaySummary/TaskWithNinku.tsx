@@ -1,7 +1,7 @@
 'use client'
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {PlusCircleIcon} from '@heroicons/react/20/solid'
+import {PlusCircleIcon} from 'lucide-react'
 import React from 'react'
 import {GetNinkuList} from 'src/non-common/(chains)/getGenbaScheduleStatus/getNinkuList'
 import {formatDate} from '@class/Days/date-utils/formatters'

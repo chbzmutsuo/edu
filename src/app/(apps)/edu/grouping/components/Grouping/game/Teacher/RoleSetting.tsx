@@ -4,7 +4,7 @@ import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/edu/class/ColBuilder'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
-import {ClipboardDocumentIcon} from '@heroicons/react/20/solid'
+import {ClipboardIcon} from 'lucide-react'
 
 import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
@@ -63,7 +63,7 @@ export const RoleSetting = ({Game, useGlobalProps}) => {
               <>
                 {Game.LearningRoleMasterOnGame.length === 0 && (
                   <CircledIcon onClick={transferDataFromLearningRoleMaster}>
-                    <ClipboardDocumentIcon />
+                    <ClipboardIcon />
                   </CircledIcon>
                 )}
               </>

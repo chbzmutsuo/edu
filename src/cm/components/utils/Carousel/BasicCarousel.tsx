@@ -5,7 +5,7 @@ import ContentPlayer from 'src/cm/components/utils/ContentPlayer'
 
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import {CSSProperties} from 'react'
-import {ChevronDoubleLeftIcon, ChevronDoubleRightIcon} from '@heroicons/react/20/solid'
+import {ChevronsLeftIcon, ChevronsRightIcon} from 'lucide-react'
 import {cl} from 'src/cm/lib/methods/common'
 
 export type CarouselImageType = {
@@ -47,8 +47,7 @@ export default BasicCarousel
 const RenderArrow = ({onClickHandler, active, label, pos}) => {
   if (!active) return
   const arrowClass = ` w-7 z-10    onHover`
-  const ArrowIcon =
-    pos === 'right' ? <ChevronDoubleRightIcon className={arrowClass} /> : <ChevronDoubleLeftIcon className={arrowClass} />
+  const ArrowIcon = pos === 'right' ? <ChevronsRightIcon className={arrowClass} /> : <ChevronsLeftIcon className={arrowClass} />
 
   const className = cl(
     pos === 'right' ? 'right-4' : 'left-4 ',

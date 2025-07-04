@@ -6,8 +6,8 @@ import {CenterScreen} from '@components/styles/common-components/common-componen
 import useGlobal from '@hooks/globalHooks/useGlobal'
 
 import Redirector from '@components/utils/Redirector'
-import AdminClient from '@components/layout/Admin/AdminClient'
 
+import Admin from '@components/layout/Admin/Admin'
 const GroupingTemplate = props => {
   const {accessScopes, session, pathname, query, rootPath} = useGlobal()
   const {schoolId} = accessScopes().getGroupieScopes()
@@ -23,7 +23,7 @@ const GroupingTemplate = props => {
 
   return (
     <>
-      <AdminClient
+      <Admin
         {...{
           navBarPosition: `left`,
           AppName: AppName,
@@ -41,7 +41,7 @@ const GroupingTemplate = props => {
             props.children
           )}
         </div>
-      </AdminClient>
+      </Admin>
     </>
   )
   return <></>

@@ -1,6 +1,6 @@
-import React, { useCallback} from 'react'
+import React, {useCallback} from 'react'
 import {Z_INDEX} from 'src/cm/lib/constants/constants'
-import {Bars3Icon} from '@heroicons/react/20/solid'
+import {MenuIcon} from 'lucide-react'
 
 interface MenuButtonProps {
   onClick: () => void
@@ -35,7 +35,7 @@ export const MenuButton = React.memo<MenuButtonProps>(
 
     return (
       <button id="menu-btn" type="button" aria-label="メニューを開く">
-        <Bars3Icon
+        <MenuIcon
           style={iconStyles}
           onClick={handleClick}
           onMouseEnter={handleMouseEnter}

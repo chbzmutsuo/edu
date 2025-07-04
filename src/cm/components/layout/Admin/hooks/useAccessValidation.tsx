@@ -2,18 +2,7 @@ import {useMemo} from 'react'
 import {identifyPathItem, PAGES} from 'src/non-common/path-title-constsnts'
 import {rootPaths} from 'src/middleware'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
-
-type AccessValidationResult = {
-  isValid: boolean
-  redirectPath?: string
-  needsRedirect: boolean
-}
-
-type CheckValidAccessProps = {
-  pathname: string
-  origin: string
-  allPathsPatterns: any[]
-}
+import {AccessValidationResult, CheckValidAccessProps} from '@components/layout/Admin/type'
 
 const checkValidAccess = (props: CheckValidAccessProps) => {
   const {allPathsPatterns, pathname, origin = ''} = props

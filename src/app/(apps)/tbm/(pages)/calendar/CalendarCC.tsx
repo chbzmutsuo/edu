@@ -24,7 +24,7 @@ import React from 'react'
 export default function CalendarCC() {
   const {query} = useGlobal()
 
-  const month = toUtc(query.from ?? getMidnight())
+  const month = toUtc(query.month ?? getMidnight())
 
   return (
     <Padding>

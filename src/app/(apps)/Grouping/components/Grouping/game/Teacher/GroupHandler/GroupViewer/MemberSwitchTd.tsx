@@ -1,4 +1,4 @@
-import {ArrowsRightLeftIcon} from '@heroicons/react/20/solid'
+import {ArrowRightLeftIcon} from 'lucide-react'
 import React from 'react'
 
 export default function MemberSwitchTd({Student, editable, iconClass, isMoveCandidate, moveStudent, setmoveStudent}) {
@@ -9,7 +9,7 @@ export default function MemberSwitchTd({Student, editable, iconClass, isMoveCand
           {!isMoveCandidate && moveStudent ? (
             ``
           ) : (
-            <ArrowsRightLeftIcon
+            <ArrowRightLeftIcon
               {...{
                 className: iconClass,
                 onClick: () => {
