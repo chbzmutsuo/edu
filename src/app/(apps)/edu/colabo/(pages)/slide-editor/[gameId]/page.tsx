@@ -3,11 +3,11 @@ import prisma from '@cm/lib/prisma'
 import Redirector from '@cm/components/utils/Redirector'
 import {SlideEditorClient} from './SlideEditorClient'
 
-const Page = async (props) => {
+const Page = async props => {
   const {gameId} = await props.params
   const query = await props.searchParams
   const {session} = await initServerComopnent({query})
-  
+
   if (!session?.id) {
     return <Redirector redirectPath={'/login'} />
   }
@@ -16,20 +16,20 @@ const Page = async (props) => {
   const game = await prisma.game.findUnique({
     where: {
       id: parseInt(gameId),
-      teacherId: session.id // Ensure teacher owns this game
+      teacherId: session.id, // Ensure teacher owns this game
     },
     include: {
       Slide: {
         orderBy: {sortOrder: 'asc'},
         include: {
           SlideBlock: {
-            orderBy: {sortOrder: 'asc'}
-          }
-        }
+            orderBy: {sortOrder: 'asc'},
+          },
+        },
       },
       School: true,
-      SubjectNameMaster: true
-    }
+      SubjectNameMaster: true,
+    },
   })
 
   if (!game) {

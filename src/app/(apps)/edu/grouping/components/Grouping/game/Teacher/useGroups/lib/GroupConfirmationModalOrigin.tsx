@@ -15,9 +15,9 @@ export const GroupConfirmationModalOrigin = ({
     <>
       {groups && (
         <BasicModal
-          open={groups}
-          handleClose={e => {
-            setgroups(null)
+          {...{
+            open: groups,
+            setopen: setgroups,
           }}
         >
           <div className={`col-stack t-paper my-2 flex-wrap text-center`}>

@@ -50,7 +50,6 @@ model User {
   membershipName       String?
   damageNameMasterId   Int?
   color                String?
-  tell                 String?
   app                  String?
   apps                 String[]
 

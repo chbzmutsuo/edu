@@ -107,7 +107,7 @@ export default function EasySearcher(props: {
     return (
       <GlobalModal
         id={`${dataModelName}-Es-Modal`}
-        toggle={
+        Trigger={
           <IconBtn className={`onHover`} color={filterIsActive ? `yellow` : `gray`}>
             <R_Stack>
               <Filter />
@@ -194,7 +194,7 @@ const ShowAllFilterBtn = ({dataModelName, RowGroups, activeExGroup, createNextQu
       <Center>
         <GlobalModal
           id={`${dataModelName}-Es-Modal`}
-          toggle={
+          Trigger={
             <span className={`t-link pb-1 text-xs `}>
               <CircledIcon>
                 <SquareArrowRight />

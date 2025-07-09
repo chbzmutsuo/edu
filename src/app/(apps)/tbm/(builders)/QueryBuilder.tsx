@@ -29,7 +29,13 @@ export class QueryBuilder {
       tbmRouteGroup,
       tbmBase,
       user: {include: {TbmBase: {}, TbmVehicle: {}}} as Prisma.UserFindManyArgs,
-      tbmVehicle: {include: {TbmBase: {}, TbmVehicleMaintenanceRecord: {}}} as Prisma.TbmVehicleFindManyArgs,
+      tbmVehicle: {
+        include: {
+          TbmBase: {},
+          TbmVehicleMaintenanceRecord: {},
+          TbmFuelCard: {},
+        },
+      } as Prisma.TbmVehicleFindManyArgs,
       tbmRefuelHistory: {include: {TbmVehicle: {}, User: {}}} as Prisma.TbmRefuelHistoryFindManyArgs,
       tbmCarWashHistory: {include: {TbmVehicle: {}, User: {}}} as Prisma.TbmCarWashHistoryFindManyArgs,
       tbmDriveSchedule: {

@@ -7,6 +7,7 @@ import {CssString} from 'src/cm/components/styles/cssString'
 import React from 'react'
 import {IconBtnForSelect} from '@components/styles/common-components/IconBtn'
 import {twMerge} from 'tailwind-merge'
+import {ChevronDown} from 'lucide-react'
 
 const BaseDisplay = React.memo((props: {contexts: contextsType}) => {
   const {MySelectContextValue, controlContextValue} = props.contexts
@@ -31,13 +32,18 @@ const BaseDisplay = React.memo((props: {contexts: contextsType}) => {
   const textAlignMent = COLOR ? `text-center` : `: text-start`
 
   return (
-    <div tabIndex={0}>
-      <R_Stack
-        style={{...controlContextValue.ControlStyle}}
-        onClick={showSelector}
-        onKeyDown={showSelector}
-        className={twMerge(formProps.className, '')}
-      >
+    <div
+      {...{
+        tabIndex: 0,
+        onClick: showSelector,
+        onKeyDown: showSelector,
+      }}
+    >
+      <div className={`absolute right-2 top-1/2 -translate-y-1/2`}>
+        <ChevronDown className={`w-6 h-6`} />
+      </div>
+
+      <R_Stack style={{...controlContextValue.ControlStyle}} className={twMerge(formProps.className, '')}>
         <IconBtnForSelect
           color={COLOR}
           className={twMerge(

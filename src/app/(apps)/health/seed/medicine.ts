@@ -1,4 +1,3 @@
-
 // 薬マスタの初期データ
 export const medicineSeeds = [
   {

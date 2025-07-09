@@ -1,7 +1,7 @@
 import {STOCK_CONST} from '@app/(apps)/stock/(constants)/STOCK_CONST'
 import {jquants__getStockPrice} from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
 import {Days} from '@class/Days/Days'
-import { toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@class/Days/date-utils/calculations'
 import {createUpdate} from '@lib/methods/createUpdate'
 import prisma from '@lib/prisma'
 import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'

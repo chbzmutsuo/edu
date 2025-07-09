@@ -2,24 +2,14 @@
 import React, {useState} from 'react'
 
 import {basicModalPropType, ModalCore} from '@components/utils/modal/ModalCore'
-import ShadModal from '@cm/shadcn-ui/components/ShadModal'
 
 const BasicModal = React.memo((props: basicModalPropType) => {
-  const [open, setopen] = useState(false)
+  const [openState, setopenState] = useState(false)
 
-  // toggleがクリックされた時にモーダルを開く処理を追加
-  // const enhancedToggle = props.toggle ? <div onClick={() => setshow(true)}>{props.toggle}</div> : undefined
+  const open = props?.open ?? openState
+  const setopen = props?.setopen ?? setopenState
 
-  return (
-    <ShadModal
-      {...{
-        ...props,
-        DialogTrigger: props.toggle,
-        open: open,
-        onOpenChange: setopen,
-      }}
-    />
-  )
+  return <ModalCore {...{...props, open, setopen}} />
 })
 
 export default BasicModal

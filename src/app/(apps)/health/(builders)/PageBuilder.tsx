@@ -1,11 +1,13 @@
 'use client'
 
+import {Fields} from '@class/Fields/Fields'
 import {ColBuilder} from './ColBuilder'
 import {DetailPagePropType} from '@cm/types/types'
 import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import {R_Stack} from '@components/styles/common-components/common-components'
 import MyAccordion from '@components/utils/Accordions/MyAccordion'
+import GlobalIdSelector from '@components/GlobalIdSelector/GlobalIdSelector'
 
 export class PageBuilder {
   static masterKeyClient = {
@@ -36,5 +38,30 @@ export class PageBuilder {
         </R_Stack>
       )
     },
+  }
+
+  static getGlobalIdSelector = ({useGlobalProps}) => {
+    return () => {
+      const {accessScopes} = useGlobalProps
+      const scopes = accessScopes()
+      const {admin} = scopes
+
+      if (!admin) {
+        return <></>
+      }
+
+      const columns = Fields.transposeColumns([
+        {
+          label: '',
+          id: 'g_userId',
+          forSelect: {
+            config: {},
+          },
+          form: {},
+        },
+      ])
+
+      return <GlobalIdSelector {...{useGlobalProps, columns}} />
+    }
   }
 }

@@ -15,13 +15,8 @@ export default function Loader(props: any) {
         style={{
           zIndex: Z_INDEX.loader,
           background: 'var(--color-white)',
-          // background: 'linear-gradient(135deg,  var(--color-primary-light) , var(--color-white) )',
         }}
       >
-        {/* <div className={`progress-container`}>
-          <div className={`progress-bar`}></div>
-        </div> */}
-
         <LoadingBar ref={ref} height={4} />
         <Absolute>
           <C_Stack className={` items-center`}>

@@ -7,7 +7,7 @@ import {
   makeEasySearchGroupsProp,
   toRowGroup,
 } from '@cm/class/builders/QueryBuilderVariables'
-import { Prisma} from '@prisma/client'
+import {Prisma} from '@prisma/client'
 
 export const aquapotEasySearchBuilder = async () => {
   // const aqSaleRecord = async (props: easySearchType) => {

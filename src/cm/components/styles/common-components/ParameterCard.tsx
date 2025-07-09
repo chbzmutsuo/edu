@@ -14,7 +14,7 @@ const getClasses = styling => {
     wrapper = `p-1 leading-4 col-stack gap-0.5`,
     label = cn(
       //
-      `text-xs  text-gray-500 px-1 py-0.5`,
+      `text-xs  text-gray-500 px-1 py-0.5 gap-0`,
       `bg-gradient-to-r from-gray-100 to-gray-50`,
       `rounded-lg shadow-sm`,
       `transition-all duration-200 hover:shadow-md`
@@ -41,11 +41,11 @@ export const LabelValue = (props: htmlProps & {label?: any; value?: any; styling
       {...rest}
     >
       {label && (
-        <dt {...spread(styling, `label`)}>
-          <>
-            <span>{label}</span>
+        <dt>
+          <R_Stack {...spread(styling, `label`)}>
+            <div>{label}</div>
             <span className={!label ? 'opacity-0' : ''}>:</span>
-          </>
+          </R_Stack>
         </dt>
       )}
 

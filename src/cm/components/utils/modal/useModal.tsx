@@ -1,27 +1,27 @@
 import {useCallback, useState} from 'react'
-import {basicModalPropType} from '@components/utils/modal/ModalCore'
-import ShadModal from '@cm/shadcn-ui/components/ShadModal'
+import {basicModalPropType, ModalCore} from '@components/utils/modal/ModalCore'
 
-const useModal = (props?: {defaultOpen?: boolean; defaultState?: any}) => {
+const useModal = (props?: {defaultOpen?: boolean; defaultState?: any; alertOnClose?: boolean}) => {
   const [open, setopen] = useState<any>(props?.defaultState || props?.defaultOpen ? true : false)
   const handleOpen = (openValue?: any) => setopen(openValue || true)
   const handleClose = (closeValue?: any) => setopen(closeValue || false)
 
   const Modal = useCallback(
-    (props: basicModalPropType) => {
+    (modalProps: basicModalPropType) => {
       return (
-        <ShadModal
+        <ModalCore
           {...{
-            open,
-            onOpenChange: setopen,
             ...props,
+            open,
+            setopen,
+            ...modalProps,
           }}
         >
-          {props.children}
-        </ShadModal>
+          {modalProps.children}
+        </ModalCore>
       )
     },
-    [open, handleClose]
+    [open, handleClose, props]
   )
 
   return {

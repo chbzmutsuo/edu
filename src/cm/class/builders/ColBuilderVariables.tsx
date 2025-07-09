@@ -87,7 +87,7 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
   return (
     <LabelValue
       {...{
-        label,
+        label: <ShadPopover PopoverTrigger={<div>{label}</div>}>{children ?? value}</ShadPopover>,
         styling: {styles: {wrapper: {width: wrapperWidthPx}, label: {minWidth: labelWidthPx}}, classes: {wrapper: `text-sm`}},
       }}
     >
@@ -100,7 +100,7 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
             whiteSpace: 'nowrap',
           }}
         >
-          <ShadPopover PopoverTrigger={<div>{children ?? value}</div>}>{children ?? value}</ShadPopover>
+          {children ?? value}
         </div>
         {/* <EllipsisPopover maxWidth={valueWidth}>{children ?? value}</EllipsisPopover> */}
       </div>

@@ -41,8 +41,8 @@ model TbmBase_MonthConfig {
  code      String?
  yearMonth DateTime
 
- gasolinePerLiter Float?
  keiyuPerLiter    Float?
+ gasolinePerLiter Float?
 
  TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
  tbmBaseId Int
@@ -58,6 +58,7 @@ model TbmVehicle {
 
  code String @unique
 
+ name          String?
  frameNo       String? @unique
  vehicleNumber String  @unique
  type          String?
@@ -115,23 +116,27 @@ model TbmFuelCard {
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
 
- name         String
- date         DateTime
+ name      String
+ startDate DateTime @default(now())
+ endDate   DateTime @default(now())
+
  TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id])
  tbmVehicleId Int?
 }
 
+// 1台ごとに、「日付、件名、金額、依頼先、備考」からなる整備記録の履歴を管理可能
 model TbmVehicleMaintenanceRecord {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
 
- date   DateTime
- title  String
- price  Float
- remark String?
- type   String? // 3ヶ月点検・車検・その他
+ date       DateTime //日付
+ title      String // 件名
+ price      Float // 金額
+ contractor String? // 依頼先事業者
+ remark     String? // 備考
+ type       String? // 3ヶ月点検・車検・その他
 
  TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id])
  tbmVehicleId Int?

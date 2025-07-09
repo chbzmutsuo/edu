@@ -1,4 +1,3 @@
-
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
 import useGlobal from '@hooks/globalHooks/useGlobal'

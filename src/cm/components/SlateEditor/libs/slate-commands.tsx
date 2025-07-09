@@ -54,7 +54,6 @@ export const getCommands = ({editor}) => {
         match: n => !Editor.isEditor(n) && SlateElement.isElement(n) && n.type === type,
       })
 
-      // Toggle the block type depending on whether there's already a match.
       Transforms.setNodes(
         editor,
         {type: match ? 'paragraph' : type},

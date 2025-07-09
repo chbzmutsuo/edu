@@ -64,7 +64,7 @@ export const getAqProduct = (props: columnGetterType) => {
       format: (value, aqProduct) => {
         return (
           <R_Stack className={`items-center`}>
-            <GlobalModal id={`aqProductPriceOptionModal` + aqProduct.id} toggle={<div className={`t-link`}>編集</div>}>
+            <GlobalModal id={`aqProductPriceOptionModal` + aqProduct.id} Trigger={<div className={`t-link`}>編集</div>}>
               <ChildCreator
                 {...{
                   ParentData: aqProduct,

@@ -33,7 +33,7 @@ const GlobalIdSelector = React.memo((props: GlobalIdSelectorProps) => {
   })
 
   const ControlOptions = {
-    ControlStyle: {width: 120, fontSize: 13},
+    ControlStyle: {width: 140, fontSize: 13, background: 'white'},
     LabelStyle: {fontSize: 13},
   }
 

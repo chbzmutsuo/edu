@@ -78,6 +78,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
         //
 
         // {tabId: 'tbmDriveSchedule', label: '走行履歴'},
+        {tabId: 'tbmVehicle', label: '全車両一覧'},
         {tabId: 'tbmRefuelHistory', label: '給油履歴'},
         {tabId: 'tbmCarWashHistory', label: '洗車履歴'},
       ],

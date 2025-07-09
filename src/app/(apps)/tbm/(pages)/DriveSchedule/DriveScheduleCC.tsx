@@ -139,18 +139,18 @@ export default function DriveScheduleCC({days, tbmBase, whereQuery}) {
                 />
               ),
             },
-            {
-              label: <TextBlue> 商品マスタ</TextBlue>,
-              component: (
-                <ChildCreator
-                  {...{
-                    ...childCreatorProps,
-                    models: {parent: `tbmBase`, children: `tbmProduct`},
-                    columns: ColBuilder.tbmProduct(ColBuiderProps),
-                  }}
-                />
-              ),
-            },
+            // {
+            //   label: <TextBlue> 商品マスタ</TextBlue>,
+            //   component: (
+            //     <ChildCreator
+            //       {...{
+            //         ...childCreatorProps,
+            //         models: {parent: `tbmBase`, children: `tbmProduct`},
+            //         columns: ColBuilder.tbmProduct(ColBuiderProps),
+            //       }}
+            //     />
+            //   ),
+            // },
           ],
         }}
       />

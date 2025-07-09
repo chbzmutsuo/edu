@@ -100,21 +100,12 @@ export const useFormSubmit = ({
   const showErrorToast = useCallback((errorDetails: FormErrorDetails) => {
     const toastId = `form-error-${Date.now()}`
 
-    // toast.error(errorDetails.message, {
-    //   toastId,
-    //   autoClose: errorDetails.type === 'NETWORK_ERROR' ? 8000 : 5000,
-    //   closeOnClick: true,
-    //   draggable: true,
-    // })
-
-    // 開発環境では詳細ログを出力
-    if (process.env.NODE_ENV === 'development') {
-      console.group('🚨 Form Submit Error')
-      console.error('Error Type:', errorDetails.type)
-      console.error('Message:', errorDetails.message)
-      console.error('Original Error:', errorDetails.originalError)
-      console.groupEnd()
-    }
+    toast.error(errorDetails.message, {
+      toastId,
+      autoClose: errorDetails.type === 'NETWORK_ERROR' ? 8000 : 5000,
+      closeOnClick: true,
+      draggable: true,
+    })
   }, [])
 
   // データを取得してレコードを変更

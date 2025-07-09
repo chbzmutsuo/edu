@@ -1,11 +1,5 @@
 'use client'
-import {
-  dataMinimumCommonType,
-  form_table_modal_config,
-  prismaDataType,
-  additionalPropsType,
-  MyTableType,
-} from '@cm/types/types'
+import {dataMinimumCommonType, form_table_modal_config, prismaDataType, additionalPropsType, MyTableType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
 
 import {C_Stack, NoData} from 'src/cm/components/styles/common-components/common-components'

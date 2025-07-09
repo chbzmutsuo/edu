@@ -2,7 +2,6 @@
 
 import React, {useCallback} from 'react'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
-import {SquarePen} from 'lucide-react'
 
 import {cl} from 'src/cm/lib/methods/common'
 import Link from 'next/link'

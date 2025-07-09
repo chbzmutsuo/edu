@@ -108,7 +108,7 @@ export const myFormDefault: MyFormType = {
     // minWidth: Math.min(250),
 
     margin: 'auto',
-    background: '#ffffff',
+    // background: '#ffffff',
 
     ...stylesByDevice?.[GetDevice(getWindow().width)]?.Form,
   },

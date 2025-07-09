@@ -1,5 +1,4 @@
 import {NumHandler} from '@class/NumHandler'
-import {ScrollArea} from '@cm/shadcn-ui/components/ui/scroll-area'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
 import {cn} from '@cm/shadcn-ui/lib/utils'
 

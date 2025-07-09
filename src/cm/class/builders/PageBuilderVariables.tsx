@@ -27,7 +27,7 @@ export type DataModelBuilder = {
 export const roleMaster: DataModelBuilder = {
   top: props => {
     return (
-      <GlobalModal {...{id: `user-role-control`, toggle: <div className={`t-link`}>割当表</div>}}>
+      <GlobalModal {...{id: `user-role-control`, Trigger: <div className={`t-link`}>割当表</div>}}>
         <RoleAllocationTable {...{PageBuilderExtraProps: props.PageBuilderExtraProps}} />
       </GlobalModal>
     )

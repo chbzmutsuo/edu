@@ -1,3 +1,5 @@
+import {getMidnight} from '@class/Days/date-utils/calculations'
+import {Days} from '@class/Days/Days'
 import {
   EasySearchObject,
   EasySearchObjectExclusiveGroup,
@@ -27,7 +29,10 @@ export const tbmEasySearchBuilder = async () => {
       [key in string]: EasySearchObject
     }
 
-    const oneMonthFromNow = new Date(new Date().setMonth(new Date().getMonth() + 1))
+    const today = getMidnight()
+    const oneMonthFromNow = Days.month.add(today, 1)
+
+    const threeMonthFromNow = Days.month.add(today, 3)
 
     const Ex_exclusive1: exclusiveGroups = {
       jibaisekiManryobi: {
@@ -57,7 +62,7 @@ export const tbmEasySearchBuilder = async () => {
       etcCardExpiration: {
         label: `ETCカード`,
         CONDITION: {
-          etcCardExpiration: {lte: oneMonthFromNow},
+          etcCardExpiration: {lte: threeMonthFromNow},
         },
       },
       fuelCardExpiration: {
@@ -65,7 +70,8 @@ export const tbmEasySearchBuilder = async () => {
         CONDITION: {
           TbmFuelCard: {
             some: {
-              date: {lte: oneMonthFromNow},
+              startDate: {lte: today},
+              endDate: {gte: oneMonthFromNow},
             },
           },
         },

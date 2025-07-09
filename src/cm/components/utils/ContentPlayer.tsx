@@ -9,7 +9,7 @@ import {anyObject} from '@cm/types/utility-types'
 
 import useWindowSize from 'src/cm/hooks/useWindowSize'
 
-import {Absolute, Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
+import {Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {cl} from 'src/cm/lib/methods/common'
 import {pathToNoImage} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
 import {DownloadIcon} from 'lucide-react'
@@ -64,8 +64,8 @@ export default function ContentPlayer(props: ContentPlayerProps) {
       ...styles.thumbnail,
     }
     const mainStyle = {
-      width: WD.width * 0.8 - 50,
-      maxWidth: 600,
+      width: WD.width * 0.9,
+      maxWidth: Math.min(600, WD.width * 0.9),
       ...styles.main,
     }
 
@@ -146,18 +146,11 @@ const ZoomInBtn = ({
   return (
     <BasicModal
       {...{
-        // style: {maxHeight: '90vh', maxWidth: '90vw'},
-
-        toggle: <ZoomIn className={btnClass} />,
+        Trigger: <ZoomIn className={btnClass} />,
         alertOnClose: false,
       }}
     >
-      <Center
-        style={{
-          ...fileTypeAndStyles.mainStyle,
-          overflow: 'hidden',
-        }}
-      >
+      <Center style={{...fileTypeAndStyles.mainStyle, overflow: 'hidden'}}>
         <div className={`w-full h-full`}>{main}</div>
       </Center>
     </BasicModal>

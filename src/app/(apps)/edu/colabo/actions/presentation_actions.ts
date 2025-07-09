@@ -5,22 +5,22 @@ import {revalidatePath} from 'next/cache'
 
 export const presentation_actions = {
   async setActiveSlide(gameId, slideId) {
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       // Set all slides in this game to inactive
       await tx.slide.updateMany({
         where: {gameId: parseInt(gameId)},
-        data: {isActive: false}
+        data: {isActive: false},
       })
-      
+
       // Set the selected slide to active
       if (slideId) {
         await tx.slide.update({
           where: {id: parseInt(slideId)},
-          data: {isActive: true}
+          data: {isActive: true},
         })
       }
     })
-    
+
     revalidatePath('/edu/colabo/presentation')
   },
 
@@ -28,22 +28,22 @@ export const presentation_actions = {
     // For now, just mark this action
     // In a real implementation, you might want to store which responses are shared
     // or send real-time updates to students
-    
+
     const response = await prisma.slideResponse.findUnique({
       where: {id: parseInt(responseId)},
       include: {
         Student: true,
-        Slide: true
-      }
+        Slide: true,
+      },
     })
-    
+
     if (!response) {
       throw new Error('Response not found')
     }
-    
+
     // Here you could implement WebSocket/SSE to push the shared response to students
     // For now, we'll just return the response
-    
+
     revalidatePath('/edu/colabo/presentation')
     return response
   },
@@ -56,25 +56,25 @@ export const presentation_actions = {
           where: {isActive: true},
           include: {
             SlideBlock: {
-              orderBy: {sortOrder: 'asc'}
-            }
-          }
+              orderBy: {sortOrder: 'asc'},
+            },
+          },
         },
         GameStudent: {
           include: {
-            Student: true
-          }
-        }
-      }
+            Student: true,
+          },
+        },
+      },
     })
 
     const activeSlide = game?.Slide?.[0] || null
     const totalStudents = game?.GameStudent?.length || 0
-    
+
     let responseCount = 0
     if (activeSlide) {
       responseCount = await prisma.slideResponse.count({
-        where: {slideId: activeSlide.id}
+        where: {slideId: activeSlide.id},
       })
     }
 
@@ -83,7 +83,7 @@ export const presentation_actions = {
       activeSlide,
       totalStudents,
       responseCount,
-      responseRate: totalStudents > 0 ? Math.round((responseCount / totalStudents) * 100) : 0
+      responseRate: totalStudents > 0 ? Math.round((responseCount / totalStudents) * 100) : 0,
     }
   },
 
@@ -92,8 +92,8 @@ export const presentation_actions = {
     const existingGameStudent = await prisma.gameStudent.findFirst({
       where: {
         gameId: parseInt(gameId),
-        studentId: parseInt(studentId)
-      }
+        studentId: parseInt(studentId),
+      },
     })
 
     if (existingGameStudent) {
@@ -104,15 +104,15 @@ export const presentation_actions = {
     const gameStudent = await prisma.gameStudent.create({
       data: {
         gameId: parseInt(gameId),
-        studentId: parseInt(studentId)
+        studentId: parseInt(studentId),
       },
       include: {
         Student: {
           include: {
-            Classroom: true
-          }
-        }
-      }
+            Classroom: true,
+          },
+        },
+      },
     })
 
     revalidatePath('/edu/colabo/presentation')
@@ -123,16 +123,16 @@ export const presentation_actions = {
     await prisma.gameStudent.deleteMany({
       where: {
         gameId: parseInt(gameId),
-        studentId: parseInt(studentId)
-      }
+        studentId: parseInt(studentId),
+      },
     })
 
     // Also remove their responses
     await prisma.slideResponse.deleteMany({
       where: {
         gameId: parseInt(gameId),
-        studentId: parseInt(studentId)
-      }
+        studentId: parseInt(studentId),
+      },
     })
 
     revalidatePath('/edu/colabo/presentation')
@@ -142,10 +142,10 @@ export const presentation_actions = {
     // Generate QR code data for student access
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     const gameUrl = `${baseUrl}/edu/colabo/presentation/${secretKey}?as=student`
-    
+
     return {
       url: gameUrl,
-      qrData: gameUrl
+      qrData: gameUrl,
     }
   },
 
@@ -154,8 +154,8 @@ export const presentation_actions = {
     const game = await prisma.game.findUnique({
       where: {secretKey},
       include: {
-        School: true
-      }
+        School: true,
+      },
     })
 
     if (!game) {
@@ -166,11 +166,11 @@ export const presentation_actions = {
     const student = await prisma.student.findFirst({
       where: {
         attendanceNumber: parseInt(studentCode),
-        schoolId: game.schoolId
+        schoolId: game.schoolId,
       },
       include: {
-        Classroom: true
-      }
+        Classroom: true,
+      },
     })
 
     if (!student) {
@@ -182,7 +182,7 @@ export const presentation_actions = {
 
     return {
       game,
-      student
+      student,
     }
   },
 
@@ -191,16 +191,16 @@ export const presentation_actions = {
       where: {id: parseInt(gameId)},
       data: {
         status: 'completed',
-        updatedAt: new Date()
-      }
+        updatedAt: new Date(),
+      },
     })
 
     // Set all slides to inactive
     await prisma.slide.updateMany({
       where: {gameId: parseInt(gameId)},
-      data: {isActive: false}
+      data: {isActive: false},
     })
 
     revalidatePath('/edu/colabo/presentation')
-  }
+  },
 }

@@ -19,11 +19,11 @@ export default function ColOptionModal() {
     <BasicModal
       {...{
         alertOnClose: false,
-        open: colConfigModal,
-        handleClose: () => setcolConfigModal(null),
+        open: !!colConfigModal,
+        setopen: setcolConfigModal,
       }}
     >
-      {col?.search && <SearchForm {...{dataModelName, col, query, addQuery}} />}
+      <div>{col?.search && <SearchForm {...{dataModelName, col, query, addQuery}} />}</div>
     </BasicModal>
   )
 }

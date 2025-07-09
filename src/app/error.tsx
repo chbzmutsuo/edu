@@ -22,7 +22,7 @@ export default function Error({error, reset}) {
         </C_Stack>
       </Center>
       <div className={`fixed  bottom-4 right-4`}>
-        <BasicModal toggle={<div className={`text-gray-50`}>_</div>}>
+        <BasicModal Trigger={<div className={`text-gray-50`}>_</div>}>
           <div className={`p-4`}>{error.message}</div>
         </BasicModal>
       </div>

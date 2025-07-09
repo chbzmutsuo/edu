@@ -1,46 +1,79 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "ES2022",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
     "strict": false,
     "forceConsistentCasingInFileNames": true,
-    "experimentalDecorators": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "sourceMap": false,
     "incremental": true,
-    "baseUrl": ".",
-    "paths": {
-      "@app/*": ["src/app/*"],
-      "@providers/*": ["src/cm/providers/*"],
-      "@constants/*": ["src/cm/constants/*"],
-      "@class/*": ["src/cm/class/*"],
-      "@components/*": ["src/cm/components/*"],
-      "@styles/*": ["src/cm/styles/*"],
-      "@hooks/*": ["src/cm/hooks/*"],
-      "@lib/*": ["src/cm/lib/*"],
-      "@pages/*": ["src/pages/*"],
-      "@fonts/*": ["src/fonts/*"],
-      "@context/*": ["src/cm/context/*"],
-      "@cm/*": ["src/cm/*"]
-    },
+    "allowSyntheticDefaultImports": true,
     "plugins": [
       {
         "name": "next"
       }
     ],
+    "baseUrl": ".",
+    "paths": {
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@providers/*": [
+        "src/cm/providers/*"
+      ],
+      "@constants/*": [
+        "src/cm/constants/*"
+      ],
+      "@class/*": [
+        "src/cm/class/*"
+      ],
+      "@components/*": [
+        "src/cm/components/*"
+      ],
+      "@styles/*": [
+        "src/cm/styles/*"
+      ],
+      "@hooks/*": [
+        "src/cm/hooks/*"
+      ],
+      "@lib/*": [
+        "src/cm/lib/*"
+      ],
+      "@pages/*": [
+        "src/pages/*"
+      ],
+      "@fonts/*": [
+        "src/fonts/*"
+      ],
+      "@context/*": [
+        "src/cm/context/*"
+      ],
+      "@cm/*": [
+        "src/cm/*"
+      ]
+    },
     "strictNullChecks": true
   },
-  "include": ["next-env.d.ts", "postcss.config.cjs", "src/**/*", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", ".next", "dist", "coverage", "**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.spec.tsx"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
 // {
 //   "compilerOptions": {

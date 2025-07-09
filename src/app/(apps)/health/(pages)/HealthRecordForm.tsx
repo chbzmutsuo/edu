@@ -31,10 +31,10 @@ interface BulkRecordItem {
   bloodSugarValue?: number
   medicineId?: number
   medicineUnit?: number
-  walkingCasual?: number
-  walkingLightly?: number
-  walkingQuickly?: number
-  walkingStrenuous?: number
+  walkingShortDistance?: number
+  walkingMediumDistance?: number
+  walkingLongDistance?: number
+  walkingExercise?: number
   memo?: string
 }
 
@@ -85,6 +85,18 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
     e.preventDefault()
     if (!onBulkSubmit) return
 
+    const dataWithoutTime = bulkData.items.some(item => {
+      const hasTime = item.recordTime
+
+      const hasOtherProperty = Object.values(item).some(value => !!value)
+      return !hasTime && hasOtherProperty
+    })
+
+    if (dataWithoutTime) {
+      alert('時刻が入力されていないデータがあります。')
+      return
+    }
+
     const validItems = bulkData.items.filter(item => item.recordTime)
     const formattedData: HealthRecordFormData[] = validItems.map(item => ({
       category: bulkData.category,
@@ -93,14 +105,16 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
       bloodSugarValue: item.bloodSugarValue,
       medicineId: item.medicineId,
       medicineUnit: item.medicineUnit,
-      walkingCasual: item.walkingCasual,
-      walkingLightly: item.walkingLightly,
-      walkingQuickly: item.walkingQuickly,
-      walkingStrenuous: item.walkingStrenuous,
+      walkingShortDistance: item.walkingShortDistance,
+      walkingMediumDistance: item.walkingMediumDistance,
+      walkingLongDistance: item.walkingLongDistance,
+      walkingExercise: item.walkingExercise,
       memo: item.memo,
     }))
 
-    onBulkSubmit(formattedData)
+    return
+
+    // onBulkSubmit(formattedData)
   }
 
   const handleInputChange = (field: keyof HealthRecordFormData, value: any) => {
@@ -135,7 +149,8 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
             </button>
           )}
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6 p-3 w-[400px] max-w-[80vw] bg-white rounded-lg shadow">
+
+        <form onSubmit={handleSubmit} className="space-y-6  w-[400px]  max-w-[80vw] ">
           {/* 日付選択 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">日付</label>
@@ -304,7 +319,7 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
 
   // 一括入力モード
   return (
-    <form onSubmit={handleBulkSubmit} className="space-y-6 p-3 w-[800px] max-w-[95vw] bg-white rounded-lg shadow">
+    <form onSubmit={handleBulkSubmit} className="space-y-6  w-[800px] max-w-[90vw] ">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold text-gray-800">健康記録を一括登録</h2>
         <button
@@ -354,8 +369,8 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
       {/* 一括入力テーブル */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium text-gray-800">記録入力（最大10件）</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300">
+        <div className="overflow-x-auto border rounded-md">
+          <table className="w-full border-collapse border border-gray-300 ">
             <thead>
               <tr className="bg-gray-50">
                 <th className="border border-gray-300 p-2 text-left font-medium text-gray-700">時刻</th>
@@ -370,13 +385,13 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
                 )}
                 {bulkData.category === HEALTH_CATEGORIES.WALKING && (
                   <>
-                    <th className="border border-gray-300 p-2 text-left font-medium text-gray-700 text-xs">軽歩行</th>
-                    <th className="border border-gray-300 p-2 text-left font-medium text-gray-700 text-xs">中歩行</th>
-                    <th className="border border-gray-300 p-2 text-left font-medium text-gray-700 text-xs">急歩行</th>
-                    <th className="border border-gray-300 p-2 text-left font-medium text-gray-700 text-xs">強歩行</th>
+                    <th className="border border-gray-300 p-2 min-w-16 text-left font-medium text-gray-700 text-xs">短</th>
+                    <th className="border border-gray-300 p-2 min-w-16 text-left font-medium text-gray-700 text-xs">中</th>
+                    <th className="border border-gray-300 p-2 min-w-16 text-left font-medium text-gray-700 text-xs">長</th>
+                    <th className="border border-gray-300 p-2 min-w-16 text-left font-medium text-gray-700 text-xs">運動</th>
                   </>
                 )}
-                <th className="border border-gray-300 p-2 text-left font-medium text-gray-700">メモ</th>
+                <th className="border border-gray-300 p-2 min-w-40 text-left font-medium text-gray-700">メモ</th>
               </tr>
             </thead>
             <tbody>
@@ -465,9 +480,9 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
                       <>
                         <td className="border border-gray-300 p-2">
                           <select
-                            value={item.walkingCasual || ''}
-                            onChange={e => handleBulkItemChange(index, 'walkingCasual', parseFloat(e.target.value) || 0)}
-                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            value={item.walkingShortDistance || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingShortDistance', parseFloat(e.target.value) || 0)}
+                            className="w-full p-0 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="">選択</option>
                             {Array.from({length: 50}, (_, i) => i).map(value => (
@@ -479,9 +494,9 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
                         </td>
                         <td className="border border-gray-300 p-2">
                           <select
-                            value={item.walkingLightly || ''}
-                            onChange={e => handleBulkItemChange(index, 'walkingLightly', parseFloat(e.target.value) || 0)}
-                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            value={item.walkingMediumDistance || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingMediumDistance', parseFloat(e.target.value) || 0)}
+                            className="w-full p-0 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="">選択</option>
                             {Array.from({length: 50}, (_, i) => i).map(value => (
@@ -493,9 +508,9 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
                         </td>
                         <td className="border border-gray-300 p-2">
                           <select
-                            value={item.walkingQuickly || ''}
-                            onChange={e => handleBulkItemChange(index, 'walkingQuickly', parseFloat(e.target.value) || 0)}
-                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            value={item.walkingLongDistance || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingLongDistance', parseFloat(e.target.value) || 0)}
+                            className="w-full p-0 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="">選択</option>
                             {Array.from({length: 50}, (_, i) => i).map(value => (
@@ -507,9 +522,9 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
                         </td>
                         <td className="border border-gray-300 p-2">
                           <select
-                            value={item.walkingStrenuous || ''}
-                            onChange={e => handleBulkItemChange(index, 'walkingStrenuous', parseFloat(e.target.value) || 0)}
-                            className="w-full p-1 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                            value={item.walkingExercise || ''}
+                            onChange={e => handleBulkItemChange(index, 'walkingExercise', parseFloat(e.target.value) || 0)}
+                            className="w-full p-0 border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="">選択</option>
                             {Array.from({length: 50}, (_, i) => i).map(value => (

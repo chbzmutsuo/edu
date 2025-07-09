@@ -14,22 +14,28 @@ export const SlideBlock = ({block, isPreview = false}) => {
     backgroundColor,
     fontWeight,
     textDecoration,
-    isCorrectAnswer
+    isCorrectAnswer,
   } = block
 
   const getAlignmentClass = () => {
     switch (alignment) {
-      case 'center': return 'text-center'
-      case 'right': return 'text-right'
-      default: return 'text-left'
+      case 'center':
+        return 'text-center'
+      case 'right':
+        return 'text-right'
+      default:
+        return 'text-left'
     }
   }
 
   const getVerticalAlignClass = () => {
     switch (verticalAlign) {
-      case 'middle': return 'flex items-center'
-      case 'bottom': return 'flex items-end'
-      default: return 'flex items-start'
+      case 'middle':
+        return 'flex items-center'
+      case 'bottom':
+        return 'flex items-end'
+      default:
+        return 'flex items-start'
     }
   }
 
@@ -67,12 +73,7 @@ export const SlideBlock = ({block, isPreview = false}) => {
     return (
       <div className={containerClass}>
         {imageUrl ? (
-          <img 
-            src={imageUrl} 
-            alt={content || 'スライド画像'} 
-            className="max-w-full h-auto rounded"
-            style={getTextStyle()}
-          />
+          <img src={imageUrl} alt={content || 'スライド画像'} className="max-w-full h-auto rounded" style={getTextStyle()} />
         ) : (
           !isPreview && (
             <div className="w-full">
@@ -91,9 +92,9 @@ export const SlideBlock = ({block, isPreview = false}) => {
     return (
       <div className={containerClass}>
         {linkUrl ? (
-          <a 
-            href={linkUrl} 
-            target="_blank" 
+          <a
+            href={linkUrl}
+            target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:text-blue-800 underline"
             style={getTextStyle()}
@@ -104,9 +105,7 @@ export const SlideBlock = ({block, isPreview = false}) => {
           !isPreview && (
             <div className="w-full">
               <div className="text-sm text-gray-600 mb-1">リンクブロック</div>
-              <div className="border rounded p-2 bg-gray-50 text-gray-400">
-                リンクURLを設定してください
-              </div>
+              <div className="border rounded p-2 bg-gray-50 text-gray-400">リンクURLを設定してください</div>
             </div>
           )
         )}
@@ -118,19 +117,12 @@ export const SlideBlock = ({block, isPreview = false}) => {
     return (
       <div className={containerClass}>
         <div className="w-full">
-          {!isPreview && (
-            <div className="text-sm text-gray-600 mb-1">クイズ問題</div>
-          )}
-          <div 
-            className={isPreview ? 'text-xl font-bold' : 'border rounded p-3 bg-blue-50'}
-            style={getTextStyle()}
-          >
+          {!isPreview && <div className="text-sm text-gray-600 mb-1">クイズ問題</div>}
+          <div className={isPreview ? 'text-xl font-bold' : 'border rounded p-3 bg-blue-50'} style={getTextStyle()}>
             {content ? (
               <MarkDownDisplay>{content}</MarkDownDisplay>
             ) : (
-              !isPreview && (
-                <span className="text-gray-400">問題文を入力してください</span>
-              )
+              !isPreview && <span className="text-gray-400">問題文を入力してください</span>
             )}
           </div>
         </div>
@@ -147,7 +139,7 @@ export const SlideBlock = ({block, isPreview = false}) => {
               選択肢 {isCorrectAnswer && <span className="text-green-600">(正解)</span>}
             </div>
           )}
-          <div 
+          <div
             className={`
               ${isPreview ? 'border-2 rounded-lg p-3 cursor-pointer hover:bg-gray-50' : 'border rounded p-2 bg-gray-50'}
               ${isCorrectAnswer && isPreview ? 'border-green-400' : 'border-gray-300'}
@@ -157,9 +149,7 @@ export const SlideBlock = ({block, isPreview = false}) => {
             {content ? (
               <MarkDownDisplay>{content}</MarkDownDisplay>
             ) : (
-              !isPreview && (
-                <span className="text-gray-400">選択肢を入力してください</span>
-              )
+              !isPreview && <span className="text-gray-400">選択肢を入力してください</span>
             )}
           </div>
         </div>

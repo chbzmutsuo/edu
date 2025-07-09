@@ -176,7 +176,7 @@ export const Padding = (props: htmlProps & {paddingClass?: string}) => {
   return (
     <div
       {...{
-        className: cl('p-3', className),
+        className: cn('p-4', className),
         style,
         ...rest,
       }}

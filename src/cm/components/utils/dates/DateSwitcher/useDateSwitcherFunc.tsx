@@ -7,7 +7,7 @@ import React, {useCallback} from 'react'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {ChevronsLeft, ChevronsRight} from 'lucide-react'
 
 export default function useDateSwitcherFunc(props) {
@@ -205,7 +205,7 @@ const getColumnBase = ({
 
     columnsBase.from.type = 'month'
     columnsBase.from.form.showResetBtn = false
-    columnsBase.from.form.style = {width: 140}
+    columnsBase.from.form.style = {width: 155}
   }
 
   if (yearOnly) {
@@ -219,7 +219,7 @@ const getColumnBase = ({
 
     columnsBase.from.type = 'year'
     columnsBase.from.form.showResetBtn = false
-    columnsBase.from.form.style = {width: 140}
+    columnsBase.from.form.style = {width: 155}
   }
 
   if (selectMonth) {
@@ -250,6 +250,8 @@ const getQueryInfo = ({query}) => {
     from = new Date(query.from)
   } else if (query.month && noValue) {
     from = Days.month.getMonthDatum(new Date(query.month)).firstDayOfMonth
+  } else {
+    from = getMidnight(new Date())
   }
 
   if (query.to) {

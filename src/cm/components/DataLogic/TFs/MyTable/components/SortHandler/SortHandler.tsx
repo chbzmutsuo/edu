@@ -26,7 +26,7 @@ const SortHandler = React.memo((props: SortHandler) => {
   /**modal Memo */
   const ModalMemo = () => {
     return (
-      <BasicModal alertOnClose={false} open={tableSortModalOpen} handleClose={e => settableSortModalOpen(false)}>
+      <BasicModal alertOnClose={false} open={tableSortModalOpen} setopen={settableSortModalOpen}>
         <main className={`relative  `} style={{...myFormDefault?.style, maxWidth: 900, padding: 0, maxHeight: '70vh'}}>
           <C_Stack>
             {sortableCols.map((col, i) => {

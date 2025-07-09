@@ -24,44 +24,44 @@ export const TemplateFactory = {
     }
   },
 
-  getTemplateConfig: (templateType) => {
+  getTemplateConfig: templateType => {
     const configs = {
       normal: {
         name: 'ノーマル',
         description: '基本的なスライド表示',
         allowedBlocks: ['text', 'image', 'link'],
-        features: ['display']
+        features: ['display'],
       },
       psychology: {
         name: '心理アンケート',
         description: '生徒の心理状態を調査',
         allowedBlocks: ['text', 'image'],
-        features: ['survey', 'grouping']
+        features: ['survey', 'grouping'],
       },
       choice_quiz: {
         name: '選択クイズ',
         description: '選択肢から回答を選ぶクイズ',
         allowedBlocks: ['text', 'image', 'quiz_question', 'choice_option'],
-        features: ['quiz', 'analytics']
+        features: ['quiz', 'analytics'],
       },
       free_text_quiz: {
         name: '自由記述クイズ',
         description: '自由にテキストで回答',
         allowedBlocks: ['text', 'image', 'quiz_question'],
-        features: ['quiz', 'text_response']
+        features: ['quiz', 'text_response'],
       },
       summary_survey: {
         name: 'まとめアンケート',
         description: '授業のまとめアンケート',
         allowedBlocks: ['text', 'image'],
-        features: ['survey', 'ranking']
-      }
+        features: ['survey', 'ranking'],
+      },
     }
-    
+
     return configs[templateType] || configs.normal
   },
 
-  createDefaultBlocks: (templateType) => {
+  createDefaultBlocks: templateType => {
     switch (templateType) {
       case 'psychology':
         return [
@@ -69,8 +69,8 @@ export const TemplateFactory = {
             blockType: 'text',
             content: '# 心理アンケート\n\n以下の質問に答えてください。',
             alignment: 'center',
-            sortOrder: 0
-          }
+            sortOrder: 0,
+          },
         ]
       case 'choice_quiz':
         return [
@@ -78,22 +78,22 @@ export const TemplateFactory = {
             blockType: 'quiz_question',
             content: '問題文をここに入力してください',
             alignment: 'left',
-            sortOrder: 0
+            sortOrder: 0,
           },
           {
             blockType: 'choice_option',
             content: '選択肢1',
             alignment: 'left',
             isCorrectAnswer: true,
-            sortOrder: 1
+            sortOrder: 1,
           },
           {
             blockType: 'choice_option',
             content: '選択肢2',
             alignment: 'left',
             isCorrectAnswer: false,
-            sortOrder: 2
-          }
+            sortOrder: 2,
+          },
         ]
       case 'free_text_quiz':
         return [
@@ -101,8 +101,8 @@ export const TemplateFactory = {
             blockType: 'quiz_question',
             content: '質問をここに入力してください',
             alignment: 'left',
-            sortOrder: 0
-          }
+            sortOrder: 0,
+          },
         ]
       case 'summary_survey':
         return [
@@ -110,8 +110,8 @@ export const TemplateFactory = {
             blockType: 'text',
             content: '# 授業の振り返り\n\n今日の授業について感想を聞かせてください。',
             alignment: 'center',
-            sortOrder: 0
-          }
+            sortOrder: 0,
+          },
         ]
       default: // normal
         return [
@@ -119,9 +119,9 @@ export const TemplateFactory = {
             blockType: 'text',
             content: '# 新しいスライド\n\nこちらにコンテンツを追加してください。',
             alignment: 'center',
-            sortOrder: 0
-          }
+            sortOrder: 0,
+          },
         ]
     }
-  }
+  },
 }

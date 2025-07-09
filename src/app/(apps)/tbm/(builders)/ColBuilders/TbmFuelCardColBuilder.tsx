@@ -1,6 +1,7 @@
 'use client'
 import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
 import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {getMidnight} from '@class/Days/date-utils/calculations'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
 
@@ -20,7 +21,16 @@ export const TbmFuelCardColBuilder = (props: columnGetterType) => {
         config: getVehicleForSelectConfig({}),
       },
     },
-    {id: 'name', label: 'タイトル', form: {...defaultRegister}},
-    {id: 'date', label: '日付', form: {...defaultRegister}, type: 'date'},
+    {id: 'name', label: '件名', form: {...defaultRegister}},
+    {
+      id: 'startDate',
+      label: '利用開始日',
+      form: {
+        ...defaultRegister,
+        defaultValue: getMidnight(),
+      },
+      type: 'date',
+    },
+    {id: 'endDate', label: '有効期限', form: {...defaultRegister}, type: 'date'},
   ]).transposeColumns()
 }

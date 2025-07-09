@@ -1,6 +1,5 @@
 'use client'
 import React, {useMemo} from 'react'
-import {NestHandler} from 'src/cm/class/NestHandler'
 import {C_Stack, Padding, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {Z_INDEX} from '@lib/constants/constants'
@@ -8,35 +7,13 @@ import {Z_INDEX} from '@lib/constants/constants'
 import {TableSkelton} from '@components/utils/loader/TableSkelton'
 import DetailedPageCC from '@components/DataLogic/TFs/PropAdjustor/components/DetailedPageCC'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import TableForm from '@components/DataLogic/TFs/PropAdjustor/components/TableForm'
 
 import EasySearcher from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
 
 import {usePropAdjustorLogic} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/usePropAdjustorLogic'
-import {PropAdjustorPropsType, SurroundingComponentProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {PropAdjustorPropsType} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import useWindowSize from '@hooks/useWindowSize'
-
-const SurroundingComponent = React.memo<SurroundingComponentProps>(({type, ClientProps2}) => {
-  const {PageBuilder, dataModelName} = ClientProps2
-
-  const componentMethod = useMemo(() => {
-    if (!PageBuilder) return undefined
-    const getter = `${dataModelName}.${type}`
-    return NestHandler.GetNestedValue(getter, PageBuilder)
-  }, [PageBuilder, dataModelName, type])
-
-  if (componentMethod) {
-    return componentMethod(ClientProps2)
-  }
-
-  if (type === 'table') {
-    return <TableForm {...ClientProps2} />
-  }
-
-  return null
-})
-
-SurroundingComponent.displayName = 'SurroundingComponent'
+import {SurroundingComponent} from '@components/DataLogic/TFs/PropAdjustor/components/SurroundingComponent'
 
 const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
   const {serverFetchProps} = props

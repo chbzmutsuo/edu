@@ -1,5 +1,5 @@
 import {Days} from '@class/Days/Days'
-import { toJst, toUtc} from '@class/Days/date-utils/calculations'
+import {toJst, toUtc} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {AqSaleRecord, AqPriceOption, AqSaleCart} from '@prisma/client'

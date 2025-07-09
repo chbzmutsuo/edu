@@ -5,9 +5,9 @@ import {cva} from 'class-variance-authority'
 
 function Card({
   className,
-  variant = 'accent',
+  variant = 'default',
   ...props
-}: {variant?: 'default' | 'outline' | 'accent'} & React.ComponentProps<'div'>) {
+}: {variant?: 'default' | 'outline' | 'gradient'} & React.ComponentProps<'div'>) {
   const cardVariantClass = cva(
     'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-gray-200 py-3 px-2  shadow-md',
     {
@@ -15,7 +15,7 @@ function Card({
         variant: {
           default: 'bg-white text-card-foreground flex flex-col gap-6 rounded-xl border border-gray-200 py-3 px-2 shadow-md',
 
-          accent: 'bg-gradient-to-br from-bg-gray-100 to-white rounded-2xl border-0 py-4 px-4 shadow-lg',
+          gradient: 'gradient-base',
           outline: 'bg-white   shadow-lg  border-2 border-gray-200  rounded-xl  py-3 px-2 ',
         },
       },
@@ -23,7 +23,7 @@ function Card({
   )
   return (
     <div data-slot="card" className={cn(cardVariantClass({variant}), className)} {...props}>
-      <div className={`bg-white`}>{props.children}</div>
+      <div>{props.children}</div>
     </div>
   )
 }

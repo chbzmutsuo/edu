@@ -47,12 +47,13 @@
  .myFormControl {
   display: block;
   width: 100%;
-  background-color: var(--color-gray-100);
+  background-color: var(--color-);
   padding-top: 0.3rem; /* p-1 */
   padding-bottom: 0.3rem;
   padding-left: 0.5rem; /* px-2 */
   padding-right: 0.5rem;
-  border-bottom-width: 1.5px;
+  border-width: 1px;
+  border-radius: var(--radius-md);
   border-color: var(--color-gray-300);
   line-height: 1.5rem; /* smの行間も合わせるなら */
   font-size: 18px !important;
@@ -60,22 +61,22 @@
   transition-duration: 300ms;
   transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
 
-  &:required {
-   &:placeholder-shown {
-    background-color: var(--color-red-100) !important;
-    border-color: var(--color-red-500) !important;
-   }
-  }
+  // &:required {
+  //  &:placeholder-shown {
+  //   background-color: var(--color-red-100) !important;
+  //   border-color: var(--color-red-500) !important;
+  //  }
+  // }
 
   &:hover {
    cursor: text;
    border-color: var(--color-blue-600) !important;
-   background-color: var(--color-blue-50) !important;
+   box-shadow: var(--shadow-md);
   }
   &:focus {
    // border-color: var(--color-blue-600) !important;
    // background-color: var(--color-blue-50) !important;
-   border: none;
+   // border: none;
   }
 
   &:disabled {

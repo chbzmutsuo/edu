@@ -30,7 +30,7 @@ const MySelect = React.memo((props: ControlProps) => {
             mode: 'click',
             PopoverTrigger: <BaseDisplay {...{contexts}} />,
             open: isOptionsVisible,
-            handleClose: setIsOptionsVisible,
+            setopen: setIsOptionsVisible,
           }}
         >
           <OptionSelector {...{contexts}} />

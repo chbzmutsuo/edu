@@ -7,6 +7,7 @@ import {formatDate, TimeFormatType} from '@class/Days/date-utils/formatters'
 import {ControlContextType} from '@cm/types/form-control-type'
 import {Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
+import {CalendarDays} from 'lucide-react'
 
 const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -67,34 +68,31 @@ const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
 
   return (
     <>
-      <>
-        <ShadPopover
+      <ShadPopover
+        {...{
+          mode: 'click',
+          PopoverTrigger: (
+            <R_Stack className={`  justify-between gap-1`}>
+              <DateInputter {...{col, currentValue, formProps, selectedDate, toggleCalendar, timeFormat, ControlStyle}} />
+              {col.type === `datetime` && <TimeInputter {...{col, selectedDate, setDate, formProps}} />}
+            </R_Stack>
+          ),
+        }}
+      >
+        <MainDatePicker
           {...{
-            PopoverTrigger: (
-              <R_Stack className={`  justify-between gap-1`}>
-                <DateInputter {...{col, currentValue, formProps, selectedDate, toggleCalendar, timeFormat, ControlStyle}} />
-                {col.type === `datetime` && <TimeInputter {...{col, selectedDate, setDate, formProps}} />}
-              </R_Stack>
-            ),
-            open: isOpen,
-            handleClose: setIsOpen,
+            ControlStyle,
+            col,
+            formProps,
+            setIsOpen,
+            field,
+            useResetValue,
+            selectedDate,
+            setSelectedDate,
+            handleDateChange: (date, e) => setDate({date, timeStr: ''}),
           }}
-        >
-          <MainDatePicker
-            {...{
-              ControlStyle,
-              col,
-              formProps,
-              setIsOpen,
-              field,
-              useResetValue,
-              selectedDate,
-              setSelectedDate,
-              handleDateChange: (date, e) => setDate({date, timeStr: ''}),
-            }}
-          />
-        </ShadPopover>
-      </>
+        />
+      </ShadPopover>
     </>
   )
 })
@@ -103,7 +101,15 @@ export default MyDatepicker
 
 const DateInputter = ({col, currentValue, formProps, selectedDate, toggleCalendar, timeFormat, ControlStyle}) => {
   return (
-    <div tabIndex={0} onKeyDown={e => e.key === 'Enter' && toggleCalendar()} onClick={toggleCalendar}>
+    <div
+      className={`relative cursor-pointer`}
+      tabIndex={0}
+      onKeyDown={e => e.key === 'Enter' && toggleCalendar()}
+      onClick={toggleCalendar}
+    >
+      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+        <CalendarDays />
+      </div>
       <Center style={{fontSize: 18, justifyContent: `start`}}>
         <div>
           {selectedDate && Days.validate.isDate(selectedDate) ? (

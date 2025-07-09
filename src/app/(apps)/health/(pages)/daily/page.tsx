@@ -16,6 +16,7 @@ import Link from 'next/link'
 import {Paper} from '@components/styles/common-components/paper'
 import useWindowSize from '@hooks/useWindowSize'
 import {HealthService} from '@app/(apps)/health/(lib)/healthService'
+import {Padding} from '@components/styles/common-components/common-components'
 
 // useGlobalの型定義（実際の実装に合わせて調整してください）
 interface User {
@@ -30,7 +31,7 @@ export default function HealthPage() {
   const selectedDate: string = query.date ? query.date : formatDate(getMidnight())
   const setSelectedDate = value => addQuery({date: value})
 
-  const {open: showForm, setopen: setShowForm, Modal} = useModal()
+  const {open: showForm, setopen: setShowForm, Modal} = useModal({alertOnClose: true})
   const [editingRecord, setEditingRecord] = useState<any>(null)
   const [refreshTrigger, setRefreshTrigger] = useState(0)
   const [records, setRecords] = useState<any[]>([])
@@ -188,11 +189,6 @@ export default function HealthPage() {
     setShowForm(true)
   }
 
-  const handleCloseForm = () => {
-    setShowForm(false)
-    setEditingRecord(null)
-  }
-
   if (!session) {
     return <div className="p-4 text-center">ログインが必要です</div>
   }
@@ -203,7 +199,9 @@ export default function HealthPage() {
         {/* ヘッダー */}
         <Paper>
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-bold text-gray-800">健康記録 - {formatDate(selectedDate)} 7:00〜翌7:00</h1>
+            <h1 className="text-xl font-bold text-gray-800">
+              <div>健康記録</div>
+            </h1>
             <div className="flex  gap-2">
               <Link href="/health" className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
                 ホーム
@@ -230,29 +228,31 @@ export default function HealthPage() {
 
         {/* フォーム */}
         <Modal>
-          <HealthRecordForm
-            onSubmit={handleFormSubmit}
-            onBulkSubmit={handleBulkFormSubmit}
-            initialData={
-              editingRecord
-                ? {
-                    category: editingRecord.category,
-                    recordDate: formatDate(new Date(editingRecord.recordDate || selectedDate), 'YYYY-MM-DD'),
-                    recordTime: editingRecord.recordTime,
-                    bloodSugarValue: editingRecord.bloodSugarValue,
-                    medicineId: editingRecord.medicineId,
-                    medicineUnit: editingRecord.medicineUnit,
-                    walkingShortDistance: editingRecord.walkingShortDistance,
-                    walkingMediumDistance: editingRecord.walkingMediumDistance,
-                    walkingLongDistance: editingRecord.walkingLongDistance,
-                    walkingExercise: editingRecord.walkingExercise,
-                    memo: editingRecord.memo,
-                  }
-                : {recordDate: selectedDate}
-            }
-            isEditing={!!editingRecord}
-            selectedDate={selectedDate}
-          />
+          <Padding>
+            <HealthRecordForm
+              onSubmit={handleFormSubmit}
+              onBulkSubmit={handleBulkFormSubmit}
+              initialData={
+                editingRecord
+                  ? {
+                      category: editingRecord.category,
+                      recordDate: formatDate(new Date(editingRecord.recordDate || selectedDate), 'YYYY-MM-DD'),
+                      recordTime: editingRecord.recordTime,
+                      bloodSugarValue: editingRecord.bloodSugarValue,
+                      medicineId: editingRecord.medicineId,
+                      medicineUnit: editingRecord.medicineUnit,
+                      walkingShortDistance: editingRecord.walkingShortDistance,
+                      walkingMediumDistance: editingRecord.walkingMediumDistance,
+                      walkingLongDistance: editingRecord.walkingLongDistance,
+                      walkingExercise: editingRecord.walkingExercise,
+                      memo: editingRecord.memo,
+                    }
+                  : {recordDate: selectedDate}
+              }
+              isEditing={!!editingRecord}
+              selectedDate={selectedDate}
+            />
+          </Padding>
         </Modal>
 
         {/* グラフ表示 */}

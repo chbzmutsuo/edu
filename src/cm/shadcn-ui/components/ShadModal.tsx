@@ -28,9 +28,8 @@ import React from 'react'
 import {JSX} from 'react'
 
 type ShadModalProps = {
-  DialogTrigger?: JSX.Element | string
-  open?: boolean
-  onOpenChange?: any
+  Trigger?: JSX.Element | string
+
   onOpenAutoFocus?: any
   title?: React.ReactNode
   description?: React.ReactNode
@@ -38,57 +37,48 @@ type ShadModalProps = {
   footer?: React.ReactNode
   className?: string
   style?: React.CSSProperties
+
+  open?: any
+  setopen?: any
 }
 
 const ShadModal = React.memo((props: ShadModalProps) => {
-  const {
-    open,
-    onOpenChange,
-    DialogTrigger: Trigger,
-    children,
-    onOpenAutoFocus = e => e.preventDefault(),
-    title,
-    description,
-    footer,
-    className = '',
-    style,
-  } = props
+  const {Trigger, children, onOpenAutoFocus = e => e.preventDefault(), title, description, footer, className = '', style} = props
   const mobile = useIsMobile()
-  const [isOpen, setIsOpen] = React.useState(false)
 
-  const handleOpenChange = React.useCallback(
-    (newOpen: boolean) => {
-      setIsOpen(newOpen)
-      if (onOpenChange) {
-        onOpenChange(newOpen)
-      }
-    },
-    [onOpenChange]
-  )
+  const [openState, setopenState] = React.useState(false)
+  //
 
-  const isControlled = open !== undefined
-  const openState = isControlled ? open : isOpen
+  const open = props?.open ?? openState
+  const setopen = props?.setopen ?? setopenState
+
+  const headerClass = title || description ? '' : 'hidden'
+  const footerClass = footer ? '' : 'hidden'
 
   if (mobile) {
     return (
-      <Drawer open={openState} onOpenChange={handleOpenChange}>
-        {Trigger && <DrawerTrigger asChild>{Trigger}</DrawerTrigger>}
+      <Drawer open={open} onOpenChange={setopen}>
+        {Trigger && (
+          <DrawerTrigger asChild onClick={() => setopen?.(true)}>
+            {Trigger}
+          </DrawerTrigger>
+        )}
 
         <DrawerPortal>
           <DrawerContent
             style={style}
             onOpenAutoFocus={onOpenAutoFocus}
-            className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
+            className={cn(`ModalContent rounded-lg   shadow-md  ${className}`)}
           >
             <div className="mx-auto w-full ">
-              <DrawerHeader>
+              <DrawerHeader className={headerClass}>
                 <DrawerTitle>{title}</DrawerTitle>
                 <DrawerDescription>{description}</DrawerDescription>
               </DrawerHeader>
 
-              <div className="w-fit mx-auto p-4">{children}</div>
+              <div className="w-fit mx-auto ">{children}</div>
 
-              <DrawerFooter>{footer}</DrawerFooter>
+              <DrawerFooter className={footerClass}>{footer}</DrawerFooter>
             </div>
           </DrawerContent>
         </DrawerPortal>
@@ -97,23 +87,27 @@ const ShadModal = React.memo((props: ShadModalProps) => {
   }
 
   return (
-    <Dialog open={openState} onOpenChange={handleOpenChange}>
-      {Trigger && <DialogTrigger asChild>{Trigger}</DialogTrigger>}
+    <Dialog open={open} onOpenChange={setopen}>
+      {Trigger && (
+        <DialogTrigger asChild onClick={() => setopen?.(true)}>
+          {Trigger}
+        </DialogTrigger>
+      )}
 
       <DialogPortal>
         <DialogContent
+          showCloseButton={false}
           onOpenAutoFocus={onOpenAutoFocus}
           style={{...style, maxHeight: '85vh', maxWidth: '90vw', overflow: 'auto'}}
-          className={cn(`ModalContent p-6 w-fit mx-auto shadow-lg shadow-gray-500 border border-gray-200 bg-white ${className}`)}
+          className={cn(` ModalContent w-fit mx-auto shadow-lg shadow-gray-500   ${className}`)}
         >
-          <DialogHeader>
+          <DialogHeader className={headerClass}>
             <DialogTitle>{title}</DialogTitle>
             <DialogDescription>{description}</DialogDescription>
           </DialogHeader>
 
-          <div className="bg-white">{children}</div>
-
-          <DialogFooter>{footer}</DialogFooter>
+          <div className="w-fit mx-auto ">{children}</div>
+          <DialogFooter className={footerClass}>{footer}</DialogFooter>
         </DialogContent>
       </DialogPortal>
     </Dialog>

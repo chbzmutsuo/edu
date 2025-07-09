@@ -216,7 +216,7 @@ export default function GameInformation({GameCtxValue, useGroupReturnObj, groupC
                       </Link>
 
                       <BasicModal
-                        toggle={
+                        Trigger={
                           <div className={` onHover`}>
                             <QRCodeComponent url={url} style={{height: 90, width: 90}} />
                           </div>

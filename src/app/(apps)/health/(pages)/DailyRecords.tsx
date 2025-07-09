@@ -158,7 +158,7 @@ export default function DailyRecords({userId, date, records, onEdit, onDelete, r
                   ],
                 }
               }),
-            }).WithWrapper({className: '!max-w-[90vw] max-h-[60vh]'})}
+            }).WithWrapper({className: '!max-w-[90vw] max-h-none'})}
           </div>
         )}
       </div>

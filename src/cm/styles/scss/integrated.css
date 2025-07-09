@@ -69,12 +69,13 @@
   --color-orange-light: oklch(0.9 0.07 50);
   --color-yellow-main: oklch(0.75 0.2 90);
   --color-yellow-light: oklch(0.95 0.08 85);
+  --color-control-bg: oklch(0.94 0 0);
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
 }
 
 .dark {
-  --color-background: oklch(0.29 0 0);
+  --color-background: oklch(0.71 0 17.19);
   --color-primary-text: black;
 }
 
@@ -151,12 +152,13 @@
   .myFormControl {
     display: block;
     width: 100%;
-    background-color: var(--color-gray-100);
+    background-color: var(--color-);
     padding-top: 0.3rem; /* p-1 */
     padding-bottom: 0.3rem;
     padding-left: 0.5rem; /* px-2 */
     padding-right: 0.5rem;
-    border-bottom-width: 1.5px;
+    border-width: 1px;
+    border-radius: var(--radius-md);
     border-color: var(--color-gray-300);
     line-height: 1.5rem; /* smの行間も合わせるなら */
     font-size: 18px !important;
@@ -164,21 +166,10 @@
     transition-duration: 300ms;
     transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
-  .myFormControl:required:-moz-placeholder-shown {
-    background-color: var(--color-red-100) !important;
-    border-color: var(--color-red-500) !important;
-  }
-  .myFormControl:required:placeholder-shown {
-    background-color: var(--color-red-100) !important;
-    border-color: var(--color-red-500) !important;
-  }
   .myFormControl:hover {
     cursor: text;
     border-color: var(--color-blue-600) !important;
-    background-color: var(--color-blue-50) !important;
-  }
-  .myFormControl:focus {
-    border: none;
+    box-shadow: var(--shadow-md);
   }
   .myFormControl:disabled {
     border: none;
@@ -473,7 +464,15 @@
     left: 0;
   }
 }
-@layer utilities {}
+@layer utilities {
+  .gradient-base {
+    background: linear-gradient(135deg, var(--color-gray-50), var(--color-gray-100)) !important;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 1rem;
+  }
+}
 @keyframes slideUp {
   from {
     transform: translateY(100%);

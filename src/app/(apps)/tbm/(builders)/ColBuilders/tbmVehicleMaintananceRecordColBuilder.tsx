@@ -22,8 +22,9 @@ export const tbmVehicleMaintananceRecordColBuilder = (props: columnGetterType) =
       },
     },
     {id: 'date', label: '日付', form: {...defaultRegister}, type: 'date'},
-    {id: 'title', label: 'タイトル', form: {...defaultRegister}},
+    {id: 'title', label: '件名', form: {...defaultRegister}},
     {id: 'price', label: '料金', form: {...defaultRegister}, type: 'price'},
+    {id: 'contractor', label: '依頼先業者', form: {...defaultRegister}, type: `textarea`},
     {id: 'remark', label: '備考', form: {}, type: `textarea`},
     {
       id: 'type',

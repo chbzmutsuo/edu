@@ -1,12 +1,10 @@
 'use client'
-import React, {CSSProperties, JSX} from 'react'
+import React, {JSX} from 'react'
 
 import ShadModal from '@cm/shadcn-ui/components/ShadModal'
 
 export type basicModalPropType = {
-  toggle?: JSX.Element
-  open?: any
-  handleClose?: any
+  Trigger?: JSX.Element
   withPaper?: boolean
   title?: React.ReactNode
   description?: React.ReactNode
@@ -15,10 +13,13 @@ export type basicModalPropType = {
   style?: object
   alertOnClose?: string | boolean
   closeBtn?: boolean | JSX.Element
+
+  open?: any
+  setopen?: any
 }
 export type ModalCorePropType = basicModalPropType & {
-  show: boolean
-  setshow: any
+  open?: any
+  setopen?: any
 }
 
 const getAlertOnClose = (props: ModalCorePropType) => {
@@ -30,32 +31,22 @@ const getAlertOnClose = (props: ModalCorePropType) => {
   }
   return result
 }
-const getOpen = (props: ModalCorePropType) => {
-  let open = props.open
-  const simpleModalMode = !open && !props.handleClose
-  if (simpleModalMode) {
-    open = props.show
-  }
-  return {open, simpleModalMode}
-}
 
 export const ModalCore = React.memo((props: ModalCorePropType) => {
-  const {toggle, style, children, handleClose, title, description, withPaper = true, show, setshow} = props
+  const {Trigger, style, children, title, description, withPaper = true} = props
   const alertOnClose = getAlertOnClose(props)
-  const {open, simpleModalMode} = getOpen(props)
 
-  const customHandleClose = () => {
-    let newHadnleClose = handleClose
+  const open = props.open
 
-    if (simpleModalMode) {
-      newHadnleClose = () => setshow(false)
-    }
-    if (alertOnClose && confirm(String(alertOnClose)) === false) {
-      return
-    }
-
-    newHadnleClose()
-  }
+  const setopen = alertOnClose
+    ? prev => {
+        if (confirm(String(alertOnClose))) {
+          props.setopen(false)
+        } else {
+          props.setopen(!prev)
+        }
+      }
+    : props.setopen
 
   const modalStyle = {
     width: 'fit-content',
@@ -70,38 +61,14 @@ export const ModalCore = React.memo((props: ModalCorePropType) => {
     <ShadModal
       {...{
         open,
-        onOpenChange: customHandleClose,
-        DialogTrigger: toggle,
+        setopen,
         style: modalStyle,
-        children,
-        handleClose,
+        Trigger,
         title,
         description,
+        children,
         withPaper,
-        show,
-        setshow,
       }}
     />
   )
-  // return (
-  //   <Dialog open={toggle ? undefined : Boolean(open)} onOpenChange={customHandleClose}>
-  //     {toggle && (
-  //       <DialogTrigger asChild>
-  //         <div onClick={() => setshow(prev => !prev)}>{toggle}</div>
-  //       </DialogTrigger>
-  //     )}
-  //     <DialogPortal>
-  //       <DialogContent style={modalStyle} className={`bg-white rounded-2xl shadow-lg shadow-gray-500 border border-gray-200 p-2`}>
-  //         <DialogHeader>
-  //           <DialogTitle>{title}</DialogTitle>
-  //           <DialogDescription>{description}</DialogDescription>
-  //         </DialogHeader>
-
-  //         <div>{children}</div>
-
-  //         <DialogFooter></DialogFooter>
-  //       </DialogContent>
-  //     </DialogPortal>
-  //   </Dialog>
-  // )
 })

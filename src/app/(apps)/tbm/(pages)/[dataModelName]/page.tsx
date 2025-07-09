@@ -70,7 +70,7 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
               orderBy: [{vehicleNumber: 'asc'}],
             },
 
-            // editType: {type: `pageOnSame`},
+            editType: {type: `pageOnSame`},
           }
         },
       },

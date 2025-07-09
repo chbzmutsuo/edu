@@ -12,6 +12,7 @@ import MyCheckBox from '@components/DataLogic/TFs/MyForm/components/HookFormCont
 import MyDatepicker from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
 import MyMultipleChoice from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'
 import MySelect from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
+import ErrorMessage from '@components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/ErrorMessage'
 
 export type ControlProps = {
   field: string
@@ -64,9 +65,12 @@ const Control = ({controlContextValue}) => {
   }
 
   return (
-    <div style={{...ControlStyle}}>
-      <Main {...{type, col, props}} />
-    </div>
+    <>
+      <div style={{...ControlStyle}}>
+        <Main {...{type, col, props}} />
+        <ErrorMessage {...{controlContextValue}} />
+      </div>
+    </>
   )
 }
 

@@ -83,6 +83,7 @@ export class ColBuilder {
       {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {defaultValue: tbmBaseId, disabled: tbmBaseId}},
       {id: 'yearMonth', label: '年月', type: 'month'},
       {id: 'keiyuPerLiter', label: '軽油単価', type: 'float'},
+      {id: 'gasolinePerLiter', label: 'ガソリン単価', type: 'float'},
     ])
       .customAttributes(({col}) => ({
         ...col,

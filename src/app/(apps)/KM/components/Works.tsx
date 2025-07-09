@@ -71,7 +71,7 @@ export const Works = ({works}) => {
     })
     return (
       <BasicModal
-        toggle={
+        Trigger={
           <div className={`text-kaizen-cool-main  absolute left-0 w-[60px] cursor-pointer`}>
             <Search className={` text-[20px] `} />
           </div>

@@ -1,4 +1,10 @@
 'use client'
+const defaultSummaryInTdArgs = {
+  hideUndefinedValue: false,
+  labelWidthPx: 70,
+  wrapperWidthPx: 160,
+  showShadow: true,
+}
 
 import {colType, colTypeOptional} from '@cm/types/types'
 import {aggregateOnSingleTd, aggregateOnSingleTdProps} from 'src/cm/class/Fields/lib/aggregateOnSingleTd'
@@ -54,7 +60,7 @@ export class Fields {
       return this.cache.get(cacheKey)
     }
 
-    const {hideUndefinedValue = false, wrapperWidthPx = 200, labelWidthPx = 80, showShadow = true} = props
+    const {hideUndefinedValue, wrapperWidthPx, labelWidthPx, showShadow} = {...defaultSummaryInTdArgs, ...props}
     const id = `readOnly_${columns.map(d => d.id).join('_')}`
 
     const SummaryRow = React.memo(({value, row}: {value: any; row: any}) => {

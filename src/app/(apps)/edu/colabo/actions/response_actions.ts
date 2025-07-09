@@ -12,11 +12,19 @@ export const response_actions = {
       responseType,
       choiceAnswer,
       textAnswer,
-      curiocity1, curiocity2, curiocity3, curiocity4, curiocity5,
-      efficacy1, efficacy2, efficacy3, efficacy4, efficacy5,
+      curiocity1,
+      curiocity2,
+      curiocity3,
+      curiocity4,
+      curiocity5,
+      efficacy1,
+      efficacy2,
+      efficacy3,
+      efficacy4,
+      efficacy5,
       lessonImpression,
       lessonSatisfaction,
-      asSummary = false
+      asSummary = false,
     } = data
 
     // Check if response already exists
@@ -24,8 +32,8 @@ export const response_actions = {
       where: {
         slideId: parseInt(slideId),
         studentId: parseInt(studentId),
-        gameId: parseInt(gameId)
-      }
+        gameId: parseInt(gameId),
+      },
     })
 
     let response
@@ -47,12 +55,12 @@ export const response_actions = {
           efficacy3: efficacy3 || null,
           efficacy4: efficacy4 || null,
           efficacy5: efficacy5 || null,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         },
         include: {
           Student: true,
-          Slide: true
-        }
+          Slide: true,
+        },
       })
     } else {
       // Create new response
@@ -73,12 +81,12 @@ export const response_actions = {
           efficacy2: efficacy2 || null,
           efficacy3: efficacy3 || null,
           efficacy4: efficacy4 || null,
-          efficacy5: efficacy5 || null
+          efficacy5: efficacy5 || null,
         },
         include: {
           Student: true,
-          Slide: true
-        }
+          Slide: true,
+        },
       })
     }
 
@@ -88,8 +96,8 @@ export const response_actions = {
         where: {
           gameId: parseInt(gameId),
           studentId: parseInt(studentId),
-          asSummary: asSummary
-        }
+          asSummary: asSummary,
+        },
       })
 
       const answerData = {
@@ -105,21 +113,21 @@ export const response_actions = {
         efficacy5: efficacy5 || null,
         lessonImpression: lessonImpression || null,
         lessonSatisfaction: lessonSatisfaction || null,
-        asSummary
+        asSummary,
       }
 
       if (existingAnswer) {
         await prisma.answer.update({
           where: {id: existingAnswer.id},
-          data: answerData
+          data: answerData,
         })
       } else {
         await prisma.answer.create({
           data: {
             ...answerData,
             gameId: parseInt(gameId),
-            studentId: parseInt(studentId)
-          }
+            studentId: parseInt(studentId),
+          },
         })
       }
     }
@@ -134,11 +142,11 @@ export const response_actions = {
       include: {
         Student: {
           include: {
-            Classroom: true
-          }
-        }
+            Classroom: true,
+          },
+        },
       },
-      orderBy: {createdAt: 'asc'}
+      orderBy: {createdAt: 'asc'},
     })
 
     return responses
@@ -150,15 +158,12 @@ export const response_actions = {
       include: {
         Student: {
           include: {
-            Classroom: true
-          }
+            Classroom: true,
+          },
         },
-        Slide: true
+        Slide: true,
       },
-      orderBy: [
-        {slideId: 'asc'},
-        {createdAt: 'asc'}
-      ]
+      orderBy: [{slideId: 'asc'}, {createdAt: 'asc'}],
     })
 
     return responses
@@ -170,19 +175,19 @@ export const response_actions = {
       where: {
         slideId: parseInt(slideId),
         blockType: 'choice_option',
-        isCorrectAnswer: true
-      }
+        isCorrectAnswer: true,
+      },
     })
 
     return {
       isCorrect: correctChoice ? correctChoice.id.toString() === choiceAnswer : false,
-      correctAnswer: correctChoice
+      correctAnswer: correctChoice,
     }
   },
 
   async deleteResponse(responseId) {
     await prisma.slideResponse.delete({
-      where: {id: parseInt(responseId)}
+      where: {id: parseInt(responseId)},
     })
 
     revalidatePath('/edu/colabo/presentation')
@@ -190,20 +195,28 @@ export const response_actions = {
 
   async exportResponses(gameId, format = 'csv') {
     const responses = await this.getGameResponses(gameId)
-    
+
     if (format === 'csv') {
       // Generate CSV data
       const headers = [
         'Student Name',
-        'Slide Title', 
+        'Slide Title',
         'Response Type',
         'Choice Answer',
         'Text Answer',
-        'Curiosity 1', 'Curiosity 2', 'Curiosity 3', 'Curiosity 4', 'Curiosity 5',
-        'Efficacy 1', 'Efficacy 2', 'Efficacy 3', 'Efficacy 4', 'Efficacy 5',
-        'Submitted At'
+        'Curiosity 1',
+        'Curiosity 2',
+        'Curiosity 3',
+        'Curiosity 4',
+        'Curiosity 5',
+        'Efficacy 1',
+        'Efficacy 2',
+        'Efficacy 3',
+        'Efficacy 4',
+        'Efficacy 5',
+        'Submitted At',
       ]
-      
+
       const rows = responses.map(response => [
         response.Student?.name || '',
         response.Slide?.title || '',
@@ -220,16 +233,16 @@ export const response_actions = {
         response.efficacy3 || '',
         response.efficacy4 || '',
         response.efficacy5 || '',
-        response.createdAt.toISOString()
+        response.createdAt.toISOString(),
       ])
-      
+
       return {
         headers,
         rows,
-        filename: `colabo_responses_${gameId}_${new Date().toISOString().split('T')[0]}.csv`
+        filename: `colabo_responses_${gameId}_${new Date().toISOString().split('T')[0]}.csv`,
       }
     }
-    
+
     return responses
-  }
+  },
 }

@@ -108,12 +108,15 @@ export const getStyleProps = ({ControlOptions, col}) => {
     ...(isBooleanType ? {width: `100%`} : {}),
   }
 
-  const offsetWidth = 20
+  const withBase = [col?.form?.style?.width, ControlStyle?.width, controlDefaultStyle.width].find(Boolean)
+
+  const minWidthBase = [col?.form?.style?.minWidth, ControlStyle?.minWidth, controlDefaultStyle.minWidth].find(Boolean)
+
   ControlStyle = {
     ...ControlStyle,
-    width: isNaN(ControlStyle.width) ? ControlStyle.width : ControlStyle.width - offsetWidth,
-    maxWidth: isNaN(ControlStyle.width) ? ControlStyle.maxWidth : ControlStyle.width - offsetWidth,
-    overflow: `hidden`,
+    width: getOffsetWidth(withBase, 40),
+    minWidth: getOffsetWidth(minWidthBase, 40),
+    // overflow: `hidden`,
   }
 
   return {id, flexDirection, wrapperClass, ControlStyle, isBooleanType}
@@ -144,14 +147,13 @@ export const getStyleProps = ({ControlOptions, col}) => {
 }
 
 export const getFormProps = ({ControlOptions, isBooleanType, Register, col, errorMessage, currentValue}) => {
-  const defaultControlClassName = 'myFormControl  text-[18px]'
+  const defaultControlClassName = 'myFormControl   '
   const {controllClassName} = ControlOptions ?? {}
 
   const normalInputClass = cl(controllClassName ? controllClassName : defaultControlClassName)
 
   const formProps: formPropType = {
     className: cl(
-      // Register?.disabled ? 'disabled bg-gray-300' : '',
       isBooleanType ? '' : normalInputClass,
       ControlOptions?.shownButDisabled ? ' disabled bg-gray-300' : '',
       errorMessage ? `errorFormControl` : '',
@@ -176,4 +178,9 @@ export const showResetBtn = ({col, isBooleanType, Register, currentValue, Contro
       ControlOptions?.showResetBtn !== false &&
       col.form?.showResetBtn !== false
   )
+}
+
+export const getOffsetWidth = (width: string | number, offsetWidth = 0) => {
+  const affix = typeof width === 'string' ? '' : 'px'
+  return `calc(${width}${affix} - ${offsetWidth}px)`
 }

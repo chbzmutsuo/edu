@@ -45,6 +45,7 @@ export default function JournalTimelineEntry({
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [uploading, setUploading] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
+  const [deletingImageId, setDeletingImageId] = useState<number | null>(null)
 
   // ファイル選択時の処理
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,8 +76,9 @@ export default function JournalTimelineEntry({
 
   // 既存画像削除
   const removeExistingImage = async (imageId: number) => {
-    if (!confirm('この画像を削除しますか？')) return
+    if (!confirm('この画像を削除しますか？\n削除した画像は復元できません。')) return
 
+    setDeletingImageId(imageId)
     try {
       const result = await deleteJournalImage(imageId)
       if (result.success) {
@@ -90,6 +92,8 @@ export default function JournalTimelineEntry({
     } catch (error) {
       console.error('画像削除エラー:', error)
       alert('画像の削除に失敗しました')
+    } finally {
+      setDeletingImageId(null)
     }
   }
 
@@ -267,7 +271,8 @@ export default function JournalTimelineEntry({
                       />
                       <button
                         onClick={() => removePreviewImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors"
+                        title="画像を削除"
                       >
                         ×
                       </button>
@@ -277,14 +282,16 @@ export default function JournalTimelineEntry({
               </div>
             )}
           </section>
+
           {/* 既存画像 */}
           {entry.images && entry.images.length > 0 && (
             <div className="mt-3">
+              <p className="text-sm text-gray-700 mb-2 font-medium">保存済み画像:</p>
               {/* 画面表示用 */}
-              <R_Stack className=" justify-start    items-start gap-0">
+              <R_Stack className=" justify-start items-start gap-0">
                 {entry.images.map(image => (
                   <div key={image.id} className=" w-1/4 relative  p-1.5">
-                    <div className={` t-paper p-1 mx-auto w-fit`}>
+                    <div className={` t-paper p-1 mx-auto w-fit relative`}>
                       <ContentPlayer
                         src={image.filePath}
                         {...{
@@ -294,14 +301,32 @@ export default function JournalTimelineEntry({
                       />
                       <button
                         onClick={() => removeExistingImage(image.id)}
-                        className="absolute -top-2 -right-2 m cursor-pointer text-white rounded-full w-6 h-6 z-50 flex items-center justify-center text-xs hover:bg-red-600"
+                        disabled={deletingImageId === image.id}
+                        className={`absolute -top-2 -right-2 rounded-full w-7 h-7 z-50 flex items-center justify-center text-sm font-bold shadow-md transition-all duration-200 ${
+                          deletingImageId === image.id
+                            ? 'bg-gray-400 cursor-not-allowed'
+                            : 'bg-red-500 hover:bg-red-600 text-white hover:scale-110'
+                        }`}
+                        title={deletingImageId === image.id ? '削除中...' : '画像を削除'}
                       >
-                        ×
+                        {deletingImageId === image.id ? '...' : '×'}
                       </button>
                     </div>
                   </div>
                 ))}
               </R_Stack>
+
+              {/* 印刷用画像表示 */}
+              <div className="print-images hidden print:block">
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {entry.images.map(image => (
+                    <div key={image.id} className="print-image-container">
+                      <img src={image.filePath} alt={image.description || image.fileName} className="print-image" />
+                      <div className="print-image-caption">{image.description || image.fileName}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -312,7 +337,7 @@ export default function JournalTimelineEntry({
             <button
               onClick={handleConfirm}
               disabled={uploading}
-              className={`px-4 py-2 rounded-md text-white font-medium ${
+              className={`px-4 py-2 rounded-md text-white font-medium transition-colors ${
                 uploading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
               }`}
             >

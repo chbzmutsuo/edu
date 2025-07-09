@@ -9,7 +9,7 @@ import TextAccordion from '@cm/components/utils/Accordions/TextAccordiong./TextA
 import BasicCarousel from '@cm/components/utils/Carousel/BasicCarousel'
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
-import {MessageCircleIcon, MessageSquareIcon, MonitorIcon, ThumbsUpIcon} from 'lucide-react'
+import {MessageCircleIcon, MonitorIcon, ThumbsUpIcon} from 'lucide-react'
 
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {cl} from '@cm/lib/methods/common'

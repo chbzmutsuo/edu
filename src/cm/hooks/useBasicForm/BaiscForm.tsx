@@ -2,16 +2,16 @@
 
 import React, {Fragment, useEffect, useState} from 'react'
 import {colType, onFormItemBlurType} from '@cm/types/types'
-import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
+import {C_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {FormProvider, UseFormReturn} from 'react-hook-form'
 import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
-import {cl} from 'src/cm/lib/methods/common'
-import {makeFormsByColumnObj} from '@hooks/useBasicForm/lib/makeFormsByColumnObj'
 
 import {adjustBasicFormProps} from '@hooks/useBasicForm/lib/createBasicFormProps'
 import ControlGroup from '@hooks/useBasicForm/molecules/ControlGroup'
 import {Card} from '@cm/shadcn-ui/components/ui/card'
+import {DynamicGridContainer} from '@components/utils'
+import {obj__initializeProperty} from '@class/ObjHandler/transformers'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -46,7 +46,7 @@ const FormSection = React.memo(
       <>
         {isNaN(colFormIndexGroupName) && colFormIndexGroupName ? (
           <>
-            <Card variant="outline">
+            <Card variant="gradient">
               <div className={`  text-primary-main text-center text-lg font-bold `}>{colFormIndexGroupName}</div>
               {children}
             </Card>
@@ -60,19 +60,41 @@ const FormSection = React.memo(
 )
 
 const BasicForm = (props: BasicFormType) => {
-  const {formRef, useGlobalProps, formId, alignMode, style, wrapperClass, ControlOptions, columns} = adjustBasicFormProps(props)
+  const {formRef, formId, alignMode, style, wrapperClass, ControlOptions, columns, ReactHookForm} = adjustBasicFormProps(props)
 
-  const ReactHookForm: UseFormReturn = props.ReactHookForm
-  const handleFormSubmit = props.onSubmit ? ReactHookForm.handleSubmit(props.onSubmit) : undefined
   const onSubmit = async e => {
+    const handleFormSubmit = props.onSubmit ? ReactHookForm.handleSubmit(props.onSubmit) : undefined
     e.preventDefault()
     const formElement = e.target as HTMLFormElement
     if (formElement?.getAttribute('id') === formId && handleFormSubmit) {
       return await handleFormSubmit(e)
     }
   }
-  const {transposedRowsForForm} = makeFormsByColumnObj(columns)
-  const {justifyDirection} = useJustifyDirection({transposedRowsForForm, useGlobalProps})
+
+  //カラム作成
+  const makeFormsByColumnObj = (columns: any) => {
+    const validColumnsForEditForm: colType[] = columns.flat().filter(col => col.form && col?.form?.hidden !== true)
+    const formsByColumnObj: any = {}
+
+    validColumnsForEditForm.sort((x: colType, y: colType) => {
+      return Number(x.originalColIdx) - Number(y.originalColIdx)
+    })
+
+    validColumnsForEditForm.forEach((col: colType) => {
+      const colIndex = col?.form?.colIndex ?? 0
+      obj__initializeProperty(formsByColumnObj, colIndex, [])
+      formsByColumnObj[colIndex].push(col)
+    })
+
+    const transposedRowsForForm: colType[][] = Object.keys(formsByColumnObj).map(key => {
+      return formsByColumnObj[key]
+    })
+    const colIndexes = Object.keys(formsByColumnObj)
+
+    return {transposedRowsForForm, colIndexes}
+  }
+
+  // const {justifyDirection} = useJustifyDirection({transposedRowsForForm, useGlobalProps})
 
   const ChildComponent = () => {
     if (props.children) {
@@ -81,12 +103,14 @@ const BasicForm = (props: BasicFormType) => {
     return <></>
   }
 
+  const {transposedRowsForForm} = makeFormsByColumnObj(columns)
+
   return (
     <div className={`w-fit `}>
       <FormProvider {...ReactHookForm}>
         <form {...{ref: formRef, id: formId, onSubmit}}>
           <C_Stack className={`items-center`}>
-            <R_Stack style={style} className={cl(` mx-auto w-full items-stretch gap-8  gap-y-24`, justifyDirection)}>
+            <DynamicGridContainer style={style}>
               {transposedRowsForForm.map((columns, i) => {
                 return (
                   <Fragment key={i}>
@@ -102,7 +126,7 @@ const BasicForm = (props: BasicFormType) => {
                   </Fragment>
                 )
               })}
-            </R_Stack>
+            </DynamicGridContainer>
 
             {alignMode !== `row` && <ChildComponent />}
           </C_Stack>

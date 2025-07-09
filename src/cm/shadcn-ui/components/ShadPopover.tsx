@@ -22,9 +22,11 @@ type ShadPopoverProps = {
   PopoverTrigger?: JSX.Element | string
   open?: boolean
   onOpenChange?: any
+  handleClose?: any
   onOpenAutoFocus?: any
   title?: string
   description?: string
+  footer?: JSX.Element
   children: JSX.Element
   mode?: 'click' | 'hover'
 }
@@ -32,89 +34,118 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const {
     open,
     onOpenChange,
+    handleClose,
     PopoverTrigger: Trigger,
     children,
     onOpenAutoFocus = e => e.preventDefault(),
     title,
     description,
     mode = 'hover',
+    footer,
   } = props
   const mobile = useIsMobile()
   const [isOpen, setIsOpen] = React.useState(false)
 
+  const isControlled = open !== undefined
+  const openState = isControlled ? open : isOpen
+
+  const headerClass = title || description ? '' : 'hidden'
+  const footerClass = footer ? '' : 'hidden'
+
   const handleOpenChange = React.useCallback(
     (newOpen: boolean) => {
-      setIsOpen(newOpen)
+      if (!isControlled) {
+        setIsOpen(newOpen)
+      }
       if (onOpenChange) {
         onOpenChange(newOpen)
       }
+      if (handleClose && !newOpen) {
+        handleClose(false)
+      }
     },
-    [onOpenChange]
+    [onOpenChange, handleClose, isControlled]
   )
 
   const handleMouseEnter = React.useCallback(() => {
     if (mode === 'click') return
-    setIsOpen(true)
-    if (onOpenChange) {
-      onOpenChange(true)
-    }
-  }, [onOpenChange])
+
+    handleOpenChange(true)
+  }, [mode, handleOpenChange])
 
   const handleMouseLeave = React.useCallback(() => {
     if (mode === 'click') return
-    setIsOpen(false)
-    if (onOpenChange) {
-      onOpenChange(false)
-    }
-  }, [onOpenChange])
 
-  const isControlled = open !== undefined
-  const openState = isControlled ? open : isOpen
+    handleOpenChange(false)
+  }, [mode, handleOpenChange])
+
+  const handleTriggerClick = React.useCallback(
+    (e: React.MouseEvent) => {
+      if (mode === 'hover') return
+      e.preventDefault()
+      e.stopPropagation()
+      handleOpenChange(!openState)
+    },
+    [mode, openState, handleOpenChange]
+  )
 
   if (mobile) {
     return (
-      <Drawer open={openState} onOpenChange={handleOpenChange}>
-        <DrawerTrigger asChild>{Trigger}</DrawerTrigger>
+      <>
+        <Drawer open={openState} onOpenChange={handleOpenChange}>
+          <DrawerTrigger asChild>
+            <div onClick={handleTriggerClick}>{Trigger}</div>
+          </DrawerTrigger>
+          <DrawerPortal>
+            <DrawerContent
+              onOpenAutoFocus={onOpenAutoFocus}
+              className="PopoverContent  rounded-lg  bg-white p-1  shadow-md border border-gray-200 "
+            >
+              <div className="mx-auto w-full max-w-sm">
+                <DrawerHeader className={headerClass}>
+                  <DrawerTitle>{title}</DrawerTitle>
+                  <DrawerDescription>{description}</DrawerDescription>
+                </DrawerHeader>
 
-        <DrawerPortal>
-          <DrawerContent
-            onOpenAutoFocus={onOpenAutoFocus}
-            className="PopoverContent  rounded-lg  bg-white p-1  shadow-md border border-gray-200 "
-          >
-            <div className="mx-auto w-full max-w-sm">
-              <DrawerHeader>
-                <DrawerTitle>{title}</DrawerTitle>
-                <DrawerDescription>{description}</DrawerDescription>
-              </DrawerHeader>
+                <div className={`w-fit mx-auto`}>{children}</div>
 
-              <div className={`w-fit mx-auto`}>{children}</div>
-
-              <DrawerFooter></DrawerFooter>
-            </div>
-          </DrawerContent>
-        </DrawerPortal>
-      </Drawer>
+                <DrawerFooter className={footerClass}></DrawerFooter>
+              </div>
+            </DrawerContent>
+          </DrawerPortal>
+        </Drawer>
+      </>
     )
   }
 
   return (
-    <Popover open={openState} onOpenChange={handleOpenChange}>
-      {Trigger && (
-        <PopoverTrigger onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-          {Trigger}
-        </PopoverTrigger>
-      )}
-      <PopoverPortal>
-        <PopoverContent
-          onOpenAutoFocus={onOpenAutoFocus}
-          className="PopoverContent  p-3 w-fit  mx-auto  shadow-lg shadow-gray-500 border border-gray-200 bg-white"
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        >
-          <div className={`bg-white   `}>{children}</div>
-        </PopoverContent>
-      </PopoverPortal>
-    </Popover>
+    <>
+      <Popover open={openState} onOpenChange={handleOpenChange}>
+        {Trigger && (
+          <PopoverTrigger asChild>
+            <div
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleTriggerClick}
+              style={{cursor: 'pointer'}}
+            >
+              {React.isValidElement(Trigger) ? Trigger : <span>{Trigger}</span>}
+            </div>
+          </PopoverTrigger>
+        )}
+
+        <PopoverPortal>
+          <PopoverContent
+            onOpenAutoFocus={onOpenAutoFocus}
+            className="PopoverContent  p-3 w-fit  mx-auto  shadow-lg shadow-gray-500 border border-gray-200 bg-white"
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            <div className={`bg-white   `}>{children}</div>
+          </PopoverContent>
+        </PopoverPortal>
+      </Popover>
+    </>
   )
 })
 

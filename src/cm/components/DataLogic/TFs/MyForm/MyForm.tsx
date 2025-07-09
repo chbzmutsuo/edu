@@ -82,7 +82,7 @@ const MyForm = React.memo<DetailPagePropType>(props => {
         <div>{myForm?.customActions && myForm.customActions(customActionsArgs)}</div>
       </section>
 
-      <section className="mx-auto w-fit">
+      <section className="mx-auto w-fit ">
         <BasicForm
           latestFormData={latestFormData}
           onSubmit={wrappedHandleOnSubmit}

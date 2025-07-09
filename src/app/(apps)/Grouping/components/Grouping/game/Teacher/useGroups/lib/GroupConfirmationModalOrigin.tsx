@@ -14,12 +14,7 @@ export const GroupConfirmationModalOrigin = ({
   return (
     <>
       {groups && (
-        <BasicModal
-          open={groups}
-          handleClose={e => {
-            setgroups(null)
-          }}
-        >
+        <BasicModal open={groups} setopen={setgroups}>
           <div className={`col-stack t-paper my-2 flex-wrap text-center`}>
             <div className={`row-stack mx-auto  flex-nowrap  `}></div>
             <R_Stack>
