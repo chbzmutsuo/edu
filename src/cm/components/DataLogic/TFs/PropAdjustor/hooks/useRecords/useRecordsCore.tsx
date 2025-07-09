@@ -2,6 +2,7 @@ import {useState, useCallback, useEffect} from 'react'
 import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
 import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import {tableRecord} from './useRecords'
+import {atomKey, useJotaiByKey} from '@hooks/useJotai'
 
 interface UseRecordsCoreProps {
   serverFetchProps: serverFetchProps
@@ -65,9 +66,11 @@ const deleteRecordFromArray = (prev: tableRecord[] | null, record: tableRecord):
 export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn => {
   const {serverFetchProps, initialModelRecords, fetchTime, query, rootPath, isInfiniteScrollMode, resetToFirstPage} = props
 
+  const globalStateKey = ['table-records', serverFetchProps.dataModelName].join('_') as atomKey
+  const [records, setrecords] = useJotaiByKey<tableRecord[] | null>(globalStateKey, null)
+  // const [records, setrecords] = useState<tableRecord[] | null>(null)
   const [easySearchPrismaDataOnServer, seteasySearchPrismaDataOnServer] =
     useState<easySearchDataSwrType>(INITIAL_EASY_SEARCH_DATA)
-  const [records, setrecords] = useState<tableRecord[] | null>(null)
   const [totalCount, settotalCount] = useState<number>(0)
   const [prismaDataExtractionQuery, setprismaDataExtractionQuery] = useState({})
   const [EasySearcherQuery, setEasySearcherQuery] = useState({})

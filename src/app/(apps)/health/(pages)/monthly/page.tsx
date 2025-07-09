@@ -8,7 +8,6 @@ import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStan
 import {getMidnight} from '@class/Days/date-utils/calculations'
 import {Days} from '@class/Days/Days'
 import useGlobal from '@hooks/globalHooks/useGlobal'
-import Link from 'next/link'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import MonthlySummaryTable from '@app/(apps)/health/(components)/MonthlySummaryTable'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
@@ -186,14 +185,6 @@ export default function MonthlyPage() {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold text-gray-800">月別サマリー</h1>
-            <div className="flex gap-2">
-              <Link href="/health" className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                ホーム
-              </Link>
-              <Link href="/health/daily" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                日別画面
-              </Link>
-            </div>
           </div>
 
           <R_Stack className="gap-4 ">

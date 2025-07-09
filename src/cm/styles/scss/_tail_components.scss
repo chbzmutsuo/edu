@@ -44,6 +44,13 @@
   }
  }
 
+ .control-border {
+  border-width: 1px;
+  border-radius: var(--radius-md);
+  border-color: var(--color-gray-300);
+  padding-left: 0.5rem;
+  min-width: 100px;
+ }
  .myFormControl {
   display: block;
   width: 100%;

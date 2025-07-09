@@ -11,7 +11,7 @@ model TbmBase {
  TbmVehicle          TbmVehicle[]
  TbmRouteGroup       TbmRouteGroup[]
  TbmDriveSchedule    TbmDriveSchedule[]
- TbmProduct          TbmProduct[]
+ // TbmProduct          TbmProduct[]
  TbmCustomer         TbmCustomer[]
  TbmBase_MonthConfig TbmBase_MonthConfig[]
 }
@@ -56,7 +56,7 @@ model TbmVehicle {
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
 
- code String @unique
+ code String? @unique
 
  name          String?
  frameNo       String? @unique
@@ -155,6 +155,8 @@ model TbmRouteGroup {
  pickupTime  String? //接車時間
  vehicleType String? //車z種
 
+ productName String?
+
  seikyuKbn String? @default("01")
 
  TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
@@ -163,7 +165,8 @@ model TbmRouteGroup {
  TbmDriveSchedule TbmDriveSchedule[]
 
  TbmMonthlyConfigForRouteGroup TbmMonthlyConfigForRouteGroup[]
- Mid_TbmRouteGroup_TbmProduct  Mid_TbmRouteGroup_TbmProduct?
+ // Mid_TbmRouteGroup_TbmProduct  Mid_TbmRouteGroup_TbmProduct?
+
  Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer?
  TbmRouteGroupCalendar         TbmRouteGroupCalendar[]
 
@@ -206,34 +209,34 @@ model TbmMonthlyConfigForRouteGroup {
  @@unique([yearMonth, tbmRouteGroupId], name: "unique_yearMonth_tbmRouteGroupId")
 }
 
-model TbmProduct {
- id                           Int                            @id @default(autoincrement())
- createdAt                    DateTime                       @default(now())
- updatedAt                    DateTime?                      @default(now()) @updatedAt()
- sortOrder                    Float                          @default(0)
- code                         String                         @unique
- name                         String                         @unique
- Mid_TbmRouteGroup_TbmProduct Mid_TbmRouteGroup_TbmProduct[]
- TbmBase                      TbmBase                        @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
- tbmBaseId                    Int
+// model TbmProduct {
+//  id                           Int                            @id @default(autoincrement())
+//  createdAt                    DateTime                       @default(now())
+//  updatedAt                    DateTime?                      @default(now()) @updatedAt()
+//  sortOrder                    Float                          @default(0)
+//  code                         String                         @unique
+//  name                         String                         @unique
+//  Mid_TbmRouteGroup_TbmProduct Mid_TbmRouteGroup_TbmProduct[]
+//  TbmBase                      TbmBase                        @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+//  tbmBaseId                    Int
 
- @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
-}
+//  @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
+// }
 
-model Mid_TbmRouteGroup_TbmProduct {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
+// model Mid_TbmRouteGroup_TbmProduct {
+//  id        Int       @id @default(autoincrement())
+//  createdAt DateTime  @default(now())
+//  updatedAt DateTime? @default(now()) @updatedAt()
+//  sortOrder Float     @default(0)
 
- TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
- tbmRouteGroupId Int           @unique
+// TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+//  tbmRouteGroupId Int           @unique
 
- TbmProduct   TbmProduct @relation(fields: [tbmProductId], references: [id], onDelete: Cascade)
- tbmProductId Int
+//  TbmProduct   TbmProduct @relation(fields: [tbmProductId], references: [id], onDelete: Cascade)
+//  tbmProductId Int
 
- @@unique([tbmRouteGroupId, tbmProductId], name: "unique_tbmRouteGroupId_tbmProductId")
-}
+//  @@unique([tbmRouteGroupId, tbmProductId], name: "unique_tbmRouteGroupId_tbmProductId")
+// }
 
 model Mid_TbmRouteGroup_TbmCustomer {
  id        Int       @id @default(autoincrement())

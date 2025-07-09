@@ -184,7 +184,10 @@ export async function getAllHealthRecordsForDate(userId: number, journalDate: st
     const result = await doStandardPrisma('healthRecord', 'findMany', {
       where: {
         userId,
-        recordDate: {gte: startDate, lte: endDate},
+        recordDate: {
+          gte: startDate,
+          lte: endDate,
+        },
       },
       include: {Medicine: true},
       orderBy: {recordTime: 'asc'},

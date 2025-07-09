@@ -29,7 +29,7 @@ export const useGlobalModalForm = <S,>(
             {...{
               closeBtn: false,
               open: GMF_OPEN,
-              handleClose: () => setGMF_OPEN(null),
+              setopen: setGMF_OPEN,
             }}
           >
             {props?.mainJsx?.({GMF_OPEN, setGMF_OPEN, close}) ?? <></>}

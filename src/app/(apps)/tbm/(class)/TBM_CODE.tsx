@@ -1,7 +1,7 @@
-import {Code} from '@class/Code'
+import {Code, codeItemCore, codeObjectArgs} from '@class/Code'
 
 export class TBM_CODE extends Code {
-  static VEHICLE = {
+  static VEHICLE: {MAINTANANCE_RECORD_TYPE: codeObjectArgs} = {
     MAINTANANCE_RECORD_TYPE: {
       '01': {label: `3ヶ月点検`, color: `red`},
       '02': {label: `車検`, color: `red`},
@@ -10,7 +10,7 @@ export class TBM_CODE extends Code {
     },
   }
 
-  static ROUTE = {
+  static ROUTE: {KBN: codeObjectArgs} = {
     KBN: {
       '01': {label: `規定（地域内）`, color: `green`},
       '02': {label: `規定（地域間）`, color: `green`},
@@ -26,7 +26,7 @@ export class TBM_CODE extends Code {
       '12': {label: `その他`, color: `gray`},
     },
   }
-  static USER = {
+  static USER: {TYPE: codeObjectArgs} = {
     TYPE: {
       '01': {label: `一般`, color: ``},
       '02': {label: `委託用`, color: `red`},

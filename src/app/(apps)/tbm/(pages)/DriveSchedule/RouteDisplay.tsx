@@ -12,7 +12,11 @@ import React from 'react'
 
 export default function RouteDisplay({tbmBase, whereQuery}) {
   const useGlobalProps = useGlobal()
-  const {query} = useGlobalProps
+
+  const {query, session} = useGlobalProps
+
+  const {tbmBaseId} = session.scopes.getTbmScopes()
+
   const {firstDayOfMonth: yearMonth} = Days.month.getMonthDatum(query.from ? toUtc(query.from) : getMidnight())
 
   return (
@@ -34,7 +38,6 @@ export default function RouteDisplay({tbmBase, whereQuery}) {
                 },
               },
               Mid_TbmRouteGroup_TbmCustomer: {include: {TbmCustomer: true}},
-              Mid_TbmRouteGroup_TbmProduct: {include: {TbmProduct: true}},
               TbmMonthlyConfigForRouteGroup: {where: {yearMonth: whereQuery}},
               TbmRouteGroupFee: {orderBy: {startDate: `desc`}, take: 1},
             },
@@ -44,7 +47,11 @@ export default function RouteDisplay({tbmBase, whereQuery}) {
           myTable: {style: {width: `90vw`}, pagination: {countPerPage: 10}},
           columns: ColBuilder.tbmRouteGroup({
             useGlobalProps,
-            ColBuilderExtraProps: {showMonthConfig: true, yearMonth},
+            ColBuilderExtraProps: {
+              tbmBaseId,
+              showMonthConfig: true,
+              yearMonth,
+            },
           }),
 
           useGlobalProps,

@@ -63,9 +63,6 @@ export const tbmBase = {
                             Mid_TbmRouteGroup_TbmCustomer: {
                               include: {TbmCustomer: {}},
                             },
-                            Mid_TbmRouteGroup_TbmProduct: {
-                              include: {TbmProduct: {}},
-                            },
                           },
                         },
                       }}
@@ -126,18 +123,6 @@ export const tbmBase = {
                         ...childCreatorProps,
                         models: {parent: `tbmBase`, children: `tbmCustomer`},
                         columns: ColBuilder.tbmCustomer(ColBuiderProps),
-                      }}
-                    />
-                  ),
-                },
-                {
-                  label: '商品',
-                  component: (
-                    <ChildCreator
-                      {...{
-                        ...childCreatorProps,
-                        models: {parent: `tbmBase`, children: `tbmProduct`},
-                        columns: ColBuilder.tbmProduct(ColBuiderProps),
                       }}
                     />
                   ),

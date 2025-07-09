@@ -13,6 +13,8 @@ import {doTransaction} from '@lib/server-actions/common-server-actions/doTransac
 import {toastByResult} from '@lib/ui/notifications'
 import BasicTabs from '@components/utils/tabs/BasicTabs'
 import {Head1} from '@components/styles/common-components/heading'
+import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
+import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
 
 export default function TbmRouteGroupDetail(props: DetailPagePropType) {
   const {useGlobalProps} = props
@@ -35,56 +37,78 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
   const defaultSelectedDays = calendar.filter(c => c.holidayType === '稼働').map(c => c.date)
   const tbmRouteGroupId = props.formData?.id
 
+  let TabComponentArray = [{label: `基本情報`, component: <MyForm {...props}></MyForm>}]
+
+  if (props.formData?.id) {
+    TabComponentArray = [
+      ...TabComponentArray,
+      {
+        label: `付帯作業/運賃`,
+        component: (
+          <ChildCreator
+            {...{
+              ParentData: props.formData,
+              models: {parent: `tbmRouteGroup`, children: `tbmRouteGroupFee`},
+              additional: {
+                orderBy: [{startDate: `desc`}],
+              },
+
+              columns: ColBuilder.tbmRouteGroupFee({useGlobalProps}),
+              useGlobalProps,
+            }}
+          />
+        ),
+      },
+      {
+        label: `配車予定`,
+        component: (
+          <div>
+            <div>
+              <Head1>{props.formData?.name}</Head1>
+            </div>
+            <CalendarSetter
+              {...{
+                months,
+                days: days,
+                defaultSelectedDays: defaultSelectedDays,
+                onConfirm: async ({selectedDays}) => {
+                  if (!confirm('変更を反映しますか？')) return
+
+                  const res = await doTransaction({
+                    transactionQueryList: days.map(day => {
+                      const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
+
+                      const unique_tbmRouteGroupId_date = {
+                        tbmRouteGroupId,
+                        date: day,
+                      }
+
+                      return {
+                        model: 'tbmRouteGroupCalendar',
+                        method: 'upsert',
+                        queryObject: {
+                          where: {unique_tbmRouteGroupId_date},
+                          ...createUpdate({...unique_tbmRouteGroupId_date, holidayType: isSelected ? '稼働' : ''}),
+                        },
+                      }
+                    }),
+                  })
+                  toastByResult(res)
+                },
+              }}
+            />
+          </div>
+        ),
+      },
+    ]
+  }
+
   return (
     <BasicTabs
       {...{
         id: `tbmVechicleDetailPage`,
         showAll: false,
-
-        TabComponentArray: [
-          {label: `基本情報`, component: <MyForm {...props}></MyForm>},
-          {
-            label: `配車予定`,
-            component: (
-              <div>
-                <div>
-                  <Head1>{props.formData?.name}</Head1>
-                </div>
-                <CalendarSetter
-                  {...{
-                    months,
-                    days: days,
-                    defaultSelectedDays: defaultSelectedDays,
-                    onConfirm: async ({selectedDays}) => {
-                      if (!confirm('変更を反映しますか？')) return
-
-                      const res = await doTransaction({
-                        transactionQueryList: days.map(day => {
-                          const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
-
-                          const unique_tbmRouteGroupId_date = {
-                            tbmRouteGroupId,
-                            date: day,
-                          }
-
-                          return {
-                            model: 'tbmRouteGroupCalendar',
-                            method: 'upsert',
-                            queryObject: {
-                              where: {unique_tbmRouteGroupId_date},
-                              ...createUpdate({...unique_tbmRouteGroupId_date, holidayType: isSelected ? '稼働' : ''}),
-                            },
-                          }
-                        }),
-                      })
-                      toastByResult(res)
-                    },
-                  }}
-                />
-              </div>
-            ),
-          },
-        ],
+        TabComponentArray,
       }}
     />
   )

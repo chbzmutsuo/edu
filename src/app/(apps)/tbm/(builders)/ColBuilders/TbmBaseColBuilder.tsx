@@ -5,7 +5,7 @@ import {columnGetterType} from '@cm/types/types'
 
 export const TbmBaseColBuilder = (props: columnGetterType) => {
   return new Fields([
-    {id: 'code', label: 'コード', form: {...defaultRegister}},
+    // {id: 'code', label: 'コード', form: {...defaultRegister}},
     {id: 'name', label: '名称', form: {...defaultRegister}},
     // {
     //   id: 'selectedBase',

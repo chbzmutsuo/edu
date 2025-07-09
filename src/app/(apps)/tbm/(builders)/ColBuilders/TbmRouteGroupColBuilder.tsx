@@ -12,18 +12,19 @@ import {toast} from 'react-toastify'
 
 export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
   const {yearMonth, showMonthConfig = false, tbmBaseId} = props.ColBuilderExtraProps ?? {}
+
   const {useGlobalProps} = props
 
   const regularStyle = {minWidth: 100, color: `#43639a`, fontSize: 12}
 
   let colsource: colType[] = [
     ...new Fields([
-      {
-        id: 'code',
-        label: 'CD',
-        form: {...defaultRegister, defaultValue: null},
-        td: {style: {...regularStyle, minWidth: 60}},
-      },
+      // {
+      //   id: 'code',
+      //   label: 'CD',
+      //   form: {...defaultRegister, defaultValue: null},
+      //   td: {style: {...regularStyle, minWidth: 60}},
+      // },
       {
         id: 'tbmBaseId',
         label: '営業所',
@@ -59,13 +60,6 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
     ]).buildFormGroup({groupName: '便設定①'}).plain,
     ...new Fields([
       {
-        id: 'pickupTime',
-        label: '出庫時間',
-        type: 'time',
-        form: {},
-        td: {style: {...regularStyle, width: 80}},
-      },
-      {
         id: 'vehicleType',
         label: '車種',
         type: 'text',
@@ -73,9 +67,22 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         form: {},
       },
       {
+        id: 'delegatePattern',
+        label: '委託パターン',
+        td: {style: {...regularStyle, minWidth: 200}},
+        form: {hidden: true},
+      },
+      {
+        id: `productName`,
+        label: `品名`,
+        td: {style: {...regularStyle, minWidth: 150}},
+        form: {},
+      },
+
+      {
         id: `tbmCustomerId`,
         label: `取引先`,
-        td: {style: {...regularStyle, minWidth: 160}},
+        td: {style: {...regularStyle, minWidth: 200}},
         form: {
           defaultValue: (alreadyRegisteredFormData, formData, col) => {
             return formData?.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id
@@ -85,20 +92,6 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
 
         format: (val, routeGroup) => {
           return <div>{routeGroup.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.name}</div>
-        },
-      },
-      {
-        id: `tbmProductId`,
-        label: `商品`,
-        td: {style: {...regularStyle, minWidth: 150}},
-        form: {
-          defaultValue: (alreadyRegisteredFormData, formData, col) => {
-            return formData?.Mid_TbmRouteGroup_TbmProduct?.TbmProduct?.id
-          },
-        },
-        forSelect: {},
-        format: (val, routeGroup) => {
-          return <div>{routeGroup.Mid_TbmRouteGroup_TbmProduct?.TbmProduct?.name}</div>
         },
       },
     ]).buildFormGroup({groupName: '便設定②'}).plain,
@@ -130,7 +123,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
                 <input
                   style={style}
                   type={col.type}
-                  className={`border  pl-1 ${value ? '' : ' opacity-30'}`}
+                  className={`control-border  pl-1 ${value ? '' : ' opacity-30'}`}
                   onChange={e => setvalue(e.target.value)}
                   onBlur={async e => {
                     const value = col.type === `number` ? Number(e.target.value) : e.target.value

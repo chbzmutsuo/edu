@@ -139,8 +139,8 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
-    "**/tmp/**": true
+    "**/tmp/**": true,
+    "**/health/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -156,6 +156,7 @@
     "achievement",
     "aquapot",
     "edu",
+    "health",
     "keihi",
     "kickswrap",
     "page",
@@ -163,7 +164,6 @@
     "shinsei",
     "sohken",
     "stock",
-    "tbm",
     "tmp"
   ],
   "editor.stickyScroll.enabled": false,

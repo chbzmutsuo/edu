@@ -8,9 +8,7 @@ export class QueryBuilder {
         Mid_TbmRouteGroup_TbmCustomer: {
           include: {TbmCustomer: {}},
         },
-        Mid_TbmRouteGroup_TbmProduct: {
-          include: {TbmProduct: {}},
-        },
+
         TbmBase: {},
       },
     }

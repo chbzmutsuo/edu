@@ -70,6 +70,8 @@ const MyDatepicker = React.forwardRef((props: anyObject, ref) => {
     <>
       <ShadPopover
         {...{
+          open: isOpen,
+          setopen: setIsOpen,
           mode: 'click',
           PopoverTrigger: (
             <R_Stack className={`  justify-between gap-1`}>

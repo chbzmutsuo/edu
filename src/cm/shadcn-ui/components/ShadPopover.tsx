@@ -13,16 +13,17 @@ import {
 import {Popover, PopoverContent, PopoverTrigger} from '@cm/shadcn-ui/components/ui/popover'
 
 import {useIsMobile} from '@cm/shadcn-ui/hooks/use-mobile'
+import {sleep} from '@lib/methods/common'
 import {PopoverPortal} from '@radix-ui/react-popover'
 
-import React from 'react'
+import React, {useEffect} from 'react'
 import {JSX} from 'react'
 
 type ShadPopoverProps = {
   PopoverTrigger?: JSX.Element | string
   open?: boolean
-  onOpenChange?: any
-  handleClose?: any
+  setopen?: any
+
   onOpenAutoFocus?: any
   title?: string
   description?: string
@@ -33,8 +34,8 @@ type ShadPopoverProps = {
 const ShadPopover = React.memo((props: ShadPopoverProps) => {
   const {
     open,
-    onOpenChange,
-    handleClose,
+    setopen,
+
     PopoverTrigger: Trigger,
     children,
     onOpenAutoFocus = e => e.preventDefault(),
@@ -57,14 +58,12 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
       if (!isControlled) {
         setIsOpen(newOpen)
       }
-      if (onOpenChange) {
-        onOpenChange(newOpen)
-      }
-      if (handleClose && !newOpen) {
-        handleClose(false)
+
+      if (setopen) {
+        setopen(newOpen)
       }
     },
-    [onOpenChange, handleClose, isControlled]
+    [setopen, isControlled]
   )
 
   const handleMouseEnter = React.useCallback(() => {
@@ -91,9 +90,9 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
 
   if (mobile) {
     return (
-      <>
+      <div>
         <Drawer open={openState} onOpenChange={handleOpenChange}>
-          <DrawerTrigger asChild>
+          <DrawerTrigger asChild className={`PopoverTrigger`}>
             <div onClick={handleTriggerClick}>{Trigger}</div>
           </DrawerTrigger>
           <DrawerPortal>
@@ -114,15 +113,15 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
             </DrawerContent>
           </DrawerPortal>
         </Drawer>
-      </>
+      </div>
     )
   }
 
   return (
-    <>
+    <div>
       <Popover open={openState} onOpenChange={handleOpenChange}>
         {Trigger && (
-          <PopoverTrigger asChild>
+          <PopoverTrigger asChild className={`PopoverTrigger`}>
             <div
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
@@ -145,7 +144,7 @@ const ShadPopover = React.memo((props: ShadPopoverProps) => {
           </PopoverContent>
         </PopoverPortal>
       </Popover>
-    </>
+    </div>
   )
 })
 

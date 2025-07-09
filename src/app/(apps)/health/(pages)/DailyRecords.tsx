@@ -85,7 +85,8 @@ export default function DailyRecords({userId, date, records, onEdit, onDelete, r
                         background: COLORS.table.thead,
                       },
                       className: tdBorderClass,
-                      cellValue: formatDate(new Date(`${formatDate(record.recordDate)} ${record.recordTime}`), 'M/D(ddd) HH:mm'),
+                      // cellValue: record.recordDate + ' ' + record.recordTime,
+                      cellValue: formatDate(new Date(`${formatDate(record.recordDate)} ${record.recordTime}`), 'M/D(ddd)HH:mm'),
                     },
                     {
                       label: 'カテゴリ',

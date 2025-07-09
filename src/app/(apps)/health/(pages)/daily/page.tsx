@@ -12,7 +12,6 @@ import {toastByResult} from '@lib/ui/notifications'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import useModal from '@components/utils/modal/useModal'
-import Link from 'next/link'
 import {Paper} from '@components/styles/common-components/paper'
 import useWindowSize from '@hooks/useWindowSize'
 import {HealthService} from '@app/(apps)/health/(lib)/healthService'
@@ -202,14 +201,6 @@ export default function HealthPage() {
             <h1 className="text-xl font-bold text-gray-800">
               <div>健康記録</div>
             </h1>
-            <div className="flex  gap-2">
-              <Link href="/health" className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700">
-                ホーム
-              </Link>
-              <Link href="/health/monthly" className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                月別画面
-              </Link>
-            </div>
           </div>
 
           {/* 日付選択 */}

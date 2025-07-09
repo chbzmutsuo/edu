@@ -4,7 +4,6 @@ export type meisaiKey =
   | `routeCode`
   | `routeName`
   | `vehicleType`
-  | `productCode`
   | `productName`
   | `customerCode`
   | `customerName`
@@ -70,7 +69,6 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
             where: {yearMonth: whereQuery.gte},
           },
           Mid_TbmRouteGroup_TbmCustomer: {include: {TbmCustomer: {}}},
-          Mid_TbmRouteGroup_TbmProduct: {include: {TbmProduct: {}}},
         },
       },
       TbmVehicle: {},
@@ -102,7 +100,6 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
     const T_JomuinUnchin = S_driverFee - (V_thirteenPercentOfPostalHighway + W_general)
 
     const Customer = schedule.TbmRouteGroup?.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer
-    const Product = schedule.TbmRouteGroup?.Mid_TbmRouteGroup_TbmProduct?.TbmProduct
 
     return {
       schedule: schedule as TbmDriveSchedule & {User: userType; TbmVehicle: TbmVehicle},
@@ -126,13 +123,10 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
           label: '車種',
           cellValue: schedule.TbmVehicle?.type,
         },
-        productCode: {
-          label: '品名CD',
-          cellValue: Product?.code,
-        },
+
         productName: {
           label: '品名',
-          cellValue: Product?.name,
+          cellValue: schedule.TbmRouteGroup.productName,
           style: {minWidth: 120},
         },
         customerCode: {

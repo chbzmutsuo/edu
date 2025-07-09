@@ -17,6 +17,7 @@ export type MediaType =
   | 'text/plain'
   | 'text/html'
   | 'text/css'
+  | 'text/csv'
   // Application types
   | 'application/pdf'
   | 'application/json'
@@ -41,6 +42,7 @@ export type extType =
   | '.txt'
   | '.html'
   | '.css'
+  | '.csv'
   // Application extensions
   | '.pdf'
   | '.json'
@@ -82,12 +84,12 @@ export const Megabyte = 1024 * 1024
 
 export const FILE_TYPE_CONFIGS: readonly FileTypeConfig[] = Object.freeze([
   // 画像ファイル（2MBに制限）
-  {type: 'image', mediaType: 'image/jpg', ext: '.jpg', maxSizeMB: 2 * Megabyte, description: 'JPEG画像'},
-  {type: 'image', mediaType: 'image/jpeg', ext: '.jpeg', maxSizeMB: 2 * Megabyte, description: 'JPEG画像'},
-  {type: 'image', mediaType: 'image/png', ext: '.png', maxSizeMB: 2 * Megabyte, description: 'PNG画像'},
-  {type: 'image', mediaType: 'image/gif', ext: '.gif', maxSizeMB: 2 * Megabyte, description: 'GIF画像'},
-  {type: 'image', mediaType: 'image/heic', ext: '.heic', maxSizeMB: 2 * Megabyte, description: 'HEIC画像'},
-  {type: 'image', mediaType: 'image/webp', ext: '.webp', maxSizeMB: 2 * Megabyte, description: 'WebP画像'},
+  {type: 'image', mediaType: 'image/jpg', ext: '.jpg', maxSizeMB: 4 * Megabyte, description: 'JPEG画像'},
+  {type: 'image', mediaType: 'image/jpeg', ext: '.jpeg', maxSizeMB: 4 * Megabyte, description: 'JPEG画像'},
+  {type: 'image', mediaType: 'image/png', ext: '.png', maxSizeMB: 4 * Megabyte, description: 'PNG画像'},
+  {type: 'image', mediaType: 'image/gif', ext: '.gif', maxSizeMB: 4 * Megabyte, description: 'GIF画像'},
+  {type: 'image', mediaType: 'image/heic', ext: '.heic', maxSizeMB: 4 * Megabyte, description: 'HEIC画像'},
+  {type: 'image', mediaType: 'image/webp', ext: '.webp', maxSizeMB: 4 * Megabyte, description: 'WebP画像'},
 
   // 動画ファイル
   {type: 'video', mediaType: 'video/quicktime', ext: '.mov', maxSizeMB: 100 * Megabyte, description: 'QuickTime動画'},
@@ -100,9 +102,11 @@ export const FILE_TYPE_CONFIGS: readonly FileTypeConfig[] = Object.freeze([
 
   // ドキュメント
   {type: 'text', mediaType: 'text/plain', ext: '.txt', maxSizeMB: 1 * Megabyte, description: 'テキストファイル'},
+  {type: 'text', mediaType: 'text/csv', ext: '.csv', maxSizeMB: 1 * Megabyte, description: 'CSVファイル'},
+  {type: 'text', mediaType: 'text/html', ext: '.html', maxSizeMB: 1 * Megabyte, description: 'HTMLファイル'},
+  {type: 'text', mediaType: 'text/css', ext: '.css', maxSizeMB: 1 * Megabyte, description: 'CSSファイル'},
+
   {type: 'application', mediaType: 'application/pdf', ext: '.pdf', maxSizeMB: 50 * Megabyte, description: 'PDFドキュメント'},
   {type: 'application', mediaType: 'application/json', ext: '.json', maxSizeMB: 1 * Megabyte, description: 'JSONファイル'},
   {type: 'application', mediaType: 'application/xml', ext: '.xml', maxSizeMB: 1 * Megabyte, description: 'XMLファイル'},
-  {type: 'text', mediaType: 'text/html', ext: '.html', maxSizeMB: 1 * Megabyte, description: 'HTMLファイル'},
-  {type: 'text', mediaType: 'text/css', ext: '.css', maxSizeMB: 1 * Megabyte, description: 'CSSファイル'},
 ] as const)

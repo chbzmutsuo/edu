@@ -1,5 +1,7 @@
 'use client'
 
+const today = getMidnight()
+
 import {useState, useEffect, useRef, Fragment, useCallback} from 'react'
 import {useReactToPrint} from 'react-to-print'
 import useGlobal from '@hooks/globalHooks/useGlobal'
@@ -19,6 +21,7 @@ import {getMidnight} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {BreakBefore} from '@components/styles/common-components/print-components'
 import {HealthJournalEntry} from '@prisma/client'
+import {Days} from '@class/Days/Days'
 
 export default function JournalPage() {
   const global = useGlobal()
@@ -33,7 +36,7 @@ export default function JournalPage() {
   const [originalGoalAndReflection, setOriginalGoalAndReflection] = useState('')
 
   const [goalHasChanges, setGoalHasChanges] = useState(false)
-  const [healthRecords, setHealthRecords] = useState<any[]>([])
+  // const [healthRecords, setHealthRecords] = useState<any[]>([])
 
   // 健康記録の時間帯別キャッシュ
   const [healthRecordsByHour, setHealthRecordsByHour] = useState<Map<number, any[]>>(new Map())
@@ -360,9 +363,11 @@ export default function JournalPage() {
     }
 
     // 記録を時間帯別に分類
-    records.forEach(record => {
+    records.forEach((record, i) => {
+      const datetime = new Date(`${formatDate(record.recordDate)} ${record.recordTime}`)
+      const recordHour = datetime.getHours()
+
       try {
-        const recordHour = parseInt(record.recordTime.split(':')[0], 10)
         if (recordHour >= 0 && recordHour < 24) {
           const hourRecords = recordsByHour.get(recordHour) || []
           hourRecords.push(record)
@@ -379,7 +384,9 @@ export default function JournalPage() {
   // 指定時間帯の健康記録を取得（キャッシュ使用）
   const getHealthRecordsForHourSlot = useCallback(
     (hourSlot: number) => {
-      return healthRecordsByHour.get(hourSlot) || []
+      const result = healthRecordsByHour.get(hourSlot) || []
+
+      return result
     },
     [healthRecordsByHour]
   )
@@ -391,11 +398,32 @@ export default function JournalPage() {
     setLoading(true)
     try {
       // 日誌データと健康記録を並行取得
-      const [journalResult, healthRecordsResult] = await Promise.all([
-        getOrCreateJournal(session.id, selectedDate),
 
-        getAllHealthRecordsForDate(session.id, selectedDate),
-      ])
+      const journalResult = await getOrCreateJournal(session.id, selectedDate)
+
+      let {data: healthRecordsResult} = await getAllHealthRecordsForDate(session.id, selectedDate)
+
+      healthRecordsResult.sort((a, b) => {
+        const datetimeA = new Date(`${formatDate(a.recordDate)} ${a.recordTime}`)
+        const datetimeB = new Date(`${formatDate(b.recordDate)} ${b.recordTime}`)
+
+        return datetimeA.getTime() - datetimeB.getTime()
+      })
+
+      healthRecordsResult = healthRecordsResult.filter(record => {
+        const datetime = new Date(`${formatDate(record.recordDate)} ${record.recordTime}`)
+
+        const today7 = getMidnight(selectedDate)
+        today7.setHours(7, 0, 0, 0)
+
+        const tomorrow7 = Days.day.add(getMidnight(selectedDate), 1)
+        tomorrow7.setHours(7, 0, 0, 0)
+
+        const after7Today = datetime.getTime() >= today7.getTime()
+        const before7Tomorrow = datetime.getTime() < tomorrow7.getTime()
+
+        return after7Today && before7Tomorrow
+      })
 
       if (journalResult.success && journalResult.data) {
         setJournal(journalResult.data as any)
@@ -407,16 +435,11 @@ export default function JournalPage() {
         console.error('日誌の取得に失敗しました:', journalResult.error)
       }
 
-      if (healthRecordsResult.success) {
-        setHealthRecords(healthRecordsResult.data)
-        // 健康記録をプリプロセッシングしてキャッシュ
-        const processedRecords = preprocessHealthRecords(healthRecordsResult.data)
-        setHealthRecordsByHour(processedRecords)
-      } else {
-        console.error('健康記録の取得に失敗しました:', healthRecordsResult.error)
-        setHealthRecords([])
-        setHealthRecordsByHour(new Map())
-      }
+      // setHealthRecords(healthRecordsResult.data)
+      // 健康記録をプリプロセッシングしてキャッシュ
+      const processedRecords = preprocessHealthRecords(healthRecordsResult)
+
+      setHealthRecordsByHour(processedRecords)
     } catch (error) {
       console.error('データの取得に失敗しました:', error)
     } finally {

@@ -6,7 +6,7 @@ import {columnGetterType} from '@cm/types/types'
 export const tbmCustomerColBuilder = (props: columnGetterType) => {
   const {date, tbmVehicleId, lastOdometerStart = 0, lastOdometerEnd = 0} = props.ColBuilderExtraProps ?? {}
   return new Fields([
-    {id: 'code', label: 'コード'},
+    // {id: 'code', label: 'コード'},
     {id: 'name', label: '名称', form: {...defaultRegister}},
     {id: 'address', label: '住所'},
     {id: 'phoneNumber', label: 'TEL'},
