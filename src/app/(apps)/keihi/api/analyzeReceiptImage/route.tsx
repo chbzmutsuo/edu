@@ -2,7 +2,7 @@ import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeRece
 import {createBulkExpensesBasicReturn} from '@app/(apps)/keihi/api/analyzeReceiptImage/fetchAnalyzeReceiptImage'
 import {FileHandler} from '@class/FileHandler'
 import prisma from '@lib/prisma'
-import {S3_API_FormData} from '@pages/api/S3'
+import {S3FormData} from '@cm/class/FileHandler'
 import {NextRequest, NextResponse} from 'next/server'
 
 export const POST = async (req: NextRequest) => {
@@ -88,8 +88,8 @@ export const POST = async (req: NextRequest) => {
             const file = new File([blob], fileName, {type: 'image/jpeg'})
 
             // S3アップロード用のフォームデータ
-            const s3FormData: S3_API_FormData = {
-              backetKey: 'keihi', // フォルダ名
+            const s3FormData: S3FormData = {
+              bucketKey: 'keihi', // フォルダ名
             }
 
             // S3にアップロード

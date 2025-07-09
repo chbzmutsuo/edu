@@ -71,7 +71,7 @@ export const createExpenseWithDraft = async (
           // S3にアップロード
           const s3Result = await FileHandler.sendFileToS3({
             file,
-            formDataObj: {backetKey: 'keihi'},
+            formDataObj: {bucketKey: 'keihi'},
           })
 
           if (!s3Result.success) {
@@ -164,7 +164,7 @@ export const createExpense = async (
           const s3Result = await FileHandler.sendFileToS3({
             file,
             formDataObj: {
-              backetKey: 'keihi',
+              bucketKey: 'keihi',
             },
           })
 

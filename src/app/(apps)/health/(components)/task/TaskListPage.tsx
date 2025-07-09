@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect, useMemo} from 'react'
-import {getTasks, toggleTaskComplete, deleteTask} from '../../(lib)/task-actions'
+import {getTasks, toggleTaskComplete, deleteTask, deleteTaskAttachment} from '../../(lib)/task-actions'
 import {Task} from '../../(lib)/task-actions'
 import TaskModal from './TaskModal'
 import RecurringTaskModal from './RecurringTaskModal'
@@ -18,6 +18,7 @@ export default function TaskListPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState<'dueDate' | 'createdAt' | 'title'>('dueDate')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState<number | null>(null)
 
   const loadTasks = async () => {
     if (!session?.id) return
@@ -56,6 +57,25 @@ export default function TaskListPage() {
       const result = await deleteTask(taskId)
       if (result.success) {
         await loadTasks()
+      }
+    }
+  }
+
+  const handleDeleteAttachment = async (attachmentId: number) => {
+    if (confirm('この画像を削除しますか？\n削除した画像は復元できません。')) {
+      setDeletingAttachmentId(attachmentId)
+      try {
+        const result = await deleteTaskAttachment(attachmentId)
+        if (result.success) {
+          await loadTasks()
+        } else {
+          alert(`画像の削除に失敗しました: ${result.error}`)
+        }
+      } catch (error) {
+        console.error('画像削除エラー:', error)
+        alert('画像の削除に失敗しました')
+      } finally {
+        setDeletingAttachmentId(null)
       }
     }
   }
@@ -249,6 +269,14 @@ export default function TaskListPage() {
                             <div className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
                               📎
                             </div>
+                            {/* 削除ボタン */}
+                            <button
+                              onClick={() => handleDeleteAttachment(attachment.id)}
+                              disabled={deletingAttachmentId === attachment.id}
+                              className="absolute -top-2 -left-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              {deletingAttachmentId === attachment.id ? '...' : '×'}
+                            </button>
                             {/* ファイル名のツールチップ */}
                             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b opacity-0 group-hover:opacity-100 transition-opacity truncate">
                               {attachment.originalName}

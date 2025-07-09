@@ -21,7 +21,7 @@ export const updateWithImageAndAddUrlToLatestFormData = async ({latestFormData, 
               const updatedFileRes = await FileHandler.sendFileToS3({
                 file: theFile,
                 formDataObj: {
-                  backetKey: `${backetKey}/${fileKey}`,
+                  bucketKey: `${backetKey}/${fileKey}`,
                   deleteImageUrl: latestFormData?.[fileKey],
                 },
               })

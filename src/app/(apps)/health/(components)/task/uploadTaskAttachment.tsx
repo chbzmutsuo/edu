@@ -12,12 +12,15 @@ export const uploadTaskAttachment = async ({taskId, file}: {taskId: number; file
       body: formData,
     })
 
-    const result = await response.json()
-
     if (!response.ok) {
-      return {success: false, error: result.error || 'ファイルのアップロードに失敗しました'}
+      const errorData = await response.json().catch(() => ({}))
+      return {
+        success: false,
+        error: errorData.error || `HTTPエラー: ${response.status} ${response.statusText}`,
+      }
     }
 
+    const result = await response.json()
     return {success: true, data: result.data}
   } catch (error) {
     console.error('ファイルアップロードエラー:', error)

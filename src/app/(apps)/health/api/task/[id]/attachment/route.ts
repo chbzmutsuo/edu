@@ -1,14 +1,12 @@
 import {NextRequest, NextResponse} from 'next/server'
 import prisma from '@lib/prisma'
-import {writeFile, mkdir} from 'fs/promises'
-import {join} from 'path'
-import {randomBytes} from 'crypto'
-import {existsSync} from 'fs'
+import {FileHandler} from '@cm/class/FileHandler'
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData()
 
   const taskId = Number(formData.get('taskId'))
+
   try {
     if (isNaN(taskId)) {
       return NextResponse.json(
@@ -47,58 +45,46 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // ファイルサイズ制限（10MB）
-    const maxSize = 10 * 1024 * 1024
-    if (file.size > maxSize) {
+    // ファイル検証（新しいFileHandler使用）
+    const validation = FileHandler.validateFile(file)
+    if (!validation.isValid) {
       return NextResponse.json(
         {
           success: false,
-          error: 'ファイルサイズが大きすぎます（最大10MB）',
+          error: `ファイル検証エラー: ${validation.errors.join(', ')}`,
         },
         {status: 400}
       )
     }
 
-    // ファイル形式チェック（画像のみ）
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-    if (!allowedTypes.includes(file.type)) {
+    // S3にアップロード
+    const s3Result = await FileHandler.sendFileToS3({
+      file,
+      formDataObj: {
+        bucketKey: `health/task/${taskId}`,
+        optimize: true, // 画像最適化を有効にする
+      },
+      validateFile: true,
+    })
+
+    if (!s3Result.success) {
       return NextResponse.json(
         {
           success: false,
-          error: 'サポートされていないファイル形式です（JPEG、PNG、GIF、WebPのみ）',
+          error: `ファイルアップロードに失敗しました: ${s3Result.error}`,
         },
-        {status: 400}
+        {status: 500}
       )
     }
-
-    // ユニークなファイル名を生成
-    const timestamp = Date.now()
-    const randomString = randomBytes(3).toString('hex')
-    const extension = file.name.split('.').pop()
-    const filename = `${timestamp}_${randomString}.${extension}`
-
-    // アップロードディレクトリの確保
-
-    const uploadDir = join(process.cwd(), 'public', 'uploads', 'task')
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, {recursive: true})
-    }
-
-    // ファイルを保存
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-    const filepath = join(uploadDir, filename)
-
-    await writeFile(filepath, buffer)
 
     // DBにレコード追加
     const attachment = await prisma.taskAttachment.create({
       data: {
-        filename,
+        filename: s3Result.result?.key || file.name,
         originalName: file.name,
         mimeType: file.type,
         size: file.size,
-        url: `/uploads/task/${filename}`,
+        url: s3Result.result?.url || '',
         taskId,
       },
     })

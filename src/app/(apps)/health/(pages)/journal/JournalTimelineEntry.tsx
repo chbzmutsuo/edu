@@ -48,20 +48,58 @@ export default function JournalTimelineEntry({
   const [deletingImageId, setDeletingImageId] = useState<number | null>(null)
 
   // ファイル選択時の処理
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
 
-    // ファイル検証
-    const validation = FileHandler.validateFiles(files)
+    // ファイルリスト全体の検証とリサイズ
+    const validation = FileHandler.validateFileList(files)
+
     if (!validation.isValid) {
-      alert('ファイル検証エラー:\n' + validation.errors.join('\n'))
+      alert('ファイル検証エラー:\n' + validation.errorMessages.join(', '))
       return
     }
 
-    // プレビューURL作成
-    const newPreviewUrls = files.map(file => URL.createObjectURL(file))
+    // 画像ファイルのリサイズ（2MB制限を超えている場合）
+    const oversizedImages = validation.validFiles.filter(file => file.type.startsWith('image/') && file.size > 2 * 1024 * 1024)
 
-    setSelectedFiles(prev => [...prev, ...files])
+    let processedFiles = validation.validFiles
+
+    if (oversizedImages.length > 0) {
+      const shouldResize = confirm(`${oversizedImages.length}個の画像ファイルが2MBを超えています。\n自動でリサイズしますか？`)
+
+      if (shouldResize) {
+        try {
+          const optimizeResult = await FileHandler.optimizeFileList(
+            validation.validFiles,
+            {
+              maxWidth: 1200,
+              maxHeight: 900,
+              quality: 0.8,
+              format: 'jpeg',
+              maintainAspectRatio: true,
+            },
+            (step, progress) => {
+              console.log(`${step} ${progress}%`)
+            }
+          )
+
+          processedFiles = optimizeResult.resizedFiles
+
+          if (optimizeResult.summary.totalSizeReduction > 0) {
+            const reductionMB = (optimizeResult.summary.totalSizeReduction / (1024 * 1024)).toFixed(2)
+            alert(`リサイズ完了: ${reductionMB}MB削減されました`)
+          }
+        } catch (error) {
+          console.error('リサイズエラー:', error)
+          alert('リサイズに失敗しました。元のファイルを使用します。')
+        }
+      }
+    }
+
+    // プレビューURL作成
+    const newPreviewUrls = processedFiles.map(file => URL.createObjectURL(file))
+
+    setSelectedFiles(prev => [...prev, ...processedFiles])
     setPreviewUrls(prev => [...prev, ...newPreviewUrls])
     setHasChanges(true)
   }
@@ -75,12 +113,16 @@ export default function JournalTimelineEntry({
   }
 
   // 既存画像削除
-  const removeExistingImage = async (imageId: number) => {
+  const removeExistingImage = async (image: {id: number; filePath: string}) => {
+    const {id: imageId, filePath} = image
     if (!confirm('この画像を削除しますか？\n削除した画像は復元できません。')) return
 
     setDeletingImageId(imageId)
+
     try {
       const result = await deleteJournalImage(imageId)
+      const deleteResult = await FileHandler.deleteFileFromS3(filePath)
+
       if (result.success) {
         // 親コンポーネントに更新を通知（エントリを再取得）
         if (entry) {
@@ -117,9 +159,7 @@ export default function JournalTimelineEntry({
       // 画像のアップロード
       for (const file of selectedFiles) {
         const formDataObj = {
-          folder: 'health/journal',
-          fileName: `${entry.id}_${Date.now()}_${file.name}`,
-          backetKey: `health/journal/${entry.id}_${Date.now()}_${file.name}`,
+          bucketKey: 'health/journal',
         }
 
         const uploadResult = await FileHandler.sendFileToS3({
@@ -250,10 +290,16 @@ export default function JournalTimelineEntry({
           {/* プレビュー画像 */}
           <section className={`no-print`}>
             {/* ファイル選択 */}
+            <div className="mb-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">画像を選択</label>
+              <p className="text-xs text-gray-500 mb-2">
+                対応形式: JPEG (.jpeg, .jpg), PNG (.png), GIF (.gif), WebP (.webp), HEIC (.heic)
+              </p>
+            </div>
             <input
               type="file"
               multiple
-              accept="image/*"
+              accept=".jpeg,.jpg,.png,.gif,.webp,.heic,image/jpeg,image/jpg,image/png,image/gif,image/webp,image/heic"
               onChange={handleFileSelect}
               className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             />
@@ -300,7 +346,7 @@ export default function JournalTimelineEntry({
                         }}
                       />
                       <button
-                        onClick={() => removeExistingImage(image.id)}
+                        onClick={() => removeExistingImage({id: image.id, filePath: image.filePath})}
                         disabled={deletingImageId === image.id}
                         className={`absolute -top-2 -right-2 rounded-full w-7 h-7 z-50 flex items-center justify-center text-sm font-bold shadow-md transition-all duration-200 ${
                           deletingImageId === image.id

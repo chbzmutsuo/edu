@@ -3,7 +3,7 @@
 import {revalidatePath} from 'next/cache'
 import OpenAI from 'openai'
 import {FileHandler} from 'src/cm/class/FileHandler'
-import {S3_API_FormData} from '@pages/api/S3'
+import {S3FormData} from '@cm/class/FileHandler'
 import prisma from '@lib/prisma'
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
@@ -248,8 +248,8 @@ export const uploadAttachment = async (
     const filename = `keihi/${timestamp}_${randomString}.${extension}`
 
     // S3アップロード用のフォームデータ
-    const s3FormData: S3_API_FormData = {
-      backetKey: 'keihi', // フォルダ名
+    const s3FormData: S3FormData = {
+      bucketKey: 'keihi', // フォルダ名
     }
 
     // S3にアップロード

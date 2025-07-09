@@ -358,6 +358,33 @@ export async function updateTask(id: number, data: {title?: string; description?
 // タスク削除
 export async function deleteTask(id: number) {
   try {
+    // 削除前にタスクの添付ファイル情報を取得
+    const task = await prisma.task.findUnique({
+      where: {id},
+      include: {
+        TaskAttachment: true,
+      },
+    })
+
+    if (!task) {
+      return {success: false, error: 'タスクが見つかりません'}
+    }
+
+    // S3から画像を削除（FileHandlerを使用）
+    const {FileHandler} = await import('@cm/class/FileHandler')
+
+    for (const attachment of task.TaskAttachment) {
+      try {
+        // fileNameからS3のkeyを推測（filename フィールドを使用）
+        const s3Key = attachment.filename
+        await FileHandler.deleteFileFromS3(s3Key)
+      } catch (error) {
+        console.error(`S3画像削除エラー (${attachment.filename}):`, error)
+        // S3削除エラーがあってもタスク削除は続行
+      }
+    }
+
+    // データベースからタスクを削除（CASCADE設定により添付ファイルも自動削除）
     await prisma.task.delete({
       where: {id},
     })
@@ -366,6 +393,40 @@ export async function deleteTask(id: number) {
   } catch (error) {
     console.error('タスク削除エラー:', error)
     return {success: false, error: 'タスクの削除に失敗しました'}
+  }
+}
+
+// タスク添付画像削除
+export async function deleteTaskAttachment(attachmentId: number) {
+  try {
+    // 削除前に添付ファイル情報を取得
+    const attachment = await prisma.taskAttachment.findUnique({
+      where: {id: attachmentId},
+    })
+
+    if (!attachment) {
+      return {success: false, error: '添付ファイルが見つかりません'}
+    }
+
+    // S3から画像を削除
+    const {FileHandler} = await import('@cm/class/FileHandler')
+
+    try {
+      await FileHandler.deleteFileFromS3(attachment.filename)
+    } catch (error) {
+      console.error(`S3画像削除エラー (${attachment.filename}):`, error)
+      // S3削除エラーがあってもDB削除は続行
+    }
+
+    // データベースから添付ファイルを削除
+    await prisma.taskAttachment.delete({
+      where: {id: attachmentId},
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('添付ファイル削除エラー:', error)
+    return {success: false, error: '添付ファイルの削除に失敗しました'}
   }
 }
 

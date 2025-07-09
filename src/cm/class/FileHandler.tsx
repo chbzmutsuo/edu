@@ -1,187 +1,466 @@
 import Axios from 'src/cm/lib/axios'
-import {S3_API_FormData} from '@pages/api/S3'
-import {extType, MediaType} from '@cm/types/file-types'
+import {FILE_TYPE_CONFIGS, FileTypeConfig} from '@cm/types/file-types'
 import {requestResultType} from '@cm/types/types'
 
-// 型定義の改善
-export interface FileTypeConfig {
-  mediaType: MediaType
-  ext: extType
-  maxSize?: number // バイト単位
-  description?: string
-}
-
-export interface FileValidationResult {
-  isValid: boolean
-  errors: string[]
-  warnings: string[]
-}
-
-export interface FileInfo {
-  name: string
-  size: number
-  type: string
-  lastModified: number
-  extension: string
-  mediaType: MediaType | null
-}
-
+// プログレス情報の型
 export interface UploadProgress {
   loaded: number
   total: number
   percentage: number
 }
 
+// アップロード結果の型
 export interface UploadResult extends requestResultType {
-  fileInfo?: FileInfo
+  fileInfo?: {
+    name: string
+    size: number
+    type: string
+    lastModified: number
+  }
   uploadTime?: number
+}
+
+// S3アップロード用のフォームデータ型（新しいAPI用）
+export interface S3FormData {
+  bucketKey: string
+  deleteImageUrl?: string
+  optimize?: boolean
 }
 
 export interface SendFileToS3Props {
   file: File | null
-  formDataObj: S3_API_FormData
+  formDataObj: S3FormData
   onProgress?: (progress: UploadProgress) => void
   validateFile?: boolean
 }
 
-// 定数定義（メモ化対応）
-const FILE_TYPE_CONFIGS: readonly FileTypeConfig[] = Object.freeze([
-  // 画像ファイル
-  {mediaType: 'image/jpeg', ext: '.jpg', maxSize: 10 * 1024 * 1024, description: 'JPEG画像'},
-  {mediaType: 'image/png', ext: '.png', maxSize: 10 * 1024 * 1024, description: 'PNG画像'},
-  {mediaType: 'image/gif', ext: '.gif', maxSize: 5 * 1024 * 1024, description: 'GIF画像'},
-  {mediaType: 'image/bmp', ext: '.bmp', maxSize: 20 * 1024 * 1024, description: 'BMP画像'},
-  {mediaType: 'image/tiff', ext: '.tiff', maxSize: 50 * 1024 * 1024, description: 'TIFF画像'},
-  {mediaType: 'image/svg+xml', ext: '.svg', maxSize: 1 * 1024 * 1024, description: 'SVG画像'},
+// ファイル検証結果の型
+export interface FileValidationResult {
+  isValid: boolean
+  errors: string[]
+  warnings?: string[]
+}
 
-  // 動画ファイル
-  {mediaType: 'video/quicktime', ext: '.mov', maxSize: 100 * 1024 * 1024, description: 'QuickTime動画'},
-  {mediaType: 'video/mp4', ext: '.mp4', maxSize: 100 * 1024 * 1024, description: 'MP4動画'},
-  {mediaType: 'video/webm', ext: '.webm', maxSize: 100 * 1024 * 1024, description: 'WebM動画'},
+// ファイルリスト検証結果の型
+export interface FileListValidationResult {
+  isValid: boolean
+  validFiles: File[]
+  invalidFiles: {file: File; errors: string[]}[]
+  totalSize: number
+  totalSizeFormatted: string
+  errorMessages: string[]
+  summary: {
+    totalFiles: number
+    validFiles: number
+    invalidFiles: number
+    oversizedFiles: number
+    unsupportedFiles: number
+  }
+}
 
-  // 音声ファイル
-  {mediaType: 'audio/mpeg', ext: '.mp3', maxSize: 20 * 1024 * 1024, description: 'MP3音声'},
-  {mediaType: 'audio/ogg', ext: '.ogg', maxSize: 20 * 1024 * 1024, description: 'OGG音声'},
+// リサイズオプションの型
+export interface ResizeOptions {
+  maxWidth?: number
+  maxHeight?: number
+  quality?: number // 0-1の範囲
+  format?: 'jpeg' | 'png' | 'webp'
+  maintainAspectRatio?: boolean
+}
 
-  // ドキュメント
-  {mediaType: 'text/plain', ext: '.txt', maxSize: 1 * 1024 * 1024, description: 'テキストファイル'},
-  {mediaType: 'application/pdf', ext: '.pdf', maxSize: 50 * 1024 * 1024, description: 'PDFドキュメント'},
-  {mediaType: 'application/json', ext: '.json', maxSize: 1 * 1024 * 1024, description: 'JSONファイル'},
-  {mediaType: 'application/xml', ext: '.xml', maxSize: 1 * 1024 * 1024, description: 'XMLファイル'},
-  {mediaType: 'text/html', ext: '.html', maxSize: 1 * 1024 * 1024, description: 'HTMLファイル'},
-  {mediaType: 'text/css', ext: '.css', maxSize: 1 * 1024 * 1024, description: 'CSSファイル'},
-] as const)
+// リサイズ結果の型
+export interface ResizeResult {
+  success: boolean
+  originalFile: File
+  resizedFile?: File
+  originalSize: number
+  resizedSize: number
+  compressionRatio?: number
+  error?: string
+}
 
-// ユーティリティ関数
-const getFileExtension = (filename: string): string => {
-  const lastDotIndex = filename.lastIndexOf('.')
-  return lastDotIndex !== -1 ? filename.slice(lastDotIndex).toLowerCase() : ''
+// ヘルパー関数
+const isValidFile = (file: File | null): file is File => {
+  return file !== null && file instanceof File && file.size > 0
 }
 
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes'
-
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-const isValidFile = (file: any): file is File => {
-  return file instanceof File && typeof file.name === 'string' && typeof file.size === 'number' && typeof file.type === 'string'
+// 画像リサイズ用のヘルパー関数
+const createCanvas = (width: number, height: number): HTMLCanvasElement => {
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  return canvas
 }
 
-// ファイル名の安全性チェック用の正規表現
-// eslint-disable-next-line no-control-regex
-const UNSAFE_FILENAME_CHARS = /[<>:"/\\|?*\x00-\x1f]/
+const calculateResizeDimensions = (
+  originalWidth: number,
+  originalHeight: number,
+  maxWidth: number,
+  maxHeight: number,
+  maintainAspectRatio: boolean = true
+): {width: number; height: number} => {
+  if (!maintainAspectRatio) {
+    return {width: maxWidth, height: maxHeight}
+  }
 
-// または行ごとに無効化
-const unsafeChars = /[<>:"/\\|?*\x00-\x1f]/ // eslint-disable-line no-control-regex
+  const aspectRatio = originalWidth / originalHeight
+
+  let newWidth = maxWidth
+  let newHeight = maxHeight
+
+  if (originalWidth > originalHeight) {
+    newHeight = newWidth / aspectRatio
+    if (newHeight > maxHeight) {
+      newHeight = maxHeight
+      newWidth = newHeight * aspectRatio
+    }
+  } else {
+    newWidth = newHeight * aspectRatio
+    if (newWidth > maxWidth) {
+      newWidth = maxWidth
+      newHeight = newWidth / aspectRatio
+    }
+  }
+
+  return {width: Math.round(newWidth), height: Math.round(newHeight)}
+}
 
 export class FileHandler {
   /**
-   * サポートされているファイル形式一覧（読み取り専用）
+   * ファイルタイプ設定を取得
    */
-  static get mediaTypes(): readonly FileTypeConfig[] {
+  static getFileTypeConfigs(): readonly FileTypeConfig[] {
     return FILE_TYPE_CONFIGS
   }
 
   /**
    * ファイル情報を取得
    */
-  static getFileInfo = (file: File): FileInfo => {
-    const extension = getFileExtension(file.name)
-    const config = FILE_TYPE_CONFIGS.find(config => config.ext === extension || config.mediaType === file.type)
-
+  static getFileInfo(file: File): {
+    name: string
+    size: number
+    type: string
+    lastModified: number
+    sizeFormatted: string
+    extension: string
+  } {
     return {
       name: file.name,
       size: file.size,
       type: file.type,
       lastModified: file.lastModified,
-      extension,
-      mediaType: config?.mediaType || null,
+      sizeFormatted: formatFileSize(file.size),
+      extension: file.name.split('.').pop()?.toLowerCase() || '',
     }
   }
 
   /**
    * ファイル検証（強化版）
    */
-  static validateFile = (file: File): FileValidationResult => {
-    const result: FileValidationResult = {
-      isValid: true,
-      errors: [],
-      warnings: [],
-    }
+  static validateFile(file: File): FileValidationResult {
+    const errors: string[] = []
+    const warnings: string[] = []
 
     if (!isValidFile(file)) {
-      result.isValid = false
-      result.errors.push('無効なファイルオブジェクトです')
-      return result
+      errors.push('無効なファイルです')
+      return {isValid: false, errors, warnings}
     }
 
-    // ファイル名チェック
+    // ファイル名の検証
     if (!file.name || file.name.trim().length === 0) {
-      result.isValid = false
-      result.errors.push('ファイル名が空です')
+      errors.push('ファイル名が無効です')
     }
 
-    // ファイルサイズチェック（0バイト）
+    // ファイルサイズの検証
     if (file.size === 0) {
-      result.isValid = false
-      result.errors.push('ファイルサイズが0バイトです')
+      errors.push('ファイルサイズが0バイトです')
     }
 
-    // 拡張子チェック
-    const extension = getFileExtension(file.name)
-    const config = FILE_TYPE_CONFIGS.find(config => config.ext === extension || config.mediaType === file.type)
-
-    if (!config) {
-      result.isValid = false
-      result.errors.push(`サポートされていないファイル形式です: ${extension || file.type}`)
-    } else {
-      // サイズ制限チェック
-      if (config.maxSize && file.size > config.maxSize) {
-        result.isValid = false
-        result.errors.push(`ファイルサイズが制限を超えています: ${formatFileSize(file.size)} > ${formatFileSize(config.maxSize)}`)
-      }
-
-      // MIMEタイプの一致チェック
-      if (file.type && file.type !== config.mediaType) {
-        result.warnings.push(`ファイルの拡張子とMIMEタイプが一致しません: ${extension} vs ${file.type}`)
-      }
+    const fileSize = file.size
+    // MIMEタイプの検証
+    const config = FILE_TYPE_CONFIGS.find(config => config.mediaType === file.type)
+    if (config === undefined) {
+      errors.push(`サポートされていないファイル形式です: ${file.type}`)
+    } else if (config.maxSizeMB && fileSize > config.maxSizeMB) {
+      errors.push(`ファイルサイズが制限を超えています: ${formatFileSize(fileSize)} > ${formatFileSize(config.maxSizeMB)}`)
     }
 
-    // ファイル名の安全性チェック
-    if (unsafeChars.test(file.name)) {
-      result.warnings.push('ファイル名に安全でない文字が含まれています')
+    // ファイル名の文字数制限
+    if (file.name.length > 255) {
+      errors.push('ファイル名が長すぎます（255文字以内）')
     }
 
-    return result
+    // 危険な拡張子のチェック
+    const dangerousExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.com', '.jar']
+    const extension = file.name.split('.').pop()?.toLowerCase()
+    if (extension && dangerousExtensions.includes(`.${extension}`)) {
+      errors.push('危険なファイル形式です')
+    }
+
+    return {isValid: errors.length === 0, errors, warnings}
   }
 
   /**
-   * S3へのファイル送信（強化版）
+   * ファイルリスト全体の検証（新機能）
+   */
+  static validateFileList(files: File[]): FileListValidationResult {
+    const validFiles: File[] = []
+    const invalidFiles: {file: File; errors: string[]}[] = []
+    let totalSize = 0
+    let oversizedFiles = 0
+    let unsupportedFiles = 0
+
+    // 各ファイルの検証
+    files.forEach(file => {
+      const validation = FileHandler.validateFile(file)
+      totalSize += file.size
+
+      if (validation.isValid) {
+        validFiles.push(file)
+      } else {
+        invalidFiles.push({file, errors: validation.errors})
+
+        // エラーの分類
+        if (validation.errors.some(error => error.includes('ファイルサイズが制限を超えています'))) {
+          oversizedFiles++
+        }
+        if (validation.errors.some(error => error.includes('サポートされていないファイル形式'))) {
+          unsupportedFiles++
+        }
+      }
+    })
+
+    const errorMessages = invalidFiles.map((invalid, index) => `ファイル${index + 1} (${invalid.file.name}): ${invalid.errors}`)
+
+    return {
+      isValid: invalidFiles.length === 0,
+      validFiles,
+      invalidFiles,
+      errorMessages,
+      totalSize,
+      totalSizeFormatted: formatFileSize(totalSize),
+      summary: {
+        totalFiles: files.length,
+        validFiles: validFiles.length,
+        invalidFiles: invalidFiles.length,
+        oversizedFiles,
+        unsupportedFiles,
+      },
+    }
+  }
+
+  /**
+   * 画像ファイルのクライアントサイドリサイズ（新機能）
+   */
+  static async resizeImage(file: File, options: ResizeOptions = {}): Promise<ResizeResult> {
+    const {maxWidth = 800, maxHeight = 600, quality = 0.8, format = 'jpeg', maintainAspectRatio = true} = options
+
+    return new Promise(resolve => {
+      // 画像ファイルでない場合はエラー
+      if (!file.type.startsWith('image/')) {
+        resolve({
+          success: false,
+          originalFile: file,
+          originalSize: file.size,
+          resizedSize: 0,
+          error: '画像ファイルではありません',
+        })
+        return
+      }
+
+      const img = new Image()
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+
+      if (!ctx) {
+        resolve({
+          success: false,
+          originalFile: file,
+          originalSize: file.size,
+          resizedSize: 0,
+          error: 'Canvas context を取得できませんでした',
+        })
+        return
+      }
+
+      img.onload = () => {
+        try {
+          // リサイズ後の寸法を計算
+          const {width, height} = calculateResizeDimensions(img.width, img.height, maxWidth, maxHeight, maintainAspectRatio)
+
+          // Canvasのサイズを設定
+          canvas.width = width
+          canvas.height = height
+
+          // 画像を描画
+          ctx.drawImage(img, 0, 0, width, height)
+
+          // Blobに変換
+          canvas.toBlob(
+            blob => {
+              if (!blob) {
+                resolve({
+                  success: false,
+                  originalFile: file,
+                  originalSize: file.size,
+                  resizedSize: 0,
+                  error: 'Blob変換に失敗しました',
+                })
+                return
+              }
+
+              // 新しいファイル名を生成
+              const originalName = file.name
+              const nameWithoutExt = originalName.substring(0, originalName.lastIndexOf('.'))
+              const newFileName = `${nameWithoutExt}_resized.${format}`
+
+              // 新しいFileオブジェクトを作成
+              const resizedFile = new File([blob], newFileName, {
+                type: `image/${format}`,
+                lastModified: Date.now(),
+              })
+
+              const compressionRatio = ((file.size - resizedFile.size) / file.size) * 100
+
+              resolve({
+                success: true,
+                originalFile: file,
+                resizedFile,
+                originalSize: file.size,
+                resizedSize: resizedFile.size,
+                compressionRatio,
+              })
+            },
+            `image/${format}`,
+            quality
+          )
+        } catch (error) {
+          resolve({
+            success: false,
+            originalFile: file,
+            originalSize: file.size,
+            resizedSize: 0,
+            error: `リサイズ処理中にエラーが発生しました: ${error}`,
+          })
+        }
+      }
+
+      img.onerror = () => {
+        resolve({
+          success: false,
+          originalFile: file,
+          originalSize: file.size,
+          resizedSize: 0,
+          error: '画像の読み込みに失敗しました',
+        })
+      }
+
+      // 画像を読み込み
+      img.src = URL.createObjectURL(file)
+    })
+  }
+
+  /**
+   * 複数の画像ファイルを一括リサイズ（新機能）
+   */
+  static async resizeMultipleImages(
+    files: File[],
+    options: ResizeOptions = {},
+    onProgress?: (index: number, result: ResizeResult) => void
+  ): Promise<ResizeResult[]> {
+    const results: ResizeResult[] = []
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const result = await FileHandler.resizeImage(file, options)
+      results.push(result)
+
+      if (onProgress) {
+        onProgress(i, result)
+      }
+    }
+
+    return results
+  }
+
+  /**
+   * ファイルリストの自動最適化（検証 + リサイズ）（新機能）
+   */
+  static async optimizeFileList(
+    files: File[],
+    resizeOptions: ResizeOptions = {},
+    onProgress?: (step: string, progress: number) => void
+  ): Promise<{
+    validFiles: File[]
+    invalidFiles: {file: File; errors: string[]}[]
+    resizedFiles: File[]
+    summary: {
+      totalFiles: number
+      validFiles: number
+      invalidFiles: number
+      resizedFiles: number
+      totalSizeReduction: number
+    }
+  }> {
+    // Step 1: ファイル検証
+    if (onProgress) onProgress('ファイル検証中...', 0)
+    const validation = FileHandler.validateFileList(files)
+
+    // Step 2: 画像ファイルのリサイズ
+    if (onProgress) onProgress('画像リサイズ中...', 30)
+    const imageFiles = validation.validFiles.filter(file => file.type.startsWith('image/'))
+    const nonImageFiles = validation.validFiles.filter(file => !file.type.startsWith('image/'))
+
+    const resizeResults = await FileHandler.resizeMultipleImages(imageFiles, resizeOptions, (index, result) => {
+      if (onProgress) {
+        const progress = 30 + (index / imageFiles.length) * 60
+        onProgress(`画像リサイズ中... (${index + 1}/${imageFiles.length})`, progress)
+      }
+    })
+
+    // Step 3: 結果の集計
+    if (onProgress) onProgress('結果集計中...', 90)
+    const resizedFiles: File[] = []
+    let totalSizeReduction = 0
+
+    resizeResults.forEach(result => {
+      if (result.success && result.resizedFile) {
+        resizedFiles.push(result.resizedFile)
+        totalSizeReduction += result.originalSize - result.resizedSize
+      } else {
+        // リサイズに失敗した場合は元のファイルを使用
+        resizedFiles.push(result.originalFile)
+      }
+    })
+
+    // 非画像ファイルも追加
+    resizedFiles.push(...nonImageFiles)
+
+    if (onProgress) onProgress('完了', 100)
+
+    return {
+      validFiles: validation.validFiles,
+      invalidFiles: validation.invalidFiles,
+      resizedFiles,
+      summary: {
+        totalFiles: files.length,
+        validFiles: validation.validFiles.length,
+        invalidFiles: validation.invalidFiles.length,
+        resizedFiles: resizeResults.filter(r => r.success).length,
+        totalSizeReduction,
+      },
+    }
+  }
+
+  /**
+   * S3へのファイル送信（新しいAPI対応版）
    */
   static sendFileToS3 = async (props: SendFileToS3Props): Promise<UploadResult> => {
     const {file, formDataObj, onProgress, validateFile = true} = props
@@ -203,6 +482,15 @@ export class FileHandler {
       }
     }
 
+    // bucketKeyの必須チェック
+    if (!formDataObj.bucketKey || formDataObj.bucketKey.trim().length === 0) {
+      return {
+        success: false,
+        message: 'bucketKeyが必要です',
+        error: 'bucketKey is required',
+      }
+    }
+
     // ファイル検証（オプション）
     if (validateFile) {
       const validation = FileHandler.validateFile(file)
@@ -221,12 +509,15 @@ export class FileHandler {
       // FormDataの構築
       const formData = new FormData()
       formData.append('file', file)
+      formData.append('bucketKey', formDataObj.bucketKey)
 
-      Object.entries(formDataObj).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) {
-          formData.append(key, String(value))
-        }
-      })
+      if (formDataObj.deleteImageUrl) {
+        formData.append('deleteImageUrl', formDataObj.deleteImageUrl)
+      }
+
+      if (formDataObj.optimize !== undefined) {
+        formData.append('optimize', formDataObj.optimize.toString())
+      }
 
       // アップロード設定
       const config: any = {
@@ -247,8 +538,8 @@ export class FileHandler {
         }
       }
 
-      // アップロード実行
-      const response = await Axios.post('/api/S3', formData, config)
+      // アップロード実行（新しいエンドポイント）
+      const response = await Axios.post('/api/s3', formData, config)
       const result: requestResultType = response.data
 
       const uploadTime = Date.now() - startTime
@@ -269,6 +560,14 @@ export class FileHandler {
           errorMessage = 'アップロードがタイムアウトしました'
         } else if (error.message.includes('Network Error')) {
           errorMessage = 'ネットワークエラーが発生しました'
+        } else if (error.message.includes('413')) {
+          errorMessage = 'ファイルサイズが大きすぎます'
+        } else if (error.message.includes('400')) {
+          errorMessage = 'ファイル形式またはリクエストが無効です'
+        } else if (error.message.includes('403')) {
+          errorMessage = 'アクセス権限がありません'
+        } else if (error.message.includes('500')) {
+          errorMessage = 'サーバーエラーが発生しました'
         }
       }
 
@@ -282,93 +581,59 @@ export class FileHandler {
   }
 
   /**
-   * サポートされているファイル形式かチェック
+   * S3からファイルを削除
    */
-  static isSupportedFileType = (file: File): boolean => {
-    const extension = getFileExtension(file.name)
-    return FILE_TYPE_CONFIGS.some(config => config.ext === extension || config.mediaType === file.type)
-  }
-
-  /**
-   * ファイル形式の設定を取得
-   */
-  static getFileTypeConfig = (file: File): FileTypeConfig | null => {
-    const extension = getFileExtension(file.name)
-    return FILE_TYPE_CONFIGS.find(config => config.ext === extension || config.mediaType === file.type) || null
-  }
-
-  /**
-   * 複数ファイルの一括検証
-   */
-  static validateFiles = (files: File[]): FileValidationResult => {
-    const result: FileValidationResult = {
-      isValid: true,
-      errors: [],
-      warnings: [],
-    }
-
-    if (!Array.isArray(files) || files.length === 0) {
-      result.isValid = false
-      result.errors.push('ファイルが選択されていません')
-      return result
-    }
-
-    files.forEach((file, index) => {
-      const validation = FileHandler.validateFile(file)
-
-      if (!validation.isValid) {
-        result.isValid = false
-        validation.errors.forEach(error => {
-          result.errors.push(`ファイル${index + 1}: ${error}`)
-        })
+  static deleteFileFromS3 = async (fileUrl: string): Promise<requestResultType> => {
+    try {
+      const response = await Axios.delete(`/api/s3?url=${encodeURIComponent(fileUrl)}`)
+      return response.data
+    } catch (error) {
+      console.error('Error deleting file from S3:', error)
+      return {
+        success: false,
+        message: 'ファイル削除に失敗しました',
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
+    }
+  }
 
-      validation.warnings.forEach(warning => {
-        result.warnings.push(`ファイル${index + 1}: ${warning}`)
+  /**
+   * 署名付きURL生成
+   */
+  static generateSignedUrl = async (key: string, expiresIn: number = 3600): Promise<requestResultType> => {
+    try {
+      const response = await Axios.get(`/api/s3?key=${encodeURIComponent(key)}&expiresIn=${expiresIn}`)
+      return response.data
+    } catch (error) {
+      console.error('Error generating signed URL:', error)
+      return {
+        success: false,
+        message: '署名付きURLの生成に失敗しました',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      }
+    }
+  }
+
+  /**
+   * 複数ファイルの一括アップロード
+   */
+  static uploadMultipleFiles = async (
+    files: File[],
+    bucketKey: string,
+    onProgress?: (fileIndex: number, progress: UploadProgress) => void
+  ): Promise<UploadResult[]> => {
+    const results: UploadResult[] = []
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      const result = await FileHandler.sendFileToS3({
+        file,
+        formDataObj: {bucketKey},
+        onProgress: onProgress ? progress => onProgress(i, progress) : undefined,
       })
-    })
+      results.push(result)
+    }
 
-    return result
-  }
-
-  /**
-   * ファイルサイズの合計を計算
-   */
-  static getTotalFileSize = (files: File[]): number => {
-    if (!Array.isArray(files)) return 0
-
-    return files.reduce((total, file) => {
-      return total + (isValidFile(file) ? file.size : 0)
-    }, 0)
-  }
-
-  /**
-   * ファイル形式別の統計を取得
-   */
-  static getFileTypeStats = (files: File[]) => {
-    if (!Array.isArray(files)) return {}
-
-    const stats: Record<string, {count: number; totalSize: number}> = {}
-
-    files.forEach(file => {
-      if (!isValidFile(file)) return
-
-      const config = FileHandler.getFileTypeConfig(file)
-      const key = config?.description || 'その他'
-
-      if (!stats[key]) {
-        stats[key] = {count: 0, totalSize: 0}
-      }
-
-      stats[key].count++
-      stats[key].totalSize += file.size
-    })
-
-    return stats
+    return results
   }
 }
-
-// 型エクスポート
-
-// 後方互換性のための型エイリアス
-export type fileType = FileTypeConfig

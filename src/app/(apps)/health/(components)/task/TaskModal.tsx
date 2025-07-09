@@ -5,6 +5,7 @@ import {createTask, updateTask} from '../../(lib)/task-actions'
 import {Task} from '../../(lib)/task-actions'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {uploadTaskAttachment} from './uploadTaskAttachment'
+import {FileHandler} from '@cm/class/FileHandler'
 
 type Props = {
   task?: Task | null
@@ -19,6 +20,7 @@ export default function TaskModal({task, onClose}: Props) {
   const [loading, setLoading] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
+  const [validationErrors, setValidationErrors] = useState<string[]>([])
   const modalRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -43,10 +45,53 @@ export default function TaskModal({task, onClose}: Props) {
     }
   }, [onClose])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const filesArray = Array.from(e.target.files)
-      setSelectedFiles(prev => [...prev, ...filesArray])
+
+      // ファイルリスト検証
+      const validation = FileHandler.validateFileList(filesArray)
+
+      if (!validation.isValid) {
+        setValidationErrors(validation.errorMessages)
+        return
+      }
+
+      // 検証をクリア
+      setValidationErrors([])
+
+      // 2MB超過の画像ファイルがある場合、リサイズの確認
+      const oversizedImages = validation.validFiles.filter(file => file.type.startsWith('image/') && file.size > 2 * 1024 * 1024)
+
+      let processedFiles = validation.validFiles
+
+      if (oversizedImages.length > 0) {
+        const shouldResize = confirm(`${oversizedImages.length}個の画像ファイルが2MBを超えています。\n自動でリサイズしますか？`)
+
+        if (shouldResize) {
+          try {
+            const optimizeResult = await FileHandler.optimizeFileList(validation.validFiles, {
+              maxWidth: 1200,
+              maxHeight: 900,
+              quality: 0.8,
+              format: 'jpeg',
+              maintainAspectRatio: true,
+            })
+
+            processedFiles = optimizeResult.resizedFiles
+
+            if (optimizeResult.summary.totalSizeReduction > 0) {
+              const reductionMB = (optimizeResult.summary.totalSizeReduction / (1024 * 1024)).toFixed(2)
+              alert(`リサイズ完了: ${reductionMB}MB削減されました`)
+            }
+          } catch (error) {
+            console.error('リサイズエラー:', error)
+            alert('リサイズに失敗しました。元のファイルを使用します。')
+          }
+        }
+      }
+
+      setSelectedFiles(prev => [...prev, ...processedFiles])
     }
   }
 
@@ -80,7 +125,7 @@ export default function TaskModal({task, onClose}: Props) {
       if (selectedFiles.length > 0 && savedTask) {
         setUploading(true)
         for (const file of selectedFiles) {
-          await uploadTaskAttachment({
+          const res = await uploadTaskAttachment({
             taskId: savedTask.id,
             file: file,
           })
@@ -159,6 +204,18 @@ export default function TaskModal({task, onClose}: Props) {
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
+            {/* ファイル検証エラーの表示 */}
+            {validationErrors.length > 0 && (
+              <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-600 font-medium">ファイル検証エラー:</p>
+                <ul className="text-sm text-red-600 mt-1 list-disc list-inside">
+                  {validationErrors.map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {/* 選択されたファイルの一覧 */}
             {selectedFiles.length > 0 && (
               <div className="mt-2 space-y-1">
@@ -169,7 +226,9 @@ export default function TaskModal({task, onClose}: Props) {
                       key={index}
                       className="flex items-center justify-between text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded"
                     >
-                      <span className="truncate flex-1 mr-2">{file.name}</span>
+                      <span className="truncate flex-1 mr-2">
+                        {file.name} ({FileHandler.getFileInfo(file).sizeFormatted})
+                      </span>
                       <button type="button" onClick={() => removeFile(index)} className="text-red-500 hover:text-red-700 text-xs">
                         削除
                       </button>

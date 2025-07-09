@@ -1,6 +1,5 @@
 import {extType, MediaType} from '@cm/types/file-types'
 import {requestResultType} from '@cm/types/types'
-import {S3_API_FormData} from '@pages/api/S3'
 
 // ファイル設定の型定義
 export interface FileTypeConfig {
@@ -14,7 +13,7 @@ export interface FileTypeConfig {
 export interface FileValidationResult {
   isValid: boolean
   errors: string[]
-  warnings: string[]
+  warnings?: string[]
 }
 
 // ファイル情報の型定義
@@ -40,10 +39,17 @@ export interface UploadResult extends requestResultType {
   uploadTime?: number
 }
 
+// S3アップロード用のフォームデータ型
+export interface S3FormData {
+  bucketKey: string
+  deleteImageUrl?: string
+  optimize?: boolean
+}
+
 // S3アップロード用のプロパティ
 export interface SendFileToS3Props {
   file: File | null
-  formDataObj: S3_API_FormData
+  formDataObj: S3FormData
   onProgress?: (progress: UploadProgress) => void
   validateFile?: boolean
 }

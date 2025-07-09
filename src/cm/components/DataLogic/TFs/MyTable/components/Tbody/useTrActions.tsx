@@ -67,7 +67,7 @@ const useTrActions = props => {
           await FileHandler.sendFileToS3({
             file: null,
             formDataObj: {
-              backetKey: `${backetKey}/${id}`,
+              bucketKey: `${backetKey}/${id}`,
               deleteImageUrl,
             },
           })

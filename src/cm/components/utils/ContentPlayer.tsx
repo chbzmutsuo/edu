@@ -51,7 +51,7 @@ export default function ContentPlayer(props: ContentPlayerProps) {
 
   const fileTypeAndStyles = useMemo(() => {
     const ext = extname(src)
-    const mediaTypeFromExt = FileHandler.mediaTypes?.find(obj => ext === obj.ext)?.mediaType
+    const mediaTypeFromExt = FileHandler.getFileTypeConfigs()?.find(obj => ext === obj.ext)?.mediaType
     let fileType = props.fileType ?? mediaType ?? mediaTypeFromExt?.split('/')[0] ?? 'application'
 
     if (src.includes('google.com')) {
@@ -76,7 +76,7 @@ export default function ContentPlayer(props: ContentPlayerProps) {
     let thumbnail, main
 
     const ext = extname(src)
-    const mediaTypeFromExt = FileHandler.mediaTypes?.find(obj => ext === obj.ext)?.mediaType
+    const mediaTypeFromExt = FileHandler.getFileTypeConfigs()?.find(obj => ext === obj.ext)?.mediaType
     let fileType = props.fileType ?? mediaType ?? mediaTypeFromExt?.split('/')[0] ?? 'application'
     if (src.includes(`google.com`)) {
       fileType = 'image'
