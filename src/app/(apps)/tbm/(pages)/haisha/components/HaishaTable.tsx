@@ -1,5 +1,5 @@
 'use client'
-import React, {useEffect, useMemo, useState} from 'react'
+import React, {useEffect, useMemo, useState, useTransition, useDeferredValue} from 'react'
 
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 
@@ -15,7 +15,9 @@ import {formatDate} from '@class/Days/date-utils/formatters'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {showSpendTime} from '@lib/methods/toast-helper'
 import useLocalLoading from '@hooks/globalHooks/useLocalLoading'
+
 export type haishaTableMode = 'ROUTE' | 'DRIVER'
+
 export default function HaishaTable({
   days,
   tbmBase,
@@ -32,7 +34,7 @@ export default function HaishaTable({
   const {admin} = session.scopes
   const [listDataState, setlistDataState] = useState<haishaListData | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [itemsPerPage, setItemsPerPage] = useState(999)
   const [maxRecord, setMaxRecord] = useState(0)
 
   const {LocalLoader, toggleLocalLoading} = useLocalLoading()
@@ -43,9 +45,7 @@ export default function HaishaTable({
   const fetchData = async () => {
     await showSpendTime(async () => {
       const takeSkip = {take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage}
-
       const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip})
-
       setMaxRecord(data.maxCount)
       setlistDataState(data)
     })
@@ -106,10 +106,16 @@ export default function HaishaTable({
     setCurrentPage(page)
   }
 
+  const handleItemsPerPageChange = (newItemsPerPage: number) => {
+    setItemsPerPage(newItemsPerPage)
+    setCurrentPage(1)
+  }
+
   const {data: holidays = []} = useDoStandardPrisma(`calendar`, `findMany`, {
     where: {holidayType: `祝日`},
   })
 
+  // 🔥 Use deferred data for table rendering
   const HaishaTableMemo = useMemo(() => {
     if (listDataState) {
       const {TbmDriveSchedule, userList, tbmRouteGroup} = listDataState as haishaListData
@@ -119,10 +125,8 @@ export default function HaishaTable({
           {...{
             mode,
             tbmBase,
-
             days,
             holidays,
-
             fetchData,
             setModalOpen,
             admin,
@@ -131,7 +135,7 @@ export default function HaishaTable({
             tbmRouteGroup,
             userList,
           }}
-        ></TableContent>
+        />
       )
     }
   }, [listDataState, mode, tbmBase, days, holidays, fetchData, setModalOpen, admin, query])
@@ -145,7 +149,10 @@ export default function HaishaTable({
           </Button>
 
           <div className="px-4 py-2 font-bold">
+            {/* 🔥 Page number updates immediately */}
             {currentPage} / {Math.ceil(maxRecord / itemsPerPage)}
+            {/* 🔥 Show loading state during pagination */}
+            {/* {isPaginating && <span className="ml-2 text-xs text-blue-500 animate-pulse">更新中...</span>} */}
           </div>
 
           <Button
@@ -159,10 +166,7 @@ export default function HaishaTable({
           <select
             className="ml-4 rounded-sm border px-2 py-1"
             value={itemsPerPage}
-            onChange={async e => {
-              setItemsPerPage(Number(e.target.value))
-              setCurrentPage(1)
-            }}
+            onChange={e => handleItemsPerPageChange(Number(e.target.value))}
           >
             <option value={15}>15件</option>
             <option value={30}>30件</option>

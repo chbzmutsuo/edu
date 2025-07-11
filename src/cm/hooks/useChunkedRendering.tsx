@@ -1,4 +1,4 @@
-import {useState, useEffect, useCallback} from 'react'
+import {useState, useEffect, useCallback, useRef} from 'react'
 
 interface UseChunkedRenderingOptions {
   chunkSize: number
@@ -18,6 +18,16 @@ export function useChunkedRendering<T>(data: T[], options: Partial<UseChunkedRen
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isStarted, setIsStarted] = useState(false)
 
+  // データの参照を保持して無限ループを防ぐ
+  const dataRef = useRef<T[]>(data)
+  const optionsRef = useRef(options)
+
+  // データまたはオプションが変更された時のみ更新
+  useEffect(() => {
+    dataRef.current = data
+    optionsRef.current = options
+  })
+
   const startRendering = useCallback(() => {
     setRenderedData([])
     setCurrentIndex(0)
@@ -26,12 +36,13 @@ export function useChunkedRendering<T>(data: T[], options: Partial<UseChunkedRen
   }, [])
 
   const renderAll = useCallback(() => {
-    setRenderedData(data || [])
+    const currentData = dataRef.current
+    setRenderedData(currentData ? [...currentData] : [])
     setIsComplete(true)
-    setCurrentIndex(data?.length || 0)
-  }, [data])
+    setCurrentIndex(currentData?.length || 0)
+  }, [])
 
-  // データが変更されたときの初期化
+  // データが変更されたときの初期化（依存配列を最小限に）
   useEffect(() => {
     if (!data?.length) {
       setRenderedData([])
@@ -41,33 +52,39 @@ export function useChunkedRendering<T>(data: T[], options: Partial<UseChunkedRen
     }
 
     if (autoStart) {
-      startRendering()
+      // 直接状態を更新（startRenderingを呼ばない）
+      setRenderedData([])
+      setCurrentIndex(0)
+      setIsComplete(false)
+      setIsStarted(true)
     } else {
       setIsStarted(false)
       setIsComplete(false)
       setRenderedData([])
     }
-  }, [data, autoStart, startRendering])
+  }, [data?.length, autoStart]) // dataの長さのみ監視
 
   // チャンクレンダリングの実行
   useEffect(() => {
-    if (!data?.length || isComplete || !isStarted) return
+    const currentData = dataRef.current
+
+    if (!currentData?.length || isComplete || !isStarted) return
 
     const timer = setTimeout(() => {
-      const nextChunk = data.slice(currentIndex, currentIndex + chunkSize)
+      const nextChunk = currentData.slice(currentIndex, currentIndex + chunkSize)
 
       if (nextChunk.length > 0) {
         setRenderedData(prev => [...prev, ...nextChunk])
         setCurrentIndex(prev => prev + chunkSize)
       }
 
-      if (currentIndex + chunkSize >= data.length) {
+      if (currentIndex + chunkSize >= currentData.length) {
         setIsComplete(true)
       }
     }, delay)
 
     return () => clearTimeout(timer)
-  }, [data, currentIndex, chunkSize, delay, isComplete, isStarted])
+  }, [currentIndex, chunkSize, delay, isComplete, isStarted]) // dataを依存配列から除外
 
   const progress = data?.length ? Math.min(currentIndex / data.length, 1) : 1
 

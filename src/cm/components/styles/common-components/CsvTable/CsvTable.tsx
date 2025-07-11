@@ -6,143 +6,14 @@ import {htmlProps} from '@components/styles/common-components/type'
 
 import React, {CSSProperties} from 'react'
 import {twMerge} from 'tailwind-merge'
-export type recordsType = {
-  headerRecords?: bodyRecordsType
-  bodyRecords?: bodyRecordsType
-  records?: bodyRecordsType
-}
-export type CsvTableProps = {
-  stylesInColumns?: stylesInColumns
 
-  SP?: boolean
-  csvOutput?: {
-    fileTitle: string
-    dataArranger?: (props: recordsType) => Promise<any[]>
-  }
-} & recordsType
-
-export const convertRecords = (props: recordsType) => {
-  const {records} = props
-  let {headerRecords, bodyRecords} = props
-  if (records) {
-    headerRecords = [records[0]].map(row => {
-      return {
-        ...row,
-        csvTableRow: (row?.csvTableRow ?? []).map(d => {
-          return {
-            //
-            ...d,
-            cellValue: d.label,
-          }
-        }),
-      }
-    })
-    bodyRecords = records.map(row => {
-      return {
-        ...row,
-        csvTableRow: (row?.csvTableRow ?? []).map(d => {
-          return {
-            ...d,
-            label: undefined,
-          }
-        }),
-      }
-    })
-  }
-
-  return {
-    ...props,
-    headerRecords,
-    bodyRecords,
-  }
-}
-
-export const CsvTable = (props: CsvTableProps) => {
-  props = convertRecords(props)
-
-  const getBodyWithHeader = () => {
-    if (props.SP) {
-      const {headerRecords = []} = props
-      const {bodyRecords = []} = props
-      const rowCount = Math.max(...headerRecords.map(d => d.csvTableRow.length))
-      const bodyWithHeader = new Array(rowCount).fill(null).map((_, rowIdx) => {
-        const headerCols = headerRecords
-          .map((d, colIdx) => {
-            const cols = d.csvTableRow
-
-            const findTheCol = cols[rowIdx] ?? null
-
-            if (findTheCol?.colSpan) {
-              d.csvTableRow.splice(rowIdx + 1, 0, ...new Array(findTheCol.colSpan - 1).fill(null))
-            }
-
-            if (findTheCol) {
-              return {...findTheCol, rowSpan: findTheCol?.colSpan, colSpan: 1}
-            }
-          })
-          .filter(Boolean)
-
-        const body = bodyRecords.map(d => d.csvTableRow[rowIdx])
-
-        return {
-          csvTableRow: [...headerCols, ...body],
-        }
-      }) as bodyRecordsType
-
-      return bodyWithHeader
-    } else {
-      return props.bodyRecords
-    }
-  }
-
-  const bodyWithHeader = getBodyWithHeader()
-
-  // if (props.SP) {
-
-  //   //
-  //   return {
-  //     WithWrapper: (
-  //       props?: htmlProps & {
-  //         size?: `sm` | `base` | `lg` | `xl`
-  //       }
-  //     ) => {
-  //       return (
-  //         <TableWrapper {...props}>
-  //           <TableBordered {...{size: props?.size}}>{ALL()}</TableBordered>
-  //         </TableWrapper>
-  //       )
-  //     },
-  //     ALL,
-  //     Thead: () => <CsvTableHead {...props} headerRecords={[]} />,
-  //     Tbody: () => <CsvTableBody {...props} bodyRecords={bodyWithHeader} />,
-  //     Downloader: () => <Downloader {...props} />,
-  //   }
-  // }
-
-  const ALL = () => {
-    return (
-      <>
-        <CsvTableHead {...props} />
-        <CsvTableBody {...props} bodyRecords={bodyWithHeader} />
-      </>
-    )
-  }
-
-  const WithWrapper = (props: htmlProps & {size?: `sm` | `base` | `lg` | `xl`}) => {
-    return (
-      <TableWrapper {...props} {...{className: twMerge('max-h-[80vh] max-w-[90vw] mx-auto', props.className)}}>
-        <TableBordered {...{size: props?.size}}>{ALL()}</TableBordered>
-      </TableWrapper>
-    )
-  }
-
-  return {
-    WithWrapper,
-    ALL,
-    Thead: () => <CsvTableHead {...props} />,
-    Tbody: () => <CsvTableBody {...props} />,
-    Downloader: () => <Downloader {...props} />,
-  }
+export type ChunkedOptions = {
+  enabled: boolean
+  chunkSize?: number
+  delay?: number
+  autoStart?: boolean
+  showProgress?: boolean
+  showControls?: boolean
 }
 
 export type trTdProps = {
@@ -153,12 +24,115 @@ export type trTdProps = {
   thStyle?: CSSProperties
   onClick?: any
 }
-export type csvTableCol = {cellValue: any; cellValueRaw?: any; label?: any} & trTdProps
-export type csvTableRow = trTdProps & {csvTableRow: csvTableCol[]}
+
+export type csvTableCol = {
+  cellValue: any
+  cellValueRaw?: any
+  label?: any
+} & trTdProps
+
+export type csvTableRow = trTdProps & {
+  csvTableRow: csvTableCol[]
+}
+
 export type bodyRecordsType = csvTableRow[]
+
 export type stylesInColumns = {
   [key: number]: {
     style?: CSSProperties
     className?: string
+  }
+}
+
+export type CsvTableProps = {
+  records: bodyRecordsType
+  stylesInColumns?: stylesInColumns
+  csvOutput?: {
+    fileTitle: string
+    dataArranger?: (records: bodyRecordsType) => Promise<any[]>
+  }
+  // 🔥 チャンク処理オプション（クライアント専用）
+  chunked?: ChunkedOptions
+}
+
+/**
+ * recordsからheaderとbodyを分離
+ */
+const separateHeaderAndBody = (records: bodyRecordsType) => {
+  if (!records || records.length === 0) {
+    return {headerRecords: [], bodyRecords: []}
+  }
+
+  const headerRow = records[0]
+  const bodyRows = records
+
+  // ヘッダー用の変換：labelをcellValueに
+  const headerRecords = [
+    {
+      ...headerRow,
+      csvTableRow: headerRow.csvTableRow.map(col => ({
+        ...col,
+        cellValue: col.label || col.cellValue,
+      })),
+    },
+  ]
+
+  // ボディ用の変換：labelを除去
+  const bodyRecords = bodyRows.map(row => ({
+    ...row,
+    csvTableRow: row.csvTableRow.map(col => ({
+      ...col,
+      label: undefined,
+    })),
+  }))
+
+  return {headerRecords, bodyRecords}
+}
+
+/**
+ * Server Component対応のCsvTable
+ * チャンク処理が不要な場合はそのまま使用可能
+ *
+ * @note チャンク処理が必要な場合は、CsvTableChunkedを直接使用してください
+ */
+export const CsvTable = (props: CsvTableProps) => {
+  // 🔥 Server Componentではチャンク処理をサポートしない
+  if (props.chunked?.enabled) {
+    console.warn('CsvTable: チャンク処理はServer Componentでは利用できません。CsvTableChunkedを使用してください。')
+  }
+
+  // 🔥 通常のServer Component版
+  return createCsvTableCore(props)
+}
+
+/**
+ * Core CsvTable functionality (Server Component compatible)
+ */
+export const createCsvTableCore = (props: CsvTableProps) => {
+  const {headerRecords, bodyRecords} = separateHeaderAndBody(props.records)
+
+  const ALL = () => {
+    return (
+      <>
+        <CsvTableHead headerRecords={headerRecords} stylesInColumns={props.stylesInColumns} />
+        <CsvTableBody bodyRecords={bodyRecords} stylesInColumns={props.stylesInColumns} />
+      </>
+    )
+  }
+
+  const WithWrapper = (wrapperProps: htmlProps & {size?: `sm` | `base` | `lg` | `xl`}) => {
+    return (
+      <TableWrapper {...wrapperProps} {...{className: twMerge('max-h-[80vh] max-w-[90vw] mx-auto', wrapperProps.className)}}>
+        <TableBordered {...{size: wrapperProps?.size}}>{ALL()}</TableBordered>
+      </TableWrapper>
+    )
+  }
+
+  return {
+    WithWrapper,
+    ALL,
+    Thead: () => <CsvTableHead headerRecords={headerRecords} stylesInColumns={props.stylesInColumns} />,
+    Tbody: () => <CsvTableBody bodyRecords={bodyRecords} stylesInColumns={props.stylesInColumns} />,
+    Downloader: () => <Downloader records={props.records} csvOutput={props.csvOutput} />,
   }
 }

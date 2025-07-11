@@ -1,9 +1,14 @@
-import {CsvTableProps} from '@components/styles/common-components/CsvTable/CsvTable'
+import {bodyRecordsType, stylesInColumns} from '@components/styles/common-components/CsvTable/CsvTable'
 import {Counter} from '@components/styles/common-components/Table'
 import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
 import {cl} from '@lib/methods/common'
 
-export function CsvTableHead(props: CsvTableProps) {
+export type CsvTableHeadProps = {
+  headerRecords: bodyRecordsType
+  stylesInColumns?: stylesInColumns
+}
+
+export function CsvTableHead(props: CsvTableHeadProps) {
   const hasHeader = props.headerRecords?.some(d => d.csvTableRow.some(cell => cell.cellValue))
 
   if (hasHeader === false) {
