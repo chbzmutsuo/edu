@@ -1,37 +1,60 @@
 'use client'
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useMemo, useState} from 'react'
 
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 
 import useHaishaTableEditorGMF from '@app/(apps)/tbm/(globalHooks)/useHaishaTableEditorGMF'
-import {getListData, haishaListData} from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/getListData'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
-
-import HaishaTableSwitcher from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/HaishaTableSwitcher'
-import {Paper} from '@components/styles/common-components/paper'
-import TableContent from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/TableContent'
 import {Button} from '@components/styles/common-components/Button'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import {getListData, haishaListData} from '@app/(apps)/tbm/(pages)/haisha/components/getListData'
+import HaishaTableSwitcher from '@app/(apps)/tbm/(pages)/haisha/components/HaishaTableSwitcher'
+import TableContent from '@app/(apps)/tbm/(pages)/haisha/components/TableContent'
+import {TbmBase} from '@prisma/client'
+import {formatDate} from '@class/Days/date-utils/formatters'
+import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import {showSpendTime} from '@lib/methods/toast-helper'
+import useLocalLoading from '@hooks/globalHooks/useLocalLoading'
 export type haishaTableMode = 'ROUTE' | 'DRIVER'
-export default function HaishaTable({whereQuery, days, tbmBase}) {
-  const {query} = useGlobal()
-
+export default function HaishaTable({
+  days,
+  tbmBase,
+  whereQuery,
+}: {
+  tbmBase: TbmBase | null
+  days: Date[]
+  whereQuery: {
+    gte?: Date
+    lt?: Date
+  }
+}) {
+  const {query, session, toggleLoad} = useGlobal()
+  const {admin} = session.scopes
   const [listDataState, setlistDataState] = useState<haishaListData | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(15)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
   const [maxRecord, setMaxRecord] = useState(0)
+
+  const {LocalLoader, toggleLocalLoading} = useLocalLoading()
 
   const tbmBaseId = tbmBase?.id ?? 0
   const mode: haishaTableMode = query.mode
+
   const fetchData = async () => {
-    const takeSkip = {take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage}
-    const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip})
-    setMaxRecord(data.maxCount)
-    setlistDataState(data)
+    await showSpendTime(async () => {
+      const takeSkip = {take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage}
+
+      const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip})
+
+      setMaxRecord(data.maxCount)
+      setlistDataState(data)
+    })
   }
 
   useEffect(() => {
-    fetchData()
+    toggleLocalLoading(async () => {
+      await fetchData()
+    })
   }, [currentPage, itemsPerPage, mode, tbmBaseId, whereQuery])
 
   const HK_HaishaTableEditorGMF = useHaishaTableEditorGMF({
@@ -83,27 +106,39 @@ export default function HaishaTable({whereQuery, days, tbmBase}) {
     setCurrentPage(page)
   }
 
-  if (!listDataState) return <PlaceHolder />
+  const {data: holidays = []} = useDoStandardPrisma(`calendar`, `findMany`, {
+    where: {holidayType: `祝日`},
+  })
 
-  return (
-    <C_Stack>
-      <HK_HaishaTableEditorGMF.Modal />
-      <Paper>
-        <HaishaTableSwitcher />
-      </Paper>
-      <Paper>
+  const HaishaTableMemo = useMemo(() => {
+    if (listDataState) {
+      const {TbmDriveSchedule, userList, tbmRouteGroup} = listDataState as haishaListData
+
+      return (
         <TableContent
           {...{
             mode,
-            listDataState,
-            days,
             tbmBase,
+
+            days,
+            holidays,
+
             fetchData,
             setModalOpen,
+            admin,
+            query,
+            TbmDriveSchedule,
+            tbmRouteGroup,
+            userList,
           }}
         ></TableContent>
+      )
+    }
+  }, [listDataState, mode, tbmBase, days, holidays, fetchData, setModalOpen, admin, query])
 
-        {/* ページネーションコントロール */}
+  const PaginationControl = useMemo(() => {
+    if (listDataState) {
+      return (
         <R_Stack className="mt-4 justify-center gap-2 p-2">
           <Button color="blue" onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
             前へ
@@ -124,7 +159,7 @@ export default function HaishaTable({whereQuery, days, tbmBase}) {
           <select
             className="ml-4 rounded-sm border px-2 py-1"
             value={itemsPerPage}
-            onChange={e => {
+            onChange={async e => {
               setItemsPerPage(Number(e.target.value))
               setCurrentPage(1)
             }}
@@ -136,7 +171,25 @@ export default function HaishaTable({whereQuery, days, tbmBase}) {
             <option value={300}>300件</option>
           </select>
         </R_Stack>
-      </Paper>
+      )
+    }
+  }, [currentPage, itemsPerPage, maxRecord, listDataState])
+
+  const ModalMemo = useMemo(() => <HK_HaishaTableEditorGMF.Modal />, [HK_HaishaTableEditorGMF.GMF_OPEN])
+
+  if (!listDataState) return <PlaceHolder />
+
+  return (
+    <C_Stack className={` p-3`}>
+      <LocalLoader />
+      {ModalMemo}
+
+      <HaishaTableSwitcher />
+
+      {HaishaTableMemo}
+
+      {/* ページネーションコントロール */}
+      {PaginationControl}
     </C_Stack>
   )
 }

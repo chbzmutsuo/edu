@@ -1,4 +1,4 @@
-import {Code, codeItemCore, codeObjectArgs} from '@class/Code'
+import {Code, codeObjectArgs} from '@class/Code'
 
 export class TBM_CODE extends Code {
   static VEHICLE: {MAINTANANCE_RECORD_TYPE: codeObjectArgs} = {

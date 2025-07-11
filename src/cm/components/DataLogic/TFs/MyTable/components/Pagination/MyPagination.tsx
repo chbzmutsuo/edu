@@ -2,8 +2,9 @@ import {getPaginationPropsType} from '@components/DataLogic/TFs/MyTable/hooks/us
 
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import React, {useEffect} from 'react'
+import React from 'react'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
+
 const cevronClass = `h-6 w-6 t-link onHover !t-link`
 const partClasses = {
   inputGroupClass: 'row-stack gap-0   ',
@@ -12,6 +13,7 @@ const partClasses = {
 }
 
 import {ChevronsLeft, ChevronsRight} from 'lucide-react'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 
 export type PaginationPropType = {
   useGlobalProps: useGlobalPropType
@@ -39,18 +41,10 @@ const MyPagination = React.memo((props: PaginationPropType) => {
   const activePage = array.find(number => String(number) === String(page))
   const noData = activePage === undefined && page > 1
 
-  useEffect(() => {
-    if (noData) {
-      shallowAddQuery({
-        ...query,
-        [pageKey]: '',
-        [skipKey]: '',
-        [takeKey]: '',
-      })
-    }
-  }, [query, activePage])
-
   if (noData) return <></>
+
+  const isInFirstPage = page === 1
+  const isInLastPage = page === pageCount
 
   return (
     <div className={` items-end   gap-0.5  `}>
@@ -74,7 +68,10 @@ const MyPagination = React.memo((props: PaginationPropType) => {
             <R_Stack className={`gap-0`}>
               <div className={partClasses.inputGroupClass}>
                 <R_Stack className={`gap-1`}>
-                  <ChevronsLeft className={cevronClass} onClick={() => changePage(page - 1)} />
+                  <ChevronsLeft
+                    className={cn(cevronClass, isInFirstPage && ` pointer-events-none opacity-30`)}
+                    onClick={() => changePage(page - 1)}
+                  />
 
                   <select
                     id={`take`}
@@ -88,7 +85,10 @@ const MyPagination = React.memo((props: PaginationPropType) => {
                       return <option key={index}>{number}</option>
                     })}
                   </select>
-                  <ChevronsRight className={cevronClass} onClick={() => changePage(page + 1)} />
+                  <ChevronsRight
+                    className={cn(cevronClass, isInLastPage && ` pointer-events-none opacity-30`)}
+                    onClick={() => changePage(page + 1)}
+                  />
                 </R_Stack>
               </div>
               <small>/</small>

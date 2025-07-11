@@ -62,10 +62,10 @@ export const TableBordered = (props: htmlProps & {size?: `sm` | `base` | `lg` | 
       {...{
         className: [
           //
+          // `t-paper`,
           className,
-          `t-paper`,
-          // `[&_td:not(.noEffect)]:!border-[1px] [&_th]:!border-[1px] `,
           sizeClass,
+          `[&_td]:align-top`,
         ].join(' '),
         style,
         ...rest,

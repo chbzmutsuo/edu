@@ -46,7 +46,7 @@ const NavBar = React.memo(({useGlobalProps, horizontalMenu, navItems}: NavBarPro
       id="navBar"
       onMouseLeave={handleMouseLeave}
       style={{height: useGlobalProps?.appbarHeight}}
-      className={cl(ulClass, 'h-full')}
+      className={cl(ulClass, 'h-full ')}
     >
       {filteredItems.map((item: pathItemType, navWrapperIdx: number) => {
         // 子要素が1つの場合は直接その子要素を使用

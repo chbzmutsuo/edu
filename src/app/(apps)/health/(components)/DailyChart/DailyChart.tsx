@@ -49,6 +49,47 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
     return a.recordTime.localeCompare(b.recordTime)
   })
 
+  // 重複する記録のオフセット計算用のヘルパー関数
+  const calculateTooltipOffset = (chartData: any[], currentIndex: number, category: string, recordIndex: number = 0) => {
+    const currentTime = chartData[currentIndex].time
+    const currentRecords = chartData[currentIndex][`${category}Records`]
+
+    if (!currentRecords || currentRecords.length === 0) return 0
+
+    // 同じ時間帯の他のカテゴリの記録をチェック
+    const sameTimeRecords: Array<{category: string; records: any[]}> = []
+    const categories = ['urine', 'stool', 'meal', 'snack', 'medicine']
+
+    for (const cat of categories) {
+      const records = chartData[currentIndex][`${cat}Records`]
+      if (records && records.length > 0) {
+        sameTimeRecords.push({category: cat, records})
+      }
+    }
+
+    // 現在のカテゴリのインデックスを取得
+    const currentCategoryIndex = sameTimeRecords.findIndex(r => r.category === category)
+
+    // 基本オフセット値
+    const baseOffset = -5
+    const categoryOffsetStep = 25
+    const recordOffsetStep = 15
+
+    // カテゴリベースのオフセット + 同一カテゴリ内での記録インデックスベースのオフセット
+    let totalOffset = baseOffset
+
+    if (sameTimeRecords.length > 1) {
+      totalOffset += currentCategoryIndex * categoryOffsetStep
+    }
+
+    // 同一カテゴリ内に複数記録がある場合の追加オフセット
+    if (currentRecords.length > 1) {
+      totalOffset += recordIndex * recordOffsetStep
+    }
+
+    return totalOffset
+  }
+
   // 7:00〜翌7:00の時間軸を30分刻みで生成
   const generateTimeLabels = () => {
     const timeLabels: string[] = []
@@ -79,11 +120,17 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
     const dataPoint: any = {
       time,
       bloodSugar: null,
+      bloodSugarRecords: [],
       urine: null,
+      urineRecords: [],
       stool: null,
+      stoolRecords: [],
       meal: null,
+      mealRecords: [],
       snack: null,
+      snackRecords: [],
       medicine: null,
+      medicineRecords: [],
     }
 
     // 該当時刻の記録を検索
@@ -134,32 +181,43 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
       return recordMinutes > prevMinutes && recordMinutes <= currentMinutes
     })
 
+    // 各カテゴリの記録を配列として保持
     recordsAtTime.forEach(record => {
       switch (record.category) {
         case 'blood_sugar':
+          dataPoint.bloodSugarRecords.push(record)
+          // 血糖値は最新の値を表示用に保持
           dataPoint.bloodSugar = record.bloodSugarValue
           dataPoint.bloodSugarRecord = record
           break
         case 'urine':
+          dataPoint.urineRecords.push(record)
           dataPoint.urine = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.URINE]
           dataPoint.urineRecord = record
           break
         case 'stool':
+          dataPoint.stoolRecords.push(record)
           dataPoint.stool = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.STOOL]
           dataPoint.stoolRecord = record
           break
         case 'meal':
+          dataPoint.mealRecords.push(record)
           dataPoint.meal = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEAL]
           dataPoint.mealRecord = record
           break
         case 'snack':
+          dataPoint.snackRecords.push(record)
           dataPoint.snack = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.SNACK]
           dataPoint.snackRecord = record
           break
-        case 'medicine':
+        case 'medicine': {
+          dataPoint.medicineRecords.push(record)
+
+          console.log(record.Medicine.name) //logs
           dataPoint.medicine = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEDICINE]
           dataPoint.medicineRecord = record
           break
+        }
       }
     })
 
@@ -322,20 +380,38 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   strokeWidth={2}
                   connectNulls={true}
                   dot={({cx, cy, payload, index}) => {
-                    if (!payload.bloodSugar) return <g key={index} />
+                    if (!payload.bloodSugar || !payload.bloodSugarRecords || payload.bloodSugarRecords.length === 0) {
+                      return <g key={index} />
+                    }
+                    const records = payload.bloodSugarRecords
+
                     return (
                       <g key={index}>
-                        <circle
-                          cx={cx}
-                          cy={cy}
-                          r={4}
-                          fill={HEALTH_CATEGORY_COLORS.blood_sugar}
-                          stroke={HEALTH_CATEGORY_COLORS.blood_sugar}
-                          strokeWidth={1}
-                        />
-                        <text x={cx} y={cy - 10} textAnchor="middle" fill={HEALTH_CATEGORY_COLORS.blood_sugar} fontSize={10}>
-                          {payload.bloodSugar}
-                        </text>
+                        {records.map((record: any, recordIndex: number) => {
+                          const yOffset = recordIndex * 15 // 複数の血糖値記録がある場合のオフセット
+
+                          return (
+                            <g key={`${index}-${recordIndex}`}>
+                              <circle
+                                cx={cx}
+                                cy={cy}
+                                r={4}
+                                fill={HEALTH_CATEGORY_COLORS.blood_sugar}
+                                stroke={HEALTH_CATEGORY_COLORS.blood_sugar}
+                                strokeWidth={1}
+                              />
+                              <text
+                                x={cx}
+                                y={cy - 10 - yOffset}
+                                textAnchor="middle"
+                                fill={HEALTH_CATEGORY_COLORS.blood_sugar}
+                                fontSize={10}
+                              >
+                                {record.bloodSugarValue}
+                              </text>
+                            </g>
+                          )
+                        })}
                       </g>
                     )
                   }}
@@ -349,38 +425,43 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   dataKey="urine"
                   strokeWidth={0}
                   dot={({cx, cy, payload, index}) => {
-                    if (!payload.urine || !payload.urineRecord) return <g key={index} />
-                    const record = payload.urineRecord
-                    const displayText = record.recordTime
+                    if (!payload.urine || !payload.urineRecords || payload.urineRecords.length === 0) return <g key={index} />
+                    const records = payload.urineRecords
                     const color = HEALTH_CATEGORY_COLORS.urine
-
-                    const isOddIndex = index % 2 === 1
-                    const yOffset = isOddIndex ? 30 : -5
 
                     return (
                       <g key={index}>
-                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
-                        <rect
-                          x={cx - displayText.length * 3 - 3}
-                          y={cy - 20 + yOffset}
-                          width={displayText.length * 6 + 6}
-                          height={16}
-                          fill="rgba(255, 255, 255, 0.95)"
-                          stroke={color}
-                          strokeWidth={1}
-                          rx={2}
-                        />
-                        <text
-                          x={cx}
-                          y={cy - 12 + yOffset}
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill={color}
-                          fontWeight="bold"
-                          dominantBaseline="middle"
-                        >
-                          {displayText}
-                        </text>
+                        {records.map((record: any, recordIndex: number) => {
+                          const displayText = record.recordTime
+                          const yOffset = calculateTooltipOffset(chartData, index, 'urine', recordIndex)
+
+                          return (
+                            <g key={`${index}-${recordIndex}`}>
+                              <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
+                              <rect
+                                x={cx - displayText.length * 3 - 3}
+                                y={cy - 20 + yOffset}
+                                width={displayText.length * 6 + 6}
+                                height={16}
+                                fill="rgba(255, 255, 255, 0.95)"
+                                stroke={color}
+                                strokeWidth={1}
+                                rx={2}
+                              />
+                              <text
+                                x={cx}
+                                y={cy - 12 + yOffset}
+                                textAnchor="middle"
+                                fontSize="11"
+                                fill={color}
+                                fontWeight="bold"
+                                dominantBaseline="middle"
+                              >
+                                {displayText}
+                              </text>
+                            </g>
+                          )
+                        })}
                       </g>
                     )
                   }}
@@ -393,38 +474,43 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   dataKey="stool"
                   strokeWidth={0}
                   dot={({cx, cy, payload, index}) => {
-                    if (!payload.stool || !payload.stoolRecord) return <g key={index} />
-                    const record = payload.stoolRecord
-                    const displayText = record.recordTime
+                    if (!payload.stool || !payload.stoolRecords || payload.stoolRecords.length === 0) return <g key={index} />
+                    const records = payload.stoolRecords
                     const color = HEALTH_CATEGORY_COLORS.stool
-
-                    const isOddIndex = index % 2 === 1
-                    const yOffset = isOddIndex ? 35 : 0
 
                     return (
                       <g key={index}>
-                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
-                        <rect
-                          x={cx - displayText.length * 3 - 3}
-                          y={cy - 20 + yOffset}
-                          width={displayText.length * 6 + 6}
-                          height={16}
-                          fill="rgba(255, 255, 255, 0.95)"
-                          stroke={color}
-                          strokeWidth={1}
-                          rx={2}
-                        />
-                        <text
-                          x={cx}
-                          y={cy - 12 + yOffset}
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill={color}
-                          fontWeight="bold"
-                          dominantBaseline="middle"
-                        >
-                          {displayText}
-                        </text>
+                        {records.map((record: any, recordIndex: number) => {
+                          const displayText = record.recordTime
+                          const yOffset = calculateTooltipOffset(chartData, index, 'stool', recordIndex)
+
+                          return (
+                            <g key={`${index}-${recordIndex}`}>
+                              <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
+                              <rect
+                                x={cx - displayText.length * 3 - 3}
+                                y={cy - 20 + yOffset}
+                                width={displayText.length * 6 + 6}
+                                height={16}
+                                fill="rgba(255, 255, 255, 0.95)"
+                                stroke={color}
+                                strokeWidth={1}
+                                rx={2}
+                              />
+                              <text
+                                x={cx}
+                                y={cy - 12 + yOffset}
+                                textAnchor="middle"
+                                fontSize="11"
+                                fill={color}
+                                fontWeight="bold"
+                                dominantBaseline="middle"
+                              >
+                                {displayText}
+                              </text>
+                            </g>
+                          )
+                        })}
                       </g>
                     )
                   }}
@@ -437,38 +523,43 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   dataKey="meal"
                   strokeWidth={0}
                   dot={({cx, cy, payload, index}) => {
-                    if (!payload.meal || !payload.mealRecord) return <g key={index} />
-                    const record = payload.mealRecord
-                    const displayText = record.recordTime
+                    if (!payload.meal || !payload.mealRecords || payload.mealRecords.length === 0) return <g key={index} />
+                    const records = payload.mealRecords
                     const color = HEALTH_CATEGORY_COLORS.meal
-
-                    const isOddIndex = index % 2 === 1
-                    const yOffset = isOddIndex ? 40 : 5
 
                     return (
                       <g key={index}>
-                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
-                        <rect
-                          x={cx - displayText.length * 3 - 3}
-                          y={cy - 20 + yOffset}
-                          width={displayText.length * 6 + 6}
-                          height={16}
-                          fill="rgba(255, 255, 255, 0.95)"
-                          stroke={color}
-                          strokeWidth={1}
-                          rx={2}
-                        />
-                        <text
-                          x={cx}
-                          y={cy - 12 + yOffset}
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill={color}
-                          fontWeight="bold"
-                          dominantBaseline="middle"
-                        >
-                          {displayText}
-                        </text>
+                        {records.map((record: any, recordIndex: number) => {
+                          const displayText = record.recordTime
+                          const yOffset = calculateTooltipOffset(chartData, index, 'meal', recordIndex)
+
+                          return (
+                            <g key={`${index}-${recordIndex}`}>
+                              <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
+                              <rect
+                                x={cx - displayText.length * 3 - 3}
+                                y={cy - 20 + yOffset}
+                                width={displayText.length * 6 + 6}
+                                height={16}
+                                fill="rgba(255, 255, 255, 0.95)"
+                                stroke={color}
+                                strokeWidth={1}
+                                rx={2}
+                              />
+                              <text
+                                x={cx}
+                                y={cy - 12 + yOffset}
+                                textAnchor="middle"
+                                fontSize="11"
+                                fill={color}
+                                fontWeight="bold"
+                                dominantBaseline="middle"
+                              >
+                                {displayText}
+                              </text>
+                            </g>
+                          )
+                        })}
                       </g>
                     )
                   }}
@@ -481,38 +572,43 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   dataKey="snack"
                   strokeWidth={0}
                   dot={({cx, cy, payload, index}) => {
-                    if (!payload.snack || !payload.snackRecord) return <g key={index} />
-                    const record = payload.snackRecord
-                    const displayText = record.recordTime
+                    if (!payload.snack || !payload.snackRecords || payload.snackRecords.length === 0) return <g key={index} />
+                    const records = payload.snackRecords
                     const color = HEALTH_CATEGORY_COLORS.snack
-
-                    const isOddIndex = index % 2 === 1
-                    const yOffset = isOddIndex ? 40 : 5
 
                     return (
                       <g key={index}>
-                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
-                        <rect
-                          x={cx - displayText.length * 3 - 3}
-                          y={cy - 20 + yOffset}
-                          width={displayText.length * 6 + 6}
-                          height={16}
-                          fill="rgba(255, 255, 255, 0.95)"
-                          stroke={color}
-                          strokeWidth={1}
-                          rx={2}
-                        />
-                        <text
-                          x={cx}
-                          y={cy - 12 + yOffset}
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill={color}
-                          fontWeight="bold"
-                          dominantBaseline="middle"
-                        >
-                          {displayText}
-                        </text>
+                        {records.map((record: any, recordIndex: number) => {
+                          const displayText = record.recordTime
+                          const yOffset = calculateTooltipOffset(chartData, index, 'snack', recordIndex)
+
+                          return (
+                            <g key={`${index}-${recordIndex}`}>
+                              <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
+                              <rect
+                                x={cx - displayText.length * 3 - 3}
+                                y={cy - 20 + yOffset}
+                                width={displayText.length * 6 + 6}
+                                height={16}
+                                fill="rgba(255, 255, 255, 0.95)"
+                                stroke={color}
+                                strokeWidth={1}
+                                rx={2}
+                              />
+                              <text
+                                x={cx}
+                                y={cy - 12 + yOffset}
+                                textAnchor="middle"
+                                fontSize="11"
+                                fill={color}
+                                fontWeight="bold"
+                                dominantBaseline="middle"
+                              >
+                                {displayText}
+                              </text>
+                            </g>
+                          )
+                        })}
                       </g>
                     )
                   }}
@@ -525,39 +621,47 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
                   dataKey="medicine"
                   strokeWidth={0}
                   dot={({cx, cy, payload, index}) => {
-                    if (!payload.medicine || !payload.medicineRecord) return <g key={index} />
-                    const record = payload.medicineRecord
-                    const medicineName = record.Medicine?.name || '薬'
-                    const unit = record.medicineUnit ? ` (${record.medicineUnit}単位)` : ''
-                    const displayText = `${medicineName}${unit}`
+                    if (!payload.medicine || !payload.medicineRecords || payload.medicineRecords.length === 0) {
+                      return <g key={index} />
+                    }
+                    const records = payload.medicineRecords
                     const color = HEALTH_CATEGORY_COLORS.medicine
 
-                    const isOddIndex = index % 2 === 1
-                    const yOffset = isOddIndex ? 30 : -5
                     return (
                       <g key={index}>
-                        <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
-                        <rect
-                          x={cx - displayText.length * 5 - 3}
-                          y={cy - 20 + yOffset}
-                          width={displayText.length * 10 + 6}
-                          height={16}
-                          fill="rgba(255, 255, 255, 0.95)"
-                          stroke={color}
-                          strokeWidth={1}
-                          rx={2}
-                        />
-                        <text
-                          x={cx}
-                          y={cy - 12 + yOffset}
-                          textAnchor="middle"
-                          fontSize="11"
-                          fill={color}
-                          fontWeight="bold"
-                          dominantBaseline="middle"
-                        >
-                          {displayText}
-                        </text>
+                        {records.map((record: any, recordIndex: number) => {
+                          const medicineName = record.Medicine?.name || '薬'
+                          const unit = record.medicineUnit ? ` (${record.medicineUnit}単位)` : ''
+                          const displayText = `${medicineName}${unit}`
+                          const yOffset = calculateTooltipOffset(chartData, index, 'medicine', recordIndex)
+
+                          return (
+                            <g key={`${index}-${recordIndex}`}>
+                              <circle cx={cx} cy={cy} r={5} fill={color} stroke={color} strokeWidth={1} />
+                              <rect
+                                x={cx - displayText.length * 5 - 3}
+                                y={cy - 20 + yOffset}
+                                width={displayText.length * 10 + 6}
+                                height={16}
+                                fill="rgba(255, 255, 255, 0.95)"
+                                stroke={color}
+                                strokeWidth={1}
+                                rx={2}
+                              />
+                              <text
+                                x={cx}
+                                y={cy - 12 + yOffset}
+                                textAnchor="middle"
+                                fontSize="11"
+                                fill={color}
+                                fontWeight="bold"
+                                dominantBaseline="middle"
+                              >
+                                {displayText}
+                              </text>
+                            </g>
+                          )
+                        })}
                       </g>
                     )
                   }}

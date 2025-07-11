@@ -4,7 +4,6 @@ import {R_Stack} from '@components/styles/common-components/common-components'
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import {DetailPagePropType} from '@cm/types/types'
 
-import CalendarSetter from '@app/(apps)/tbm/(pages)/DriveSchedule/CalendarSetter'
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
 import {TextBlue} from '@components/styles/common-components/Alert'
@@ -13,6 +12,8 @@ import {createUpdate} from '@lib/methods/createUpdate'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {toastByResult} from '@lib/ui/notifications'
 import BasicTabs from '@components/utils/tabs/BasicTabs'
+import BulkCalendarSetter from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/BulkCalendarSetter'
+
 export default function TbmUserDetail(props: DetailPagePropType) {
   const {useGlobalProps} = props
   const {query} = useGlobalProps
@@ -41,7 +42,7 @@ export default function TbmUserDetail(props: DetailPagePropType) {
             label: `稼働予定`,
             component: (
               <div>
-                <CalendarSetter
+                <BulkCalendarSetter
                   {...{
                     months,
                     days: days,
@@ -87,7 +88,7 @@ export default function TbmUserDetail(props: DetailPagePropType) {
       {!!props?.formData?.id && (
         <div>
           <TextBlue className={` text-2xl font-bold `}>稼働予定</TextBlue>
-          <CalendarSetter
+          <BulkCalendarSetter
             {...{
               months,
               days: days,

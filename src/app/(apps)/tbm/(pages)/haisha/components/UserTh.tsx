@@ -16,7 +16,7 @@ export default function UserTh({user, admin, query}) {
 
   return (
     <C_Stack className={` h-full justify-start gap-1`}>
-      <div className={` grid grid-cols-2 gap-1`}>
+      <div className={`text-xs`}>
         <KeyValue label="">
           {admin ? <T_LINK href={HREF(`/tbm/user/${user.id}`, {userId: user.id}, query)}>{user.name} </T_LINK> : user.name}
           <span className={`text-xs`}>({user.code})</span>

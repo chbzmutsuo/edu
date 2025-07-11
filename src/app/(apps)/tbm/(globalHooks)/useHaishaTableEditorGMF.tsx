@@ -45,13 +45,10 @@ const useHaishaTableEditorGMF = (props: {
           useGlobalProps,
           ColBuilderExtraProps: {
             tbmBase,
-
             tbmDriveSchedule: tbmDriveSchedule ?? {
               date,
               userId: user?.id,
               tbmRouteGroupId: tbmRouteGroup?.id,
-
-              // tbmRouteGroupId: tbmDriveSchedule?.tbmRouteGroupId,
             },
           },
         }),

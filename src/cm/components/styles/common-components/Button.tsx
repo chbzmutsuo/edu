@@ -24,9 +24,9 @@ export const Button = (
       color: btnColorVariants,
       size: {
         xs: 'text-[12px] py-[1px] px-[4px] ',
-        sm: 'text-[14px] py-[2px] px-[6px] ',
-        md: 'text-[16px] py-[2px] px-[8px] ',
-        lg: 'text-[18px] py-[4px] px-[12px] ',
+        sm: 'text-[14px] py-[4px] px-[6px] ',
+        md: 'text-[16px] py-[4px] px-[8px] ',
+        lg: 'text-[18px] py-[6px] px-[12px] ',
       },
       active: {
         false: 'opacity-50 cursor-not-allowed',

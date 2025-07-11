@@ -1,6 +1,5 @@
 'use server'
 
-import {haishaTableMode} from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/HaishaTable'
 import prisma from '@lib/prisma'
 import {
   TbmDriveSchedule,
@@ -12,6 +11,7 @@ import {
   TbmRouteGroupCalendar,
   TbmBase,
 } from '@prisma/client'
+import {haishaTableMode} from '@app/(apps)/tbm/(pages)/haisha/components/HaishaTable'
 
 export type haishaListData = Awaited<ReturnType<typeof getListData>>
 export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mode: haishaTableMode; takeSkip: any}) => {

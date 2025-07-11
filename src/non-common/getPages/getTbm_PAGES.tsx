@@ -16,14 +16,17 @@ export const tbm_PAGES = (props: PageGetterType) => {
   const loginPath = [
     {
       tabId: '',
-      label: '配車管理/営業所別設定',
+      label: 'メインメニュー',
       children: [
         //
 
         {
-          tabId: 'DriveSchedule',
-          // <R_Stack>
-          label: <IconLetter {...{Icon: Map}}>運行計画</IconLetter>,
+          tabId: 'eigyoshoSettei',
+          label: <IconLetter {...{Icon: Map}}>営業所設定</IconLetter>,
+        },
+        {
+          tabId: 'haisha',
+          label: <IconLetter {...{Icon: Map}}>配車設定</IconLetter>,
         },
       ],
     },

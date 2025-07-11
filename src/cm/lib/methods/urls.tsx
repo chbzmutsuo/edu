@@ -1,3 +1,5 @@
+import {arr__uniqArray} from '@class/ArrHandler/array-utils/basic-operations'
+import {anyObject} from '@cm/types/utility-types'
 import {ObjectMap} from 'src/cm/lib/methods/common'
 
 export const addQuerySentence = (additionalQuery = {}, currentQuery = {}, keepOldQuery = true) => {

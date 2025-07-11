@@ -1,8 +1,8 @@
 'use client'
 
-import TenkoPaperBody from '@app/(apps)/tbm/(pages)/DriveSchedule/tenko/TenkoPaperBody'
-import TenkoPaperHeader from '@app/(apps)/tbm/(pages)/DriveSchedule/tenko/TenkoPaperHeader'
+import TenkoPaperHeader from '@app/(apps)/tbm/(pages)/tenko/TenkoPaperHeader'
 
+import TenkoPaperBody from '@app/(apps)/tbm/(pages)/tenko/TenkoPaperBody'
 import {toUtc} from '@class/Days/date-utils/calculations'
 
 import {Button} from '@components/styles/common-components/Button'

@@ -7,7 +7,7 @@ import {columnGetterType} from '@cm/types/types'
 export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
   const tbmDriveSchedule = props.ColBuilderExtraProps?.tbmDriveSchedule
   const tbmBase = props.ColBuilderExtraProps?.tbmBase
-  const {date, userId, tbmVehicleId, tbmRouteGroupId, tbmBaseId} = tbmDriveSchedule ?? {}
+  const {date, userId, TbmVehicle, tbmRouteGroupId} = tbmDriveSchedule ?? {}
 
   return new Fields([
     {
@@ -46,7 +46,7 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
       label: '車両',
       form: {
         ...defaultRegister,
-        defaultValue: tbmVehicleId,
+        defaultValue: TbmVehicle?.id,
       },
       forSelect: {
         config: getVehicleForSelectConfig({tbmBaseId: tbmBase?.id}),

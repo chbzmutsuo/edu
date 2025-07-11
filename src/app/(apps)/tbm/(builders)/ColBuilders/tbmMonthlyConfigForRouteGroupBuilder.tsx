@@ -6,9 +6,7 @@ import {defaultRegister} from '@class/builders/ColBuilderVariables'
 import {NumHandler} from '@class/NumHandler'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {R_Stack} from '@components/styles/common-components/common-components'
 import {KeyValue} from '@components/styles/common-components/ParameterCard'
-import {SquarePen} from 'lucide-react'
 
 export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) => {
   const HK_UnchinChildCreator = useUnchinChildCreator()

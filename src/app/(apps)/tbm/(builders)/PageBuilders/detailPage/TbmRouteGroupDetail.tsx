@@ -3,7 +3,6 @@
 import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
 import {DetailPagePropType} from '@cm/types/types'
 
-import CalendarSetter from '@app/(apps)/tbm/(pages)/DriveSchedule/CalendarSetter'
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
@@ -12,9 +11,9 @@ toastByResult
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {toastByResult} from '@lib/ui/notifications'
 import BasicTabs from '@components/utils/tabs/BasicTabs'
-import {Head1} from '@components/styles/common-components/heading'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+import BulkCalendarSetter from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/BulkCalendarSetter'
 
 export default function TbmRouteGroupDetail(props: DetailPagePropType) {
   const {useGlobalProps} = props
@@ -63,10 +62,7 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
         label: `配車予定`,
         component: (
           <div>
-            <div>
-              <Head1>{props.formData?.name}</Head1>
-            </div>
-            <CalendarSetter
+            <BulkCalendarSetter
               {...{
                 months,
                 days: days,
@@ -104,12 +100,15 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
   }
 
   return (
-    <BasicTabs
-      {...{
-        id: `tbmVechicleDetailPage`,
-        showAll: false,
-        TabComponentArray,
-      }}
-    />
+    <div>
+      <div>{props.formData?.name}</div>
+      <BasicTabs
+        {...{
+          id: `tbmVechicleDetailPage`,
+          showAll: false,
+          TabComponentArray,
+        }}
+      />
+    </div>
   )
 }

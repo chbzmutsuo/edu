@@ -10,7 +10,6 @@ import {anyObject} from '@cm/types/utility-types'
 
 import {useJotaiByKey, atomTypes} from '@hooks/useJotai'
 import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn-ui/components/ui/tabs'
-import {Card} from '@cm/shadcn-ui/components/ui/card'
 import {cn} from '@cm/shadcn-ui/lib/utils'
 
 export type tabComponent = {
@@ -28,18 +27,19 @@ type BasicTabsType = {
   showAll?: boolean
   className?: string
   style?: anyObject
+  forcedWidth?: CSSProperties['width']
 }
-export default function BasicTabs(props: BasicTabsType) {
+export default function BasicTabs({
+  headingText,
+  id = '',
+  showAll,
+  TabComponentArray,
+  className,
+  style,
+  forcedWidth = '95vw',
+  ...props
+}: BasicTabsType) {
   const {width} = useWindowSize()
-  const {
-    headingText,
-    id = '',
-    showAll = width > 768,
-    TabComponentArray: tempTabComponentArray,
-    className,
-    style,
-    ...otherProps
-  } = props
 
   const [value, setValue] = useJotaiByKey<atomTypes[`globalCurrentTabIdx`]>(`globalCurrentTabIdx`, {})
 
@@ -49,18 +49,20 @@ export default function BasicTabs(props: BasicTabsType) {
     setValue({...value, [id]: newValue})
   }
 
-  const filteredTabComponentArray = props.TabComponentArray.filter(obj => obj?.exclusiveTo !== false)
+  const filteredTabComponentArray = TabComponentArray.filter(obj => obj?.exclusiveTo !== false)
+
   const anyTabIsActive = filteredTabComponentArray.some((obj, idx) => currentTabIdx === idx)
+
   useEffect(() => {
     if (anyTabIsActive === false) {
       setcurrentTabIdx(0)
     }
   }, [anyTabIsActive])
 
-  const maxComponentWidth =
-    (filteredTabComponentArray.length > 0 &&
-      filteredTabComponentArray.map(data => (data?.style?.width ?? 0) as number)?.reduce((a, b) => Math.max(a, b))) ||
-    undefined
+  // const maxComponentWidth =
+  //   (filteredTabComponentArray.length > 0 &&
+  //     filteredTabComponentArray.map(data => (data?.style?.width ?? 0) as number)?.reduce((a, b) => Math.max(a, b))) ||
+  //   undefined
 
   if (!width) return <PlaceHolder />
 
@@ -70,10 +72,13 @@ export default function BasicTabs(props: BasicTabsType) {
     setcurrentTabIdx(parseInt(value))
   }
 
-  const wrapperStyle = {minWidth: maxComponentWidth, ...style}
+  // const wrapperStyle = {
+  //   minWidth: maxComponentWidth,
+  //   ...style,
+  // }
 
   return (
-    <div style={wrapperStyle} className={cn('mx-auto', className)} {...otherProps}>
+    <div style={{width: forcedWidth}} className={cn('mx-auto', className)} {...props}>
       {headingText && (
         <div className="mb-4">
           {typeof headingText === 'string' ? <h2 className="text-xl font-semibold text-gray-800">{headingText}</h2> : headingText}
@@ -82,7 +87,12 @@ export default function BasicTabs(props: BasicTabsType) {
 
       {showAll
         ? renderShowAll({filteredTabComponentArray})
-        : renderTabsComponent({filteredTabComponentArray, currentTabValue, handleTabChange})}
+        : renderTabsComponent({
+            forcedWidth,
+            filteredTabComponentArray,
+            currentTabValue,
+            handleTabChange,
+          })}
     </div>
   )
 }
@@ -118,9 +128,9 @@ const renderShowAll = ({filteredTabComponentArray}) => {
   )
 }
 
-const renderTabsComponent = ({filteredTabComponentArray, currentTabValue, handleTabChange}) => {
+const renderTabsComponent = ({forcedWidth, filteredTabComponentArray, currentTabValue, handleTabChange}) => {
   return (
-    <Card>
+    <div>
       <Tabs value={currentTabValue} onValueChange={handleTabChange} className="w-full ">
         <TabsList
           className="grid w-full bg-gray-100 "
@@ -132,7 +142,7 @@ const renderTabsComponent = ({filteredTabComponentArray, currentTabValue, handle
               <TabsTrigger
                 key={i}
                 value={String(i)}
-                className=" font-medium transition-all duration-200 data-[state=active]:bg-white  data-[state=active]:text-gray-900 data-[state=active]:shadow-sm"
+                className=" font-medium transition-all duration-200 data-[state=active]:bg-white  data-[state=active]:text-gray-900 data-[state=active]:shadow-sm cursor-pointer"
               >
                 {obj?.label}
               </TabsTrigger>
@@ -149,12 +159,16 @@ const renderTabsComponent = ({filteredTabComponentArray, currentTabValue, handle
               className="mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
             >
               <div className={cl('animate-in fade-in-50 duration-300', containerClass)}>
-                <Card>{obj?.component}</Card>
+                <div>
+                  <div style={{width: forcedWidth}}>
+                    <div className={`mx-auto w-fit`}>{obj?.component}</div>
+                  </div>
+                </div>
               </div>
             </TabsContent>
           )
         })}
       </Tabs>
-    </Card>
+    </div>
   )
 }

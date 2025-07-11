@@ -1,4 +1,4 @@
-import DriveScheduleCC from '@app/(apps)/tbm/(pages)/DriveSchedule/DriveScheduleCC'
+import HaishaTable from '@app/(apps)/tbm/(pages)/haisha/components/HaishaTable'
 import {Days} from '@class/Days/Days'
 import {getMidnight} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
@@ -14,25 +14,34 @@ export default async function Page(props) {
   const {session, scopes} = await initServerComopnent({query})
   const {tbmBaseId} = scopes.getTbmScopes()
 
-  const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
+  const {firstDayOfMonth, lastDayOfMonth} = Days.month.getMonthDatum(new Date())
   const {redirectPath, whereQuery} = await dateSwitcherTemplate({
     query,
     defaultWhere: {
       mode: 'DRIVER',
-      month: formatDate(firstDayOfMonth),
+      from: firstDayOfMonth,
+      to: lastDayOfMonth,
     },
   })
+  if (redirectPath) {
+    return <Redirector {...{redirectPath}} />
+  }
 
-  if (redirectPath) return <Redirector {...{redirectPath}} />
+  const today = whereQuery?.gte ?? getMidnight()
 
-  const theDate = whereQuery?.gte ?? getMidnight()
-  const MONTH = Days.month.getMonthDatum(theDate)
+  const currentMonthData = Days.month.getMonthDatum(today)
 
   const tbmBase = await prisma.tbmBase.findUnique({where: {id: tbmBaseId}})
 
   return (
     <div className="print-target ">
-      <DriveScheduleCC {...{tbmBase, days: MONTH.days, tbmBaseId, whereQuery}} />
+      <HaishaTable
+        {...{
+          tbmBase,
+          days: currentMonthData.days,
+          whereQuery,
+        }}
+      />
     </div>
   )
 }

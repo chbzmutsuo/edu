@@ -6,31 +6,113 @@ import {formatDate} from '@class/Days/date-utils/formatters'
 import {C_Stack} from '@components/styles/common-components/common-components'
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 
-import {Cell} from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/Cell'
+import {Cell} from '@app/(apps)/tbm/(pages)/haisha/components/Cell'
 import {TbmDriveSchedule} from '@prisma/client'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import UserTh from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/UserTh'
-import {haishaListData} from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/getListData'
+
+import UserTh from '@app/(apps)/tbm/(pages)/haisha/components/UserTh'
+
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
-import DateThCell from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/DateThCell'
+import DateThCell from '@app/(apps)/tbm/(pages)/haisha/components/DateThCell'
+import {Z_INDEX} from '@lib/constants/constants'
 
-export default function TableContent({mode, listDataState, days, tbmBase, fetchData, setModalOpen}) {
-  const {query, accessScopes} = useGlobal()
-  const {admin} = accessScopes()
-  const {data: holidays = []} = useDoStandardPrisma(`calendar`, `findMany`, {
-    where: {holidayType: `祝日`},
-  })
+type props = {
+  mode
+  tbmBase
+  userList
+  TbmDriveSchedule
+  tbmRouteGroup
+  days
+  holidays
 
-  const {TbmDriveSchedule, userList, tbmRouteGroup} = listDataState as haishaListData
-  const userWorkStatusByDate = userList.reduce((acc, user) => {
-    acc[user.id] = user.UserWorkStatus.reduce((acc, userWorkStatus) => {
-      acc[formatDate(userWorkStatus.date)] = userWorkStatus.workStatus
+  fetchData
+  setModalOpen
+  admin
+  query
+}
+
+export const TableContent = React.memo((props: props) => {
+  const {mode, tbmBase, userList, TbmDriveSchedule, tbmRouteGroup, days, holidays, fetchData, setModalOpen, admin, query} = props
+
+  if (mode === 'DRIVER') {
+    const {scheduleByDateAndUser} = getScheduleByDateAndUser({TbmDriveSchedule})
+
+    const userWorkStatusByDate = userList.reduce((acc, user) => {
+      acc[user.id] = user.UserWorkStatus.reduce((acc, userWorkStatus) => {
+        acc[formatDate(userWorkStatus.date)] = userWorkStatus.workStatus
+        return acc
+      }, {})
       return acc
     }, {})
-    return acc
-  }, {})
+
+    return (
+      <>
+        {userList.length > 0 ? (
+          CsvTable({
+            records: userList
+              .sort((a, b) => a.code?.localeCompare(b.code ?? '') ?? 0)
+              .map(user => {
+                user[`userWorkStatusList`] = userWorkStatusByDate?.[user.id]
+                return {
+                  csvTableRow: [
+                    // ユーザー情報
+                    {
+                      label: `ユーザー`,
+                      cellValue: <UserTh {...{user, admin, query}} />,
+                      style: {
+                        minWidth: 130,
+                        left: 0,
+                        position: 'sticky',
+                        zIndex: 30,
+                        background: `#d8d8d8`,
+                        height: 10,
+                      },
+                    },
+
+                    //日付別
+                    ...days.map(date => {
+                      const scheduleListOnDate = scheduleByDateAndUser?.[formatDate(date)]?.[String(user.id)] ?? []
+
+                      const dateStr = formatDate(date, 'M/D(ddd)')
+
+                      const isHoliday = Days.day.isHoliday(date, holidays)
+
+                      const thStyle = {background: '#d8d8d8', ...isHoliday?.style, fontWeight: 'bold'}
+
+                      return {
+                        label: (
+                          <div id={`#${dateStr}`}>
+                            <DateThCell {...{tbmBase, mode, date, userList, scheduleListOnDate, doTransaction, fetchData}}>
+                              {dateStr}
+                            </DateThCell>
+                          </div>
+                        ),
+                        cellValue: (
+                          <Cell
+                            {...{
+                              fetchData,
+                              setModalOpen,
+                              scheduleListOnDate,
+                              user,
+                              date,
+                              tbmBase,
+                            }}
+                          />
+                        ),
+
+                        thStyle,
+                      }
+                    }),
+                  ],
+                }
+              }),
+          }).WithWrapper({className: `max-w-[calc(95vw-50px)] max-h-[75vh] `})
+        ) : (
+          <div>データがありません</div>
+        )}
+      </>
+    )
+  }
 
   if (mode === `ROUTE`) {
     const {scheduleByDateAndRoute} = getScheduleByDateAndRoute({TbmDriveSchedule})
@@ -42,7 +124,7 @@ export default function TableContent({mode, listDataState, days, tbmBase, fetchD
             records: tbmRouteGroup
               .sort((a, b) => a.code.localeCompare(b.code))
               .map(route => {
-                const color = new TBM_CODE(TBM_CODE.ROUTE.KBN).findByCode(route.seikyuKbn ?? '')?.color
+                // const color = new TBM_CODE(TBM_CODE.ROUTE.KBN).findByCode(route.seikyuKbn ?? '')?.color
                 // const userWorkStatusList = userWorkStatusByDate?.[user.id]
                 return {
                   csvTableRow: [
@@ -105,70 +187,10 @@ export default function TableContent({mode, listDataState, days, tbmBase, fetchD
         )}
       </>
     )
-  } else {
-    const {scheduleByDateAndUser} = getScheduleByDateAndUser({TbmDriveSchedule})
-
-    return (
-      <>
-        {userList.length > 0 ? (
-          CsvTable({
-            records: userList
-              .sort((a, b) => a.code?.localeCompare(b.code ?? '') ?? 0)
-              .map(user => {
-                user[`userWorkStatusList`] = userWorkStatusByDate?.[user.id]
-                return {
-                  csvTableRow: [
-                    // ユーザー情報
-                    {
-                      label: `ユーザー`,
-                      cellValue: <UserTh {...{user, admin, query}} />,
-                      style: {minWidth: 240, left: 0, position: 'sticky', background: `#d8d8d8`},
-                    },
-
-                    //日付別
-                    ...days.map(date => {
-                      const scheduleListOnDate = scheduleByDateAndUser?.[formatDate(date)]?.[String(user.id)] ?? []
-
-                      const dateStr = formatDate(date, 'M/D(ddd)')
-
-                      const isHoliday = Days.day.isHoliday(date, holidays)
-
-                      const thStyle = {background: '#d8d8d8', ...isHoliday?.style, fontWeight: 'bold'}
-
-                      return {
-                        label: (
-                          <div id={`#${dateStr}`}>
-                            <DateThCell {...{tbmBase, mode, date, userList, scheduleListOnDate, doTransaction, fetchData}}>
-                              {dateStr}
-                            </DateThCell>
-                          </div>
-                        ),
-                        cellValue: (
-                          <Cell
-                            {...{
-                              fetchData,
-                              setModalOpen,
-                              scheduleListOnDate,
-                              user,
-                              date,
-                              tbmBase,
-                            }}
-                          />
-                        ),
-                        thStyle,
-                      }
-                    }),
-                  ],
-                }
-              }),
-          }).WithWrapper({className: `max-w-[calc(95vw-50px)] max-h-[75vh] `})
-        ) : (
-          <div>データがありません</div>
-        )}
-      </>
-    )
   }
-}
+
+  return <></>
+})
 
 const getScheduleByDateAndUser = ({TbmDriveSchedule}) => {
   const scheduleByDateAndUser = TbmDriveSchedule.reduce((acc, schedule) => {
@@ -202,3 +224,4 @@ const getScheduleByDateAndRoute = ({TbmDriveSchedule}) => {
 
   return {scheduleByDateAndRoute} as {scheduleByDateAndRoute: Record<string, Record<string, TbmDriveSchedule[]>>}
 }
+export default TableContent

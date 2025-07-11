@@ -1,10 +1,8 @@
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import {tableRecord} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 import {useGlobalModalForm} from '@components/utils/modal/useGlobalModalForm'
 import useGlobal from '@hooks/globalHooks/useGlobal'
 import {atomKey, useJotaiByKey} from '@hooks/useJotai'
-import {TbmRouteGroup, TbmRouteGroupFee} from '@prisma/client'
 import React from 'react'
 
 export default function useUnchinChildCreator() {

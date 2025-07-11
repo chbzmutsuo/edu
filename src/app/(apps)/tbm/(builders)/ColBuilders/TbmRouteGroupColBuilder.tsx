@@ -7,7 +7,7 @@ import {Fields} from '@cm/class/Fields/Fields'
 import {colType, columnGetterType} from '@cm/types/types'
 import {createUpdate} from '@lib/methods/createUpdate'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {toast} from 'react-toastify'
 
 export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
@@ -25,6 +25,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
       //   form: {...defaultRegister, defaultValue: null},
       //   td: {style: {...regularStyle, minWidth: 60}},
       // },
+
       {
         id: 'tbmBaseId',
         label: '営業所',
@@ -113,9 +114,15 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
                 return col.format(val, row, col)
               }
 
-              const MonthConfig = row?.TbmMonthlyConfigForRouteGroup?.[0]
+              const MonthConfig = row?.TbmMonthlyConfigForRouteGroup.sort((a, b) => -(a.id - b.id))?.[0]
+
               const defaultValue = MonthConfig?.[dataKey] ?? ''
-              const [value, setvalue] = useState(defaultValue)
+              const [value, setvalue] = useState<any>(null)
+
+              useEffect(() => {
+                setvalue(defaultValue)
+              }, [defaultValue])
+
               const unique_yearMonth_tbmRouteGroupId = {yearMonth, tbmRouteGroupId: row.id}
               const style = col.td?.style
 
@@ -128,6 +135,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
                   onBlur={async e => {
                     const value = col.type === `number` ? Number(e.target.value) : e.target.value
 
+
                     const res = await doStandardPrisma(`tbmMonthlyConfigForRouteGroup`, `upsert`, {
                       where: {unique_yearMonth_tbmRouteGroupId},
                       ...createUpdate({
@@ -135,11 +143,12 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
                         [dataKey]: value ?? '',
                       }),
                     })
+
                     if (res.success === false) {
                       toast.error(res.message)
                     }
                   }}
-                  value={value ?? null}
+                  value={value ?? ''}
                 />
               )
             },

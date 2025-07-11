@@ -22,8 +22,8 @@ export const doTransaction = async (props: {transactionQueryList: transactionQue
   ]
     .filter(d => d)
     .join('_')
-  console.time(timeKey)
 
+  console.time(timeKey)
   const errorItemList: (transactionQuery & {error: string})[] = []
 
   try {
@@ -64,12 +64,14 @@ export const doTransaction = async (props: {transactionQueryList: transactionQue
     console.timeEnd(timeKey)
     return result
   } catch (error) {
-    console.error(error.stack)
-    const result: requestResultType = {
-      success: false,
-      message: error.message,
-      result: errorItemList,
-    }
-    return result
+    throw new Error(error.message)
+    // console.error(error.stack)
+    // const result: requestResultType = {
+    //   success: false,
+    //   message: error.message,
+    //   result: errorItemList,
+    // }
+  } finally {
+    console.timeEnd(timeKey)
   }
 }

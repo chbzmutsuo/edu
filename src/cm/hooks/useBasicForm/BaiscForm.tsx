@@ -1,6 +1,6 @@
 'use client'
 
-import React, {Fragment, useEffect, useState} from 'react'
+import React, {Fragment} from 'react'
 import {colType, onFormItemBlurType} from '@cm/types/types'
 import {C_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {FormProvider, UseFormReturn} from 'react-hook-form'
@@ -12,6 +12,7 @@ import ControlGroup from '@hooks/useBasicForm/molecules/ControlGroup'
 import {Card} from '@cm/shadcn-ui/components/ui/card'
 import {DynamicGridContainer} from '@components/utils'
 import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {cn} from '@cm/shadcn-ui/lib/utils'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -60,7 +61,7 @@ const FormSection = React.memo(
 )
 
 const BasicForm = (props: BasicFormType) => {
-  const {formRef, formId, alignMode, style, wrapperClass, ControlOptions, columns, ReactHookForm} = adjustBasicFormProps(props)
+  const {formRef, formId, alignMode, style, ControlOptions, columns, ReactHookForm} = adjustBasicFormProps(props)
 
   const onSubmit = async e => {
     const handleFormSubmit = props.onSubmit ? ReactHookForm.handleSubmit(props.onSubmit) : undefined
@@ -69,29 +70,6 @@ const BasicForm = (props: BasicFormType) => {
     if (formElement?.getAttribute('id') === formId && handleFormSubmit) {
       return await handleFormSubmit(e)
     }
-  }
-
-  //カラム作成
-  const makeFormsByColumnObj = (columns: any) => {
-    const validColumnsForEditForm: colType[] = columns.flat().filter(col => col.form && col?.form?.hidden !== true)
-    const formsByColumnObj: any = {}
-
-    validColumnsForEditForm.sort((x: colType, y: colType) => {
-      return Number(x.originalColIdx) - Number(y.originalColIdx)
-    })
-
-    validColumnsForEditForm.forEach((col: colType) => {
-      const colIndex = col?.form?.colIndex ?? 0
-      obj__initializeProperty(formsByColumnObj, colIndex, [])
-      formsByColumnObj[colIndex].push(col)
-    })
-
-    const transposedRowsForForm: colType[][] = Object.keys(formsByColumnObj).map(key => {
-      return formsByColumnObj[key]
-    })
-    const colIndexes = Object.keys(formsByColumnObj)
-
-    return {transposedRowsForForm, colIndexes}
   }
 
   // const {justifyDirection} = useJustifyDirection({transposedRowsForForm, useGlobalProps})
@@ -115,11 +93,14 @@ const BasicForm = (props: BasicFormType) => {
                 return (
                   <Fragment key={i}>
                     <FormSection {...{columns, ControlOptions}}>
-                      <div className={`${wrapperClass}   `}>
+                      <div className={cn(alignMode === `row` ? `row-stack` : `col-stack`, `gap-10 gap-x-6`)}>
+                        {/* グループ */}
                         {columns.map((col: colType, formItemIndex) => {
                           const uniqueKey = `${i}-${formItemIndex}`
                           return <ControlGroup key={uniqueKey} {...{...props, col, formItemIndex}} />
                         })}
+
+                        {/* ボタン */}
                         {alignMode === `row` && <ChildComponent />}
                       </div>
                     </FormSection>
@@ -138,17 +119,40 @@ const BasicForm = (props: BasicFormType) => {
 
 export default BasicForm
 
-const useJustifyDirection = ({transposedRowsForForm, useGlobalProps}) => {
-  const {width, SP} = useGlobalProps
+// const useJustifyDirection = ({transposedRowsForForm, useGlobalProps}) => {
+//   const {width, SP} = useGlobalProps
 
-  const [justifyDirection, setjustifyDirection] = useState(`justify-center`)
-  const elems = document?.querySelectorAll(`.formSec`)
-  useEffect(() => {
-    if (elems.length > 0) {
-      const justifyDirection = transposedRowsForForm.length === 1 || SP ? `justify-center` : `justify-start`
-      setjustifyDirection(justifyDirection)
-    }
-  }, [width, transposedRowsForForm, elems, SP])
+//   const [justifyDirection, setjustifyDirection] = useState(`justify-center`)
+//   const elems = document?.querySelectorAll(`.formSec`)
+//   useEffect(() => {
+//     if (elems.length > 0) {
+//       const justifyDirection = transposedRowsForForm.length === 1 || SP ? `justify-center` : `justify-start`
+//       setjustifyDirection(justifyDirection)
+//     }
+//   }, [width, transposedRowsForForm, elems, SP])
 
-  return {justifyDirection}
+//   return {justifyDirection}
+// }
+
+//カラム作成
+const makeFormsByColumnObj = (columns: any) => {
+  const validColumnsForEditForm: colType[] = columns.flat().filter(col => col.form && col?.form?.hidden !== true)
+  const formsByColumnObj: any = {}
+
+  validColumnsForEditForm.sort((x: colType, y: colType) => {
+    return Number(x.originalColIdx) - Number(y.originalColIdx)
+  })
+
+  validColumnsForEditForm.forEach((col: colType) => {
+    const colIndex = col?.form?.colIndex ?? 0
+    obj__initializeProperty(formsByColumnObj, colIndex, [])
+    formsByColumnObj[colIndex].push(col)
+  })
+
+  const transposedRowsForForm: colType[][] = Object.keys(formsByColumnObj).map(key => {
+    return formsByColumnObj[key]
+  })
+  const colIndexes = Object.keys(formsByColumnObj)
+
+  return {transposedRowsForForm, colIndexes}
 }

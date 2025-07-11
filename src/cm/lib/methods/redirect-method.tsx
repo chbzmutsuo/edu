@@ -83,8 +83,9 @@ export const dateSwitcherTemplate = async (props: {query; firstDayOfMonth?: Date
     lt?: Date | undefined
     lte?: Date | undefined
   } = {}
-  const FROM = query.from ? toUtc(query.from) : undefined
-  const TO = query.to ? toUtc(query.to) : undefined
+
+  const FROM = query.from ? toUtc(query.from) : defaultWhere?.from
+  const TO = query.to ? toUtc(query.to) : defaultWhere?.to
 
   if (FROM && TO) {
     whereQuery = {gte: FROM, lte: TO}

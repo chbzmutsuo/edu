@@ -13,10 +13,9 @@ import {
 import {Popover, PopoverContent, PopoverTrigger} from '@cm/shadcn-ui/components/ui/popover'
 
 import {useIsMobile} from '@cm/shadcn-ui/hooks/use-mobile'
-import {sleep} from '@lib/methods/common'
 import {PopoverPortal} from '@radix-ui/react-popover'
 
-import React, {useEffect} from 'react'
+import React from 'react'
 import {JSX} from 'react'
 
 type ShadPopoverProps = {

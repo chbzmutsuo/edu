@@ -83,14 +83,11 @@ export const makeDefaultValues = ({columns, formData}) => {
 
 export const useFormValues = () => {
   const {getValues} = useForm()
-
   return {
     ...useWatch(), // subscribe to form value updates
     ...getValues(), // always merge with latest form values
   }
 }
-
-// export const Register = () => {}
 
 export const getStyleProps = ({ControlOptions, col}) => {
   const isBooleanType = judgeBooleanType({col})

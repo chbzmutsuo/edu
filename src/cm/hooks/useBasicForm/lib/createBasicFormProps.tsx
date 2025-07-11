@@ -3,12 +3,6 @@ import {useRegisterOrigin} from '@hooks/useBasicForm/lib/useRegisterOrigin'
 export const adjustBasicFormProps = props => {
   const {alignMode = `col`, ControlOptions = {}, ...restProps} = props
 
-  const wrapperClass = props.wrapperClass
-    ? props.wrapperClass
-    : alignMode === 'row'
-      ? 'row-stack gap-0   items-start!   flex-wrap gap-5 gap-y-3'
-      : 'col-stack  justify-center  gap-6'
-
   if (alignMode === 'row') {
     ControlOptions.ControlStyle = {...ControlOptions?.ControlStyle, minHeight: undefined}
     ControlOptions.direction = 'horizontal'
@@ -33,7 +27,7 @@ export const adjustBasicFormProps = props => {
     ...restProps,
     columns,
     alignMode,
-    wrapperClass,
+    // wrapperClass,
     ControlOptions,
   }
 }

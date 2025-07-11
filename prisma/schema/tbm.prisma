@@ -352,7 +352,7 @@ model TbmDriveSchedule {
 
  finished  Boolean? @default(false)
  confirmed Boolean? @default(false)
- approved  Boolean? @default(true)
+ approved  Boolean? @default(false)
 
  TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
  tbmBaseId Int

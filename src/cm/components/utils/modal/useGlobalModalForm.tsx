@@ -32,7 +32,7 @@ export const useGlobalModalForm = <S,>(
               setopen: setGMF_OPEN,
             }}
           >
-            {props?.mainJsx?.({GMF_OPEN, setGMF_OPEN, close}) ?? <></>}
+            <div className={` p-4 `}>{props?.mainJsx?.({GMF_OPEN, setGMF_OPEN, close}) ?? <></>}</div>
           </BasicModal>
         )}
       </>

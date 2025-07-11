@@ -51,9 +51,11 @@ const PCLayout = React.memo(({MainDisplay, adminContext, menuContext, useGlobalP
     <Header adminContext={adminContext} />
 
     {adminContext.navBarPosition === `left` && (
-      <Drawer menuContext={menuContext}>
-        <NavBar useGlobalProps={useGlobalProps} horizontalMenu={horizontalMenu} navItems={pathItemObject.navItems} />
-      </Drawer>
+      <div>
+        <Drawer menuContext={menuContext}>
+          <NavBar useGlobalProps={useGlobalProps} horizontalMenu={horizontalMenu} navItems={pathItemObject.navItems} />
+        </Drawer>
+      </div>
     )}
 
     <MainDisplay />
@@ -65,6 +67,7 @@ const SPLayout = React.memo(({MainDisplay, adminContext, menuContext, useGlobalP
   <div className="sticky top-0">
     <div>
       <Header adminContext={adminContext} />
+
       <Drawer menuContext={menuContext}>
         <NavBar useGlobalProps={useGlobalProps} horizontalMenu={horizontalMenu} navItems={pathItemObject.navItems} />
       </Drawer>

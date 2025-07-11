@@ -11,10 +11,9 @@ export default function Loader(props: any) {
   return (
     <>
       <div
-        className={`fixed inset-0 h-full w-full`}
+        className={`fixed inset-0 h-full w-full bg-white/50`}
         style={{
           zIndex: Z_INDEX.loader,
-          background: 'var(--color-white)',
         }}
       >
         <LoadingBar ref={ref} height={4} />

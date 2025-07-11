@@ -2,7 +2,7 @@
 
 import {BasicFormType} from '@hooks/useBasicForm/BaiscForm'
 import {getFormProps, getOffsetWidth, getStyleProps} from '@hooks/useBasicForm/lib/hookformMethods'
-import React, {Fragment} from 'react'
+import React, {Fragment, useCallback} from 'react'
 import {Controller} from 'react-hook-form'
 import {ControlContextType} from '@cm/types/form-control-type'
 import {liftUpNewValueOnChange} from '@components/DataLogic/TFs/MyForm/MyForm'
@@ -38,7 +38,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
         render={({field}) => {
           const errorMessage = messages?.[col.id]?.message?.toString()
 
-          const {id: wrapperId, flexDirection, wrapperClass, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col})
+          const {id: wrapperId, flexDirection, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col})
 
           const currentValue = props.ReactHookForm?.getValues(col.id)
 
@@ -75,38 +75,53 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
           const horizontal = props.alignMode === `row`
 
           const showDescription = ControlOptions?.showDescription !== false && col.form?.descriptionNoteAfter
-          const wrapperClassName = cn(wrapperClass, col.id)
+
+          const {reverseLabelTitle} = col.form
+
+          const LabelCallback = useCallback(
+            (props: {position: 'left' | 'right'}) => {
+              const {position} = props
+
+              if (position === 'left') {
+                return (
+                  !reverseLabelTitle && (
+                    <section className={cn(horizontal ? 'mr-1' : `mb-2`, 'min-w-fit')}>
+                      <Label {...{ReactHookForm, col, ControlOptions, required}} />
+                    </section>
+                  )
+                )
+              }
+              if (position === 'right') {
+                return <div>{reverseLabelTitle && <Label {...{ReactHookForm, col, ControlOptions, required}} />}</div>
+              }
+
+              return <></>
+            },
+            [ReactHookForm, reverseLabelTitle, ControlOptions, required, col]
+          )
+
+          const style = !horizontal
+            ? {
+                width: getOffsetWidth(ControlStyle.width, -5),
+                minWidth: getOffsetWidth(ControlStyle.minWidth, -5),
+                maxWidth: 'fit-content',
+              }
+            : undefined
 
           return (
             <div
               id={wrapperId}
-              style={{
-                width: getOffsetWidth(ControlStyle.width, -5),
-                minWidth: getOffsetWidth(ControlStyle.minWidth, -5),
-                maxWidth: 'fit-content',
-              }}
-              className={cn(
-                wrapperClassName,
-                flexDirection,
-                ` ${DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''}  relative `
-              )}
+              style={style}
+              className={cn(` ${DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''}  relative `)}
             >
               <div
-                style={
-                  {
-                    // width: horizontal ? undefined : ControlStyle.width,
-                  }
-                }
                 className={cn(
                   //
                   `gap-0 w-full`,
                   horizontal ? 'row-stack flex-nowrap　items-center ' : 'col-stack'
                 )}
               >
-                <section className={cn(horizontal ? 'mr-1' : `mb-2`)}>
-                  <div>{!col?.form?.reverseLabelTitle && <Label {...{ReactHookForm, col, ControlOptions, required}} />}</div>
-                </section>
-
+                <LabelCallback position="left" />
                 <div>
                   <LeftControlRight
                     {...{
@@ -128,7 +143,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
                   />
                 )}
 
-                {col?.form?.reverseLabelTitle && <Label {...{ReactHookForm, col, ControlOptions, required}} />}
+                <LabelCallback position="right" />
               </div>
             </div>
           )
