@@ -8,7 +8,7 @@ import {formatDate} from '@class/Days/date-utils/formatters'
 import {toUtc} from '@class/Days/date-utils/calculations'
 import BasicModal from '@components/utils/modal/BasicModal'
 
-import {bodyRecordsType, CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
+import { CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 
 import {handleCopyTask, taskObj} from '@app/(apps)/sohken/(parts)/Tasks/HandleBulkUpsertTask'
 
@@ -49,7 +49,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
 
   const inputClass = ` border-b bg-gray-50 p-0.5 px-1 w-32`
 
-  const {headerRecords, bodyRecords} = getBodyRecords()
+  const records = getRecords()
   return (
     <div>
       <BasicModal
@@ -78,26 +78,14 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
           >
             登録
           </Button>
-          {CsvTable({headerRecords, bodyRecords}).WithWrapper({})}
+          {CsvTable({records}).WithWrapper({})}
         </C_Stack>
       </BasicModal>
     </div>
   )
 
-  function getBodyRecords() {
-    const headerRecords: bodyRecordsType = [
-      {
-        csvTableRow: [
-          {cellValue: `追加`},
-          {cellValue: `タスク名`},
-          {cellValue: `色`},
-          {cellValue: `日付`},
-          {cellValue: `終了日`},
-          {cellValue: `人工`},
-        ],
-      },
-    ]
-    const bodyRecords: bodyRecordsType = allTasks.map(task => {
+  function getRecords() {
+    const records = allTasks.map(task => {
       const {name, color} = task
 
       const doUpdate = !!activeTasks[name]?.checked
@@ -135,6 +123,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
         className: `[&_td]:p-2!  ${doUpdate ? '' : 'opacity-30'}`,
         csvTableRow: [
           {
+            label: `追加`,
             cellValue: (
               <input
                 {...{
@@ -147,6 +136,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
             ),
           },
           {
+            label: `タスク名`,
             cellValue: (
               <input
                 {...{
@@ -160,6 +150,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
             ),
           },
           {
+            label: `色`,
             cellValue: (
               <input
                 {...{
@@ -172,6 +163,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
             ),
           },
           {
+            label: `日付`,
             cellValue: (
               <input
                 {...{
@@ -184,6 +176,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
             ),
           },
           {
+            label: `終了日`,
             cellValue: (
               <input
                 {...{
@@ -196,6 +189,7 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
             ),
           },
           {
+            label: `人工`,
             cellValue: (
               <input
                 {...{
@@ -211,6 +205,6 @@ export const TaskAsignBtn = ({Genba, allTasks, router}) => {
       }
     })
 
-    return {headerRecords, bodyRecords}
+    return records
   }
 }

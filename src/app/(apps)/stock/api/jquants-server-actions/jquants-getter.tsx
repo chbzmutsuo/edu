@@ -7,7 +7,7 @@ import {createUpdate} from '@lib/methods/createUpdate'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {getJQUANTS_ID_TOKEN} from '@app/(apps)/stock/api/jquants-server-actions/jquants-auth'
 import {StockCl} from 'src/non-common/EsCollection/(stock)/StockCl'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'

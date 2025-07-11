@@ -5,10 +5,11 @@ import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
 import Redirector from '@components/utils/Redirector'
 import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
-import prisma from '@lib/prisma'
+
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
+import prisma from 'src/lib/prisma'
 
 export default async function Page(props) {
   const query = await props.searchParams

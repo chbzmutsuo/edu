@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {RecurringPattern} from '@prisma/client'
 
 // 日本時間の日付文字列をUTC時刻（0時）に変換

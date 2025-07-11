@@ -1,7 +1,7 @@
 'use server'
 
 import {requestResultType} from '@cm/types/types'
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 
 export type transactionQuery = {
   model: any

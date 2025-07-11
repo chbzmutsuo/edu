@@ -3,7 +3,6 @@ import {Days} from '@class/Days/Days'
 import {Button} from '@components/styles/common-components/Button'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import {TableBordered, TableWrapper} from '@components/styles/common-components/Table'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
@@ -116,67 +115,57 @@ export default function MultipleCarSelector({currentRelationalModelRecords, Genb
     return (
       <>
         <C_Stack>
-          <TableWrapper className={`border-blue-main max-h-[50vh]  border-2`}>
-            <TableBordered className={`text-center`}>
-              {CsvTable({
-                headerRecords: [
+          {CsvTable({
+            records: optionList.map(car => {
+              const active = selectedCarObject?.[car.id]
+              const {carsOnOtherGembaOnSameDate} = car
+
+              const CarNameDisplay = () => {
+                return (
+                  <R_Stack className={`items-start leading-3`}>
+                    <div>{car.name}</div>
+                    <div className={`text-error-main`}>{carsOnOtherGembaOnSameDate.length > 0 ? '★' : ''}</div>
+                  </R_Stack>
+                )
+              }
+
+              return {
+                style: {
+                  opacity: active?.active ? 1 : 0.5,
+                },
+                csvTableRow: [
                   {
-                    csvTableRow: [
-                      //
-                      {cellValue: ``},
-                      {cellValue: `ユーザー`},
-                    ],
+                    label: ``,
+                    cellValue: (
+                      <input
+                        className={`h-6 w-6`}
+                        type={`checkbox`}
+                        checked={!!active?.active}
+                        onChange={() =>
+                          setselectedCarObject(prev => {
+                            return {
+                              ...prev,
+                              [car.id]: {
+                                ...prev[car.id],
+                                active: !prev[car.id]?.active,
+                              },
+                            }
+                          })
+                        }
+                      />
+                    ),
+                    style: {width: 30, padding: 5},
+                  },
+                  {
+                    label: `ユーザー`,
+                    cellValue: <CarNameDisplay />,
+                    style: {width: 120, padding: 5},
                   },
                 ],
-                bodyRecords: optionList.map(car => {
-                  const active = selectedCarObject?.[car.id]
-                  const {carsOnOtherGembaOnSameDate} = car
+              }
+            }),
+          }).WithWrapper({className: `border-blue-main max-h-[50vh]  border-2`})}
 
-                  const CarNameDisplay = () => {
-                    return (
-                      <R_Stack className={`items-start leading-3`}>
-                        <div>{car.name}</div>
-                        <div className={`text-error-main`}>{carsOnOtherGembaOnSameDate.length > 0 ? '★' : ''}</div>
-                      </R_Stack>
-                    )
-                  }
-
-                  return {
-                    style: {
-                      opacity: active?.active ? 1 : 0.5,
-                    },
-                    csvTableRow: [
-                      {
-                        cellValue: (
-                          <input
-                            className={`h-6 w-6`}
-                            type={`checkbox`}
-                            checked={!!active?.active}
-                            onChange={() =>
-                              setselectedCarObject(prev => {
-                                return {
-                                  ...prev,
-                                  [car.id]: {
-                                    ...prev[car.id],
-                                    active: !prev[car.id]?.active,
-                                  },
-                                }
-                              })
-                            }
-                          />
-                        ),
-                        style: {width: 30, padding: 5},
-                      },
-                      {
-                        cellValue: <CarNameDisplay />,
-                        style: {width: 120, padding: 5},
-                      },
-                    ],
-                  }
-                }),
-              }).ALL()}
-            </TableBordered>
-          </TableWrapper>
           <R_Stack className={` justify-end`}>
             <Button
               color={`green`}

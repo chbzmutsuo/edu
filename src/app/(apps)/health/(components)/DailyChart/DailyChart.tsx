@@ -213,7 +213,6 @@ export default function DailyChart({records, selectedDate}: DailyChartProps) {
         case 'medicine': {
           dataPoint.medicineRecords.push(record)
 
-          console.log(record.Medicine.name) //logs
           dataPoint.medicine = HEALTH_CATEGORY_CHART_HEIGHT_VALUE[HEALTH_CATEGORIES.MEDICINE]
           dataPoint.medicineRecord = record
           break

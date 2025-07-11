@@ -44,7 +44,7 @@ export type MonthlyTbmDriveData = {
   }
 }
 
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {TbmDriveSchedule, TbmVehicle, User} from '@prisma/client'
 
 export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {

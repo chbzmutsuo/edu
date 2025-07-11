@@ -15,7 +15,7 @@ import {HREF} from '@lib/methods/urls'
 import React from 'react'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {NumHandler} from '@class/NumHandler'
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 
 export default async function CalendarPage(props) {
   const query = await props.searchParams
@@ -233,22 +233,7 @@ export default async function CalendarPage(props) {
 
           <section>
             {CsvTable({
-              headerRecords: [
-                {
-                  csvTableRow: [
-                    //
-                    {cellValue: `日付`},
-                    // {cellValue: `人工`},
-                    // {cellValue: `余力`},
-                    {cellValue: `＃`},
-                    {cellValue: `人工（NEW）`},
-                    // {cellValue: `①タスク\n必要人工計`},
-                    // {cellValue: `②タスク\nスケジュール計`},
-                    // {cellValue: `① / ②`},
-                  ],
-                },
-              ],
-              bodyRecords: days
+              records: days
                 .filter(d => {
                   return chechIsHoliday({holidays, date: d}) === false
                 })
@@ -257,8 +242,6 @@ export default async function CalendarPage(props) {
 
                   // const genbaNameList = GenbaTaskStartingToday.map(t => t.Genba.name).join(`, `)
                   const href = HREF(`/sohken/genbaDay`, {from: formatDate(d)}, query)
-                  let i = 0
-
                   const ninku = Object.keys(ninkuObj[formatDate(d)] ?? {}).reduce((acc, genbaId) => {
                     return (
                       acc +
@@ -270,18 +253,6 @@ export default async function CalendarPage(props) {
                         const Task = allGenbaTasks.find(t => t.id === Number(taskId))
                         const taskName = Task?.name
 
-                        if (formatDate(d) === `2025-06-04`) {
-                          i++
-                          // console.log({
-                          //   // i,
-                          //   '①必要人工': requiredNinku,
-                          //   '②カード数': scheduleCount,
-                          //   '③平均人工': ninkuAveragedPerDay,
-                          //   現場名: `${genbaName} (${genbaId})`,
-                          //   タスク名: taskName,
-                          // })
-                        }
-
                         return acc + (ninkuAveragedPerDay ?? 0)
                       }, 0)
                     )
@@ -291,6 +262,7 @@ export default async function CalendarPage(props) {
                     csvTableRow: [
                       //
                       {
+                        label: `日付`,
                         cellValue: (
                           <T_LINK href={href} className={`t-link`}>
                             {formatDate(d, 'YYYY-MM-DD(ddd)')}
@@ -298,26 +270,14 @@ export default async function CalendarPage(props) {
                         ),
                       },
 
-                      // {
-                      //   cellValue: (
-                      //     <MyPopover
-                      //       {...{
-                      //         mode: `click`,
-                      //         button: requiredNinkuSum,
-                      //       }}
-                      //     >
-                      //       <Paper>{genbaNameList}</Paper>
-                      //     </MyPopover>
-                      //   ),
-                      // },
-
-                      // {cellValue: userCount - requiredNinkuSum},
                       {
+                        label: `＃`,
                         cellValue:
                           ninkuCount === null ? '' : ninkuCount === 0 ? '0' : ninkuCount >= 0 ? ninkuCount : `▲${ninkuCount}`,
                         style: {width: 100, textAlign: 'right'},
                       },
                       {
+                        label: `人工(NEW)`,
                         cellValue: NumHandler.round(ninku, 1),
                       },
                     ],

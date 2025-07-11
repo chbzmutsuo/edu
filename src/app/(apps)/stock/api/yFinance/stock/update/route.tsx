@@ -3,7 +3,7 @@ import {jquants__getStockPrice} from '@app/(apps)/stock/api/jquants-server-actio
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
 import {createUpdate} from '@lib/methods/createUpdate'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {NextRequest, NextResponse} from 'next/server'
 import {isCron} from 'src/non-common/serverSideFunction'

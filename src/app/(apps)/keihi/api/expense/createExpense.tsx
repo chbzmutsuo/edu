@@ -1,6 +1,6 @@
 import {FileHandler} from 'src/cm/class/FileHandler'
 
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {MAJOR_ACCOUNTS} from '@app/(apps)/keihi/actions/expense/constants'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'
 import {generateInsights} from '@app/(apps)/keihi/actions/expense/insights'

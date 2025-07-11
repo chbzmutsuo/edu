@@ -1,5 +1,9 @@
 'use server'
 import {requestResultType} from '@cm/types/types'
+import {handlePrismaError} from '@lib/prisma-helper'
+
+import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
+import {PrismaClient} from '@prisma/client'
 
 import {
   doDefaultPrismaMethod,
@@ -8,6 +12,7 @@ import {
   initQueryObject,
 } from '@lib/server-actions/common-server-actions/doStandardPrisma/lib'
 import {prismaChain} from 'src/non-common/prismaChain'
+import prisma from 'src/lib/prisma'
 
 export type doStandardPrismaType = <T extends PrismaModelNames, M extends prismaMethodType>(
   model: T,
@@ -84,10 +89,6 @@ export const doStandardPrisma: doStandardPrismaType = async (model, method, quer
     }
   }
 }
-
-import prisma, {handlePrismaError} from '@lib/prisma'
-import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
-import {PrismaClient} from '@prisma/client'
 
 const executeChainMethod = async callback => {
   // 現在のロック状態をチェック

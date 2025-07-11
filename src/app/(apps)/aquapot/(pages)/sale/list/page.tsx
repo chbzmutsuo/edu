@@ -142,30 +142,8 @@ order by
   let nextColor = 'bg-gray-100'
   const TABLE = CsvTable({
     csvOutput: {fileTitle: `売上リスト`},
-    headerRecords: [
-      //
-      {
-        csvTableRow: [
-          {cellValue: `#`},
-          {cellValue: `購入日`},
-          {cellValue: [`会社名`, `役職`, `顧客名`].filter(Boolean).join(` / `)},
-          // {cellValue: `担当者`},
-          // {cellValue: `会社名`},
-          // {cellValue: `役職`},
-          // {cellValue: `担当者`},
-          {cellValue: `商品名`},
-          {cellValue: `価格オプション`},
-          {cellValue: `数量`},
-          {cellValue: `価格`},
-          {cellValue: `消費税率`},
-          {cellValue: `税込価格`},
-          {cellValue: `支払方法`},
-          {cellValue: `但し書き`},
-          {cellValue: `その他`},
-        ],
-      },
-    ],
-    bodyRecords: records.map((rec, i) => {
+
+    records: records.map((rec, i) => {
       const prev = records[i - 1]
       const isDifferentCartId = rec.sale_cart_id !== prev?.sale_cart_id
 
@@ -177,14 +155,17 @@ order by
       return {
         className: rowColor,
         csvTableRow: [
-          {cellValue: i + 1},
-          {cellValue: formatDate(rec.date, `YYYY/MM/DD(ddd)`)},
-          {cellValue: [rec.companyName, rec.jobTitle, rec.name].filter(Boolean).join(` / `)},
+          {cellValue: i + 1, label: `#`},
+          {cellValue: formatDate(rec.date, `YYYY/MM/DD(ddd)`), label: `購入日`},
+          {
+            cellValue: [rec.companyName, rec.jobTitle, rec.name].filter(Boolean).join(` / `),
+            label: [`会社名`, `役職`, `顧客名`].filter(Boolean).join(` / `),
+          },
           // {cellValue: rec.userName},
           // {cellValue: rec.companyName},
           // {cellValue: rec.jobTitle},
           // {cellValue: rec.userName},
-          {cellValue: rec.productName},
+          {cellValue: rec.productName, label: `商品名`},
           {
             cellValue: [
               //
@@ -193,17 +174,19 @@ order by
             ]
               .filter(Boolean)
               .join(``),
+            label: `価格オプション`,
           },
-          {cellValue: rec.quantity},
-          {cellValue: rec.price},
-          {cellValue: rec.taxRate},
-          {cellValue: rec.taxedPrice},
-          {cellValue: rec.paymentMethod},
-          {cellValue: rec.remarks},
+          {cellValue: rec.quantity, label: `数量`},
+          {cellValue: rec.price, label: `価格`},
+          {cellValue: rec.taxRate, label: `消費税率`},
+          {cellValue: rec.taxedPrice, label: `税込価格`},
+          {cellValue: rec.paymentMethod, label: `支払方法`},
+          {cellValue: rec.remarks, label: `但し書き`},
 
           {
             cellValue: <Cell {...{rec}} />,
             cellValueRaw: '',
+            label: `その他`,
           },
         ].map(d => ({...d, style: {fontSize: 12, maxWidth: 280}})),
       }

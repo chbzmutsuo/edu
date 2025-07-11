@@ -1,7 +1,7 @@
 'use server'
 
 import {sendEmailWrapper} from 'src/non-common/(chains)/shinsei/sendEmailWrapper'
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 
 export const chain_shinsei_hacchu_notifyWhenUpdate = async ({purchaseRequestId}) => {
   const purchaseRequest = await prisma.purchaseRequest.findUnique({

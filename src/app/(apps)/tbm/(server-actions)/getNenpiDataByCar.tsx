@@ -1,6 +1,6 @@
 'use server'
 import FuelHistoryCl from '@app/(apps)/tbm/(class)/FuelHistoryCl'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 
 const keiyuPerLiter = 159.98
 

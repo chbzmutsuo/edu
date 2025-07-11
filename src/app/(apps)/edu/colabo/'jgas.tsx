@@ -1,5 +1,5 @@
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import Redirector from '@components/utils/Redirector'
 
 const Page = async props => {

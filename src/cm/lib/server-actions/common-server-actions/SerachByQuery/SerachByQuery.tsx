@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from 'src/cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
 

@@ -2,7 +2,7 @@
 
 import {generatePersonalDevKeywords} from '@app/(apps)/keihi/actions/expense/generatePersonalDevKeywords'
 import OpenAI from 'openai'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {MAJOR_ACCOUNTS} from '@app/(apps)/keihi/actions/expense/constants'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'
 

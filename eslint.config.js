@@ -53,6 +53,8 @@ module.exports = [
    '@typescript-eslint/no-wrapper-object-types': 'off',
    '@typescript-eslint/no-require-imports': 'off',
    'no-constant-binary-expression': 'off',
+   'no-unused-private-class-members': 'off',
+   '@typescript-eslint/no-unnecessary-type-constraint': 'off',
   },
   settings: {
    react: {
@@ -61,3 +63,4 @@ module.exports = [
   },
  },
 ];
+

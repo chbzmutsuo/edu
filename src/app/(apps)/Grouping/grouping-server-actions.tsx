@@ -1,7 +1,7 @@
 'use server'
 
 import {obj__initializeProperty} from '@class/ObjHandler/transformers'
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {requestResultType} from '@cm/types/types'
 import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 

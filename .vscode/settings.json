@@ -132,7 +132,7 @@
     "**/achievement/**": true,
     "**/aquapot/**": true,
     "**/edu/**": true,
-    "**/keihi/**": true,
+    "**/health/**": true,
     "**/kickswrap/**": true,
     "**/page/**": true,
     "**/sara/**": true,
@@ -140,7 +140,7 @@
     "**/sohken/**": true,
     "**/stock/**": true,
     "**/tmp/**": true,
-    "**/health/**": true
+    "**/tbm/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -157,13 +157,13 @@
     "aquapot",
     "edu",
     "health",
-    "keihi",
     "kickswrap",
     "page",
     "sara",
     "shinsei",
     "sohken",
     "stock",
+    "tbm",
     "tmp"
   ],
   "editor.stickyScroll.enabled": false,

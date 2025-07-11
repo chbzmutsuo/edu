@@ -1,4 +1,5 @@
-import prisma, {handlePrismaError} from '@cm/lib/prisma'
+import {handlePrismaError} from '@lib/prisma-helper'
+import prisma from 'src/lib/prisma'
 
 import {NextRequest, NextResponse} from 'next/server'
 import {colType} from '@cm/types/types'

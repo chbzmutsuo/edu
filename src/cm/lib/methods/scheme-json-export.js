@@ -1450,6 +1450,8 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
+  // previewFeatures = ["queryCompiler", "driverAdapters"]
+  // output          = "../generated/prisma"
 }
 
 model Department {

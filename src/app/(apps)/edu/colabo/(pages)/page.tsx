@@ -1,5 +1,5 @@
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import Redirector from '@components/utils/Redirector'
 import Link from 'next/link'
 import {HREF} from '@lib/methods/urls'

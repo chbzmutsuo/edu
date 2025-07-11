@@ -4,7 +4,7 @@ import {revalidatePath} from 'next/cache'
 import OpenAI from 'openai'
 import {FileHandler} from 'src/cm/class/FileHandler'
 import {S3FormData} from '@cm/class/FileHandler'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
 

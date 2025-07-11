@@ -6,7 +6,6 @@ import {anyObject} from '@cm/types/utility-types'
 import {Button} from '@components/styles/common-components/Button'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import {TableBordered, TableWrapper} from '@components/styles/common-components/Table'
 import PlaceHolder from '@components/utils/loader/PlaceHolder'
 import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
@@ -160,141 +159,131 @@ export default function MultipleUserSelector({currentRelationalModelRecords, Gen
     return (
       <>
         <C_Stack>
-          <TableWrapper className={`border-blue-main max-h-[50vh]  border-2`}>
-            <TableBordered className={`text-center`}>
-              {CsvTable({
-                headerRecords: [
+          {CsvTable({
+            records: optionList.map(user => {
+              const active = selectedUserObject?.[user.id]
+
+              const {shiftsOnOtherGembaOnSameDate, DayRemark} = user
+
+              const UserNameDisplay = () => {
+                const red = isRed({shiftsOnOtherGembaOnSameDate, DayRemark})
+                return (
+                  <R_Stack className={`items-start gap-0.5 leading-3`}>
+                    <div className={red ? 'text-red-500' : ''}>{user.name}</div>
+                    <IsInShift {...{hasShift: shiftsOnOtherGembaOnSameDate.length}} />
+                    <IsInKyukaTodoke {...{DayRemark}} />
+                    <IsInKyuka {...{DayRemark}} />
+                  </R_Stack>
+                )
+              }
+
+              return {
+                style: {
+                  opacity: active?.active ? 1 : 0.5,
+                },
+                csvTableRow: [
                   {
-                    csvTableRow: [
-                      //
-                      {cellValue: ``},
-                      {cellValue: `ユーザー`},
-                      {cellValue: `いつから`},
-                      {cellValue: `いつまで`},
-                      {cellValue: `直行`},
-                      {cellValue: `直帰`},
-                      {cellValue: `強調`},
-                      {cellValue: `職長`},
-                    ],
+                    label: ``,
+                    cellValue: (
+                      <input
+                        className={`h-6 w-6`}
+                        type={`checkbox`}
+                        checked={!!active?.active}
+                        onChange={() =>
+                          setselectedUserObject(prev => {
+                            return {
+                              ...prev,
+                              [user.id]: {
+                                ...prev[user.id],
+                                active: !prev[user.id]?.active,
+                              },
+                            }
+                          })
+                        }
+                      />
+                    ),
+                    style: {width: 30, padding: 5},
+                  },
+                  {
+                    label: `ユーザー`,
+                    cellValue: <UserNameDisplay />,
+                    style: {width: 120, padding: 5},
+                  },
+                  {
+                    label: `いつから`,
+                    cellValue: <Input {...{user, type: `time`, dataKey: `from`, setselectedUserObject}} />,
+                    style: {width: 70, padding: 5},
+                  },
+                  {
+                    label: `いつまで`,
+                    cellValue: <Input {...{user, type: `time`, dataKey: `to`, setselectedUserObject}} />,
+                    style: {width: 70, padding: 5},
+                  },
+                  {
+                    label: `直行`,
+                    cellValue: (
+                      <BooleanInput
+                        {...{
+                          disabled: !active?.active,
+                          user,
+                          checked: !!active?.directGo,
+                          dataKey: `directGo`,
+                          setselectedUserObject,
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    label: `直帰`,
+                    cellValue: (
+                      <BooleanInput
+                        {...{
+                          disabled: !active?.active,
+                          user,
+                          checked: !!active?.directReturn,
+                          dataKey: `directReturn`,
+                          setselectedUserObject,
+                        }}
+                      />
+                    ),
+                  },
+                  {
+                    label: `強調`,
+                    cellValue: (
+                      <div>
+                        <BooleanInput
+                          {...{
+                            disabled: !active?.active,
+                            user,
+                            checked: !!active?.important,
+                            dataKey: `important`,
+                            setselectedUserObject,
+                          }}
+                        />
+                      </div>
+                    ),
+                  },
+                  {
+                    label: `職長`,
+                    cellValue: (
+                      <div>
+                        <BooleanInput
+                          {...{
+                            disabled: !active?.active,
+                            user,
+                            checked: !!active?.shokucho,
+                            dataKey: `shokucho`,
+                            setselectedUserObject,
+                          }}
+                        />
+                      </div>
+                    ),
                   },
                 ],
-                bodyRecords: optionList.map(user => {
-                  const active = selectedUserObject?.[user.id]
+              }
+            }),
+          }).WithWrapper({className: `border-blue-main max-h-[50vh]  border-2`})}
 
-                  const {shiftsOnOtherGembaOnSameDate, DayRemark} = user
-
-                  const UserNameDisplay = () => {
-                    const red = isRed({shiftsOnOtherGembaOnSameDate, DayRemark})
-                    return (
-                      <R_Stack className={`items-start gap-0.5 leading-3`}>
-                        <div className={red ? 'text-red-500' : ''}>{user.name}</div>
-                        <IsInShift {...{hasShift: shiftsOnOtherGembaOnSameDate.length}} />
-                        <IsInKyukaTodoke {...{DayRemark}} />
-                        <IsInKyuka {...{DayRemark}} />
-                      </R_Stack>
-                    )
-                  }
-
-                  return {
-                    style: {
-                      opacity: active?.active ? 1 : 0.5,
-                    },
-                    csvTableRow: [
-                      {
-                        cellValue: (
-                          <input
-                            className={`h-6 w-6`}
-                            type={`checkbox`}
-                            checked={!!active?.active}
-                            onChange={() =>
-                              setselectedUserObject(prev => {
-                                return {
-                                  ...prev,
-                                  [user.id]: {
-                                    ...prev[user.id],
-                                    active: !prev[user.id]?.active,
-                                  },
-                                }
-                              })
-                            }
-                          />
-                        ),
-                        style: {width: 30, padding: 5},
-                      },
-                      {
-                        cellValue: <UserNameDisplay />,
-                        style: {width: 120, padding: 5},
-                      },
-                      {
-                        cellValue: <Input {...{user, type: `time`, dataKey: `from`, setselectedUserObject}} />,
-                        style: {width: 70, padding: 5},
-                      },
-                      {
-                        cellValue: <Input {...{user, type: `time`, dataKey: `to`, setselectedUserObject}} />,
-                        style: {width: 70, padding: 5},
-                      },
-                      {
-                        cellValue: (
-                          <BooleanInput
-                            {...{
-                              disabled: !active?.active,
-                              user,
-                              checked: !!active?.directGo,
-                              dataKey: `directGo`,
-                              setselectedUserObject,
-                            }}
-                          />
-                        ),
-                      },
-                      {
-                        cellValue: (
-                          <BooleanInput
-                            {...{
-                              disabled: !active?.active,
-                              user,
-                              checked: !!active?.directReturn,
-                              dataKey: `directReturn`,
-                              setselectedUserObject,
-                            }}
-                          />
-                        ),
-                      },
-                      {
-                        cellValue: (
-                          <div>
-                            <BooleanInput
-                              {...{
-                                disabled: !active?.active,
-                                user,
-                                checked: !!active?.important,
-                                dataKey: `important`,
-                                setselectedUserObject,
-                              }}
-                            />
-                          </div>
-                        ),
-                      },
-                      {
-                        cellValue: (
-                          <div>
-                            <BooleanInput
-                              {...{
-                                disabled: !active?.active,
-                                user,
-                                checked: !!active?.shokucho,
-                                dataKey: `shokucho`,
-                                setselectedUserObject,
-                              }}
-                            />
-                          </div>
-                        ),
-                      },
-                    ],
-                  }
-                }),
-              }).ALL()}
-            </TableBordered>
-          </TableWrapper>
           <R_Stack className={` justify-end`}>
             <Button color={`blue`} onClick={bulkUpdateUsersOnGenbaDay}>
               更新する

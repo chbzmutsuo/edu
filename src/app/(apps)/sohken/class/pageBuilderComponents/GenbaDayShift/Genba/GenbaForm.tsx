@@ -117,6 +117,23 @@ const TaskAndSchedule = ({genba, allTasks}) => {
                   </div>
                 </Alert>
 
+                <div className={` text-end`}>
+                  <Button
+                    onClick={async () => {
+                      const {result: genbaTasks} = await doStandardPrisma(`genbaTask`, `findMany`, {
+                        where: {Genba: {id: genba.id}},
+                      })
+                      await Promise.all(
+                        genbaTasks.map(async item => {
+                          toggleLoad(async () => await handleUpdateSchedule({genbaTask: item}), {refresh: true, mutate: true})
+                        })
+                      )
+                    }}
+                  >
+                    一括反映
+                  </Button>
+                </div>
+
                 <R_Stack className={` flex-nowrap items-start`}>
                   <ChildCreator
                     {...{
@@ -143,20 +160,6 @@ const TaskAndSchedule = ({genba, allTasks}) => {
                       },
                     }}
                   />
-                  <Button
-                    onClick={async () => {
-                      const {result: genbaTasks} = await doStandardPrisma(`genbaTask`, `findMany`, {
-                        where: {Genba: {id: genba.id}},
-                      })
-                      await Promise.all(
-                        genbaTasks.map(async item => {
-                          toggleLoad(async () => await handleUpdateSchedule({genbaTask: item}), {refresh: true, mutate: true})
-                        })
-                      )
-                    }}
-                  >
-                    一括反映
-                  </Button>
                 </R_Stack>
               </C_Stack>
             </FitMargin>

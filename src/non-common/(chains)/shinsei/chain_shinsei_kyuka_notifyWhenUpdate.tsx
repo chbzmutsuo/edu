@@ -1,8 +1,9 @@
 'use server'
 
 import {sendEmailWrapper} from 'src/non-common/(chains)/shinsei/sendEmailWrapper'
-import prisma from '@lib/prisma'
+
 import {formatDate} from '@class/Days/date-utils/formatters'
+import prisma from 'src/lib/prisma'
 
 export const chain_shinsei_kyuka_notifyWhenUpdate = async ({leaveRequestId}) => {
   const leaveRequest = await prisma.leaveRequest.findUnique({

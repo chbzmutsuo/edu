@@ -1,5 +1,5 @@
 import {isDev} from '@lib/methods/common'
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 import {NextResponse} from 'next/server'
 
 export const POST = async () => {

@@ -1,5 +1,5 @@
 import {Services} from '@app/(apps)/KM/components/Services'
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 
 const Page = async () => {
   const kaizenClient = await prisma.kaizenClient.findMany({where: {public: true}, orderBy: [{id: 'asc'}]})

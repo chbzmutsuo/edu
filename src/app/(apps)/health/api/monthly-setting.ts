@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 
 // 月間目標値の保存（upsert）
 export async function upsertMonthlyGoal({year, month, key, value}: {year: number; month: number; key: string; value: string}) {

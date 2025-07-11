@@ -3,7 +3,7 @@ import {ConfirmationForm} from '@app/(apps)/KM/(public)/top/works/confirmation/[
 import {Kaizen} from '@app/(apps)/KM/class/Kaizen'
 import {Partner} from '@app/(apps)/KM/components/Partner'
 
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {Alert} from '@components/styles/common-components/Alert'
 import {CenterScreen, C_Stack, Padding, R_Stack} from '@components/styles/common-components/common-components'
 import {T_LINK} from '@components/styles/common-components/links'

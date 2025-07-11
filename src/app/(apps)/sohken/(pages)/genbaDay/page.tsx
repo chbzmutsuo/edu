@@ -4,7 +4,7 @@ import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
 import GenbadayListClient from '@app/(apps)/sohken/(pages)/genbaDay/GenbadayListClient'
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 
 import {C_Stack} from '@components/styles/common-components/common-components'
 

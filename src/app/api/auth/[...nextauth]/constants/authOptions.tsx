@@ -1,4 +1,4 @@
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 import {normalCredentialsProvider} from '@app/api/auth/[...nextauth]/constants/next-auth-providers'
 import {googleProvider} from '@app/api/auth/[...nextauth]/constants/GoogleProvider'
 

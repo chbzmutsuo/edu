@@ -1,6 +1,6 @@
 import {Works} from '@app/(apps)/KM/components/Works'
 
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {MyContainer} from '@components/styles/common-components/common-components'
 
 const WorkPage = async () => {

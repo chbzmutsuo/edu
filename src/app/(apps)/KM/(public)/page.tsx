@@ -1,7 +1,7 @@
 import {EasyProfile} from '@app/(apps)/KM/components/common'
 import {Introducation} from '@app/(apps)/KM/components/Introduction'
 
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
 const KM_PAGE = async () => {

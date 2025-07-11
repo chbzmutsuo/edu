@@ -1,5 +1,5 @@
 import {hashPassword} from 'src/cm/lib/crypt'
-import prisma from 'src/cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {NextResponse} from 'next/server'
 
 export const POST = async () => {

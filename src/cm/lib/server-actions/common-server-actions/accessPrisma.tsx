@@ -1,7 +1,7 @@
 'use server'
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
-import prisma from '@lib/prisma'
+import {prisma} from 'src/lib/prisma'
 import {PrismaClient} from '@prisma/client'
 
 export const foo = async <T extends PrismaModelNames, M extends prismaMethodType>(

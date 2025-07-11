@@ -1,4 +1,4 @@
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 
 export const getTbmBase_MonthConfig = async ({yearMonth, tbmBaseId}) => {
   const userList = await prisma.user.findMany({

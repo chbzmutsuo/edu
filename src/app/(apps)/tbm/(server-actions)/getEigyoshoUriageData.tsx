@@ -25,7 +25,7 @@ import {getTbmBase_MonthConfig} from '@app/(apps)/tbm/(server-actions)/getBasics
 import {getMonthlyTbmDriveData, meisaiKey, tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
 import {carHistoryKey, getUserListWithCarHistory} from '@app/(apps)/tbm/(server-actions)/getUserListWithCarHistory'
 import {getMidnight} from '@class/Days/date-utils/calculations'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {User} from '@prisma/client'
 
 export type EigyoshoUriageRecord = {

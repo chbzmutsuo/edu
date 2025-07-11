@@ -4,7 +4,7 @@ import {Absolute, C_Stack} from '@components/styles/common-components/common-com
 import React from 'react'
 import path from 'path'
 import {superTrim} from '@lib/methods/common'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {createUpdate} from '@lib/methods/createUpdate'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 

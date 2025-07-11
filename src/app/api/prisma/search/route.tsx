@@ -1,6 +1,6 @@
 import {isRouteAccessAllowed} from '@app/api/prisma/isAllowed'
 
-import {handlePrismaError} from '@cm/lib/prisma'
+import {handlePrismaError} from '@lib/prisma-helper'
 import {searchByQuery} from '@lib/server-actions/common-server-actions/SerachByQuery/SerachByQuery'
 
 import {NextRequest, NextResponse} from 'next/server'

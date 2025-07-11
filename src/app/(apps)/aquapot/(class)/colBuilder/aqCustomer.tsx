@@ -180,13 +180,13 @@ export const aqCustomer = (props: columnGetterType) => {
           form: {hidden: true},
           format: (value, row) => {
             return CsvTable({
-              headerRecords: [],
-              bodyRecords: row.AqCustomerPriceOption.map(d => {
+              records: row.AqCustomerPriceOption.map(d => {
                 const {AqProduct, AqPriceOption} = d ?? {}
                 const truncate = `truncate w-[60px] text-xs`
                 return {
                   csvTableRow: [AqProduct?.name, AqPriceOption?.name, AqPriceOption?.price].map(d => ({
-                    cellValue: <div {...{className: truncate}}>{d} </div>,
+                    label: '',
+                    cellValue: <div {...{className: truncate}}>{d}</div>,
                   })),
                 }
               }),

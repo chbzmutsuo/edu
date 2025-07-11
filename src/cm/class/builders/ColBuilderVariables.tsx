@@ -7,6 +7,7 @@ import {Absolute, Vr} from 'src/cm/components/styles/common-components/common-co
 import {LabelValue} from '@components/styles/common-components/ParameterCard'
 import {getColorStyles} from '@lib/methods/colors'
 import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
+import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
 
 export const defaultRegister = {register: {required: '必須'}}
 export const textAreaDefaultStyle = {width: 600, height: 150}
@@ -84,26 +85,45 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
 
   const valueWidth = wrapperWidthPx - labelWidthPx
 
+  const content = children ?? value
+
+  const typeofContent = typeof content
+
+  const Content = typeofContent === `string` ? <MarkDownDisplay>{content}</MarkDownDisplay> : <div>{content}</div>
+
   return (
     <LabelValue
       {...{
-        label: <ShadPopover PopoverTrigger={<div>{label}</div>}>{children ?? value}</ShadPopover>,
-        styling: {styles: {wrapper: {width: wrapperWidthPx}, label: {minWidth: labelWidthPx}}, classes: {wrapper: `text-sm`}},
+        label: <div>{label}</div>,
+        styling: {
+          styles: {
+            wrapper: {width: wrapperWidthPx},
+            label: {minWidth: labelWidthPx},
+          },
+          classes: {
+            wrapper: `text-sm`,
+          },
+        },
       }}
     >
-      <div>
-        <div
-          style={{
-            maxWidth: valueWidth,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
+      {content ? (
+        <ShadPopover
+          {...{
+            PopoverTrigger: (
+              <div className={`relative`}>
+                {/* <ZoomIn className={`w-4 h-4 text-gray-600 absolute  -right-0! top-1 `} /> */}
+                <div style={{width: wrapperWidthPx - labelWidthPx, maxHeight: 40}} className={` truncate`}>
+                  {Content}
+                </div>
+              </div>
+            ),
           }}
         >
-          {children ?? value}
-        </div>
-        {/* <EllipsisPopover maxWidth={valueWidth}>{children ?? value}</EllipsisPopover> */}
-      </div>
+          {Content}
+        </ShadPopover>
+      ) : (
+        <div></div>
+      )}
     </LabelValue>
   )
 }

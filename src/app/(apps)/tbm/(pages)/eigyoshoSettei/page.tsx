@@ -3,7 +3,7 @@ import {getMidnight} from '@class/Days/date-utils/calculations'
 import EigyoshoSetteiClient from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/EigyoshoSetteiClient'
 
 import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 

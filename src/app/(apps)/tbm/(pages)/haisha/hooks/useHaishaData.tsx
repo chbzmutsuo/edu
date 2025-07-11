@@ -5,7 +5,6 @@ import {showSpendTime} from '@lib/methods/toast-helper'
 import useLocalLoading from '@hooks/globalHooks/useLocalLoading'
 import {getListData, haishaListData} from '../components/getListData'
 import {haishaTableMode} from '../components/HaishaTable'
-import {TbmDriveSchedule} from '@prisma/client'
 
 interface UseHaishaDataProps {
   tbmBaseId: number

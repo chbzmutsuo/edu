@@ -1,5 +1,5 @@
 import {Days} from '@class/Days/Days'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {Prisma} from '@prisma/client'
 import {NextRequest, NextResponse} from 'next/server'

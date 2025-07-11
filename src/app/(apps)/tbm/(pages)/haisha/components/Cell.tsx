@@ -54,7 +54,6 @@ export const Cell = React.memo(
         <section>
           <C_Stack className="gap-1">
             {scheduleListOnDate.map((tbmDriveSchedule, i) => {
-              console.log(tbmDriveSchedule) //logs
               return (
                 <ScheduleCard
                   key={tbmDriveSchedule.id}

@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from '@cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {revalidatePath} from 'next/cache'
 
 export const response_actions = {

@@ -1,4 +1,4 @@
-import {createMessage} from 'src/cm/lib/prisma'
+import {createSuccessMessage} from '@lib/prisma-helper'
 import {formatDate} from '@class/Days/date-utils/formatters'
 
 import {hashPassword} from 'src/cm/lib/crypt'
@@ -114,7 +114,7 @@ export async function doDelete({prismaModel, queryObject, model, method}) {
     console.error('delete: not found')
   }
 
-  return {success: true, result, message: createMessage({model, method})}
+  return {success: true, result, message: createSuccessMessage({model, method})}
 }
 
 export async function doDeleteMany({prismaModel, queryObject, model, method}) {
@@ -128,7 +128,7 @@ export async function doDeleteMany({prismaModel, queryObject, model, method}) {
     console.error('delete: not found')
   }
 
-  return {success: true, result, message: createMessage({model, method})}
+  return {success: true, result, message: createSuccessMessage({model, method})}
 }
 
 export async function doDefaultPrismaMethod({prismaModel, method, queryObject, model}) {
@@ -138,5 +138,5 @@ export async function doDefaultPrismaMethod({prismaModel, method, queryObject, m
 
   const result = await prismaModel?.[method]?.(queryObject)
 
-  return {success: true, result, message: createMessage({model, method})}
+  return {success: true, result, message: createSuccessMessage({model, method})}
 }

@@ -1,6 +1,6 @@
 'use server'
 
-import prisma from 'src/cm/lib/prisma'
+import prisma from 'src/lib/prisma'
 
 export const getEasySearchBtnCountData = async ({queryArrays}) => {
   const method = 'aggregate'

@@ -1,6 +1,6 @@
 'use server'
 import {getNenpiDataByCar} from '@app/(apps)/tbm/(server-actions)/getNenpiDataByCar'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 import {TbmVehicle, User} from '@prisma/client'
 
 export type carHistoryKey = `soukouKyori` | `heikinNenpi` | `nenryoiShiyoryo` | `fuelCost`

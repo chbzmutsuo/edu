@@ -86,9 +86,11 @@ export class ColBuilder {
               </IconBtn>
             )
           },
-          td: {style: {minWidth: 40}},
+          // td: {style: {minWidth: 40}},
         },
-      ]).aggregateOnSingleTd().plain,
+      ]).showSummaryInTd({
+        wrapperWidthPx: 160,
+      }).plain,
       ...new Fields([
         {
           id: 'from',
@@ -116,7 +118,7 @@ export class ColBuilder {
             }
           },
         },
-      ]).aggregateOnSingleTd().plain,
+      ]).showSummaryInTd({}).plain,
       ...new Fields([
         {
           id: 'remarks',
@@ -130,7 +132,7 @@ export class ColBuilder {
           type: `textarea`,
           form: {style: {minWidth: 240}},
         },
-      ]).aggregateOnSingleTd().plain,
+      ]).showSummaryInTd({wrapperWidthPx: 260}).plain,
 
       ...new Fields([
         {id: 'requiredNinku', label: '必要人工', type: `float`, form: {...defaultRegister}},
@@ -154,7 +156,7 @@ export class ColBuilder {
             )
           },
         },
-      ]).aggregateOnSingleTd().plain,
+      ]).showSummaryInTd({wrapperWidthPx: 120}).plain,
 
       // {
       //   id: 'status',

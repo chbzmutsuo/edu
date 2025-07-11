@@ -16,52 +16,52 @@ export default function TenkoPaperBody({OrderByPickUpTime}) {
   return (
     <div>
       {CsvTable({
-        headerRecords: [
-          {
-            csvTableRow: [
-              {cellValue: `従業員`, colSpan: 4},
-              {cellValue: `乗務前点呼`, colSpan: 8},
-              {cellValue: `中間点呼`, colSpan: 7},
-              {cellValue: `乗務後点呼`, colSpan: 8},
-              {cellValue: `備考`, colSpan: 1},
-            ],
-          },
-          {
-            csvTableRow: [
-              //
-              {cellValue: `勤怠`, rowSpan: 2},
-              {cellValue: `氏名`, rowSpan: 2},
-              {cellValue: `車両`, rowSpan: 2},
-              {cellValue: `出発時刻`, rowSpan: 2},
+        // headerRecords: [
+        //   {
+        //     csvTableRow: [
+        //       {cellValue: `従業員`, colSpan: 4},
+        //       {cellValue: `乗務前点呼`, colSpan: 8},
+        //       {cellValue: `中間点呼`, colSpan: 7},
+        //       {cellValue: `乗務後点呼`, colSpan: 8},
+        //       {cellValue: `備考`, colSpan: 1},
+        //     ],
+        //   },
+        //   {
+        //     csvTableRow: [
+        //       //
+        //       {cellValue: `勤怠`, rowSpan: 2},
+        //       {cellValue: `氏名`, rowSpan: 2},
+        //       {cellValue: `車両`, rowSpan: 2},
+        //       {cellValue: `出発時刻`, rowSpan: 2},
 
-              ...getTenkoHeaders(`乗務前点呼`),
-              ...getTenkoHeaders(`中間点呼`),
-              ...getTenkoHeaders(`乗務後点呼`),
-            ],
-          },
-          {
-            csvTableRow: [
-              // {cellValue: ``},
-              // {cellValue: ``},
-              // {cellValue: ``},
-              // {cellValue: ``},
-              ...getTenkoHeader2(`乗務前点呼`),
-              ...getTenkoHeader2(`中間点呼`),
-              ...getTenkoHeader2(`乗務後点呼`),
-            ],
-          },
-        ].map(data => {
-          return {
-            csvTableRow: data.csvTableRow.map(col => {
-              return {
-                ...col,
-                cellValue: <div className={` font-bold`}>{col.cellValue}</div>,
-              }
-            }),
-          }
-        }),
+        //       ...getTenkoHeaders(`乗務前点呼`),
+        //       ...getTenkoHeaders(`中間点呼`),
+        //       ...getTenkoHeaders(`乗務後点呼`),
+        //     ],
+        //   },
+        //   {
+        //     csvTableRow: [
+        //       // {cellValue: ``},
+        //       // {cellValue: ``},
+        //       // {cellValue: ``},
+        //       // {cellValue: ``},
+        //       ...getTenkoHeader2(`乗務前点呼`),
+        //       ...getTenkoHeader2(`中間点呼`),
+        //       ...getTenkoHeader2(`乗務後点呼`),
+        //     ],
+        //   },
+        // ].map(data => {
+        //   return {
+        //     csvTableRow: data.csvTableRow.map(col => {
+        //       return {
+        //         ...col,
+        //         cellValue: <div className={` font-bold`}>{col.cellValue}</div>,
+        //       }
+        //     }),
+        //   }
+        // }),
 
-        bodyRecords: [
+        records: [
           ...new Array(minRowCount).fill(0).map((_, i) => {
             const data = OrderByPickUpTime[i]
             const {User, TbmVehicle, TbmRouteGroup, date} = data ?? {}

@@ -5,7 +5,7 @@ import {FitMargin} from '@components/styles/common-components/common-components'
 import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
 import Redirector from '@components/utils/Redirector'
 import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
-import prisma from '@lib/prisma'
+import prisma from 'src/lib/prisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
