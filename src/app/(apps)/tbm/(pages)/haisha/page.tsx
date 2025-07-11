@@ -1,7 +1,6 @@
 import HaishaTable from '@app/(apps)/tbm/(pages)/haisha/components/HaishaTable'
 import {Days} from '@class/Days/Days'
 import {getMidnight} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
 import Redirector from '@components/utils/Redirector'
 
 import {dateSwitcherTemplate} from '@lib/methods/redirect-method'

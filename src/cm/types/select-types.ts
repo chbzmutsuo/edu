@@ -2,7 +2,7 @@
 import type {CSSProperties} from 'react'
 import type {PrismaModelNames} from '@cm/types/prisma-types'
 import type {ControlContextType} from '@cm/types/form-control-type'
-import type {colTypeStr} from './col-types'
+import type {colType, colTypeStr} from './col-types'
 import type {optionType, optionsOrOptionFetcherType} from 'src/cm/class/Fields/col-operator-types'
 import type {codeObjectArgs} from '@class/Code'
 import type {anyObject} from './utility-types'
@@ -11,7 +11,7 @@ export type forSelectConfig = {
   displayExtractKeys?: string[]
   modelName?: PrismaModelNames
   select?: {[key: string]: colTypeStr | boolean}
-  where?: anyObject | ((props: {col: any; latestFormData: anyObject}) => anyObject)
+  where?: anyObject | ((props: {col: colType; latestFormData: anyObject}) => anyObject)
   orderBy?: any
   include?: any
   nameChanger?: (op: optionType & anyObject) => optionType & {name: any}

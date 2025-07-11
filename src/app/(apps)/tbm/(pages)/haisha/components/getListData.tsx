@@ -42,6 +42,7 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
       finished: true,
       confirmed: true,
       approved: true,
+      User: {select: {id: true, name: true}},
       TbmVehicle: {
         select: {
           id: true,
@@ -98,6 +99,13 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
     orderBy: {code: 'asc'},
   })
 
+  const userWorkStatusCount = await prisma.userWorkStatus.groupBy({
+    by: ['userId', 'workStatus'],
+    orderBy: {workStatus: 'desc'},
+    _count: {_all: true},
+    where: {date: whereQuery},
+  })
+
   const result = {
     tbmBase,
     TbmDriveSchedule,
@@ -105,19 +113,20 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
     tbmRouteGroup,
     carList,
     maxCount: await getMaxRecord(),
-  } as HaishaDriveSchedule
+    userWorkStatusCount,
+  } as {
+    tbmBase: TbmBase & {id: number; name: string}
+    TbmDriveSchedule: (TbmDriveSchedule & {
+      TbmRouteGroup: TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]}
+      TbmVehicle: TbmVehicle & {OdometerInput: OdometerInput[]}
+      User: {id: number; name: string}
+    })[]
+    userList: (User & {UserWorkStatus: UserWorkStatus[]})[]
+    tbmRouteGroup: (TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]})[]
+    carList: TbmVehicle[]
+    maxCount: number
+    userWorkStatusCount: {userId: number; workStatus: string; _count: {_all: number}}[]
+  }
 
   return result
-}
-
-export type HaishaDriveSchedule = {
-  tbmBase: TbmBase
-  TbmDriveSchedule: (TbmDriveSchedule & {
-    TbmRouteGroup: TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]}
-    TbmVehicle: TbmVehicle & {OdometerInput: OdometerInput[]}
-  })[]
-  userList: (User & {UserWorkStatus: UserWorkStatus[]})[]
-  tbmRouteGroup: (TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]})[]
-  carList: TbmVehicle[]
-  maxCount: number
 }

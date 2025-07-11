@@ -36,9 +36,19 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
       form: {
         ...defaultRegister,
         defaultValue: userId,
-        // disabled: userId,
       },
-      forSelect: {},
+      forSelect: {
+        dependenceColIds: ['tbmBaseId'],
+        config: {
+          where: ({latestFormData}) => {
+            return {tbmBaseId: latestFormData?.tbmBaseId}
+          },
+          orderBy: [{id: 'asc'}],
+          nameChanger(op) {
+            return {...op, name: op ? [`[${op.id}]`, op.name].join(` `) : ''}
+          },
+        },
+      },
     },
 
     {
@@ -49,6 +59,7 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
         defaultValue: TbmVehicle?.id,
       },
       forSelect: {
+        dependenceColIds: ['tbmBaseId'],
         config: getVehicleForSelectConfig({tbmBaseId: tbmBase?.id}),
       },
     },

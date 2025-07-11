@@ -178,10 +178,19 @@
      th:first-child {
       padding-right: 0 !important;
       position: sticky;
-      z-index: 100;
+      z-index: 31; // 固定列のz-indexを上げる
       left: 0;
-      z-index: 10;
-      border-right: 1px dotted #c8c8c8;
+      border-right: 2px solid #c8c8c8; // より明確な境界線
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1); // 固定列の影を追加
+     }
+
+     // 仮想化テーブル用の固定列スタイル追加
+     td:first-child {
+      position: sticky;
+      left: 0;
+      z-index: 31;
+      border-right: 2px solid #c8c8c8;
+      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
      }
     }
    }

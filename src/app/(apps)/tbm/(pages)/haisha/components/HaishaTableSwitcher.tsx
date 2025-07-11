@@ -37,7 +37,7 @@ export default function HaishaTableSwitcher() {
             latestFormData,
           }}
         >
-          <Button color={`blue`}>設定</Button>
+          <Button color={`blue`}>切り替え</Button>
         </BasicForm>
       </R_Stack>
     </>

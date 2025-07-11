@@ -2,6 +2,7 @@
 
 import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
 import {HREF} from '@lib/methods/urls'
+import {redirect} from 'next/navigation'
 
 import {useEffect} from 'react'
 
@@ -26,6 +27,7 @@ export default function useRedirect(mustRedirect, redirectUrl = '/404', shouldRe
 
     if (doRedirect && !asPath.includes(newPath)) {
       router.replace(newPath)
+      redirect(newPath)
     }
   }, [doRedirect, redirectUrl, mustRedirect])
 

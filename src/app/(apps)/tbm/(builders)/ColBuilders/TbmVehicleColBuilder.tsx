@@ -171,7 +171,10 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
 
 export const getVehicleForSelectConfig = ({tbmBaseId}: {tbmBaseId?: number}) => {
   const result: forSelectConfig = {
-    where: {tbmBaseId: tbmBaseId ?? undefined},
+    where: ({latestFormData}) => {
+      return {tbmBaseId: latestFormData?.tbmBaseId ?? tbmBaseId}
+    },
+
     orderBy: [{id: `asc`}],
     select: {
       id: `number`,
