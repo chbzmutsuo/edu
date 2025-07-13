@@ -1,16 +1,7 @@
 'use client'
 
-import {ExpenseFormData} from '@app/(apps)/keihi/types'
+import {ExpenseFormData, AIDraft} from '@app/(apps)/keihi/types'
 import {toast} from 'react-toastify'
-
-interface AIDraft {
-  businessInsightDetail: string
-  businessInsightSummary: string
-  techInsightDetail: string
-  techInsightSummary: string
-  autoTags: string[]
-  generatedKeywords: string[]
-}
 
 interface AIDraftSectionProps {
   formData: ExpenseFormData
@@ -91,54 +82,31 @@ export default function AIDraftSection({
           </div>
 
           <div className="space-y-4">
-            {/* 営業インサイト */}
+            {/* 摘要 */}
             <div>
-              <label className="block text-sm font-medium text-purple-800 mb-1">営業・ビジネスインサイト</label>
-              <div className="space-y-2">
-                <div>
-                  <label className="block text-xs text-purple-700">要約</label>
-                  <textarea
-                    value={aiDraft.businessInsightSummary}
-                    onChange={e => setAiDraft(prev => (prev ? {...prev, businessInsightSummary: e.target.value} : null))}
-                    rows={1}
-                    className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-purple-700">詳細</label>
-                  <textarea
-                    value={aiDraft.businessInsightDetail}
-                    onChange={e => setAiDraft(prev => (prev ? {...prev, businessInsightDetail: e.target.value} : null))}
-                    rows={3}
-                    className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
+              <label className="block text-sm font-medium text-purple-800 mb-1">摘要</label>
+              <textarea
+                value={aiDraft.summary}
+                onChange={e => setAiDraft(prev => (prev ? {...prev, summary: e.target.value} : null))}
+                rows={1}
+                className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
+                placeholder="経費の簡潔な説明文"
+              />
             </div>
 
-            {/* 技術インサイト */}
+            {/* 統合されたインサイト */}
             <div>
-              <label className="block text-sm font-medium text-purple-800 mb-1">技術・開発インサイト</label>
-              <div className="space-y-2">
-                <div>
-                  <label className="block text-xs text-purple-700">要約</label>
-                  <textarea
-                    value={aiDraft.techInsightSummary}
-                    onChange={e => setAiDraft(prev => (prev ? {...prev, techInsightSummary: e.target.value} : null))}
-                    rows={1}
-                    className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-purple-700">詳細</label>
-                  <textarea
-                    value={aiDraft.techInsightDetail}
-                    onChange={e => setAiDraft(prev => (prev ? {...prev, techInsightDetail: e.target.value} : null))}
-                    rows={3}
-                    className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
+              <label className="block text-sm font-medium text-purple-800 mb-1">
+                インサイト
+                <span className="text-xs text-purple-600 ml-2">（営業・ビジネス・技術の観点を統合）</span>
+              </label>
+              <textarea
+                value={aiDraft.insight}
+                onChange={e => setAiDraft(prev => (prev ? {...prev, insight: e.target.value} : null))}
+                rows={5}
+                className="w-full px-2 py-1 text-sm border border-purple-300 rounded focus:outline-none focus:ring-1 focus:ring-purple-500"
+                placeholder="営業・ビジネス・技術の観点を統合したインサイト"
+              />
             </div>
 
             {/* 生成されたキーワード */}
@@ -146,7 +114,7 @@ export default function AIDraftSection({
               <div>
                 <label className="block text-sm font-medium text-purple-800 mb-1">
                   生成されたキーワード
-                  <span className="text-xs text-purple-600 ml-2">（個人開発アイデア生成に使用）</span>
+                  <span className="text-xs text-purple-600 ml-2">（想定される交流内容から生成）</span>
                 </label>
                 <div className="flex flex-wrap gap-2">
                   {aiDraft.generatedKeywords.map((keyword, index) => (
@@ -204,15 +172,19 @@ export default function AIDraftSection({
                     </button>
                   </div>
                 ))}
+              </div>
+              <div className="mt-2">
                 <button
                   type="button"
                   onClick={() => {
-                    const newTags = [...aiDraft.autoTags, '新しいタグ']
-                    setAiDraft(prev => (prev ? {...prev, autoTags: newTags} : null))
+                    const newTag = prompt('新しいタグを入力してください:')
+                    if (newTag?.trim()) {
+                      setAiDraft(prev => (prev ? {...prev, autoTags: [...prev.autoTags, newTag.trim()]} : null))
+                    }
                   }}
-                  className="px-2 py-1 text-xs border border-dashed border-purple-400 text-purple-600 rounded hover:bg-purple-100"
+                  className="px-3 py-1 text-xs bg-purple-600 text-white rounded hover:bg-purple-700"
                 >
-                  + タグ追加
+                  タグ追加
                 </button>
               </div>
             </div>

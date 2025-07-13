@@ -9,7 +9,7 @@ import BasicModal from '@components/utils/modal/BasicModal'
 import Redirector from '@components/utils/Redirector'
 import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
 
-import {prisma} from 'src/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
 import {formatDate} from '@class/Days/date-utils/formatters'
 

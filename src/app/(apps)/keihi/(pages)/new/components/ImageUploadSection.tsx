@@ -1,7 +1,7 @@
 'use client'
 
-import {Eye} from 'lucide-react'
 import {base64ToDataUrl} from '../../../utils'
+import ContentPlayer from '@components/utils/ContentPlayer'
 
 interface ImageUploadSectionProps {
   uploadedImages: string[]
@@ -75,13 +75,15 @@ export const ImageUploadSection = ({
       {uploadedImages.length > 0 && (
         <div className="mt-4 p-4 bg-gray-50 border border-gray-200 rounded-lg">
           <h4 className="font-medium text-gray-800 mb-3">📷 アップロード済み画像 ({uploadedImages.length}枚)</h4>
+
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {uploadedImages.map((imageBase64, index) => {
               const imageUrl = base64ToDataUrl(imageBase64)
               const fileName = `領収書${index + 1}.jpg`
               return (
                 <div key={index} className="relative group">
-                  <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border">
+                  <ContentPlayer src={imageUrl} />
+                  {/* <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border">
                     <img src={imageUrl} alt={fileName} className="w-full h-full object-cover" />
                   </div>
                   <button
@@ -93,7 +95,7 @@ export const ImageUploadSection = ({
                   </button>
                   <div className="absolute bottom-1 left-1 right-1 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded text-center">
                     {index + 1}枚目
-                  </div>
+                  </div> */}
                 </div>
               )
             })}

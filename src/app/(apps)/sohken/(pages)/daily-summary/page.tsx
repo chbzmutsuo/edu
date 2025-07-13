@@ -7,7 +7,7 @@ import {formatDate} from '@class/Days/date-utils/formatters'
 import Redirector from '@components/utils/Redirector'
 
 import {addQuerySentence} from '@lib/methods/urls'
-import {prisma} from 'src/lib/prisma'
+import prisma from 'src/lib/prisma'
 
 export default async function Page(props) {
   const query = await props.searchParams

@@ -15,7 +15,7 @@ import {HREF} from '@lib/methods/urls'
 import React from 'react'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {NumHandler} from '@class/NumHandler'
-import {prisma} from 'src/lib/prisma'
+import prisma from 'src/lib/prisma'
 
 export default async function CalendarPage(props) {
   const query = await props.searchParams

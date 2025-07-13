@@ -1,5 +1,7 @@
 'use server'
 import {MAJOR_ACCOUNTS} from '@app/(apps)/keihi/actions/expense/constants'
+import {CONVERSATION_PURPOSES} from '@app/(apps)/keihi/(constants)/conversation-purposes'
+import {ImageAnalysisResult} from '@app/(apps)/keihi/types'
 import OpenAI from 'openai'
 
 // 複数画像の統合解析
@@ -10,6 +12,7 @@ export const analyzeMultipleReceipts = async (
   data?: {
     receipts: Array<{
       date: string
+      location: string
       amount: number
       subject: string
       counterpartyName: string
@@ -37,13 +40,19 @@ export const analyzeMultipleReceipts = async (
           data: {
             receipts: [
               {
-                ...result.data,
+                date: result.data.date,
+                location: result.data.location,
+                amount: result.data.amount,
+                subject: result.data.subject,
+                counterpartyName: result.data.suggestedCounterparties[0] || '',
+                mfMemo: `${result.data.location}での${result.data.suggestedPurposes.join('・')}`,
+                keywords: result.data.generatedKeywords,
                 imageIndex: 0,
               },
             ],
             totalAmount: result.data.amount,
             suggestedMerge: false,
-            allKeywords: result.data.keywords || [],
+            allKeywords: result.data.generatedKeywords,
           },
         }
       }
@@ -56,7 +65,13 @@ export const analyzeMultipleReceipts = async (
         const result = await analyzeReceiptImage(imageData)
         if (result.success && result.data) {
           return {
-            ...result.data,
+            date: result.data.date,
+            location: result.data.location,
+            amount: result.data.amount,
+            subject: result.data.subject,
+            counterpartyName: result.data.suggestedCounterparties[0] || '',
+            mfMemo: `${result.data.location}での${result.data.suggestedPurposes.join('・')}`,
+            keywords: result.data.generatedKeywords,
             imageIndex: index,
           }
         }
@@ -71,15 +86,14 @@ export const analyzeMultipleReceipts = async (
     }
 
     const totalAmount = validResults.reduce((sum, receipt) => sum + receipt.amount, 0)
+    const allKeywords = [...new Set(validResults.flatMap(receipt => receipt.keywords))]
 
-    // 同一取引の可能性を判定（同じ日付・同じ店舗など）
-    const suggestedMerge =
-      validResults.length > 1 &&
-      validResults.every(receipt => receipt.date === validResults[0].date) &&
-      validResults.every(receipt => receipt.counterpartyName === validResults[0].counterpartyName)
-
-    // 全てのキーワードを収集（重複除去）
-    const allKeywords = [...new Set(validResults.flatMap(receipt => receipt.keywords || []))]
+    // 同じ日付・場所の領収書がある場合は統合を提案
+    const suggestedMerge = validResults.some((receipt, index) =>
+      validResults.some(
+        (other, otherIndex) => index !== otherIndex && receipt.date === other.date && receipt.location === other.location
+      )
+    )
 
     return {
       success: true,
@@ -94,74 +108,55 @@ export const analyzeMultipleReceipts = async (
     console.error('複数画像解析エラー:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : '複数画像解析に失敗しました',
+      error: error instanceof Error ? error.message : '画像解析に失敗しました',
     }
   }
 }
 
-// 画像からOCR＋AI解析
+// 画像からOCR＋AI解析（新仕様対応）
 export const analyzeReceiptImage = async (
   imageBase64: string
 ): Promise<{
   success: boolean
-  data?: {
-    date: string
-    amount: number
-    subject: string
-    counterpartyName: string
-    mfMemo: string
-    keywords: string[]
-  }
+  data?: ImageAnalysisResult
   error?: string
 }> => {
   try {
+    const conversationPurposeOptions = CONVERSATION_PURPOSES.map(p => p.value).join('\n')
+
     const prompt = `
-この領収書画像から情報を抽出し、税務調査に耐えうるビジネス情報交換会の記録として整理してください。
+この領収書画像から情報を抽出し、ビジネス交流記録として整理してください。
 
-【重要】この支出は個人事業主のビジネス開発・技術相談・情報交換のためのものです。
-店舗の種類、立地、時間帯から、どのような相手とどのような目的で会ったかを推測してください：
-
+【抽出する情報】
 1. 日付（YYYY-MM-DD形式）
-2. 金額（数値のみ）
-3. 支払先名（店舗名や会社名）
+2. 場所（店舗名・施設名）
+3. 金額（数値のみ）
 4. 適切な勘定科目（以下から選択）：
 ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
 
-5. 摘要（税務調査対応：「○○業界の方との技術相談」「新規事業の情報交換」など具体的に）
-6. 関連キーワード（相手の業界・職種から想像される具体的なシステム開発ニーズ3-5個）
-  以下のような多様なキーワードから、状況に応じて適切なものを選択してください。これらのキーワード以外にも、類推して生成してください。また、レシートの情報に固有なキーワードも生成してください:
-  業種別キーワード例：
-  - 飲食店：
-    * 売上管理アプリ、メニューアプリ、仕入れ管理、在庫管理、予約システム、POS連携、顧客管理、スタッフシフト管理、レシピ管理、食材発注
-    * デリバリー管理、テイクアウト注文、QR決済、ポイントカード、会計システム、売上分析、原価計算
+【推測する情報】
+5. 想定される相手（複数可能）：
+   - 店舗の種類、立地、時間帯から推測
+   - 例：「Aさん（教師）」「Bさん（エンジニア）」「その他複数名」
 
-  - 教育関係：
-    * 学習管理システム、自動添削、スライド作成、教材管理、出席管理、成績管理、オンライン授業、宿題管理
-    * 保護者連絡、進捗管理、テスト作成、採点自動化、学習分析、個別指導計画、カリキュラム管理
+6. 会話の目的（複数選択、以下から推測）：
+${conversationPurposeOptions}
 
-  - 人事担当：
-    * 社員データベース、面接管理、AIスコアリング、採用管理、研修管理、評価システム、給与計算
-    * 勤怠管理、福利厚生管理、人材育成、キャリアパス、組織図、採用広告、人材分析
+7. キーワード（2〜3個）：
+   - 相手、会話の目的、場所、科目から想定される交流内容
+   - 例：「技術相談」「新規開拓」「人材紹介」
 
-  - 運送業：
-    * 日報システム、配車計画、GPS追跡、配送管理、ドライバー管理、燃料管理、メンテナンス管理
-    * ルート最適化、荷物追跡、請求書管理、顧客管理、事故報告、運転記録、コンプライアンス管理
-
-  技術キーワード例：
-  - フロントエンド：React、Vue、Angular、Next.js、TypeScript、Tailwind CSS、レスポンシブデザイン
-  - バックエンド：Node.js、Python、Java、Go、GraphQL、REST API、マイクロサービス
-  - インフラ：AWS、GCP、Azure、Docker、Kubernetes、CI/CD、モニタリング
-  - データ：SQL、NoSQL、データ分析、機械学習、AI、ビッグデータ、ETL
-
-以下の例に示すJSON形式で返してください：
+以下のJSON形式で回答してください：
 {
- "date": "2024-01-01",
- "amount": 1000,
- "subject": "会議費",
- "counterpartyName": "○○レストラン",
- "mfMemo": "飲食店経営者との売上管理システム開発に関する技術相談",
- "keywords": []
-}`
+  "date": "YYYY-MM-DD",
+  "location": "店舗名・場所",
+  "amount": 数値,
+  "subject": "勘定科目",
+  "suggestedCounterparties": ["相手1", "相手2"],
+  "suggestedPurposes": ["目的1", "目的2"],
+  "generatedKeywords": ["キーワード1", "キーワード2", "キーワード3"]
+}
+`
 
     const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
 
@@ -183,7 +178,7 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
       ],
       response_format: {type: 'json_object'},
       max_tokens: 1000,
-      temperature: 1.5, // より多様な応答を得るために温度を上げる
+      temperature: 1.2, // 創造性を高めて多様な推測を促す
     })
 
     const content = response.choices[0]?.message?.content
@@ -199,9 +194,26 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
 
     const parsedData = JSON.parse(jsonMatch[0])
 
+    // データの検証と正規化
+    const result: ImageAnalysisResult = {
+      date: parsedData.date || new Date().toISOString().split('T')[0],
+      location: parsedData.location || '',
+      amount: parsedData.amount || 0,
+      subject: parsedData.subject || '会議費',
+      suggestedCounterparties: Array.isArray(parsedData.suggestedCounterparties)
+        ? parsedData.suggestedCounterparties
+        : ['その他複数名'],
+      suggestedPurposes: Array.isArray(parsedData.suggestedPurposes)
+        ? parsedData.suggestedPurposes.filter(p => CONVERSATION_PURPOSES.some(cp => cp.value === p))
+        : ['営業活動', 'リクルーティング'],
+      generatedKeywords: Array.isArray(parsedData.generatedKeywords)
+        ? parsedData.generatedKeywords.slice(0, 3)
+        : ['ビジネス交流', '情報交換'],
+    }
+
     return {
       success: true,
-      data: parsedData,
+      data: result,
     }
   } catch (error) {
     console.error('画像解析エラー:', error)
@@ -210,4 +222,80 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
       error: error instanceof Error ? error.message : '画像解析に失敗しました',
     }
   }
+}
+
+// キーワード生成関数
+export const generateKeywordsFromContext = async (
+  counterpartyName?: string,
+  conversationPurpose: string[] = [],
+  location?: string,
+  subject?: string
+): Promise<string[]> => {
+  const keywords: string[] = []
+
+  // 相手からキーワードを生成
+  if (counterpartyName) {
+    if (counterpartyName.includes('教師') || counterpartyName.includes('先生')) {
+      keywords.push('教育関係')
+    }
+    if (counterpartyName.includes('エンジニア') || counterpartyName.includes('開発')) {
+      keywords.push('技術相談')
+    }
+    if (counterpartyName.includes('営業') || counterpartyName.includes('販売')) {
+      keywords.push('営業活動')
+    }
+  }
+
+  // 会話の目的からキーワードを生成
+  conversationPurpose.forEach(purpose => {
+    switch (purpose) {
+      case '営業活動':
+        keywords.push('新規開拓', 'ビジネス機会')
+        break
+      case 'リクルーティング':
+        keywords.push('人材紹介', '採用活動')
+        break
+      case '技術・アイデア相談':
+        keywords.push('技術相談', '開発支援')
+        break
+      case 'ビジネス相談':
+        keywords.push('事業相談', '戦略検討')
+        break
+      case '研修・学習':
+        keywords.push('スキル向上', '学習支援')
+        break
+      case '情報交換':
+        keywords.push('情報共有', 'ネットワーキング')
+        break
+    }
+  })
+
+  // 場所からキーワードを生成
+  if (location) {
+    if (location.includes('カフェ') || location.includes('コーヒー')) {
+      keywords.push('カジュアル面談')
+    }
+    if (location.includes('レストラン') || location.includes('料理')) {
+      keywords.push('会食')
+    }
+    if (location.includes('ホテル') || location.includes('会議室')) {
+      keywords.push('正式会議')
+    }
+  }
+
+  // 科目からキーワードを生成
+  if (subject) {
+    if (subject.includes('会議費')) {
+      keywords.push('ビジネス会議')
+    }
+    if (subject.includes('交際費')) {
+      keywords.push('接待', '関係構築')
+    }
+    if (subject.includes('研修費')) {
+      keywords.push('教育', 'スキル開発')
+    }
+  }
+
+  // 重複を除去し、最大3つに制限
+  return [...new Set(keywords)].slice(0, 3)
 }

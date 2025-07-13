@@ -1265,11 +1265,12 @@ model KeihiExpense {
  location             String? // 場所
  counterpartyName     String? // 相手名
  counterpartyIndustry String? // 相手の職種・業種
- conversationPurpose  String? // 会話の目的
+ conversationPurpose  String[] // 会話の目的（複数選択対応）
  keywords             String[] // キーワード（配列）
 
  // 会話記録
  conversationSummary String? // 会話内容の要約
+ summary             String? // 摘要
 
  // 評価
  learningDepth Int? // 学びの深さ・重要度（1-5）
@@ -1280,12 +1281,15 @@ model KeihiExpense {
  businessOpportunity String? // ビジネス機会の評価
  competitorInfo      String? // 競合情報
 
- // AI生成情報
+ // AI生成情報（統合版）
+ insight  String? // 統合されたインサイト
+ autoTags String[] // 自動生成タグ
+
+ // 旧AI生成情報（段階的削除予定）
  businessInsightDetail  String? // 営業インサイト（詳細）
  businessInsightSummary String? // 営業インサイト（要約）
  techInsightDetail      String? // 技術インサイト（詳細）
  techInsightSummary     String? // 技術インサイト（要約）
- autoTags               String[] // 自動生成タグ
 
  // MoneyForward用情報
  mfSubject     String? // MF用科目
@@ -1450,8 +1454,6 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  // previewFeatures = ["queryCompiler", "driverAdapters"]
-  // output          = "../generated/prisma"
 }
 
 model Department {

@@ -1,10 +1,7 @@
-// 健康記録のデータアクセスサービス
-import {PrismaClient} from '@prisma/client'
 import {HealthRecordFormData, DailySummary, WALKING_MULTIPLIERS} from '../(constants)/types'
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
-
-const prisma = new PrismaClient()
+import prisma from 'src/lib/prisma'
 
 export class HealthService {
   static async getRecordDateWhere(selectedDate: string) {

@@ -1,3 +1,5 @@
+import {ConversationPurposeValue} from '../(constants)/conversation-purposes'
+
 // 基本的な経費記録の型
 export interface ExpenseRecord {
   id: string
@@ -9,21 +11,24 @@ export interface ExpenseRecord {
   location?: string | null
   counterpartyName?: string | null
   counterpartyIndustry?: string | null
-  conversationPurpose?: string | null
+  conversationPurpose: string[] // 配列形式に変更
   keywords: string[]
   conversationSummary?: string | null
+  summary?: string | null // 摘要を追加
   learningDepth?: number | null
   // 税務調査対応項目
   counterpartyContact?: string | null
   followUpPlan?: string | null
   businessOpportunity?: string | null
   competitorInfo?: string | null
-  // AIインサイト
+  // AIインサイト（統合版）
+  insight?: string | null // 統合されたインサイト
+  autoTags: string[]
+  // 旧AIインサイト（段階的削除予定）
   businessInsightDetail?: string | null
   businessInsightSummary?: string | null
   techInsightDetail?: string | null
   techInsightSummary?: string | null
-  autoTags: string[]
   // MoneyForward用
   mfSubject?: string | null
   mfSubAccount?: string | null
@@ -44,7 +49,7 @@ export interface AttachmentRecord {
   url: string
 }
 
-// フォームデータの型（actions/expense-actionsと統一）
+// フォームデータの型（新仕様対応）
 export interface ExpenseFormData {
   date: string
   amount: number
@@ -52,12 +57,13 @@ export interface ExpenseFormData {
   location?: string
   counterpartyName?: string
   counterpartyIndustry?: string
-  conversationPurpose?: string
+  conversationPurpose: string[] // 配列形式に変更
   purpose?: string
   memo?: string
   paymentMethod?: string
   keywords: string[]
   conversationSummary?: string
+  summary?: string // 摘要を追加
   learningDepth?: number
   counterpartyContact?: string
   followUpPlan?: string
@@ -65,13 +71,27 @@ export interface ExpenseFormData {
   competitorInfo?: string
 }
 
-// AI下書きの型
+// AI下書きの型（新仕様対応）
 export interface AIDraft {
-  businessInsightDetail: string
-  businessInsightSummary: string
-  techInsightDetail: string
-  techInsightSummary: string
+  summary: string // 摘要
+  insight: string // 統合されたインサイト
   autoTags: string[]
+  generatedKeywords: string[]
+  // 旧形式（段階的削除予定）
+  businessInsightDetail?: string
+  businessInsightSummary?: string
+  techInsightDetail?: string
+  techInsightSummary?: string
+}
+
+// 画像解析結果の型（新仕様対応）
+export interface ImageAnalysisResult {
+  date: string
+  location: string
+  amount: number
+  subject: string
+  suggestedCounterparties: string[]
+  suggestedPurposes: ConversationPurposeValue[]
   generatedKeywords: string[]
 }
 
@@ -81,6 +101,7 @@ export interface AnalyzedReceipt {
   date: string
   amount: number
   subject: string
+  location: string
   counterpartyName: string
   keywords: string[]
   mfMemo?: string
@@ -167,4 +188,18 @@ export interface ProcessingState {
   isAnalyzing: boolean
   isGenerating: boolean
   status: string
+}
+
+// 相手名の入力形式
+export interface CounterpartyInput {
+  name: string
+  role?: string // 教師、エンジニアなど
+}
+
+// キーワード生成用の入力データ
+export interface KeywordGenerationInput {
+  counterpartyName?: string
+  conversationPurpose: string[]
+  location?: string
+  subject: string
 }

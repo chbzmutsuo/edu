@@ -4,12 +4,13 @@ import {useState, useEffect, useCallback} from 'react'
 import {toast} from 'react-toastify'
 import {getExpenses, deleteExpenses, exportExpensesToCsv} from '../actions/expense-actions'
 import {ExpenseRecord} from '../types'
-import {ExpenseListHeader} from './components/ExpenseListHeader'
-import {ExpenseListItem} from './components/ExpenseListItem'
-import {Pagination} from './components/Pagination'
+import {ExpenseListHeader} from '../components/ExpenseListHeader'
+import {ExpenseListItem} from '../components/ExpenseListItem'
+import {Pagination} from '../components/Pagination'
 import {LoadingSpinner} from '../components/ui/LoadingSpinner'
 import {ProcessingStatus} from '../components/ui/ProcessingStatus'
 import useGlobal from '@hooks/globalHooks/useGlobal'
+import {StickyBottom, StickyTop} from '@components/styles/common-components/Sticky'
 
 const ExpenseListPage = () => {
   const {query, shallowAddQuery} = useGlobal()
@@ -221,52 +222,53 @@ const ExpenseListPage = () => {
       <div className="max-w-7xl mx-auto">
         <div className="bg-white shadow-sm">
           {/* ヘッダー */}
-          <ExpenseListHeader
-            totalCount={state.totalCount}
-            selectedCount={state.selectedIds.length}
-            onExportAll={handleExportAll}
-            onExportSelected={handleExportSelected}
-            onDeleteSelected={handleDeleteSelected}
-          />
+          <StickyTop className={` bg-white`}>
+            <ExpenseListHeader
+              totalCount={state.totalCount}
+              selectedCount={state.selectedIds.length}
+              onExportAll={handleExportAll}
+              onExportSelected={handleExportSelected}
+              onDeleteSelected={handleDeleteSelected}
+            />
+            {/* 表示件数選択 */}
+            <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  {state.expenses.length > 0 && (
+                    <>
+                      <input
+                        type="checkbox"
+                        checked={state.selectedIds.length === state.expenses.length}
+                        onChange={toggleSelectAll}
+                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className="text-sm text-gray-600">
+                        {state.selectedIds.length === state.expenses.length ? '全解除' : '全選択'}
+                      </span>
+                    </>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600">表示件数:</label>
+                  <select
+                    value={limit}
+                    onChange={e => handleLimitChange(parseInt(e.target.value))}
+                    className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value={10}>10件</option>
+                    <option value={20}>20件</option>
+                    <option value={50}>50件</option>
+                    <option value={100}>100件</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </StickyTop>
 
           {/* 処理状況 */}
           <div className="px-6">
             <ProcessingStatus isVisible={isExporting} message="CSV出力中..." variant="info" />
             <ProcessingStatus isVisible={isDeleting} message="削除処理中..." variant="info" />
-          </div>
-
-          {/* 表示件数選択 */}
-          <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                {state.expenses.length > 0 && (
-                  <>
-                    <input
-                      type="checkbox"
-                      checked={state.selectedIds.length === state.expenses.length}
-                      onChange={toggleSelectAll}
-                      className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <span className="text-sm text-gray-600">
-                      {state.selectedIds.length === state.expenses.length ? '全解除' : '全選択'}
-                    </span>
-                  </>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="text-sm text-gray-600">表示件数:</label>
-                <select
-                  value={limit}
-                  onChange={e => handleLimitChange(parseInt(e.target.value))}
-                  className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value={10}>10件</option>
-                  <option value={20}>20件</option>
-                  <option value={50}>50件</option>
-                  <option value={100}>100件</option>
-                </select>
-              </div>
-            </div>
           </div>
 
           {/* 経費記録一覧 */}
@@ -299,14 +301,16 @@ const ExpenseListPage = () => {
           </div>
 
           {/* ページネーション */}
-          <Pagination
-            currentPage={currentPage}
-            totalPages={state.totalPages}
-            onPageChange={handlePageChange}
-            totalCount={state.totalCount}
-            currentFrom={currentFrom}
-            currentTo={currentTo}
-          />
+          <StickyBottom className={` bg-gray-100`}>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={state.totalPages}
+              onPageChange={handlePageChange}
+              totalCount={state.totalCount}
+              currentFrom={currentFrom}
+              currentTo={currentTo}
+            />
+          </StickyBottom>
         </div>
       </div>
     </div>

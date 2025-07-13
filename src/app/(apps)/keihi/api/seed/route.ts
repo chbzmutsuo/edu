@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {PrismaClient} from '@prisma/client'
+import prisma from 'src/lib/prisma'
 
-const prisma = new PrismaClient()
+// import prisma from 'src/lib/prisma'
 
 // 勘定科目マスタデータ（CSVから抽出）
 const accountMasterData = [

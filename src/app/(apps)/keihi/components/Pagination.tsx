@@ -58,7 +58,7 @@ export const Pagination = ({currentPage, totalPages, onPageChange, totalCount, c
   const pageNumbers = getPageNumbers()
 
   return (
-    <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+    <div className="bg-gray-100 px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
       {/* モバイル用の簡易ページネーション */}
       <div className="flex-1 flex justify-between sm:hidden">
         <button

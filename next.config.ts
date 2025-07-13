@@ -27,7 +27,6 @@ const withPWA = require('next-pwa')({
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
-
   experimental: {
     serverActions: {bodySizeLimit: '10mb'},
   },
@@ -38,23 +37,10 @@ const nextConfig: NextConfig = {
       {protocol: 'https', hostname: '**.amazonaws.com'},
       {protocol: 'https', hostname: '**drive.google.com**'},
     ],
-    // domains: ['*kickswrap.com*', 'drive.google.com', '*.amazonaws.com'],
     unoptimized: true,
   },
   output: 'standalone',
-  env: {
-    KING_OF_TIME_ACCESS_TOKEN: process.env.KING_OF_TIME_ACCESS_TOKEN,
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/health',
-        destination: '/api/health',
-      },
-    ]
-  },
 }
 // export default nextConfig
 
 export default isProd ? withPWA(nextConfig) : nextConfig
-// module.exports = withBundleAnalyzer(nextConfig)

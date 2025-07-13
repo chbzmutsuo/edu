@@ -1,7 +1,7 @@
 'use server'
 import {Days} from '@class/Days/Days'
 import {formatDate} from '@class/Days/date-utils/formatters'
-import {prisma} from 'src/lib/prisma'
+import prisma from 'src/lib/prisma'
 
 export const getHolidayCalendar = async (props: {whereQuery: {gte: Date; lte: Date}}) => {
   const {whereQuery} = props

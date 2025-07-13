@@ -1,8 +1,8 @@
 'use server'
 
-import {KeihiOptionMaster, PrismaClient} from '@prisma/client'
+import {KeihiOptionMaster} from '@prisma/client'
 
-const prisma = new PrismaClient()
+import prisma from 'src/lib/prisma'
 
 export interface OptionMaster extends KeihiOptionMaster {}
 

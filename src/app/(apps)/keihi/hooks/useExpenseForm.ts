@@ -1,5 +1,6 @@
 import {useState, useCallback} from 'react'
 import {ExpenseFormData, AIDraft} from '../types'
+import {DEFAULT_CONVERSATION_PURPOSES} from '../(constants)/conversation-purposes'
 import {getTodayString} from '../utils'
 
 interface UseExpenseFormOptions {
@@ -16,7 +17,7 @@ export const useExpenseForm = (options: UseExpenseFormOptions = {}) => {
     location: '',
     counterpartyName: '',
     counterpartyIndustry: '',
-    conversationPurpose: '',
+    conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
     keywords: [],
     conversationSummary: '',
     learningDepth: 3,
@@ -71,7 +72,7 @@ export const useExpenseForm = (options: UseExpenseFormOptions = {}) => {
       location: '',
       counterpartyName: '',
       counterpartyIndustry: '',
-      conversationPurpose: '',
+      conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
       keywords: [],
       conversationSummary: '',
       learningDepth: 3,

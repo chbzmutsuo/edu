@@ -1,21 +1,13 @@
 import {FileHandler} from 'src/cm/class/FileHandler'
-
 import prisma from 'src/lib/prisma'
 import {MAJOR_ACCOUNTS} from '@app/(apps)/keihi/actions/expense/constants'
-import {ExpenseFormData} from '@app/(apps)/keihi/types'
+import {ExpenseFormData, AIDraft} from '@app/(apps)/keihi/types'
 import {generateInsights} from '@app/(apps)/keihi/actions/expense/insights'
 
 // 下書きを使用した経費記録作成
 export const createExpenseWithDraft = async (
   formData: ExpenseFormData,
-  draft: {
-    businessInsightDetail: string
-    businessInsightSummary: string
-    techInsightDetail: string
-    techInsightSummary: string
-    autoTags: string[]
-    generatedKeywords?: string[]
-  },
+  draft: AIDraft,
   imageFiles?: File[]
 ): Promise<{
   success: boolean
@@ -26,7 +18,7 @@ export const createExpenseWithDraft = async (
     // MF用の情報を生成
     const mfSubject = MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.account || formData.subject
     const mfTaxCategory = MAJOR_ACCOUNTS.find(acc => acc.account === formData.subject)?.taxCategory || '課仕 10%'
-    const mfMemo = formData.conversationSummary || `${formData.subject} ${formData.amount}円`
+    const mfMemo = draft.summary || formData.conversationSummary || `${formData.subject} ${formData.amount}円`
 
     const expense = await prisma.keihiExpense.create({
       data: {
@@ -45,11 +37,14 @@ export const createExpenseWithDraft = async (
         followUpPlan: formData.followUpPlan,
         businessOpportunity: formData.businessOpportunity,
         competitorInfo: formData.competitorInfo,
+        // 新仕様のフィールド
+        insight: draft.insight,
+        autoTags: draft.autoTags,
+        // 旧仕様のフィールド（後方互換性のため）
         businessInsightDetail: draft.businessInsightDetail,
         businessInsightSummary: draft.businessInsightSummary,
         techInsightDetail: draft.techInsightDetail,
         techInsightSummary: draft.techInsightSummary,
-        autoTags: draft.autoTags,
         mfSubject,
         mfTaxCategory,
         mfMemo,
@@ -118,7 +113,13 @@ export const createExpense = async (
 }> => {
   try {
     // AIインサイト生成
-    const insights = await generateInsights(formData)
+    const insightResult = await generateInsights(formData)
+
+    if (!insightResult.success || !insightResult.data) {
+      throw new Error(insightResult.error || 'インサイト生成に失敗しました')
+    }
+
+    const insights = insightResult.data
 
     const expense = await prisma.keihiExpense.create({
       data: {
@@ -137,11 +138,14 @@ export const createExpense = async (
         followUpPlan: formData.followUpPlan,
         businessOpportunity: formData.businessOpportunity,
         competitorInfo: formData.competitorInfo,
+        // 新仕様のフィールド
+        insight: insights.insight,
+        autoTags: insights.autoTags,
+        // 旧仕様のフィールド（後方互換性のため）
         businessInsightDetail: insights.businessInsightDetail,
         businessInsightSummary: insights.businessInsightSummary,
         techInsightDetail: insights.techInsightDetail,
         techInsightSummary: insights.techInsightSummary,
-        autoTags: insights.autoTags,
         mfSubject: insights.mfSubject,
         mfTaxCategory: insights.mfTaxCategory,
         mfMemo: insights.mfMemo,
@@ -206,14 +210,7 @@ export const fetchCreateExpenseApi = async (
   formData: ExpenseFormData,
   imageFiles?: File[],
   useDraft?: boolean,
-  draft?: {
-    businessInsightDetail: string
-    businessInsightSummary: string
-    techInsightDetail: string
-    techInsightSummary: string
-    autoTags: string[]
-    generatedKeywords?: string[]
-  }
+  draft?: AIDraft
 ): Promise<{
   success: boolean
   data?: {id: string}

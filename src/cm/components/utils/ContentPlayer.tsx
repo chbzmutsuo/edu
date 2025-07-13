@@ -120,11 +120,19 @@ export default function ContentPlayer(props: ContentPlayerProps) {
 
         <div>
           <Center className={` relative `} style={{...styles.thumbnail}}>
-            <div>{thumbnail}</div>
+            <BasicModal
+              {...{
+                Trigger: <div className="cursor-pointer w-full h-full">{thumbnail}</div>,
+                alertOnClose: false,
+              }}
+            >
+              <Center style={{...fileTypeAndStyles.mainStyle, overflow: 'hidden'}}>
+                <div className={`w-full h-full`}>{main}</div>
+              </Center>
+            </BasicModal>
             <div className={`absolute  bottom-0! right-0!`}>
               <R_Stack className={` justify-end pb-1`}>
                 <DownloadBtn src={src} options={options} />
-                <ZoomInBtn fileTypeAndStyles={fileTypeAndStyles} styles={styles} main={main} />
               </R_Stack>
             </div>
           </Center>
@@ -132,29 +140,6 @@ export default function ContentPlayer(props: ContentPlayerProps) {
       </main>
     )
   }
-}
-
-const ZoomInBtn = ({
-  fileTypeAndStyles,
-  // styles,
-  main,
-}: {
-  fileTypeAndStyles: anyObject
-  styles: anyObject
-  main: React.ReactNode
-}) => {
-  return (
-    <BasicModal
-      {...{
-        Trigger: <ZoomIn className={btnClass} />,
-        alertOnClose: false,
-      }}
-    >
-      <Center style={{...fileTypeAndStyles.mainStyle, overflow: 'hidden'}}>
-        <div className={`w-full h-full`}>{main}</div>
-      </Center>
-    </BasicModal>
-  )
 }
 
 const DownloadBtn = ({src, options}: {src: string; options?: {download?: boolean}}) => {

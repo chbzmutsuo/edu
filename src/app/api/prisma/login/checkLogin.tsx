@@ -1,7 +1,7 @@
 'use server'
 
 import {verifyPassword} from '@lib/crypt'
-import {prisma} from 'src/lib/prisma'
+import prisma from 'src/lib/prisma'
 import {SessionFaker} from 'src/non-common/SessionFaker'
 
 export const CheckLogin = async ({authId, authPw}) => {

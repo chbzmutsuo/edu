@@ -33,6 +33,7 @@ export const PAGES: any = {
         tabId: '',
         label: '経費管理',
         children: [
+          {tabId: '/', label: '一覧', ROOT: [rootPath]},
           {tabId: 'new', label: '新規登録', ROOT: [rootPath]},
           {tabId: 'new/bulk', label: '一括登録', ROOT: [rootPath]},
         ],

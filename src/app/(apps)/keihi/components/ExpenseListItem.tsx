@@ -1,7 +1,7 @@
 'use client'
 
-import {ExpenseRecord} from '../../types'
-import {formatAmount, formatDate} from '../../utils'
+import {ExpenseRecord} from '../types'
+import {formatAmount, formatDate} from '../utils'
 import {T_LINK} from '@components/styles/common-components/links'
 
 interface ExpenseListItemProps {

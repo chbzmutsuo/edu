@@ -4,7 +4,6 @@ import {useState, useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
 import {fetchCreateExpenseApi} from '@app/(apps)/keihi/api/expense/createExpense'
-
 import {useExpenseForm} from '@app/(apps)/keihi/hooks/useExpenseForm'
 import {useImageUpload} from '@app/(apps)/keihi/hooks/useImageUpload'
 import {usePreviewModal} from '@app/(apps)/keihi/hooks/usePreviewModal'
@@ -73,13 +72,15 @@ const NewExpensePage = () => {
         const result = await analyzeReceiptImage(imageBase64)
 
         if (result.success && result.data) {
-          // フォームに解析結果を反映
+          // フォームに解析結果を反映（新仕様対応）
           updateMultipleFields({
             date: result.data.date,
             amount: result.data.amount,
             subject: result.data.subject,
-            counterpartyName: result.data.counterpartyName,
-            keywords: result.data.keywords,
+            location: result.data.location,
+            counterpartyName: result.data.suggestedCounterparties.join(', '),
+            conversationPurpose: result.data.suggestedPurposes,
+            keywords: result.data.generatedKeywords,
           })
 
           toast.success('画像解析が完了しました')
@@ -213,11 +214,12 @@ const NewExpensePage = () => {
                   {value: '支払手数料', label: '支払手数料'},
                 ],
                 purposes: [
-                  {value: 'ビジネス相談', label: 'ビジネス相談'},
-                  {value: '技術相談', label: '技術相談'},
-                  {value: '情報交換', label: '情報交換'},
                   {value: '営業活動', label: '営業活動'},
+                  {value: 'リクルーティング', label: 'リクルーティング'},
+                  {value: '技術相談', label: '技術相談'},
+                  {value: 'ビジネス相談', label: 'ビジネス相談'},
                   {value: '研修・学習', label: '研修・学習'},
+                  {value: '情報交換', label: '情報交換'},
                 ],
               }}
               getFieldClass={(value, required = false) => {
