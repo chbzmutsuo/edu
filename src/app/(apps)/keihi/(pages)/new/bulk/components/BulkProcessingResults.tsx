@@ -3,7 +3,6 @@ import {useState, useCallback} from 'react'
 import {toast} from 'react-toastify'
 
 import {AnalyzedReceipt, BulkProcessingSummary} from '@app/(apps)/keihi/types'
-import {generateInsightsForMultipleExpenses} from '@app/(apps)/keihi/actions/expense/insights'
 import {revalidateKeihiPages} from '@app/(apps)/keihi/actions/expense-actions'
 
 interface BulkProcessingResultsProps {
@@ -52,11 +51,11 @@ export const BulkProcessingResults = ({
       }
 
       // 実際のバックグラウンド処理を開始
-      generateInsightsForMultipleExpenses(expenseIds).then(result => {
-        if (result.success) {
-          console.log(`${result.processedCount}件のインサイト生成が完了しました`)
-        }
-      })
+      // generateInsightsForMultipleExpenses(expenseIds).then(result => {
+      //   if (result.success) {
+      //     console.log(`${result.processedCount}件のインサイト生成が完了しました`)
+      //   }
+      // })
 
       setInsightProgress({current: analyzedReceipts.length, total: analyzedReceipts.length})
       toast.success('インサイト生成をバックグラウンドで開始しました')

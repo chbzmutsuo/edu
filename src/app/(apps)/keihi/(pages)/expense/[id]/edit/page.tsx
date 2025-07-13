@@ -20,7 +20,7 @@ interface ExpenseDetail {
   location?: string
   counterpartyName?: string
   counterpartyIndustry?: string
-  conversationPurpose?: string
+  conversationPurpose?: string[] // string[]に修正
   keywords: string[]
   conversationSummary?: string
   learningDepth?: number
@@ -113,7 +113,7 @@ export default function ExpenseEditPage() {
     location: '',
     counterpartyName: '',
     counterpartyIndustry: '',
-    conversationPurpose: '',
+    conversationPurpose: [] as string[], // string[]に修正
     keywords: [] as string[],
     conversationSummary: '',
     learningDepth: '',
@@ -170,7 +170,7 @@ export default function ExpenseEditPage() {
             location: data.location || '',
             counterpartyName: data.counterpartyName || '',
             counterpartyIndustry: data.counterpartyIndustry || '',
-            conversationPurpose: data.conversationPurpose || '',
+            conversationPurpose: data.conversationPurpose || [],
             keywords: data.keywords,
             conversationSummary: data.conversationSummary || '',
             learningDepth: data.learningDepth?.toString() || '',
@@ -252,10 +252,10 @@ export default function ExpenseEditPage() {
       if (result.success && result.data) {
         setFormData(prev => ({
           ...prev,
-          businessInsightDetail: result.data!.businessInsightDetail,
-          businessInsightSummary: result.data!.businessInsightSummary,
-          techInsightDetail: result.data!.techInsightDetail,
-          techInsightSummary: result.data!.techInsightSummary,
+          businessInsightDetail: result.data!.businessInsightDetail || '',
+          businessInsightSummary: result.data!.businessInsightSummary || '',
+          techInsightDetail: result.data!.techInsightDetail || '',
+          techInsightSummary: result.data!.techInsightSummary || '',
           autoTags: result.data!.autoTags,
           // 生成されたキーワードも追加
           keywords: [...prev.keywords, ...(result.data!.generatedKeywords || [])].filter((v, i, a) => a.indexOf(v) === i),
@@ -296,14 +296,14 @@ export default function ExpenseEditPage() {
 
       setFormData(prev => ({
         ...prev,
-        businessInsightDetail: result.businessInsightDetail,
-        businessInsightSummary: result.businessInsightSummary,
-        techInsightDetail: result.techInsightDetail,
-        techInsightSummary: result.techInsightSummary,
-        autoTags: result.autoTags,
-        mfSubject: result.mfSubject,
-        mfTaxCategory: result.mfTaxCategory,
-        mfMemo: result.mfMemo,
+        businessInsightDetail: result.data?.businessInsightDetail || '',
+        businessInsightSummary: result.data?.businessInsightSummary || '',
+        techInsightDetail: result.data?.techInsightDetail || '',
+        techInsightSummary: result.data?.techInsightSummary || '',
+        autoTags: result.data?.autoTags || [],
+        mfSubject: result.data?.mfSubject || '',
+        mfTaxCategory: result.data?.mfTaxCategory || '',
+        mfMemo: result.data?.mfMemo || '',
       }))
       toast.success('AIインサイトを再生成しました！')
     } catch (error) {

@@ -108,7 +108,7 @@ export const updateExpense = async (
     location?: string
     counterpartyName?: string
     counterpartyIndustry?: string
-    conversationPurpose?: string
+    conversationPurpose?: string[] // string[]に修正
     keywords?: string[]
     conversationSummary?: string
     learningDepth?: number
@@ -543,7 +543,7 @@ export const exportExpensesToCsv = async (
       expense.mfMemo || '', // MF連携用摘要
       expense.counterpartyName || '', // 相手名
       expense.location || '', // 場所
-      expense.conversationPurpose || '', // 目的
+      expense.conversationPurpose.join(', '), // 目的
       expense.keywords.join(', '), // キーワード
       expense.businessInsightSummary || '', // 営業インサイト
       expense.techInsightSummary || '', // 技術インサイト

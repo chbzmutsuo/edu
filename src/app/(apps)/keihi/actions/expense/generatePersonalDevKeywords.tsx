@@ -89,8 +89,12 @@ export const generatePersonalDevKeywords = (formData: ExpenseFormData): string[]
   }
 
   // 目的に基づくキーワード追加
-  if (formData.conversationPurpose && purposeKeywords[formData.conversationPurpose]) {
-    relevantKeywords = [...relevantKeywords, ...purposeKeywords[formData.conversationPurpose]]
+  if (formData.conversationPurpose && formData.conversationPurpose.length > 0) {
+    formData.conversationPurpose.forEach(purpose => {
+      if (purposeKeywords[purpose]) {
+        relevantKeywords = [...relevantKeywords, ...purposeKeywords[purpose]]
+      }
+    })
   }
 
   // 既存のキーワードも含める

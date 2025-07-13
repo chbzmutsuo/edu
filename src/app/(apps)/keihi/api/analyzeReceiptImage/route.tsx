@@ -51,9 +51,11 @@ export const POST = async (req: NextRequest) => {
               date: new Date(receiptData.date),
               amount: receiptData.amount,
               subject: receiptData.subject,
-              counterpartyName: receiptData.counterpartyName,
-              keywords: receiptData.keywords,
-              conversationSummary: receiptData.mfMemo,
+              location: receiptData.location,
+              counterpartyName: receiptData.suggestedCounterparties[0] || '',
+              keywords: receiptData.generatedKeywords,
+              conversationSummary: `${receiptData.location}での${receiptData.suggestedPurposes.join('・')}`,
+              conversationPurpose: receiptData.suggestedPurposes,
               learningDepth: 3, // デフォルト値
               // インサイトは後で生成するため空文字で初期化
               businessInsightDetail: '',
@@ -64,7 +66,7 @@ export const POST = async (req: NextRequest) => {
               // MoneyForward用データ
               mfSubject: receiptData.subject,
               mfTaxCategory: '課仕 10%', // デフォルト値
-              mfMemo: receiptData.mfMemo,
+              mfMemo: `${receiptData.location}での${receiptData.suggestedPurposes.join('・')}`,
             },
           })
           recordCreated = true
@@ -133,8 +135,8 @@ export const POST = async (req: NextRequest) => {
           date: receiptData.date,
           amount: receiptData.amount,
           subject: receiptData.subject,
-          counterpartyName: receiptData.counterpartyName,
-          keywords: receiptData.keywords,
+          counterpartyName: receiptData.suggestedCounterparties[0] || '',
+          keywords: receiptData.generatedKeywords,
           imageIndex: receiptData.imageIndex,
           recordCreated,
           imageUploaded,
