@@ -4,12 +4,12 @@ import {useState, useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
 import {fetchCreateExpenseApi} from '@app/(apps)/keihi/api/expense/createExpense'
-import {useExpenseForm} from '@app/(apps)/keihi/hooks/useExpenseForm'
+import {useExpenseFormManager} from '@app/(apps)/keihi/hooks/useExpenseFormManager'
 import {useImageUpload} from '@app/(apps)/keihi/hooks/useImageUpload'
 import {usePreviewModal} from '@app/(apps)/keihi/hooks/usePreviewModal'
 import {ImageUploadSection} from '@app/(apps)/keihi/(pages)/new/components/ImageUploadSection'
-import BasicInfoForm from '@app/(apps)/keihi/components/BasicInfoForm'
-import AIDraftSection from '@app/(apps)/keihi/components/AIDraftSection'
+import {ExpenseBasicInfoForm} from '@app/(apps)/keihi/components/ExpenseBasicInfoForm'
+import {ExpenseAIDraftSection} from '@app/(apps)/keihi/components/ExpenseAIDraftSection'
 import FormActions from '@app/(apps)/keihi/components/FormActions'
 import {PreviewModal} from '@app/(apps)/keihi/components/ui/PreviewModal'
 import {ProcessingStatus} from '@app/(apps)/keihi/components/ui/ProcessingStatus'
@@ -17,6 +17,17 @@ import {T_LINK} from '@components/styles/common-components/links'
 import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'
+
+// 共通のフィールドクラス生成関数
+const getFieldClass = (value: string | number | string[], required = false) => {
+  const baseClass = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+  if (required) {
+    const hasValue = Array.isArray(value) ? value.length > 0 : value !== '' && value !== 0 && value !== undefined
+    return hasValue ? `${baseClass} border-green-300 bg-green-50` : `${baseClass} border-red-300 bg-red-50`
+  }
+  const hasValue = Array.isArray(value) ? value.length > 0 : value !== '' && value !== 0 && value !== undefined
+  return hasValue ? `${baseClass} border-blue-300 bg-blue-50` : `${baseClass} border-gray-300`
+}
 
 const NewExpensePage = () => {
   const router = useRouter()
@@ -33,7 +44,7 @@ const NewExpensePage = () => {
     setAiDraft,
     showDraft,
     setShowDraft,
-  } = useExpenseForm()
+  } = useExpenseFormManager()
 
   const {uploadedImages, capturedImageFiles, isProcessing: isImageProcessing, processFiles, clearImages} = useImageUpload()
 
@@ -64,26 +75,26 @@ const NewExpensePage = () => {
 
   // 画像解析処理
   const handleImageAnalysis = useCallback(
-    async (imageBase64: string) => {
+    async (base64Image: string) => {
       setIsAnalyzing(true)
-      setAnalysisStatus('画像を解析中...')
+      setAnalysisStatus('領収書を解析中...')
 
       try {
-        const result = await analyzeReceiptImage(imageBase64)
+        const result = await analyzeReceiptImage(base64Image)
 
         if (result.success && result.data) {
-          // フォームに解析結果を反映（新仕様対応）
+          // フォームデータを更新
           updateMultipleFields({
             date: result.data.date,
             amount: result.data.amount,
             subject: result.data.subject,
             location: result.data.location,
-            counterpartyName: result.data.suggestedCounterparties.join(', '),
+            counterpartyName: result.data.suggestedCounterparties[0] || '',
             conversationPurpose: result.data.suggestedPurposes,
             keywords: result.data.generatedKeywords,
           })
 
-          toast.success('画像解析が完了しました')
+          toast.success('領収書を解析しました！内容を確認してください。')
         } else {
           toast.error(result.error || '画像解析に失敗しました')
         }
@@ -188,7 +199,7 @@ const NewExpensePage = () => {
             />
 
             {/* 基本情報フォーム */}
-            <BasicInfoForm
+            <ExpenseBasicInfoForm
               formData={formData}
               setFormData={newData => {
                 if (typeof newData === 'function') {
@@ -222,20 +233,11 @@ const NewExpensePage = () => {
                   {value: '情報交換', label: '情報交換'},
                 ],
               }}
-              getFieldClass={(value, required = false) => {
-                const baseClass =
-                  'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-                if (required) {
-                  const hasValue = Array.isArray(value) ? value.length > 0 : value !== '' && value !== 0 && value !== undefined
-                  return hasValue ? `${baseClass} border-green-300 bg-green-50` : `${baseClass} border-red-300 bg-red-50`
-                }
-                const hasValue = Array.isArray(value) ? value.length > 0 : value !== '' && value !== 0 && value !== undefined
-                return hasValue ? `${baseClass} border-blue-300 bg-blue-50` : `${baseClass} border-gray-300`
-              }}
+              getFieldClass={getFieldClass}
             />
 
             {/* AIインサイトセクション */}
-            <AIDraftSection
+            <ExpenseAIDraftSection
               {...{
                 formData,
                 aiDraft,

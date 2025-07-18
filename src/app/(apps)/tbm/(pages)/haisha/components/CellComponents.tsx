@@ -9,6 +9,7 @@ import {createUpdate} from '@lib/methods/createUpdate'
 import {TBM_STATUS} from '@app/(apps)/tbm/(constants)/TBM_STATUS'
 import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {twMerge} from 'tailwind-merge'
+import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 
 // 作業ステータス選択コンポーネント
 export const WorkStatusSelector = React.memo(
@@ -161,7 +162,7 @@ export const ScheduleCard = React.memo(
           </section>
 
           <section>
-            <small className="text-gray-600">車両No:</small> {TbmVehicle?.vehicleNumber}
+            <small className="text-gray-600">車両No:</small> {new VehicleCl(TbmVehicle).shortName}
           </section>
 
           <section>

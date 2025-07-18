@@ -1,5 +1,19 @@
 import IconLetter from '@components/styles/common-components/IconLetter'
-import {Calculator, JapaneseYenIcon, Map, Check, FileText, Truck, ListIcon} from 'lucide-react'
+import {
+  Calculator,
+  JapaneseYenIcon,
+  FileText,
+  Truck,
+  ListIcon,
+  Settings,
+  Calendar,
+  Building,
+  Users,
+  Car,
+  History,
+  Fuel,
+  Droplets,
+} from 'lucide-react'
 
 import {CleansePathSource} from 'src/non-common/path-title-constsnts'
 import {PageGetterType} from 'src/non-common/path-title-constsnts'
@@ -16,24 +30,24 @@ export const tbm_PAGES = (props: PageGetterType) => {
   const loginPath = [
     {
       tabId: '',
-      label: 'メインメニュー',
+      label: <IconLetter {...{Icon: ListIcon}}>メイン</IconLetter>,
       children: [
         //
 
         {
           tabId: 'eigyoshoSettei',
-          label: <IconLetter {...{Icon: Map}}>営業所設定</IconLetter>,
+          label: <IconLetter {...{Icon: Settings}}>営業所設定</IconLetter>,
         },
         {
           tabId: 'haisha',
-          label: <IconLetter {...{Icon: Map}}>配車設定</IconLetter>,
+          label: <IconLetter {...{Icon: Truck}}>配車設定</IconLetter>,
         },
       ],
     },
 
     {
       tabId: '',
-      label: <IconLetter {...{Icon: ListIcon}}>各種レポート等</IconLetter>,
+      label: <IconLetter {...{Icon: FileText}}>各種レポート等</IconLetter>,
       children: [
         //
         {tabId: 'unkomeisai', label: <IconLetter {...{Icon: ListIcon}}>運行明細</IconLetter>},
@@ -48,42 +62,30 @@ export const tbm_PAGES = (props: PageGetterType) => {
 
     {
       tabId: '',
-      label: 'マイページ',
+      label: <IconLetter {...{Icon: Users}}>マイページ</IconLetter>,
       children: [
         //
         {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
-        {tabId: 'myPage', label: <IconLetter {...{Icon: Check}}>実績確認</IconLetter>},
+        // {tabId: 'myPage', label: <IconLetter {...{Icon: Check}}>実績確認</IconLetter>},
       ],
     },
-    // {tabId: 'tbmOperation', label: '運行履歴'},
 
     {
       tabId: '',
-      label: 'マスタ設定',
-      children: [
-        {tabId: 'calendar', label: 'カレンダー'},
-        {tabId: 'tbmBase', label: '営業所'},
-        {tabId: 'user', label: '従業員'},
-        {tabId: 'tbmVehicle', label: '車両'},
-        // {tabId: 'user', label: 'ドライバー'},
-        // {tabId: 'tbmProduct', label: '商品'},
-        // {tabId: 'tbmVehicle', label: '車両'},
-        // {tabId: 'tbmBillingAddress', label: '請求先支社'},
-
-        // {tabId: 'tbmRouteGroup', label: 'ルートグループ'},
-        // {tabId: 'tbmRoute', label: 'ルート'},
-      ],
+      label: <IconLetter {...{Icon: Settings}}>共通設定</IconLetter>,
+      children: [{tabId: 'calendar', label: <IconLetter {...{Icon: Calendar}}>カレンダー</IconLetter>}],
     },
     {
       tabId: '',
-      label: '履歴',
+      label: <IconLetter {...{Icon: ListIcon}}>一覧</IconLetter>,
       children: [
         //
-
-        // {tabId: 'tbmDriveSchedule', label: '走行履歴'},
-        {tabId: 'tbmVehicle', label: '全車両一覧'},
-        {tabId: 'tbmRefuelHistory', label: '給油履歴'},
-        {tabId: 'tbmCarWashHistory', label: '洗車履歴'},
+        {tabId: 'tbmBase', label: <IconLetter {...{Icon: Building}}>営業所</IconLetter>},
+        {tabId: 'user', label: <IconLetter {...{Icon: Users}}>従業員</IconLetter>},
+        {tabId: 'tbmVehicle', label: <IconLetter {...{Icon: Car}}>車両</IconLetter>},
+        {tabId: 'tbmDriveSchedule', label: <IconLetter {...{Icon: History}}>運行履歴</IconLetter>},
+        {tabId: 'tbmRefuelHistory', label: <IconLetter {...{Icon: Fuel}}>給油履歴</IconLetter>},
+        {tabId: 'tbmCarWashHistory', label: <IconLetter {...{Icon: Droplets}}>洗車履歴</IconLetter>},
       ],
     },
   ].map(item => ({...item, exclusiveTo: scopes.login, ROOT: [rootPath]}))

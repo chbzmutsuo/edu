@@ -58,10 +58,7 @@ export const POST = async (req: NextRequest) => {
               conversationPurpose: receiptData.suggestedPurposes,
               learningDepth: 3, // デフォルト値
               // インサイトは後で生成するため空文字で初期化
-              businessInsightDetail: '',
-              businessInsightSummary: '',
-              techInsightDetail: '',
-              techInsightSummary: '',
+
               autoTags: [],
               // MoneyForward用データ
               mfSubject: receiptData.subject,

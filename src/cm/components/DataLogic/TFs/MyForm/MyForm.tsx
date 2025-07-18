@@ -2,7 +2,7 @@
 import React, {useId, useMemo, useCallback} from 'react'
 import {DetailPagePropType} from '@cm/types/types'
 import FormHeader from '@components/DataLogic/TFs/MyForm/components/FormHeader'
-import {myFormDefault} from 'src/cm/constants/defaults'
+import { myFormDefault} from 'src/cm/constants/defaults'
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {liftUpNewValueOnChangeType} from '@cm/types/form-control-type'
@@ -67,16 +67,16 @@ const MyForm = React.memo<DetailPagePropType>(props => {
   const updateMode = !!formData?.id
   const formElementId = useMemo(() => `myform-${formId}`, [formId])
   const buttonText = updateMode ? '更新' : '新規作成'
-  const buttonColor = useMemo(() => (updateMode ? 'blue' : 'primary'), [updateMode])
+  // const buttonColor = useMemo(() => (updateMode ? 'blue' : 'primary'), [updateMode])
 
   // customActionsの引数をメモ化
   const customActionsArgs = useMemo(() => ({...memoizedProps, ReactHookForm}), [memoizedProps, ReactHookForm])
 
   // スタイルをメモ化
-  const containerStyle = useMemo(() => ({...myForm?.style, maxHeight: undefined}), [myForm?.style])
+  const containerStyle = {...myForm?.style, maxHeight: undefined}
 
   return (
-    <div id={formElementId} style={containerStyle} className="m-0.5">
+    <div id={formElementId} style={containerStyle}>
       <section>
         <FormHeader myForm={myForm} formData={formData} />
         <div>{myForm?.customActions && myForm.customActions(customActionsArgs)}</div>

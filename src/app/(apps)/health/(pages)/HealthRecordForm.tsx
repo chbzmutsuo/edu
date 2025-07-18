@@ -112,9 +112,7 @@ export default function HealthRecordForm({onSubmit, onBulkSubmit, initialData, i
       memo: item.memo,
     }))
 
-    return
-
-    // onBulkSubmit(formattedData)
+    onBulkSubmit(formattedData)
   }
 
   const handleInputChange = (field: keyof HealthRecordFormData, value: any) => {

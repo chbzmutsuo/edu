@@ -106,14 +106,15 @@ export const getStyleProps = ({ControlOptions, col}) => {
   }
 
   const withBase = [col?.form?.style?.width, ControlStyle?.width, controlDefaultStyle.width].find(Boolean)
-
   const minWidthBase = [col?.form?.style?.minWidth, ControlStyle?.minWidth, controlDefaultStyle.minWidth].find(Boolean)
+  const maxWidthBase = [col?.form?.style?.maxWidth, ControlStyle?.maxWidth, controlDefaultStyle.maxWidth].find(Boolean)
 
+  const offset = 20
   ControlStyle = {
     ...ControlStyle,
-    width: getOffsetWidth(withBase, 40),
-    minWidth: getOffsetWidth(minWidthBase, 40),
-    // overflow: `hidden`,
+    width: getOffsetWidth(withBase, offset),
+    minWidth: getOffsetWidth(minWidthBase, offset),
+    maxWidth: getOffsetWidth(maxWidthBase, offset),
   }
 
   return {id, flexDirection, wrapperClass, ControlStyle, isBooleanType}

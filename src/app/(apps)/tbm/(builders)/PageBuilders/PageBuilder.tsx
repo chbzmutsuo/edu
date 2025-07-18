@@ -29,7 +29,7 @@ export class PageBuilder {
 
     const columns = new Fields([
       {id: 'g_tbmBaseId', label: '営', forSelect: {}},
-      // {id: 'g_userId', label: 'ド', forSelect: {}},
+      {id: 'g_userId', label: 'ド', forSelect: {}},
     ]).transposeColumns()
 
     if (admin) {

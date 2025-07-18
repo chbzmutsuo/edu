@@ -32,19 +32,11 @@ export const createExpenseWithDraft = async (
         keywords: formData.keywords || [],
         conversationSummary: formData.conversationSummary,
         learningDepth: formData.learningDepth,
-        // 税務調査対応項目
-        counterpartyContact: formData.counterpartyContact,
-        followUpPlan: formData.followUpPlan,
-        businessOpportunity: formData.businessOpportunity,
-        competitorInfo: formData.competitorInfo,
+
         // 新仕様のフィールド
         insight: draft.insight,
         autoTags: draft.autoTags,
         // 旧仕様のフィールド（後方互換性のため）
-        businessInsightDetail: draft.businessInsightDetail,
-        businessInsightSummary: draft.businessInsightSummary,
-        techInsightDetail: draft.techInsightDetail,
-        techInsightSummary: draft.techInsightSummary,
         mfSubject,
         mfTaxCategory,
         mfMemo,
@@ -133,19 +125,10 @@ export const createExpense = async (
         keywords: formData.keywords || [],
         conversationSummary: formData.conversationSummary,
         learningDepth: formData.learningDepth,
-        // 税務調査対応項目
-        counterpartyContact: formData.counterpartyContact,
-        followUpPlan: formData.followUpPlan,
-        businessOpportunity: formData.businessOpportunity,
-        competitorInfo: formData.competitorInfo,
+
         // 新仕様のフィールド
         insight: insights.insight,
         autoTags: insights.autoTags,
-        // 旧仕様のフィールド（後方互換性のため）
-        businessInsightDetail: insights.businessInsightDetail,
-        businessInsightSummary: insights.businessInsightSummary,
-        techInsightDetail: insights.techInsightDetail,
-        techInsightSummary: insights.techInsightSummary,
         mfSubject: insights.mfSubject,
         mfTaxCategory: insights.mfTaxCategory,
         mfMemo: insights.mfMemo,

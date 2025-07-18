@@ -40,18 +40,11 @@ export const ExpenseListItem = ({expense, isSelected, onToggleSelect}: ExpenseLi
                 </div>
 
                 {/* AIインサイトの要約 */}
-                {(expense.businessInsightSummary || expense.techInsightSummary) && (
-                  <div className="mt-2 flex gap-2">
-                    {expense.businessInsightSummary && (
-                      <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                        営業: {expense.businessInsightSummary}
-                      </span>
-                    )}
-                    {expense.techInsightSummary && (
-                      <span className="inline-block px-2 py-1 bg-green-100 text-green-800 text-xs rounded">
-                        技術: {expense.techInsightSummary}
-                      </span>
-                    )}
+                {expense.insight && (
+                  <div className="mt-2">
+                    <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
+                      インサイト: {expense.insight.length > 100 ? expense.insight.substring(0, 100) + '...' : expense.insight}
+                    </span>
                   </div>
                 )}
               </div>

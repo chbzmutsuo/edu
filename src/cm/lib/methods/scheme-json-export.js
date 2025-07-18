@@ -1285,12 +1285,6 @@ model KeihiExpense {
  insight  String? // 統合されたインサイト
  autoTags String[] // 自動生成タグ
 
- // 旧AI生成情報（段階的削除予定）
- businessInsightDetail  String? // 営業インサイト（詳細）
- businessInsightSummary String? // 営業インサイト（要約）
- techInsightDetail      String? // 技術インサイト（詳細）
- techInsightSummary     String? // 技術インサイト（要約）
-
  // MoneyForward用情報
  mfSubject     String? // MF用科目
  mfSubAccount  String? // MF用補助科目
@@ -2222,6 +2216,7 @@ model TbmBase {
  // TbmProduct          TbmProduct[]
  TbmCustomer         TbmCustomer[]
  TbmBase_MonthConfig TbmBase_MonthConfig[]
+ TbmKeihi            TbmKeihi[]
 }
 
 model TbmRouteGroupCalendar {
@@ -2238,6 +2233,32 @@ model TbmRouteGroupCalendar {
  tbmRouteGroupId Int
 
  @@unique([tbmRouteGroupId, date], name: "unique_tbmRouteGroupId_date")
+}
+
+model TbmKeihi {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+ item      String?
+ amount    Float?
+ date      DateTime?
+ remark    String?
+
+ TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId Int
+}
+
+model TbmDriveScheduleImage {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ imageUrl String
+
+ TbmDriveSchedule   TbmDriveSchedule? @relation(fields: [tbmDriveScheduleId], references: [id])
+ tbmDriveScheduleId Int?
 }
 
 model TbmBase_MonthConfig {
@@ -2566,6 +2587,8 @@ model TbmDriveSchedule {
  tbmBaseId Int
 
  TbmEtcMeisai TbmEtcMeisai?
+
+ TbmDriveScheduleImage TbmDriveScheduleImage[]
 }
 
 model TbmEtcMeisai {

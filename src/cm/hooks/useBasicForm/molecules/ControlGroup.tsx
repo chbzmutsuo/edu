@@ -1,7 +1,7 @@
 'use client'
 
 import {BasicFormType} from '@hooks/useBasicForm/BaiscForm'
-import {getFormProps, getOffsetWidth, getStyleProps} from '@hooks/useBasicForm/lib/hookformMethods'
+import {getFormProps, getStyleProps} from '@hooks/useBasicForm/lib/hookformMethods'
 import React, {Fragment, useCallback} from 'react'
 import {Controller} from 'react-hook-form'
 import {ControlContextType} from '@cm/types/form-control-type'
@@ -38,7 +38,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
         render={({field}) => {
           const errorMessage = messages?.[col.id]?.message?.toString()
 
-          const {id: wrapperId, flexDirection, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col})
+          const {id: wrapperId, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col})
 
           const currentValue = props.ReactHookForm?.getValues(col.id)
 
@@ -100,11 +100,12 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
             [ReactHookForm, reverseLabelTitle, ControlOptions, required, col]
           )
 
+          const offset = 0
           const style = !horizontal
             ? {
-                width: getOffsetWidth(ControlStyle.width, -5),
-                minWidth: getOffsetWidth(ControlStyle.minWidth, -5),
-                maxWidth: 'fit-content',
+                // width: getOffsetWidth(ControlStyle.width, offset),
+                // minWidth: getOffsetWidth(ControlStyle.minWidth, offset),
+                // maxWidth: getOffsetWidth(ControlStyle.maxWidth, offset),
               }
             : undefined
 

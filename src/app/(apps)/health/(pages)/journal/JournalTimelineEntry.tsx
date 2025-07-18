@@ -362,7 +362,7 @@ export default function JournalTimelineEntry({
                 ))}
               </R_Stack>
 
-              {/* 印刷用画像表示 */}
+              {/* 印刷用画像表示
               <div className="print-images hidden print:block">
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {entry.images.map(image => (
@@ -372,7 +372,7 @@ export default function JournalTimelineEntry({
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
         </div>

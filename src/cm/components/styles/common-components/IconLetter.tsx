@@ -8,10 +8,10 @@ type Props = {
   style?: CSSProperties
 }
 const IconLetter = (props: Props) => {
-  const {Icon, colorClass = 'bg-sky-600', children, style} = props
+  const {Icon, colorClass = '', children, style} = props
   return (
     <div className={`row-stack w-fit gap-1`}>
-      <Icon className={cl(`h-5 w-5 rounded-sm p-0.5 text-white`, colorClass)} style={style} />
+      <Icon strokeWidth={2.5} className={cl(`h-6 w-6  p-[3px]  text-sky-700   `, colorClass)} style={style} />
       {children}
     </div>
   )

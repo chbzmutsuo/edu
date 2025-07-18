@@ -3,10 +3,7 @@ import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
 import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import {tableRecord} from './useRecords'
 import {atomKey, useJotaiByKey} from '@hooks/useJotai'
-import {diff} from 'node:util'
-import useLogOnRender from '@hooks/useLogOnRender'
 import useGlobal from '@hooks/globalHooks/useGlobal'
-import {sleep} from '@lib/methods/common'
 
 interface UseRecordsCoreProps {
   serverFetchProps: serverFetchProps
@@ -70,17 +67,18 @@ const deleteRecordFromArray = (prev: tableRecord[] | null, record: tableRecord):
 export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn => {
   const {
     serverFetchProps,
-    initialModelRecords = {
-      data: {
-        records: [],
-        totalCount: 0,
-        easySearchPrismaDataOnServer: INITIAL_EASY_SEARCH_DATA,
-      },
-      queries: {
-        EasySearcherQuery: {},
-        prismaDataExtractionQuery: {},
-      },
-    },
+    initialModelRecords,
+    // = {
+    //   data: {
+    //     records: [],
+    //     totalCount: 0,
+    //     easySearchPrismaDataOnServer: INITIAL_EASY_SEARCH_DATA,
+    //   },
+    //   queries: {
+    //     EasySearcherQuery: {},
+    //     prismaDataExtractionQuery: {},
+    //   },
+    // },
     query,
     rootPath,
     isInfiniteScrollMode,
@@ -90,17 +88,18 @@ export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn
   const globalStateKey = ['table-records', serverFetchProps.dataModelName].join('_') as atomKey
 
   const {toggleLoad} = useGlobal()
-  const [refresedAt, setrefresedAt] = useJotaiByKey<Date | null>('refreshedAt' as atomKey, new Date())
+  const [refresedAt, setrefresedAt] = useJotaiByKey<Date | null>('useRecords-refreshedAt' as atomKey, null)
+  const [totalCount, settotalCount] = useJotaiByKey<number>('useRecords-totalCount' as atomKey, 0)
+
   const [records, setrecords] = useJotaiByKey<tableRecord[] | null>(globalStateKey, null)
   const [easySearchPrismaDataOnServer, seteasySearchPrismaDataOnServer] =
     useState<easySearchDataSwrType>(INITIAL_EASY_SEARCH_DATA)
-  const [totalCount, settotalCount] = useState<number>(0)
   const [prismaDataExtractionQuery, setprismaDataExtractionQuery] = useState({})
   const [EasySearcherQuery, setEasySearcherQuery] = useState({})
 
   // 初期データ取得
   const initFetchTableRecords = useCallback(async () => {
-    console.time('initFetchTableRecords')
+    console.time('データ取得')
     const {queries, data} = await getInitModelRecordsProps({
       ...serverFetchProps,
       query,
@@ -119,7 +118,7 @@ export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn
     if (isInfiniteScrollMode) {
       resetToFirstPage()
     }
-    console.timeEnd('initFetchTableRecords')
+
     setrefresedAt(new Date())
   }, [serverFetchProps, query, rootPath, isInfiniteScrollMode, resetToFirstPage])
 
@@ -146,22 +145,33 @@ export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn
     }
   }, [isInfiniteScrollMode, initFetchTableRecords])
 
+  const {data: InitialData, queries: InitialQueries} = initialModelRecords ?? {}
+  const inittialDataCount = InitialData?.totalCount
+
+  const setFirstData = () => {
+    setrecords(InitialData?.records)
+    settotalCount(inittialDataCount)
+    seteasySearchPrismaDataOnServer(InitialData?.easySearchPrismaDataOnServer ?? INITIAL_EASY_SEARCH_DATA)
+    setEasySearcherQuery(InitialQueries?.EasySearcherQuery ?? {})
+    setprismaDataExtractionQuery(InitialQueries?.prismaDataExtractionQuery ?? {})
+    setrefresedAt(new Date())
+  }
+
   // 初期化ロジック
   useEffect(() => {
-    if (refresedAt && Math.abs(new Date().getTime() - refresedAt.getTime()) >= 100) {
-      initFetchTableRecords()
-      setrefresedAt(new Date())
+    const hasData = inittialDataCount > 0
+    const dataIsUnset = records == null
+
+    if (initialModelRecords !== undefined && hasData && dataIsUnset) {
+      console.log('初回フェッチ')
+      setFirstData()
     } else {
-      console.log(`data from server`)
-      const {data: InitialData, queries: InitialQueries} = initialModelRecords ?? {}
-      setrecords(InitialData?.records)
-      settotalCount(InitialData?.totalCount)
-      seteasySearchPrismaDataOnServer(InitialData?.easySearchPrismaDataOnServer)
-      setEasySearcherQuery(InitialQueries?.EasySearcherQuery)
-      setprismaDataExtractionQuery(InitialQueries?.prismaDataExtractionQuery)
-      setrefresedAt(new Date())
+      if (refresedAt === null || (refresedAt && Math.abs(new Date().getTime() - refresedAt.getTime()) >= 100)) {
+        console.log('データ取得')
+        initFetchTableRecords()
+      }
     }
-  }, [query, initialModelRecords])
+  }, [query])
 
   return {
     records,

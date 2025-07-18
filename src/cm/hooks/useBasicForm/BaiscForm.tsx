@@ -10,7 +10,7 @@ import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions
 import {adjustBasicFormProps} from '@hooks/useBasicForm/lib/createBasicFormProps'
 import ControlGroup from '@hooks/useBasicForm/molecules/ControlGroup'
 import {Card} from '@cm/shadcn-ui/components/ui/card'
-import {DynamicGridContainer} from '@components/utils'
+import { DynamicGridContainer} from '@components/utils'
 import {obj__initializeProperty} from '@class/ObjHandler/transformers'
 import {cn} from '@cm/shadcn-ui/lib/utils'
 
@@ -71,8 +71,6 @@ const BasicForm = (props: BasicFormType) => {
       return await handleFormSubmit(e)
     }
   }
-
-  // const {justifyDirection} = useJustifyDirection({transposedRowsForForm, useGlobalProps})
 
   const ChildComponent = () => {
     if (props.children) {

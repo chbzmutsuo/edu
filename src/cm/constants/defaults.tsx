@@ -46,38 +46,20 @@ type StylesByDevice = {
 export const stylesByDevice: StylesByDevice = {
   SP: {
     Modal: {},
-    Form: {
-      maxWidth: '90vw',
-      maxHeight: '70vh',
-    },
-    Table: {
-      // maxHeight: '70vh',
-      maxWidth: '85vw',
-    },
+    Form: {maxWidth: '90vw', maxHeight: '70vh'},
+    Table: {maxWidth: '85vw'},
   },
 
   TB: {
     Modal: {},
-    Form: {
-      maxWidth: '90vw',
-      maxHeight: '75vh',
-    },
-    Table: {
-      // maxHeight: '70vh',
-      maxWidth: '85vw',
-    },
+    Form: {maxWidth: '90vw', maxHeight: '75vh'},
+    Table: {maxWidth: '85vw'},
   },
 
   PC: {
     Modal: {},
-    Form: {
-      maxWidth: '90vw',
-      maxHeight: '70vh',
-    },
-    Table: {
-      // maxHeight: '70vh',
-      maxWidth: '85vw',
-    },
+    Form: {maxWidth: '90vw', maxHeight: '70vh'},
+    Table: {maxWidth: '85vw'},
   },
 }
 
@@ -105,10 +87,7 @@ export const myFormDefault: MyFormType = {
     padding: '5px 5px 0 5px',
     overflow: 'auto', //必須
     minHeight: 100,
-    // minWidth: Math.min(250),
-
     margin: 'auto',
-    // background: '#ffffff',
 
     ...stylesByDevice?.[GetDevice(getWindow().width)]?.Form,
   },
@@ -135,8 +114,10 @@ export const limitEditting = (props: {exclusiveTo?: boolean; myTable?: MyTableTy
 }
 
 export const controlDefaultStyle: CSSProperties = {
-  width: 240,
-  minHeight: 30,
+  width: 350,
   maxWidth: '85vw',
+  minHeight: 30,
   margin: `auto 0`,
 }
+
+export const controlDefaultClass = 'w-[240px] min-h-[30px] max-w-[85vw] m-auto'

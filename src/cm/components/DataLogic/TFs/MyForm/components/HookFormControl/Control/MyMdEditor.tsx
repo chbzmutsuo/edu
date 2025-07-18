@@ -11,6 +11,7 @@ const MyMdEditor = React.forwardRef((props: ControlProps, ref) => {
   const initialValue = toJson(currentValue)
     ? JSON.parse(currentValue)
     : [{type: 'paragraph', children: [{text: currentValue ?? col.form?.defaultValue ?? ''}]}]
+
   const textAreaStyle = {
     ...controlDefaultStyle,
     ...col?.form?.style,

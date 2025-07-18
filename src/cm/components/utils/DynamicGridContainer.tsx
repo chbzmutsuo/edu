@@ -19,7 +19,7 @@ export const DynamicGridContainer: React.FC<DynamicGridContainerProps> = ({
   children,
   className,
   gap = 'gap-8',
-  maxCols = {base: 1, sm: 1, lg: 2, xl: 4},
+  maxCols = {base: 1, sm: 1, lg: 2, xl: 3},
   ...props
 }) => {
   const childrenArray = React.Children.toArray(children)

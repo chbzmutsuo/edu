@@ -12,11 +12,6 @@ export interface AIAnalysisResult {
   summary: string // 摘要
   insight: string // 統合されたインサイト
   autoTags: string[]
-  // 旧形式（段階的削除予定）
-  businessInsightDetail?: string
-  businessInsightSummary?: string
-  techInsightDetail?: string
-  techInsightSummary?: string
   mfSubject?: string
   mfTaxCategory?: string
   mfMemo?: string
@@ -34,11 +29,6 @@ interface InsightGenerationResult {
   insight: string
   autoTags: string[]
   generatedKeywords?: string[]
-  // 旧形式（段階的削除予定）
-  businessInsightDetail?: string
-  businessInsightSummary?: string
-  techInsightDetail?: string
-  techInsightSummary?: string
   mfSubject?: string
   mfTaxCategory?: string
   mfMemo?: string
@@ -283,10 +273,6 @@ export const addInsightToExpense = async (
       keywords: expense.keywords || [],
       conversationSummary: expense.conversationSummary || '',
       learningDepth: expense.learningDepth || undefined,
-      counterpartyContact: expense.counterpartyContact || '',
-      followUpPlan: expense.followUpPlan || '',
-      businessOpportunity: expense.businessOpportunity || '',
-      competitorInfo: expense.competitorInfo || '',
     }
 
     // インサイト生成

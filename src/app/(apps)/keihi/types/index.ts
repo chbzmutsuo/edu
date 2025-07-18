@@ -16,19 +16,11 @@ export interface ExpenseRecord {
   conversationSummary?: string | null
   summary?: string | null // 摘要を追加
   learningDepth?: number | null
-  // 税務調査対応項目
-  counterpartyContact?: string | null
-  followUpPlan?: string | null
-  businessOpportunity?: string | null
-  competitorInfo?: string | null
+
   // AIインサイト（統合版）
   insight?: string | null // 統合されたインサイト
   autoTags: string[]
-  // 旧AIインサイト（段階的削除予定）
-  businessInsightDetail?: string | null
-  businessInsightSummary?: string | null
-  techInsightDetail?: string | null
-  techInsightSummary?: string | null
+
   // MoneyForward用
   mfSubject?: string | null
   mfSubAccount?: string | null
@@ -65,10 +57,6 @@ export interface ExpenseFormData {
   conversationSummary?: string
   summary?: string // 摘要を追加
   learningDepth?: number
-  counterpartyContact?: string
-  followUpPlan?: string
-  businessOpportunity?: string
-  competitorInfo?: string
 }
 
 // AI下書きの型（新仕様対応）
@@ -77,11 +65,6 @@ export interface AIDraft {
   insight: string // 統合されたインサイト
   autoTags: string[]
   generatedKeywords: string[]
-  // 旧形式（段階的削除予定）
-  businessInsightDetail?: string
-  businessInsightSummary?: string
-  techInsightDetail?: string
-  techInsightSummary?: string
 }
 
 // 画像解析結果の型（新仕様対応）

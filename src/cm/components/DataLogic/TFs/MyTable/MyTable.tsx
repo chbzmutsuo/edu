@@ -77,8 +77,6 @@ const MyTable = React.memo<MyTableProps>(props => {
   return (
     <div>
       <div>
-        {renderTableContent()}
-
         <MyTableControls
           {...{
             SearchingStatusMemo,
@@ -96,6 +94,7 @@ const MyTable = React.memo<MyTableProps>(props => {
             myTable: ClientProps2.myTable,
           }}
         />
+        {renderTableContent()}
       </div>
     </div>
   )

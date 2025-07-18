@@ -9,8 +9,6 @@ import prisma from 'src/lib/prisma'
 const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
 
 export interface AIAnalysisResult {
-  businessInsightDetail: string
-  businessInsightSummary: string
   techInsightDetail: string
   techInsightSummary: string
   autoTags: string[]
@@ -28,8 +26,6 @@ interface InsightGenerationOptions {
 
 // インサイト生成結果の型
 interface InsightGenerationResult {
-  businessInsightDetail: string
-  businessInsightSummary: string
   techInsightDetail: string
   techInsightSummary: string
   autoTags: string[]
@@ -113,16 +109,8 @@ export const updateExpense = async (
     conversationSummary?: string
     learningDepth?: number
     // インサイト関連
-    businessInsightDetail?: string
-    businessInsightSummary?: string
-    techInsightDetail?: string
-    techInsightSummary?: string
     autoTags?: string[]
     // 税務調査対応項目
-    counterpartyContact?: string
-    followUpPlan?: string
-    businessOpportunity?: string
-    competitorInfo?: string
     mfSubject?: string
     mfTaxCategory?: string
     mfMemo?: string
@@ -545,8 +533,6 @@ export const exportExpensesToCsv = async (
       expense.location || '', // 場所
       expense.conversationPurpose.join(', '), // 目的
       expense.keywords.join(', '), // キーワード
-      expense.businessInsightSummary || '', // 営業インサイト
-      expense.techInsightSummary || '', // 技術インサイト
       expense.autoTags.join(', '), // AIタグ
       expense.KeihiAttachment.length, // 添付ファイル数
     ])

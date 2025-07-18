@@ -40,12 +40,12 @@ export const odometerInputColBuilder = (props: columnGetterType) => {
       id: 'odometerStart',
       label: '乗車時オドメータ(km)',
       form: {
-        register: {
-          validate: (value, formValues) => {
-            const min = lastOdometerEnd
-            return formValues[`odometerStart`] >= min ? true : `前回登録時(${min}km)以上を入力してください。`
-          },
-        },
+        // register: {
+        //   validate: (value, formValues) => {
+        //     const min = lastOdometerEnd
+        //     return formValues[`odometerStart`] >= min ? true : `前回登録時(${min}km)以上を入力してください。`
+        //   },
+        // },
       },
       type: `float`,
     },
@@ -53,15 +53,15 @@ export const odometerInputColBuilder = (props: columnGetterType) => {
       id: 'odometerEnd',
       label: '降車時オドメータ(km)',
       form: {
-        register: {
-          validate: (value, formValues) => {
-            if (formValues[`odometerStart`] && formValues[`odometerEnd`] !== 0) {
-              const min = formValues[`odometerStart`]
-              return formValues[`odometerEnd`] >= min ? true : `乗車時(${min}km)以上を入力してください。`
-            }
-            return true
-          },
-        },
+        // register: {
+        //   validate: (value, formValues) => {
+        //     if (formValues[`odometerStart`] && formValues[`odometerEnd`] !== 0) {
+        //       const min = formValues[`odometerStart`]
+        //       return formValues[`odometerEnd`] >= min ? true : `乗車時(${min}km)以上を入力してください。`
+        //     }
+        //     return true
+        //   },
+        // },
       },
       type: `float`,
     },

@@ -6,7 +6,7 @@ import {C_Stack, R_Stack} from '@components/styles/common-components/common-comp
 import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
 import React, {Fragment} from 'react'
 
-export default function TenkoPaperHeader({date}) {
+export default function TenkoPaperHeader({date, tableStyle}) {
   const sections = [
     {
       header: '注意・指示事項',
@@ -58,7 +58,7 @@ export default function TenkoPaperHeader({date}) {
   ]
 
   return (
-    <>
+    <div style={{...tableStyle}}>
       <R_Stack className={` w-full justify-between text-[20px] font-bold [&>*]:border-box [&_*]:border-collapse`}>
         <section>点呼記録簿</section>
 
@@ -87,7 +87,9 @@ export default function TenkoPaperHeader({date}) {
                   ],
                 }
               }),
-            }).WithWrapper({className: `text-center border rounded-none [&_td]:!px-6`})}
+            }).WithWrapper({
+              className: `text-center border rounded-none [&_td]:!px-6`,
+            })}
           </div>
         </div>
       </R_Stack>
@@ -107,33 +109,36 @@ export default function TenkoPaperHeader({date}) {
           定期的に個別チェックすることを求められる。
         </div>
       </R_Stack>
-      {/* 選択欄 */}
-      <R_Stack className={` justify-between items-stretch gap-0`}>
-        {sections.map((section, i) => (
-          <Fragment key={i}>
-            <div className={` border [&_td]:p-1 w-1/5 p-1`}>
-              <table className={` w-full `}>
-                <thead>
-                  <tr>
-                    <th>{section.header}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {section.children.map((cols, i) => {
-                    return (
-                      <tr key={i}>
-                        {cols.map((data, j) => {
-                          return <td key={j}>{data}</td>
-                        })}
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </Fragment>
-        ))}
-      </R_Stack>
-    </>
+
+      <div>
+        {/* 選択欄 */}
+        <R_Stack className={` justify-between items-stretch gap-0`}>
+          {sections.map((section, i) => (
+            <Fragment key={i}>
+              <div className={` border [&_td]:p-1 w-1/5 p-1`}>
+                <table className={` w-full `}>
+                  <thead>
+                    <tr>
+                      <th>{section.header}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {section.children.map((cols, i) => {
+                      return (
+                        <tr key={i}>
+                          {cols.map((data, j) => {
+                            return <td key={j}>{data}</td>
+                          })}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Fragment>
+          ))}
+        </R_Stack>
+      </div>
+    </div>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 import {FileHandler} from 'src/cm/class/FileHandler'
 // import {extname} from 'path'
-import BasicModal from 'src/cm/components/utils/modal/BasicModal'
 
 import dynamic from 'next/dynamic'
 
@@ -15,7 +14,7 @@ import {pathToNoImage} from '@components/DataLogic/TFs/MyForm/components/HookFor
 import {DownloadIcon} from 'lucide-react'
 import {T_LINK} from '@components/styles/common-components/links'
 import {useMemo, memo} from 'react'
-import {ZoomIn} from 'lucide-react'
+import ShadModal from '@cm/shadcn-ui/components/ShadModal'
 
 const ReactPlayer = dynamic(() => import('react-player'), {
   ssr: false,
@@ -120,16 +119,16 @@ export default function ContentPlayer(props: ContentPlayerProps) {
 
         <div>
           <Center className={` relative `} style={{...styles.thumbnail}}>
-            <BasicModal
+            <ShadModal
               {...{
-                Trigger: <div className="cursor-pointer w-full h-full">{thumbnail}</div>,
+                Trigger: <div className="cursor-zoom-in w-full h-full">{thumbnail}</div>,
                 alertOnClose: false,
               }}
             >
               <Center style={{...fileTypeAndStyles.mainStyle, overflow: 'hidden'}}>
                 <div className={`w-full h-full`}>{main}</div>
               </Center>
-            </BasicModal>
+            </ShadModal>
             <div className={`absolute  bottom-0! right-0!`}>
               <R_Stack className={` justify-end pb-1`}>
                 <DownloadBtn src={src} options={options} />

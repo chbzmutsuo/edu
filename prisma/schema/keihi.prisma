@@ -31,12 +31,6 @@ model KeihiExpense {
  insight  String? // 統合されたインサイト
  autoTags String[] // 自動生成タグ
 
- // 旧AI生成情報（段階的削除予定）
- businessInsightDetail  String? // 営業インサイト（詳細）
- businessInsightSummary String? // 営業インサイト（要約）
- techInsightDetail      String? // 技術インサイト（詳細）
- techInsightSummary     String? // 技術インサイト（要約）
-
  // MoneyForward用情報
  mfSubject     String? // MF用科目
  mfSubAccount  String? // MF用補助科目

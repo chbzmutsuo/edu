@@ -3,9 +3,9 @@ import {defaultRegister} from '@class/builders/ColBuilderVariables'
 import {formatDate} from '@class/Days/date-utils/formatters'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {forSelectConfig} from '@cm/types/select-types'
 import {TbmFuelCard, TbmVehicleMaintenanceRecord} from '@prisma/client'
 import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
+import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 
 export const TbmVehicleColBuilder = (props: columnGetterType) => {
   return new Fields([
@@ -169,31 +169,4 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
   ]).transposeColumns()
 }
 
-export const getVehicleForSelectConfig = ({tbmBaseId}: {tbmBaseId?: number}) => {
-  const result: forSelectConfig = {
-    where: ({latestFormData}) => {
-      return {tbmBaseId: latestFormData?.tbmBaseId ?? tbmBaseId}
-    },
-
-    orderBy: [{id: `asc`}],
-    select: {
-      id: `number`,
-      code: `string`,
-      frameNo: `string`,
-      vehicleNumber: `string`,
-      type: `string`,
-      shape: `string`,
-      name: false,
-    },
-    nameChanger(op) {
-      if (op) {
-        const {type, shape, frameNo} = op
-        return {...op, name: op ? [`[${type ?? '-'}]`, frameNo, op.vehicleNumber, shape].filter(Boolean).join(` `) : ''}
-      }
-
-      return op
-    },
-  }
-
-  return result
-}
+export const getVehicleForSelectConfig = VehicleCl.getVehicleForSelectConfig

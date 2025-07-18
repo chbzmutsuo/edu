@@ -38,6 +38,16 @@ export class ColBuilder {
   static odometerInput = odometerInputColBuilder
   static tbmCustomer = tbmCustomerColBuilder
   static tbmVehicleMaintenanceRecord = tbmVehicleMaintananceRecordColBuilder
+  static tbmKeihi = (props: columnGetterType) => {
+    const {tbmBaseId} = props.ColBuilderExtraProps ?? {}
+    return new Fields([
+      {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {defaultValue: tbmBaseId, disabled: tbmBaseId}},
+      {id: 'item', label: '項目', type: 'text', form: {...defaultRegister}},
+      {id: 'amount', label: '金額', type: 'float', form: {...defaultRegister}},
+      {id: 'date', label: '日付', type: 'date', form: {...defaultRegister}},
+      {id: 'remark', label: '備考', type: 'textarea', form: {}},
+    ]).transposeColumns()
+  }
   static tbmEtcMeisai = (props: columnGetterType) => {
     const {tbmBaseId} = props.ColBuilderExtraProps ?? {}
     return new Fields([

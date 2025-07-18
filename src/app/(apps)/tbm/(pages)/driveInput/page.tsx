@@ -1,3 +1,4 @@
+import {getDriveInputPageData} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
 import DriveInputCC from '@app/(apps)/tbm/(pages)/driveInput/DriveInputCC'
 import {getMidnight} from '@class/Days/date-utils/calculations'
 import {C_Stack, FitMargin, Padding} from '@components/styles/common-components/common-components'
@@ -22,7 +23,10 @@ export default async function Page(props) {
   const {userId} = scopes.getTbmScopes()
   const user = await prisma.user.findUnique({where: {id: userId}})
 
-  const driveScheduleList: any = await getData({user, whereQuery})
+  const driveScheduleList: any = await getDriveInputPageData({
+    user,
+    whereQuery,
+  })
 
   return (
     <Padding>
@@ -36,25 +40,4 @@ export default async function Page(props) {
       </FitMargin>
     </Padding>
   )
-}
-
-const getData = async ({user, whereQuery}) => {
-  const driveScheduleList = await prisma.tbmDriveSchedule.findMany({
-    where: {userId: user.id, date: {equals: whereQuery.gte}},
-    orderBy: {sortOrder: `asc`},
-    include: {
-      TbmBase: {},
-      TbmRouteGroup: {},
-      TbmVehicle: {
-        include: {
-          OdometerInput: {
-            where: {date: {lte: whereQuery.gte}},
-            orderBy: {date: `desc`},
-            take: 2,
-          },
-        },
-      },
-    },
-  })
-  return driveScheduleList
 }

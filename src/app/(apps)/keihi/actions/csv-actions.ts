@@ -1,6 +1,5 @@
 'use server'
 
-
 import prisma from 'src/lib/prisma'
 
 export interface MFJournalEntry {
@@ -108,7 +107,7 @@ export async function generateMFCSV(expenseIds?: string[]): Promise<{
         expense.amount, // 貸方金額
         0, // 貸方税額
         expense.mfMemo || expense.conversationSummary || `${expense.subject} ${expense.amount}円`, // 摘要
-        expense.businessInsightSummary || '', // 仕訳メモ
+        expense.insight || '', // 仕訳メモ
         tags, // タグ
         '', // MF仕訳タイプ
         '', // 決算整理仕訳

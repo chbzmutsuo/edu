@@ -1,0 +1,92 @@
+'use client'
+
+import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
+import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
+import {formatDate} from '@class/Days/date-utils/formatters'
+import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+
+import {TextBlue, TextGreen, TextRed} from '@components/styles/common-components/Alert'
+
+import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import BasicModal from '@components/utils/modal/BasicModal'
+import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+
+import React from 'react'
+
+export const DriveScheduleItem = (props: {
+  HK_HaishaTableEditorGMF: any
+  drive: driveInputPageType['driveScheduleList'][number]
+  finished: boolean
+  TextBtnClass: string
+  useGlobalProps: any
+}) => {
+  const {drive, finished, TextBtnClass, HK_HaishaTableEditorGMF, useGlobalProps} = props
+  const {toggleLoad, session, query} = useGlobalProps
+
+  return (
+    <R_Stack className="gap-4">
+      <section>
+        <C_Stack>
+          <span
+            {...{
+              className: `onHover`,
+              onClick: async () => {
+                toggleLoad(async () => {
+                  await doStandardPrisma(`tbmDriveSchedule`, `update`, {
+                    where: {id: drive.id},
+                    data: {finished: !finished},
+                  })
+                })
+              },
+            }}
+          >
+            {finished ? <TextGreen className={TextBtnClass}>完了</TextGreen> : <TextRed className={TextBtnClass}>未</TextRed>}
+          </span>
+          <small>{formatDate(drive.date)}</small>
+        </C_Stack>
+      </section>
+
+      <section>
+        <C_Stack>
+          <strong>{drive.TbmRouteGroup?.name}</strong>
+          <TextBlue
+            {...{
+              className: TextBtnClass,
+              onClick: async item => {
+                HK_HaishaTableEditorGMF.setGMF_OPEN({
+                  tbmDriveSchedule: drive,
+                  user: session,
+                  date: drive.date,
+                  tbmBase: drive.TbmBase,
+                  tbmRouteGroup: drive.TbmRouteGroup,
+                })
+              },
+            }}
+          >
+            {drive.TbmVehicle?.vehicleNumber}
+          </TextBlue>
+        </C_Stack>
+      </section>
+
+      <section>
+        <BasicModal Trigger={<div className={`t-link`}>画像({drive.TbmDriveScheduleImage.length})</div>}>
+          <ChildCreator
+            {...{
+              ParentData: drive,
+              useGlobalProps,
+              additional: {
+                include: {TbmDriveSchedule: {}},
+              },
+
+              models: {parent: `tbmDriveSchedule`, children: `tbmDriveScheduleImage`},
+              columns: ColBuilder.tbmDriveScheduleImage({
+                useGlobalProps,
+                ColBuilderExtraProps: {tbmDriveScheduleId: drive.id},
+              }),
+            }}
+          />
+        </BasicModal>
+      </section>
+    </R_Stack>
+  )
+}

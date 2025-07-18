@@ -1,6 +1,5 @@
 'use client'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
-import TbmUserDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmUserDetail'
 import TbmVehicleDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmVehicleDetail'
 import {autoCreateMonthConfig} from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/autoCreateMonthConfig'
 import RouteDisplay from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/RouteDisplay'
@@ -102,19 +101,6 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
             },
 
             {
-              label: <TextBlue> ドライバー/ユーザー</TextBlue>,
-              component: (
-                <ChildCreator
-                  {...{
-                    ...childCreatorProps,
-                    models: {parent: `tbmBase`, children: `user`},
-                    columns: ColBuilder.user(ColBuiderProps),
-                    EditForm: TbmUserDetail,
-                  }}
-                />
-              ),
-            },
-            {
               label: <TextBlue> 荷主マスタ</TextBlue>,
               component: (
                 <ChildCreator
@@ -122,6 +108,22 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
                     ...childCreatorProps,
                     models: {parent: `tbmBase`, children: `tbmCustomer`},
                     columns: ColBuilder.tbmCustomer(ColBuiderProps),
+                  }}
+                />
+              ),
+            },
+            {
+              label: <TextBlue> 経費</TextBlue>,
+              component: (
+                <ChildCreator
+                  {...{
+                    ...childCreatorProps,
+                    models: {parent: `tbmBase`, children: `tbmKeihi`},
+                    columns: ColBuilder.tbmKeihi(ColBuiderProps),
+                    additional: {
+                      include: {TbmBase: {}},
+                      orderBy: [{date: 'desc'}],
+                    },
                   }}
                 />
               ),

@@ -10,11 +10,11 @@ import React from 'react'
 
 import {twMerge} from 'tailwind-merge'
 
-export default function TenkoPaperBody({OrderByPickUpTime}) {
+export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
   const minRowCount = Math.max(OrderByPickUpTime.length, 40)
 
   return (
-    <div>
+    <div style={tableStyle}>
       {CsvTable({
         // headerRecords: [
         //   {
@@ -103,8 +103,8 @@ export default function TenkoPaperBody({OrderByPickUpTime}) {
           }),
         ],
       }).WithWrapper({
-        size: `sm`,
         className: twMerge(
+          'max-h-none',
           `text-center border  rounded-none w-full`,
           `[&_th]:!text-[11px] `,
           `[&_td]:!text-[11px]`,
@@ -112,50 +112,53 @@ export default function TenkoPaperBody({OrderByPickUpTime}) {
           `[&_th]:!bg-inherit`,
           `[&_th]:!border`,
 
-          `[&_td]:!px-6 `,
+          `[&_td]:!px-4 `,
           `[&_td]:!border`,
           `[&_td]:!p-0`
         ),
+        style: {
+          ...tableStyle,
+        },
       })}
     </div>
   )
 }
 
-const getTenkoHeaders = (sectionName: `乗務前点呼` | `中間点呼` | `乗務後点呼`) => {
-  let cols = [
-    {cellValue: `点呼時刻`, rowSpan: 2},
-    {cellValue: `点呼方法`, rowSpan: 2},
-    {cellValue: `アルコール検知器使用の有無`, rowSpan: 2, style: {width: 50}},
-    {cellValue: `確認事項`, colSpan: sectionName === `乗務前点呼` ? 4 : 3, rowSpan: 1},
-    {cellValue: `点呼執行者印`, rowSpan: 2, style: {width: 50}},
-  ]
+// const getTenkoHeaders = (sectionName: `乗務前点呼` | `中間点呼` | `乗務後点呼`) => {
+//   let cols = [
+//     {cellValue: `点呼時刻`, rowSpan: 2},
+//     {cellValue: `点呼方法`, rowSpan: 2},
+//     {cellValue: `アルコール検知器使用の有無`, rowSpan: 2, style: {width: 50}},
+//     {cellValue: `確認事項`, colSpan: sectionName === `乗務前点呼` ? 4 : 3, rowSpan: 1},
+//     {cellValue: `点呼執行者印`, rowSpan: 2, style: {width: 50}},
+//   ]
 
-  if (sectionName === `乗務後点呼`) {
-    cols = arr__insertItemAtIndex(cols, 4, {cellValue: `交代運転者に足しする通知・その他`, rowSpan: 2})
-  }
+//   if (sectionName === `乗務後点呼`) {
+//     cols = arr__insertItemAtIndex(cols, 4, {cellValue: `交代運転者に足しする通知・その他`, rowSpan: 2})
+//   }
 
-  return cols
-}
+//   return cols
+// }
 
-const getTenkoHeader2 = (sectionName: `乗務前点呼` | `中間点呼` | `乗務後点呼`) => {
-  const kakuninCols =
-    sectionName === `乗務前点呼`
-      ? [
-          //
-          {cellValue: `①`},
-          {cellValue: `②`},
-          {cellValue: `③`},
-          {cellValue: `④`},
-        ]
-      : [
-          //
-          {cellValue: `①`},
-          {cellValue: `②`},
-          {cellValue: `③`},
-        ]
+// const getTenkoHeader2 = (sectionName: `乗務前点呼` | `中間点呼` | `乗務後点呼`) => {
+//   const kakuninCols =
+//     sectionName === `乗務前点呼`
+//       ? [
+//           //
+//           {cellValue: `①`},
+//           {cellValue: `②`},
+//           {cellValue: `③`},
+//           {cellValue: `④`},
+//         ]
+//       : [
+//           //
+//           {cellValue: `①`},
+//           {cellValue: `②`},
+//           {cellValue: `③`},
+//         ]
 
-  return kakuninCols
-}
+//   return kakuninCols
+// }
 
 const getTenkoBody = (sectionName: `乗務前点呼` | `中間点呼` | `乗務後点呼`) => {
   const kakuninCols =

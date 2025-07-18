@@ -1,11 +1,10 @@
-import {DriveSchedule} from '@app/(apps)/tbm/(class)/DriveSchedule'
-import {TbmBase, User} from '@prisma/client'
+import {TbmBase, TbmDriveSchedule, User} from '@prisma/client'
 
 export class ScheduleCell {
   ScheduleCell
 
   constructor(
-    ScheduleCell: DriveSchedule & {
+    ScheduleCell: TbmDriveSchedule & {
       User: User
       TbmBase: TbmBase
     }

@@ -8,29 +8,22 @@ import {arr__uniqArray} from '@class/ArrHandler/array-utils/basic-operations'
 
 import {Days} from '@class/Days/Days'
 import {toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+
 import {NumHandler} from '@class/NumHandler'
-import {TextBlue, TextGray, TextGreen, TextOrange, TextRed} from '@components/styles/common-components/Alert'
+import {TextBlue, TextGray, TextGreen, TextRed} from '@components/styles/common-components/Alert'
 import {Button} from '@components/styles/common-components/Button'
 import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
 import useModal from '@components/utils/modal/useModal'
 import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
 import {cl} from '@lib/methods/common'
 import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {OdometerInput, TbmBase, TbmDriveSchedule, TbmRouteGroup, TbmVehicle} from '@prisma/client'
-import React from 'react'
+import {DriveScheduleCl} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+import {DriveScheduleItem} from './DriveScheduleItem'
 
-export default function DriveInputCC({
-  driveScheduleList,
-}: {
-  driveScheduleList: (TbmDriveSchedule & {
-    TbmBase: TbmBase
-    TbmRouteGroup: TbmRouteGroup
-    TbmVehicle: TbmVehicle & {OdometerInput: OdometerInput[]}
-  })[]
-}) {
-  const {toggleLoad, session, query, router} = useGlobal()
+export default function DriveInputCC({driveScheduleList}: {driveScheduleList: driveInputPageType['driveScheduleList']}) {
+  const useGlobalProps = useGlobal()
+  const {toggleLoad, session, query, router} = useGlobalProps
   const HK_HaishaTableEditorGMF = useHaishaTableEditorGMF({
     afterUpdate: ({res}) => router.refresh(),
     afterDelete: ({res}) => router.refresh(),
@@ -43,12 +36,7 @@ export default function DriveInputCC({
   const theDate = toUtc(query.from)
   const TextBtnClass = ` cursor-pointer text-lg font-bold hover:bg-gray-300 rounded-md p-1`
 
-  const unkoCompleted = driveScheduleList.every(d => d.finished)
-
-  const carInputCompleted = driveScheduleList.every(d => d.TbmVehicle?.OdometerInput.length)
-
-  const gyomushuryo = driveScheduleList.every(d => d.confirmed)
-
+  const {unkoCompleted, carInputCompleted, gyomushuryo} = DriveScheduleCl.getStatus(driveScheduleList)
   const {setopen, handleClose, Modal} = useModal()
 
   return (
@@ -66,53 +54,19 @@ export default function DriveInputCC({
               )}
             >
               {!driveScheduleList.length && <TextGray>予定がありません</TextGray>}
-              {driveScheduleList.map(d => {
-                const {finished} = d
+              {driveScheduleList.map(drive => {
+                const {finished} = drive
                 return (
-                  <div key={d.id} className="rounded-sm border-b  p-2 py-4 ">
-                    <R_Stack className="gap-4">
-                      <C_Stack>
-                        <span
-                          {...{
-                            className: `onHover`,
-                            onClick: async () => {
-                              toggleLoad(async () => {
-                                await doStandardPrisma(`tbmDriveSchedule`, `update`, {
-                                  where: {id: d.id},
-                                  data: {finished: !finished},
-                                })
-                              })
-                            },
-                          }}
-                        >
-                          {finished ? (
-                            <TextGreen className={TextBtnClass}>完了</TextGreen>
-                          ) : (
-                            <TextRed className={TextBtnClass}>未</TextRed>
-                          )}
-                        </span>
-                        <small>{formatDate(d.date)}</small>
-                      </C_Stack>
-                      <C_Stack>
-                        <strong>{d.TbmRouteGroup?.name}</strong>
-                        <TextBlue
-                          {...{
-                            className: TextBtnClass,
-                            onClick: async item => {
-                              HK_HaishaTableEditorGMF.setGMF_OPEN({
-                                tbmDriveSchedule: d,
-                                user: session,
-                                date: d.date,
-                                tbmBase: d.TbmBase,
-                                tbmRouteGroup: d.TbmRouteGroup,
-                              })
-                            },
-                          }}
-                        >
-                          {d.TbmVehicle?.vehicleNumber}
-                        </TextBlue>
-                      </C_Stack>
-                    </R_Stack>
+                  <div key={drive.id} className="p-2 py-4 [&:not(:last-child)]:border-b">
+                    <DriveScheduleItem
+                      {...{
+                        drive,
+                        finished: !!finished,
+                        TextBtnClass,
+                        HK_HaishaTableEditorGMF,
+                        useGlobalProps,
+                      }}
+                    />
                   </div>
                 )
               })}
@@ -129,7 +83,7 @@ export default function DriveInputCC({
             >
               {!allVehicleIdList.length && <TextGray>予定がありません</TextGray>}
               {allVehicleIdList.map((id, i) => {
-                const TbmVehicle = driveScheduleList.map(item => item.TbmVehicle).find(vehicle => vehicle.id === id)
+                const TbmVehicle = driveScheduleList.map(item => item.TbmVehicle).find(vehicle => vehicle?.id === id)
 
                 const TodayMeter = TbmVehicle?.OdometerInput.find(item => {
                   return Days.validate.isSameDate(item.date, theDate)
@@ -150,19 +104,19 @@ export default function DriveInputCC({
                 }
 
                 return (
-                  <div key={i} className="rounded-sm p-1 ">
-                    <R_Stack className="justify-between   border-b">
+                  <div key={i} className=" p-1 [&:not(:last-child)]:border-b">
+                    <R_Stack className="justify-between   ">
                       <C_Stack className="w-[80px] justify-between gap-1 font-semibold">
                         <small>({TbmVehicle?.vehicleNumber})</small>
                       </C_Stack>
 
                       <R_Stack className={`gap-3`}>
                         <C_Stack className={` w-[180px] gap-0`}>
-                          <small className={`flex gap-1`}>
+                          {/* <small className={`flex gap-1`}>
                             <span>最終:</span>
                             <span>{formatDate(LastMeter?.date, 'MM/DD(ddd)')}</span>
                             <TextOrange>{NumHandler.toPrice(lastOdometerEnd ?? 0)}km</TextOrange>
-                          </small>
+                          </small> */}
                           <div>
                             <span>乗車:</span>
                             {odometerStart ? (
@@ -214,12 +168,14 @@ export default function DriveInputCC({
         <section className={` text-center`}>
           <C_Stack className={` items-center`}>
             <div>{gyomushuryo && <TextRed className={` text-xl font-bold`}>当日業務は終了しています。</TextRed>}</div>
+
             <Button
               onClick={async () => {
                 setopen(true)
               }}
               className={`text-2xl`}
               disabled={!(unkoCompleted && carInputCompleted)}
+              color={gyomushuryo ? 'red' : 'blue'}
             >
               {gyomushuryo ? '業務終了を撤回する' : '業務終了'}
             </Button>

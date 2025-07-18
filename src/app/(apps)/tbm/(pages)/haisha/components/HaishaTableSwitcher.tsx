@@ -15,8 +15,8 @@ export default function HaishaTableSwitcher() {
         label: `モード`,
         forSelect: {
           optionsOrOptionFetcher: [
-            {name: 'ドライバ', label: 'DRIVER', value: 'DRIVER'},
-            {name: '便', label: 'ROUTE', value: 'ROUTE'},
+            {name: 'ドライバ', label: 'ドライバ', value: 'DRIVER'},
+            {name: '便', label: '便', value: 'ROUTE'},
           ],
         },
       },

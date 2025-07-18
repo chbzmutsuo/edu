@@ -3,11 +3,11 @@ import {ExpenseFormData, AIDraft} from '../types'
 import {DEFAULT_CONVERSATION_PURPOSES} from '../(constants)/conversation-purposes'
 import {getTodayString} from '../utils'
 
-interface UseExpenseFormOptions {
+interface UseExpenseFormManagerOptions {
   initialData?: Partial<ExpenseFormData>
 }
 
-export const useExpenseForm = (options: UseExpenseFormOptions = {}) => {
+export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}) => {
   const {initialData} = options
 
   const [formData, setFormData] = useState<ExpenseFormData>({
