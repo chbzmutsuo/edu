@@ -1,9 +1,9 @@
-import {Code, codeObjectArgs} from '@class/Code'
+import {Code, codeObjectArgs} from '@cm/class/Code'
 
 export class TBM_CODE extends Code {
   static VEHICLE: {MAINTANANCE_RECORD_TYPE: codeObjectArgs} = {
     MAINTANANCE_RECORD_TYPE: {
-      '01': {label: `3ヶ月点検`, color: `red`},
+      '01': {label: `3ヶ月点検`},
       '02': {label: `車検`, color: `red`},
       '03': {label: `一般修理`, color: `red`},
       '04': {label: `プレート変更`, color: `red`},
@@ -28,8 +28,19 @@ export class TBM_CODE extends Code {
   }
   static USER: {TYPE: codeObjectArgs} = {
     TYPE: {
-      '01': {label: `一般`, color: ``},
+      '01': {label: `一般`, color: `gray`},
       '02': {label: `委託用`, color: `red`},
+    },
+  }
+
+  static WORK_STATUS: {KBN: codeObjectArgs} = {
+    KBN: {
+      '01': {label: `出勤`},
+      '02': {label: `公休`},
+      '03': {label: `休日出勤`},
+      '04': {label: `有給休暇`},
+      '05': {label: `欠勤`},
+      '06': {label: `早退`},
     },
   }
 }

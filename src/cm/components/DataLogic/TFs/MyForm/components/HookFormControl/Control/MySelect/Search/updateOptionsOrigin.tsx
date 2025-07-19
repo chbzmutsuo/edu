@@ -1,11 +1,11 @@
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {optionType} from 'src/cm/class/Fields/col-operator-types'
-import {ForSelectConfig} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/ForSelectConfig'
-import {OrSearchArray} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/OrSearchArray'
+import {ForSelectConfig} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/ForSelectConfig'
+import {OrSearchArray} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/OrSearchArray'
 
-import {scaleUpWhereQueryForOptionSearch} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-client'
-import {mapAdjustOptionValue} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
-import {contextsType} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+import {scaleUpWhereQueryForOptionSearch} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-client'
+import {mapAdjustOptionValue} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
 import {generateUnivesalApiParamsForSelect} from 'src/cm/hooks/useCacheSelectOptions/lib/generateUnivesalApiParamsForSelect'
 
 export const updateOptionsOrigin = async ({input, options, isStaticOptions, contexts}) => {

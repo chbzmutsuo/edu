@@ -1,13 +1,13 @@
 'use client'
 import {getKyuyoTableList, KyuyoRecord} from '@app/(apps)/tbm/(server-actions)/getKyuyoTableList'
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 
-import {FitMargin} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
+import {FitMargin} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {useEffect, useState} from 'react'
 

@@ -1,17 +1,17 @@
 import useSWR from 'swr'
 import {colType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import {
   convertColIdToModelName,
   getSelectId,
-} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {arr__uniqArray} from '@class/ArrHandler/array-utils/basic-operations'
-import {DH__switchColType} from '@class/DataHandler/type-converter'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {arr__uniqArray} from '@cm/class/ArrHandler/array-utils/basic-operations'
+import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 
 export const renewOptions = ({col, allOptions, setallOptionsState, newOptions}) => {
   if (setallOptionsState) {

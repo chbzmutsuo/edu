@@ -4,9 +4,9 @@ import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-c
 import {PlusCircleIcon} from 'lucide-react'
 import React from 'react'
 import {GetNinkuList} from 'src/non-common/(chains)/getGenbaScheduleStatus/getNinkuList'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {Alert} from '@components/styles/common-components/Alert'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {Circle} from 'lucide-react'
 
 export const TaskWithNinku = ({GenbaDay, editable, setGenbaDayCardEditModal, GenbaDayTaskMidTable}) => {

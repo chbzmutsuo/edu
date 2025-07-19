@@ -4,11 +4,11 @@ import {cl} from 'src/cm/lib/methods/common'
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {IconBtn} from 'src/cm/components/styles/common-components/IconBtn'
 
-import {EasySearchObject} from '@class/builders/QueryBuilderVariables'
+import {EasySearchObject} from '@cm/class/builders/QueryBuilderVariables'
 
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {twMerge} from 'tailwind-merge'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
 
 export type EsButtonProps = {
   IsSingleItemGroup: boolean

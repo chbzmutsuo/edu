@@ -3,7 +3,7 @@
 import {C_Stack, MyContainer, Padding} from '@cm/components/styles/common-components/common-components'
 
 import {getSecondLayerMenus} from '@app/(apps)/KM/components/common'
-import {ParameterCard} from '@components/styles/common-components/ParameterCard'
+import {ParameterCard} from '@cm/components/styles/common-components/ParameterCard'
 
 export const Services = ({kaizenClient}) => {
   return (

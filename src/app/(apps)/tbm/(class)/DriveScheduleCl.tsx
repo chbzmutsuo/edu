@@ -1,5 +1,5 @@
 import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
 export class DriveScheduleCl {
   DriveSchedule

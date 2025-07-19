@@ -2,10 +2,10 @@
 
 import {Cart} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/Cart'
 
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack, FitMargin, R_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 import React, {useState} from 'react'
 
@@ -20,11 +20,11 @@ import useAddFormAndButton from '@app/(apps)/aquapot/(pages)/sale/register/Sales
 import {serverUpdateSale} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/server-updateSale'
 
 import {isSaleTestMode} from '@app/(apps)/aquapot/(constants)/config'
-import {sleep} from '@lib/methods/common'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {PaperLarge} from '@components/styles/common-components/paper'
-import {toastByResult} from '@lib/ui/notifications'
-import useWindowSize from '@hooks/useWindowSize'
+import {sleep} from '@cm/lib/methods/common'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
+import {PaperLarge} from '@cm/components/styles/common-components/paper'
+import {toastByResult} from '@cm/lib/ui/notifications'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export type CartItem = {
   uuid: string

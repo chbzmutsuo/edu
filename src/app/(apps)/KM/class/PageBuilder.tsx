@@ -1,8 +1,8 @@
 'use client'
 
 import {DetailPagePropType} from '@cm/types/types'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/KM/class/ColBuilder'

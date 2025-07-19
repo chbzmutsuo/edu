@@ -1,7 +1,7 @@
 'use client'
-import {Button} from '@components/styles/common-components/Button'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {basePath} from '@lib/methods/common'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {basePath} from '@cm/lib/methods/common'
 import React from 'react'
 
 export default function CalenderRefresher() {

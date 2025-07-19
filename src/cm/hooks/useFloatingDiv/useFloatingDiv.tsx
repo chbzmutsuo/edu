@@ -1,9 +1,9 @@
-import {C_Stack, Center, R_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack, Center, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {judgeIfOutside} from '@hooks/useFloatingDiv/judgeIfOutside'
-import {setDivPosition} from '@hooks/useFloatingDiv/setDivPosition'
+import {judgeIfOutside} from '@cm/hooks/useFloatingDiv/judgeIfOutside'
+import {setDivPosition} from '@cm/hooks/useFloatingDiv/setDivPosition'
 
-import {Z_INDEX} from '@lib/constants/constants'
+import {Z_INDEX} from '@cm/lib/constants/constants'
 import {GridIcon} from 'lucide-react'
 import {useState, useCallback, useRef, CSSProperties, useEffect} from 'react'
 

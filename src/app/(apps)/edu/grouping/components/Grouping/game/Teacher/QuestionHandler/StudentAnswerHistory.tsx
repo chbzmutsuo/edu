@@ -1,10 +1,10 @@
 import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 import SimpleTable from '@cm/components/utils/SimpleTable'
-import {Alert} from '@components/styles/common-components/Alert'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 
 const StudentAnswerHistory = ({student, GameCtxValue}) => {
   const {Game, players, GAME_CLASS, activePrompt} = GameCtxValue

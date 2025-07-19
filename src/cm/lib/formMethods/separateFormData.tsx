@@ -1,9 +1,9 @@
 import {additionalPropsType, dataModelNameType} from '@cm/types/types'
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
 import {anyObject} from '@cm/types/utility-types'
 
-import {StrHandler} from '@class/StrHandler'
+import {StrHandler} from '@cm/class/StrHandler'
 
 export type myFormDefaultUpsertPropType = {
   latestFormData: anyObject

@@ -4,16 +4,16 @@ import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
 
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import {SearchQuery, searchQueryKey, Sub} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
+import {SearchQuery, searchQueryKey, Sub} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
 
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 
-import SearchedItemList from '@components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/SearchedItemList'
+import SearchedItemList from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/SearchedItemList'
 
-import {Button} from '@components/styles/common-components/Button'
-import {Main} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/Main'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
-import useWindowSize from '@hooks/useWindowSize'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Main} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/Main'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 type SearchHandler = {
   columns: colType[][]

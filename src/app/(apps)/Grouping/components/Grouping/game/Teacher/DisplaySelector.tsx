@@ -1,6 +1,6 @@
 import React from 'react'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export const DisplaySelector = ({selectors}) => (
   <C_Stack className={`items-center`}>

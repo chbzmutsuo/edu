@@ -21,7 +21,7 @@ import {
   HealthCategory,
 } from '../../(constants)/types'
 import {DAILY_CHART_HEIGHT, DAILY_CHART_MARGIN} from '@app/(apps)/health/(components)/DailyChart/constants'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
 // 血糖値帯域定義
 const BLOOD_SUGAR_ZONES = [

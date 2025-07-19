@@ -1,7 +1,7 @@
 import BasicModal from '@cm/components/utils/modal/BasicModal'
-import {Button} from '@components/styles/common-components/Button'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {useState} from 'react'
 
 const HistorySelector = ({history, registerdItems, setregisterdItems}) => {

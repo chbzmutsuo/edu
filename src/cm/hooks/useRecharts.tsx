@@ -1,5 +1,5 @@
 import {Text} from 'recharts'
-import {getColorStyles} from '@lib/methods/colors'
+import {getColorStyles} from '@cm/lib/methods/colors'
 import {useMemo} from 'react'
 
 export default function useRecharts() {

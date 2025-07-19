@@ -1,7 +1,7 @@
 'use client'
 
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {bodyRecordsType, CsvTableProps} from '@components/styles/common-components/CsvTable/CsvTable'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {bodyRecordsType, CsvTableProps} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react'
 import {CSVLink} from 'react-csv'
 

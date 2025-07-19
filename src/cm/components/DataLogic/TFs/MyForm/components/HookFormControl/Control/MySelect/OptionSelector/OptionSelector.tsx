@@ -4,14 +4,14 @@ import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/commo
 
 import {optionType} from 'src/cm/class/Fields/col-operator-types'
 
-import {contextsType} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
-import {SelectOption} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/OptionSelector/SelectOption'
-import {useSearchForm} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/useSearchForm'
+import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+import {SelectOption} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/OptionSelector/SelectOption'
+import {useSearchForm} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/useSearchForm'
 // import Accordion from 'src/cm/components/utils/Accordions/Accordion'
-import CreateForm from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Create/CreateForm'
-import OptionSearcher from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/OptionSearcher'
+import CreateForm from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Create/CreateForm'
+import OptionSearcher from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/OptionSearcher'
 import {useEffect, useState, useRef} from 'react'
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn-ui/components/ui/accordion'
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn/components/ui/accordion'
 
 import {Search} from 'lucide-react'
 export const optionTakeCount = 20

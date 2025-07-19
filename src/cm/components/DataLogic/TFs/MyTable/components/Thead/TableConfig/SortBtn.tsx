@@ -1,7 +1,7 @@
 import {colType} from '@cm/types/types'
-import {TableConfigPropsType} from '@components/DataLogic/TFs/MyTable/components/TableConfig'
+import {TableConfigPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import React, {useMemo} from 'react'
-import SortHandler from '@components/DataLogic/TFs/MyTable/components/SortHandler/SortHandler'
+import SortHandler from '@cm/components/DataLogic/TFs/MyTable/components/SortHandler/SortHandler'
 
 // 型定義を追加
 interface SortBtnProps {

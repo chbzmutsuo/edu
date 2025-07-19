@@ -4,7 +4,7 @@ import {Center, C_Stack} from 'src/cm/components/styles/common-components/common
 import BasicModal from 'src/cm/components/utils/modal/BasicModal'
 import useMyNavigation from 'src/cm/hooks/globalHooks/useMyNavigation'
 import {useEffect} from 'react'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export default function Error({error, reset}) {
   const {router} = useMyNavigation()

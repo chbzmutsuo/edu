@@ -1,11 +1,11 @@
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import PlaceHolder from 'src/cm/components/utils/loader/PlaceHolder'
 import {MarkDownDisplay} from 'src/cm/components/utils/texts/MarkdownDisplay'
-import {contextsType} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
 import {CssString} from 'src/cm/components/styles/cssString'
 
 import React from 'react'
-import {IconBtnForSelect} from '@components/styles/common-components/IconBtn'
+import {IconBtnForSelect} from '@cm/components/styles/common-components/IconBtn'
 import {twMerge} from 'tailwind-merge'
 import {ChevronDown} from 'lucide-react'
 

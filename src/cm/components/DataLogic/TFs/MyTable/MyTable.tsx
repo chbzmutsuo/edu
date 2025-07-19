@@ -1,16 +1,16 @@
 'use client'
 import React, {useMemo} from 'react'
-import {TableSkelton} from '@components/utils/loader/TableSkelton'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import {TableSkelton} from '@cm/components/utils/loader/TableSkelton'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 
 // 分割されたコンポーネントをインポート
 import {MyTableInfiniteScroll} from './MyTableInfiniteScroll'
 import {MyTableControls} from './components/MyTableControls/MyTableControls'
 import {useMyTableLogic} from './hooks/useMyTableLogic'
 import {MainTable} from './components/MainTable'
-import useLogOnRender from '@hooks/useLogOnRender'
+import useLogOnRender from '@cm/hooks/useLogOnRender'
 
 // 型定義
 interface MyTableProps {

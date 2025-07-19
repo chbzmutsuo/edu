@@ -1,22 +1,26 @@
 'use client'
 import React from 'react'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {R_Stack, C_Stack} from '@components/styles/common-components/common-components'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {R_Stack, C_Stack} from '@cm/components/styles/common-components/common-components'
 import {PlusCircleIcon, SquarePen, TruckIcon} from 'lucide-react'
 import Link from 'next/link'
-import {HREF} from '@lib/methods/urls'
-import {createUpdate} from '@lib/methods/createUpdate'
+import {HREF} from '@cm/lib/methods/urls'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {TBM_STATUS} from '@app/(apps)/tbm/(constants)/TBM_STATUS'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {twMerge} from 'tailwind-merge'
 import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
+import {Code} from '@cm/class/Code'
+import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
+
+const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
 
 // 作業ステータス選択コンポーネント
 export const WorkStatusSelector = React.memo(
   ({userWorkStatus, user, date, fetchData}: {userWorkStatus: any; user: any; date: Date; fetchData: () => void}) => (
     <select
       value={userWorkStatus?.workStatus ?? ''}
-      className="w-12 rounded-sm border border-gray-300 p-0.5"
+      className={`w-[100px] rounded-sm border  p-0.5 ${userWorkStatus?.workStatus ? '' : 'bg-gray-200 opacity-80'}`}
       onChange={async e => {
         const unique_userId_date = {
           userId: user?.id ?? 0,
@@ -30,9 +34,11 @@ export const WorkStatusSelector = React.memo(
       }}
     >
       <option value="">-</option>
-      <option value="稼働">稼</option>
-      <option value="休み">休</option>
-      <option value="有給">有</option>
+      {WorkStatusList.map((workStatus, i) => (
+        <option key={i} value={workStatus.code}>
+          {workStatus.label}
+        </option>
+      ))}
     </select>
   )
 )

@@ -1,4 +1,4 @@
-import {Code} from '@class/Code'
+import {Code} from '@cm/class/Code'
 import {stockConfig_name, stockConfig_type} from 'src/non-common/EsCollection/(stock)/getStockConfig'
 
 export class STOCK_CODE extends Code {

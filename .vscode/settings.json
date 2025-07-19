@@ -1,20 +1,9 @@
 {
   "files.watcherExclude": {
-    "/.git/objects/": true,
-    "/.git/subtree-cache/": true,
-    "/node_modules/": true,
-    "/.next/": true,
-    "/.cache/": true,
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/.git/**": true,
-    "**/.histroy/**": true,
-    "**/.ipynb_checkpoints/**": true,
+    "**/*.dump": true,
     "**/node_modules/**": true,
-    "**/out/**": true,
-    "**/dist/**": true,
-    "**/.turbo/**": true,
-    "**/coverage/**": true
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true
   },
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
@@ -31,15 +20,22 @@
   "emmet.variables": {
     "lang": "ja"
   },
-  "editor.renderControlCharacters": true,
-  "editor.renderWhitespace": "all",
   "html.format.indentInnerHtml": true,
   "explorer.confirmDragAndDrop": false,
   "explorer.confirmDelete": false,
   "liveServer.settings.donotVerifyTags": true,
   "workbench.activityBar.iconClickBehavior": "focus",
   "[javascript]": {
-    "editor.defaultFormatter": "vscode.typescript-language-features"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "editor.formatOnSave": true,
   "files.associations": {
@@ -49,12 +45,7 @@
     ".vercelignore": "ignore",
     "*.sql": "sql"
   },
-  "editor.tabSize": 1,
-  "editor.fontSize": 10,
   "workbench.iconTheme": "vscode-icons",
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "[scss]": {
     "editor.defaultFormatter": "sibiraj-s.vscode-scss-formatter"
   },
@@ -72,46 +63,29 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "javascript.updateImportsOnFileMove.enabled": "always",
-  "[css]": {
-    "editor.defaultFormatter": "aeschli.vscode-css-formatter"
-  },
-  "window.commandCenter": true,
   "debug.javascript.unmapMissingSources": true,
   "git.openRepositoryInParentFolders": "never",
   "editor.inlineSuggest.enabled": true,
   "editor.inlineSuggest.showToolbar": "always",
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.largeFileOptimizations": false,
-  "[typescript]": {
-    "editor.autoIndent": "full",
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "editor.minimap.enabled": false,
-  "workbench.colorTheme": "Default Dark+",
   "vsicons.dontShowNewVersionMessage": true,
-  "editor.accessibilitySupport": "off",
   "cursor.cpp.disabledLanguages": [
     "plaintext",
     "markdown",
     "scminput"
   ],
-  "window.zoomLevel": 1,
   "window.confirmSaveUntitledWorkspace": false,
-  "prisma.showPrismaDataPlatformNotification": false,
-  "github.copilot.editor.enableAutoCompletions": true,
   "[prisma]": {},
   "search.exclude": {
     "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true,
     "**/node_modules": true,
     "**/.next/**": true,
     "**/dist/**": true,
     "**/coverage/**": true,
+    "**/*.dump": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
     "**/souken/**": true,
     "**/QRBP/**": true,
     "**/oktpas/**": true,
@@ -132,6 +106,7 @@
     "**/KM/**": true,
     "**/aquapot/**": true,
     "**/edu/**": true,
+    "**/health/**": true,
     "**/keihi/**": true,
     "**/kickswrap/**": true,
     "**/page/**": true,
@@ -139,8 +114,7 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tmp/**": true,
-    "**/health/**": true
+    "**/tmp/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -165,7 +139,5 @@
     "stock",
     "tmp"
   ],
-  "editor.stickyScroll.enabled": false,
-  "workbench.activityBar.location": "default",
-  "database-client.autoSync": true
+  "editor.stickyScroll.enabled": false
 }

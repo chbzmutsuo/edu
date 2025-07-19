@@ -1,20 +1,20 @@
 import {Cell} from '@app/(apps)/aquapot/(pages)/sale/list/ListCC'
-import {Days} from '@class/Days/Days'
-import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
-import {sql} from '@class/SqlBuilder/SqlBuilder'
-import {useRawSql} from '@class/SqlBuilder/useRawSql'
-import {FitMargin, Padding} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import Redirector from '@components/utils/Redirector'
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {sql} from '@cm/class/SqlBuilder/SqlBuilder'
+import {useRawSql} from '@cm/class/SqlBuilder/useRawSql'
+import {FitMargin, Padding} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import Redirector from '@cm/components/utils/Redirector'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 import React from 'react'
 
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 import Filter from '@app/(apps)/aquapot/(pages)/sale/list/Filter'
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 
 export default async function Page(props) {
   const query = await props.searchParams

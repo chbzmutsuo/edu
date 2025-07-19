@@ -186,9 +186,10 @@
   }
   .table-wrapper {
     padding: 0;
-    border-radius: 0.5rem;
+    border-radius: var(--radius-md);
     overflow: auto;
     white-space: normal;
+    border: 1px solid var(--color-gray-300);
   }
   .table-wrapper table {
     width: 100%;
@@ -210,18 +211,6 @@
     padding-top: 0.625rem;
     padding-bottom: 0.625rem;
   }
-  .table-wrapper table tbody tr:first-child td {
-    border-top-width: 0.5px;
-  }
-  .table-wrapper table tbody tr:first-child th {
-    border-top-width: 0.5px;
-  }
-  .table-wrapper table tbody tr:last-child td {
-    border-bottom-width: 0;
-  }
-  .table-wrapper table tbody tr:last-child th {
-    border-bottom-width: 0;
-  }
   .table-wrapper table th {
     border-bottom-width: 0.5px;
     border-left-width: 0;
@@ -235,8 +224,18 @@
     font-weight: bolder;
     text-align: start;
   }
+  .table-wrapper table thead {
+    z-index: 20 !important;
+  }
+  .table-wrapper table thead tr:first-child th:first-child {
+    position: sticky;
+    top: 0;
+    left: 0;
+    border-right: 1px solid var(--color-gray-500);
+  }
   .table-wrapper table thead th,
   .table-wrapper table thead td {
+    z-index: 100;
     background-color: #f8f8f8;
     color: var(--color-gray-800);
     border-color: var(--color-gray-500);
@@ -244,20 +243,18 @@
     border-left-width: 0;
     border-right-width: 0;
   }
-  .table-wrapper table tbody tr th:first-child {
-    padding-right: 0 !important;
-    position: sticky;
-    z-index: 31;
-    left: 0;
-    border-right: 2px solid #c8c8c8;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-  }
+  .table-wrapper table tbody tr th,
   .table-wrapper table tbody tr td:first-child {
+    background-color: white;
     position: sticky;
+    z-index: 10;
     left: 0;
-    z-index: 31;
-    border-right: 2px solid #c8c8c8;
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  }
+  .table-wrapper table tbody tr:first-child td, .table-wrapper table tbody tr:last-child td {
+    border-top-width: 0.5px;
+  }
+  .table-wrapper table tbody tr:first-child th, .table-wrapper table tbody tr:last-child th {
+    border-top-width: 0.5px;
   }
   .table-wrapper table tfoot {
     z-index: 100;

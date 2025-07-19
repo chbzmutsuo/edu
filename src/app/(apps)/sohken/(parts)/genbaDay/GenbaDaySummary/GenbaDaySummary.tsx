@@ -1,8 +1,8 @@
 'use client'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import React from 'react'
-import {Paper, Wrapper} from '@components/styles/common-components/paper'
+import {Paper, Wrapper} from '@cm/components/styles/common-components/paper'
 import Basics from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/Main'
 import Sub from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/Sub'
 import {Genba, GenbaDay, GenbaDayTaskMidTable} from '@prisma/client'
@@ -10,7 +10,7 @@ import {useGenbaDayBasicEditor} from '@app/(apps)/sohken/hooks/useGenbaDayBasicE
 import {chechIsHoliday} from '@app/(apps)/sohken/api/cron/refreshGoogleCalendar/chechIsHoliday'
 import useGDS_DND from '@app/(apps)/sohken/hooks/useGDS_DND'
 import {ButtonDisplay} from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/ButtonDisplay'
-import useWindowSize from '@hooks/useWindowSize'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 const GenbaDaySummary = (props: {
   GenbaDayBasicEditor_HK: ReturnType<typeof useGenbaDayBasicEditor>

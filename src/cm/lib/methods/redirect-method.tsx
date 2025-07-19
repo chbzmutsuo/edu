@@ -2,9 +2,9 @@
 import {ObjectMap} from './common'
 import {anyObject} from '@cm/types/utility-types'
 import {HREF} from 'src/cm/lib/methods/urls'
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 export const redirectToDefaultQuery = async (props: {query: anyObject; defaultQueryAsStr: anyObject; pathname?: string}) => {
   const {query, pathname = ''} = props

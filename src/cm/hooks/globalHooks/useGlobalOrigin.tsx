@@ -1,5 +1,5 @@
 'use client'
-import useMySession from '@hooks/globalHooks/useMySession'
+import useMySession from '@cm/hooks/globalHooks/useMySession'
 import useMyNavigation from 'src/cm/hooks/globalHooks/useMyNavigation'
 
 import useLoader from 'src/cm/hooks/globalHooks/useLoader'

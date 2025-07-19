@@ -1,7 +1,7 @@
 'use client'
 
 import {DetailPagePropType} from '@cm/types/types'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import {useState} from 'react'
 
 export const tbmOperationGroup = {

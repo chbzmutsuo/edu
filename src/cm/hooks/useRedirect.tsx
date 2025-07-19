@@ -1,7 +1,7 @@
 'use client'
 
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
-import {HREF} from '@lib/methods/urls'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
+import {HREF} from '@cm/lib/methods/urls'
 import {redirect} from 'next/navigation'
 
 import {useEffect} from 'react'

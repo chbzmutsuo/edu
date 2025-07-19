@@ -4,17 +4,17 @@ import ItemOrderForm from '@app/(apps)/kickswrap/components/ItemOrderForm'
 import LoginForm from '@app/(apps)/kickswrap/components/LoginForm'
 import {OrderedItemTable} from '@app/(apps)/kickswrap/components/OrderedItemTable'
 
-import {knockEmailApi} from '@lib/methods/knockEmailApi'
+import {knockEmailApi} from '@cm/lib/methods/knockEmailApi'
 
 import {useEffect, useState} from 'react'
 import {toast} from 'react-toastify'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
-import {Center, C_Stack, NoData, Padding, R_Stack} from '@components/styles/common-components/common-components'
-import {Button} from '@components/styles/common-components/Button'
+import {Center, C_Stack, NoData, Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
 import {getItems} from '@app/(apps)/kickswrap/dealer-order/getItem'
-import useIdbModel from '@hooks/useIdbModel'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import useIdbModel from '@cm/hooks/useIdbModel'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 const spreadApiPath = `https://script.google.com/macros/s/AKfycbyM3qObZfNC_oSQyDVzXqQFcCO-MzDtwUshms6cEYtpJHYW9orH35Y_0jLnkxClt8iRfw/exec`
 

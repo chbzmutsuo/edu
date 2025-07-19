@@ -1,8 +1,8 @@
 import {useEffect, useState} from 'react'
 import useGlobalOrigin from 'src/cm/hooks/globalHooks/useGlobalOrigin'
-import {useJotaiByKey} from '@hooks/useJotai'
-import {isServer} from '@lib/methods/common'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
+import {useJotaiByKey} from '@cm/hooks/useJotai'
+import {isServer} from '@cm/lib/methods/common'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobal'
 
 export default function useInitGlobalHooks() {
   const [globalPropsReady, setglobalPropsReady] = useState(false)

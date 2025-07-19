@@ -2642,6 +2642,14 @@ model UserWorkStatus {
  workStatus String?
  remark     String?
 
+ // 時間データ（分単位で保存）
+ vehicleNumber    String?
+ startTime        String?
+ endTime          String?
+ kyukeiMins       String?
+ shinyaKyukeiMins String?
+ kyusokuMins      String?
+
  User   User @relation(fields: [userId], references: [id], onDelete: Cascade)
  userId Int
 

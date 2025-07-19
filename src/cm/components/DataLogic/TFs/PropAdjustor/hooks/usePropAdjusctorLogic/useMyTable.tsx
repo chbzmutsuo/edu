@@ -1,4 +1,4 @@
-import {Fields} from '@class/Fields/Fields'
+import {Fields} from '@cm/class/Fields/Fields'
 import {MyTableType} from '@cm/types/types'
 import {colType} from '@cm/types/types'
 import {useMemo} from 'react'

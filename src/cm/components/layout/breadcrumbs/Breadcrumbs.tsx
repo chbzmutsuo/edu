@@ -6,10 +6,10 @@ import {cl} from 'src/cm/lib/methods/common'
 import {HREF} from 'src/cm/lib/methods/urls'
 import useDetailedModelData from 'src/cm/components/layout/breadcrumbs/useDetailedModelData'
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import {ChevronsRightIcon} from 'lucide-react'
 import {useParams} from 'next/navigation'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 type BreadcrumbsProps = {
   breads: breadType[]

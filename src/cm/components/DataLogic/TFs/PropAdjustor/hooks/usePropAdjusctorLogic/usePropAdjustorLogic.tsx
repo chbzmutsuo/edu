@@ -1,15 +1,15 @@
 import {useMemo} from 'react'
 
-import {useMergeWithCustomViewParams} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useMergeWithCustomViewParams'
-import useColumns from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useColumns'
-import useRecords, {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
-import useInitFormState from '@hooks/useInitFormState'
-import useEditForm from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useEditForm'
-import useMyTable from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useMyTable'
-import useAdditional from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useAdditional'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {useMergeWithCustomViewParams} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useMergeWithCustomViewParams'
+import useColumns from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useColumns'
+import useRecords, {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import useInitFormState from '@cm/hooks/useInitFormState'
+import useEditForm from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useEditForm'
+import useMyTable from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useMyTable'
+import useAdditional from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/useAdditional'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
-import {ClientPropsType2, UsePropAdjustorLogicProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {ClientPropsType2, UsePropAdjustorLogicProps} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
 // usePropAdjustorLogic
 export const usePropAdjustorLogic = ({

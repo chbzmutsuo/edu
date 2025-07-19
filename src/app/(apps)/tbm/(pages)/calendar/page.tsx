@@ -1,5 +1,5 @@
 import CalendarCC from '@app/(apps)/tbm/(pages)/calendar/CalendarCC'
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 import React from 'react'
 
 export default async function Page(props) {

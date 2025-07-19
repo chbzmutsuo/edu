@@ -1,9 +1,9 @@
 'use client'
 
 import {DistributionListByModel} from '@app/(apps)/sohken/(parts)/genbaDay/DistributionListByModel/DistributionListByModel'
-import {Circle, R_Stack} from '@components/styles/common-components/common-components'
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Circle, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import React from 'react'
 
 export default function Sub({records, GenbaDay, editable, commonProps, PC, allShiftBetweenDays}) {

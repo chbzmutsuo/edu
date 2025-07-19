@@ -5,7 +5,7 @@ import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-c
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 
 import {makePortal} from '@cm/lib/methods/portal'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 import {useState} from 'react'
 

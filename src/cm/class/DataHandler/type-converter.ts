@@ -1,7 +1,7 @@
 // 型変換専用モジュール
 import {BaseColTypes, DataTypeMapping} from './types'
 import {colTypeStr} from '@cm/types/types'
-import {formatDate, formatDateTimeOrDate} from '@class/Days/date-utils/formatters'
+import {formatDate, formatDateTimeOrDate} from '@cm/class/Days/date-utils/formatters'
 
 /**
  * カラム型の判定（メモ化で最適化）

@@ -2,9 +2,9 @@
 
 import {RegisterOptions} from 'react-hook-form'
 
-import {funcOrVar} from '@lib/methods/common'
+import {funcOrVar} from '@cm/lib/methods/common'
 
-import {DH__convertDataType} from '@class/DataHandler/type-converter'
+import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export const useRegisterOrigin = ({newestRecord, col, ReactHookForm, onFormItemBlur, formData, latestFormData}) => {
   const shownButDisabled = funcOrVar(col?.form?.disabled, {record: newestRecord, col})

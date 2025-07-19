@@ -1,12 +1,12 @@
 'use client'
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack, Padding, R_Stack} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack, Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import React from 'react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {toast} from 'react-toastify'
-import useFileUploadPropsOptimized from '@hooks/useFileUpload/useFileUploadPropsOptimized'
+import useFileUploadPropsOptimized from '@cm/hooks/useFileUpload/useFileUploadPropsOptimized'
 
 export default function page() {
   const {toggleLoad} = useGlobal()

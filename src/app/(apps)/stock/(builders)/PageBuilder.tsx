@@ -1,9 +1,9 @@
 'use client'
 
 import {DetailPagePropType} from '@cm/types/types'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
 
 export class PageBuilder {
   static masterKeyClient = {

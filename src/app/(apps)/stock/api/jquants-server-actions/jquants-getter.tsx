@@ -1,17 +1,17 @@
 'use server'
 
-import {toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import prisma from 'src/lib/prisma'
 import {getJQUANTS_ID_TOKEN} from '@app/(apps)/stock/api/jquants-server-actions/jquants-auth'
 import {StockCl} from 'src/non-common/EsCollection/(stock)/StockCl'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'
-import {processBatchWithRetry} from '@lib/server-actions/common-server-actions/processBatchWithRetry'
+import {processBatchWithRetry} from '@cm/lib/server-actions/common-server-actions/processBatchWithRetry'
 
 export const jquants_getStockList = async urlParams => {
   const token = await getJQUANTS_ID_TOKEN()

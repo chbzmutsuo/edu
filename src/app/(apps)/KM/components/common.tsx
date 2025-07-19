@@ -12,8 +12,8 @@ import ContentPlayer from '@cm/components/utils/ContentPlayer'
 
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {cl} from '@cm/lib/methods/common'
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {useCallback, useState} from 'react'
 
 export const EasyProfile = ({kaizenClient, works}) => {

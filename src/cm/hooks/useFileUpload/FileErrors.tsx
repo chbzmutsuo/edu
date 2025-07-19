@@ -1,4 +1,4 @@
-import {Alert} from '@components/styles/common-components/Alert'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 import {FileRejection} from 'react-dropzone'
 
 const FileErrors = ({maxFiles, fileErrorState}) => {

@@ -1,6 +1,6 @@
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export const TableWrapper = (props: any & {className?: string; children: React.ReactNode}) => {
   const {className, children, ...rest} = props

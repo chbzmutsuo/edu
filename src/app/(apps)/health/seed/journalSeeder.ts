@@ -1,5 +1,5 @@
 // 日誌機能のseedデータ
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {HOUR_SLOTS} from '../(constants)/types'
 
 export async function seedJournalData() {

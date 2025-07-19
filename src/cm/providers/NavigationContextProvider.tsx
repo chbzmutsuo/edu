@@ -1,9 +1,9 @@
 'use client'
 import React, {createContext, useContext, ReactNode} from 'react'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
 import {NavigationContextType} from './types'
-import Loader from '@components/utils/loader/Loader'
-import Redirector from '@components/utils/Redirector'
+import Loader from '@cm/components/utils/loader/Loader'
+import Redirector from '@cm/components/utils/Redirector'
 
 const NavigationContext = createContext<NavigationContextType | null>(null)
 

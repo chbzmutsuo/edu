@@ -1,4 +1,4 @@
-import {basePath} from '@lib/methods/common'
+import {basePath} from '@cm/lib/methods/common'
 
 // ファイルアップロード
 export const uploadTaskAttachment = async ({taskId, file}: {taskId: number; file: File}) => {

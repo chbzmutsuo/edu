@@ -1,10 +1,10 @@
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 
-import {Fields} from '@class/Fields/Fields'
-import {obj__cleanObject} from '@class/ObjHandler/transformers'
+import {Fields} from '@cm/class/Fields/Fields'
+import {obj__cleanObject} from '@cm/class/ObjHandler/transformers'
 
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export type useGroupSettingFormReturnType = ReturnType<typeof useGroupSettingForm>
 export default function useGroupSettingForm({Game, groupConfigMaster, defaultCount}) {

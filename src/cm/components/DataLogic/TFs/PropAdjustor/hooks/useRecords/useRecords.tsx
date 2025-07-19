@@ -1,6 +1,6 @@
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {getInitModelRecordsProps, serverFetchProps} from '@cm/components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
 import {useRecordsCore} from './useRecordsCore'
 import {useInfiniteScrollLogic} from './useInfiniteScrollLogic'
 

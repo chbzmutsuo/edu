@@ -1,9 +1,9 @@
 import {Fields} from '@cm/class/Fields/Fields'
 
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
-import {Button} from '@components/styles/common-components/Button'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useIdbModel from '@hooks/useIdbModel'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useIdbModel from '@cm/hooks/useIdbModel'
 
 import {toast} from 'react-toastify'
 

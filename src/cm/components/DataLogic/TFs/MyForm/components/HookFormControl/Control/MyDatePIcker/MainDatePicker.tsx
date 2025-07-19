@@ -2,16 +2,16 @@ import React, {useState} from 'react'
 import DatePicker, {registerLocale} from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
 import {anyObject} from '@cm/types/utility-types'
 import {cl} from 'src/cm/lib/methods/common'
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
 import {ja} from 'date-fns/locale' // import the Japanese locale
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 registerLocale('ja', ja)
 
 const MainDatePicker = (props: anyObject) => {

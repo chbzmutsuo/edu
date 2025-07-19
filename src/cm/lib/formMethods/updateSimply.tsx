@@ -1,12 +1,12 @@
-import {isMultiItem, updateMultiItemInTransaction} from '@lib/methods/multipleItemLib'
+import {isMultiItem, updateMultiItemInTransaction} from '@cm/lib/methods/multipleItemLib'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import {requestResultType} from '@cm/types/types'
 
 import {colType} from '@cm/types/types'
-import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {StrHandler} from '@class/StrHandler'
-import {separateFormData} from '@lib/formMethods/separateFormData'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {StrHandler} from '@cm/class/StrHandler'
+import {separateFormData} from '@cm/lib/formMethods/separateFormData'
 import {anyObject} from '@cm/types/utility-types'
 import {multipleSelectProps} from '@cm/types/select-types'
 

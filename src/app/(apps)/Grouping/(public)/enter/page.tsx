@@ -1,8 +1,8 @@
 'use client'
 
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {Center} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Center} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 import {useState} from 'react'
 import {toast} from 'react-toastify'

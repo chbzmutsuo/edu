@@ -1,5 +1,5 @@
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import {Days} from '@class/Days/Days'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
 import {
   EasySearchObject,
   EasySearchObjectExclusiveGroup,

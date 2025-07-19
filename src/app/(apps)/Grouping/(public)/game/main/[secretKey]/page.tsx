@@ -2,12 +2,12 @@ import {Grouping} from '@app/(apps)/Grouping/class/Grouping'
 import {QueryBuilder} from '@app/(apps)/Grouping/class/QueryBuilder'
 import {P_Query} from '@cm/class/PQuery'
 import GameMainPage from '@app/(apps)/Grouping/components/Grouping/game/GameMainPage'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import {Prisma} from '@prisma/client'
-import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
-import {searchByQuery} from '@lib/server-actions/common-server-actions/SerachByQuery/SerachByQuery'
+import {prismaDataExtractionQueryType} from '@cm/components/DataLogic/TFs/Server/Conf'
+import {searchByQuery} from '@cm/lib/server-actions/common-server-actions/SerachByQuery/SerachByQuery'
 
 export default async function Page(props) {
   const query = await props.searchParams

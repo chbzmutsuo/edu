@@ -3,14 +3,14 @@ import 'src/cm/styles/globals.css'
 
 import {Suspense} from 'react'
 import {Metadata} from 'next'
-import GlobalToast from '@components/utils/GlobalToast'
+import GlobalToast from '@cm/components/utils/GlobalToast'
 
 import React from 'react'
 
 import {getServerSession, Session} from 'next-auth'
 import {authOptions} from '@app/api/auth/[...nextauth]/constants/authOptions'
 
-import AppRootProvider from '@providers/AppRootProvider'
+import AppRootProvider from '@cm/providers/AppRootProvider'
 
 const title = process.env.NEXT_PUBLIC_TITLE
 export const metadata: Metadata = {title: title}

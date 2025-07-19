@@ -1,6 +1,6 @@
 'use server'
 
-import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {calcGenbaDayStatus} from 'src/non-common/(chains)/getGenbaScheduleStatus/calcGenbaDayStatus'
 
 export type genbaStatusType = '完了' | '不要' | '済' | '未完了'

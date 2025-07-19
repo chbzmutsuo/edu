@@ -5,7 +5,7 @@ import {getTasks, toggleTaskComplete, deleteTask, deleteTaskAttachment} from '..
 import {Task} from '../../(lib)/task-actions'
 import TaskModal from './TaskModal'
 import RecurringTaskModal from './RecurringTaskModal'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function TaskListPage() {
   const {session} = useGlobal()

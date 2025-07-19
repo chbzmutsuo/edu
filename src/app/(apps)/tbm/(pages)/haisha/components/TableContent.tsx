@@ -1,9 +1,9 @@
 'use client'
 import React from 'react'
-import {CsvTableVirtualized} from '@components/styles/common-components/CsvTable/CsvTableVirtualized'
+import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTable/CsvTableVirtualized'
 import {TableRowBuilder} from './TableRowBuilder'
 import {haishaListData} from './getListData'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 type props = {
   userList: haishaListData['userList']

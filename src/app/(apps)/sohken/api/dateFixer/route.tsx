@@ -1,5 +1,5 @@
-import {toUtc} from '@class/Days/date-utils/calculations'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {NextResponse} from 'next/server'
 
 export const POST = async () => {

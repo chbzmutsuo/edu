@@ -1,15 +1,15 @@
 import {useRef, useMemo} from 'react'
 import {getMyTableDefault} from 'src/cm/constants/defaults'
-import {useElementScrollPosition} from '@hooks/scrollPosition/useElementScrollPosition'
-import {useSearchHandler} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/useSearchHandler'
-import {Z_INDEX} from '@lib/constants/constants'
+import {useElementScrollPosition} from '@cm/hooks/scrollPosition/useElementScrollPosition'
+import {useSearchHandler} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/useSearchHandler/useSearchHandler'
+import {Z_INDEX} from '@cm/lib/constants/constants'
 
 import useTrActions from '../components/Tbody/useTrActions'
 import {TableConfigPropsType} from '../components/TableConfig'
 
-import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import useMyTableParams from '@components/DataLogic/TFs/MyTable/hooks/useMyTableParams'
+import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import useMyTableParams from '@cm/components/DataLogic/TFs/MyTable/hooks/useMyTableParams'
 
 interface MyTableLogicProps {
   ClientProps2: ClientPropsType2 & {

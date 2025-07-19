@@ -1,4 +1,4 @@
-import {StrHandler} from '@class/StrHandler'
+import {StrHandler} from '@cm/class/StrHandler'
 import {colType} from '@cm/types/col-types'
 
 export const getModelData = models => {

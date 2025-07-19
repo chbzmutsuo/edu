@@ -1,9 +1,9 @@
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
-import {mapAdjustOptionValue} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+import {mapAdjustOptionValue} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {optionType} from 'src/cm/class/Fields/col-operator-types'
-import {contextsType} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
-import {makeOptionCreatorProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
-import {getAllowCreateDefault} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/allowCreateOptionLib'
+import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+import {makeOptionCreatorProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
+import {getAllowCreateDefault} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/allowCreateOptionLib'
 import {forSelcetType} from '@cm/types/select-types'
 
 export const useSearchForm = ({contexts}) => {

@@ -8,7 +8,7 @@ import Image from 'next/image'
 
 import {colType, columnGetterType} from '@cm/types/types'
 
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 export class ColBuilder {
   static KaizenCMS = (props: columnGetterType) => {

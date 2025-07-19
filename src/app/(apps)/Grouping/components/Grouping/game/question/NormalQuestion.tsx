@@ -1,8 +1,8 @@
 import React from 'react'
 
 import {anyObject} from '@cm/types/utility-types'
-import {Center, C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {Paper, PaperLarge} from '@components/styles/common-components/paper'
+import {Center, C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Paper, PaperLarge} from '@cm/components/styles/common-components/paper'
 
 const NormalQuestions = (props: anyObject) => {
   const {sortedQuestions, setanswers, answers, showFurigana, BasicForm, headerClass} = props

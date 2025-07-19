@@ -8,7 +8,7 @@ CsvTableはServer ComponentとClient Componentの両方で利用可能なテー�
 ### 1. Server Component（通常のテーブル）
 
 ```tsx
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 
 // Server Componentで使用
 const MyPage = () => {
@@ -37,7 +37,7 @@ const MyPage = () => {
 
 ```tsx
 'use client'
-import {CsvTableChunked} from '@components/styles/common-components/CsvTable/CsvTableChunked'
+import {CsvTableChunked} from '@cm/components/styles/common-components/CsvTable/CsvTableChunked'
 
 // Client Componentで使用
 const MyComponent = () => {
@@ -57,7 +57,7 @@ const MyComponent = () => {
 
 ```tsx
 'use client'
-import {CsvTableVirtualized} from '@components/styles/common-components/CsvTable/CsvTableVirtualized'
+import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTable/CsvTableVirtualized'
 
 // 大量データ用 - 最高のパフォーマンス
 const VirtualizedTable = () => {
@@ -195,7 +195,7 @@ const UserTable = () => {
 
 ```tsx
 'use client'
-import {CsvTableVirtualized} from '@components/styles/common-components/CsvTable/CsvTableVirtualized'
+import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTable/CsvTableVirtualized'
 
 export const LargeDataTable = ({data}) => {
   return CsvTableVirtualized({

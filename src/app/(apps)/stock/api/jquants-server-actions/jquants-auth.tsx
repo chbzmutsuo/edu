@@ -1,5 +1,5 @@
-import {Days} from '@class/Days/Days'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {Days} from '@cm/class/Days/Days'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 import prisma from 'src/lib/prisma'
 
 const AUTH_USER_URL = 'https://api.jquants.com/v1/token/auth_user'

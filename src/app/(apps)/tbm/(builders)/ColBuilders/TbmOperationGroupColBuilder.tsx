@@ -1,11 +1,11 @@
 'use client'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {NumHandler} from '@class/NumHandler'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {NumHandler} from '@cm/class/NumHandler'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import useWindowSize from '@hooks/useWindowSize'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 const custom_showSummaryInTd = (cols, SP, props) => {
   return cols

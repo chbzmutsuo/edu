@@ -1,8 +1,8 @@
 'use client'
 import React, {createContext, useContext, ReactNode} from 'react'
-import useWindowSize from '@hooks/useWindowSize'
+import useWindowSize from '@cm/hooks/useWindowSize'
 import {DeviceContextType} from './types'
-import Loader from '@components/utils/loader/Loader'
+import Loader from '@cm/components/utils/loader/Loader'
 
 const DeviceContext = createContext<DeviceContextType | null>(null)
 

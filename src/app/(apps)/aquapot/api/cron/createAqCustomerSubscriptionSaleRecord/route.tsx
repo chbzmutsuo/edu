@@ -1,6 +1,6 @@
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 import prisma from 'src/lib/prisma'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {Prisma} from '@prisma/client'
 import {NextRequest, NextResponse} from 'next/server'
 

@@ -1,18 +1,18 @@
 import React from 'react'
-import MyInput from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyInput/MyInput'
+import MyInput from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyInput/MyInput'
 
-import MyFileControl from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
+import MyFileControl from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
 
 import {ControlContextType, ControlOptionType, formPropType} from '@cm/types/form-control-type'
 
 import {colType} from '@cm/types/types'
-import MyMdEditor from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'
-import MyTextarea from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyTextarea'
-import MyCheckBox from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox'
-import MyDatepicker from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
-import MyMultipleChoice from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'
-import MySelect from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
-import ErrorMessage from '@components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/ErrorMessage'
+import MyMdEditor from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyMdEditor'
+import MyTextarea from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyTextarea'
+import MyCheckBox from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyCheckBox/MyCheckBox'
+import MyDatepicker from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyDatePIcker/MyDatepicker'
+import MyMultipleChoice from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyMultipleChoice'
+import MySelect from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MySelect'
+import ErrorMessage from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/util-components/ErrorMessage'
 
 export type ControlProps = {
   field: string

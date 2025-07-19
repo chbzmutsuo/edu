@@ -1,8 +1,8 @@
 'use client'
-import {ControlProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+import {ControlProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
 
 import React, {useEffect} from 'react'
-import useFileUploadPropsOptimized from '@hooks/useFileUpload/useFileUploadPropsOptimized'
+import useFileUploadPropsOptimized from '@cm/hooks/useFileUpload/useFileUploadPropsOptimized'
 
 const MyFileControl = React.forwardRef((props: ControlProps, ref) => {
   const {col, ReactHookForm, Register, currentValue, setextraFormState} = props

@@ -1,9 +1,9 @@
 import {useState, useCallback, useEffect} from 'react'
-import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
-import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
+import {easySearchDataSwrType} from '@cm/class/builders/QueryBuilderVariables'
+import {getInitModelRecordsProps, serverFetchProps} from '@cm/components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import {tableRecord} from './useRecords'
-import {atomKey, useJotaiByKey} from '@hooks/useJotai'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {atomKey, useJotaiByKey} from '@cm/hooks/useJotai'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 interface UseRecordsCoreProps {
   serverFetchProps: serverFetchProps

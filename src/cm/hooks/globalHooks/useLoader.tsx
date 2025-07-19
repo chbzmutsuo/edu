@@ -3,7 +3,7 @@ import {handleDB} from 'src/cm/lib/methods/common'
 import useMyNavigation from 'src/cm/hooks/globalHooks/useMyNavigation'
 import useMatchMutate from 'src/cm/hooks/useMatchMutate'
 
-import {atomTypes, useJotaiByKey} from '@hooks/useJotai'
+import {atomTypes, useJotaiByKey} from '@cm/hooks/useJotai'
 import {requestResultType} from '@cm/types/types'
 import {toast} from 'react-toastify'
 import {useCallback} from 'react'

@@ -1,10 +1,10 @@
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {P_Query} from 'src/cm/class/PQuery'
 import {MouseSensor, useSensor, useSensors} from '@dnd-kit/core'
 import {arrayMove} from '@dnd-kit/sortable'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {useCallback, useEffect, useRef, useMemo} from 'react'
-import {getMyTableId} from '@components/DataLogic/TFs/MyTable/helpers/getMyTableId'
+import {getMyTableId} from '@cm/components/DataLogic/TFs/MyTable/helpers/getMyTableId'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
 // 型定義を改善

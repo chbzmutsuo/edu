@@ -3,8 +3,8 @@ import React from 'react'
 import {useGroupReturnObjType} from '@app/(apps)/Grouping/components/Grouping/game/Teacher/useGroups/useGroups'
 import {useGroupSettingFormReturnType} from '@app/(apps)/Grouping/components/Grouping/game/Teacher/useGroups/useGroupSettingForm'
 
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
 export const GroupTypeSetting = React.memo(
   (props: {groupSettingFormHook: useGroupSettingFormReturnType; useGroupReturnObj: useGroupReturnObjType; Game}) => {

@@ -1,8 +1,8 @@
-import {Days} from '@class/Days/Days'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import { TbmMonthlyConfigForRouteGroup} from '@prisma/client'
+import {Days} from '@cm/class/Days/Days'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {TbmMonthlyConfigForRouteGroup} from '@prisma/client'
 import {toast} from 'react-toastify'
 export const autoCreateMonthConfig = async ({
   toggleLoad,

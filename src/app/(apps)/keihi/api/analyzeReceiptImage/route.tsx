@@ -1,6 +1,6 @@
 import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {createBulkExpensesBasicReturn} from '@app/(apps)/keihi/api/analyzeReceiptImage/fetchAnalyzeReceiptImage'
-import {FileHandler} from '@class/FileHandler'
+import {FileHandler} from '@cm/class/FileHandler'
 import prisma from 'src/lib/prisma'
 import {S3FormData} from '@cm/class/FileHandler'
 import {NextRequest, NextResponse} from 'next/server'

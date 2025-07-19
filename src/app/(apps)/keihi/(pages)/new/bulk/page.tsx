@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {BulkProcessingContainer} from './components/BulkProcessingContainer'
 
 const BulkCreatePage = React.memo(() => {

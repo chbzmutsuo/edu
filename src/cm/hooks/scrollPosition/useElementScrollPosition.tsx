@@ -1,8 +1,8 @@
 'use client'
 
 import {useEffect, useCallback} from 'react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {isServer} from '@lib/methods/common'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {isServer} from '@cm/lib/methods/common'
 
 interface UseElementScrollPositionProps {
   elementRef: any

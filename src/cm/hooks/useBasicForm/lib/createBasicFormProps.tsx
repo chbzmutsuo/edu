@@ -1,4 +1,4 @@
-import {useRegisterOrigin} from '@hooks/useBasicForm/lib/useRegisterOrigin'
+import {useRegisterOrigin} from '@cm/hooks/useBasicForm/lib/useRegisterOrigin'
 
 export const adjustBasicFormProps = props => {
   const {alignMode = `col`, ControlOptions = {}, ...restProps} = props

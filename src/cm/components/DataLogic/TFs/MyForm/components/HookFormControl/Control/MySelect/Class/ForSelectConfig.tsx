@@ -3,7 +3,7 @@ import {PrismaModelNames} from '@cm/types/prisma-types'
 import {colType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
 import {funcOrVar} from 'src/cm/lib/methods/common'
-import {defaultOrderByArray} from '@class/PQuery'
+import {defaultOrderByArray} from '@cm/class/PQuery'
 import {forSelectConfig} from '@cm/types/select-types'
 
 export class ForSelectConfig {

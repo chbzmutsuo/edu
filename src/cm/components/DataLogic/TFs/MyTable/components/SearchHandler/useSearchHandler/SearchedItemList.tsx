@@ -1,15 +1,15 @@
-import {Sub} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
+import {Sub} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {SearchedItem} from 'src/cm/components/styles/common-components/SearchedItem'
 import React, {useEffect, useState} from 'react'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
-import {judgeColType} from '@class/Fields/lib/methods'
+import {judgeColType} from '@cm/class/Fields/lib/methods'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 export default function SearchedItemList(props: {
   Cached_Option_Props

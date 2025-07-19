@@ -1,4 +1,4 @@
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export const TbmRouteGroupUpsertController = {
   executeUpdate: async item => {

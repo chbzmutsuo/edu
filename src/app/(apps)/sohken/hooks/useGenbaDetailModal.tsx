@@ -1,13 +1,13 @@
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {atomKey} from '@hooks/useJotai'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {atomKey} from '@cm/hooks/useJotai'
 
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {useGlobalModalForm} from '@components/utils/modal/useGlobalModalForm'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {useGlobalModalForm} from '@cm/components/utils/modal/useGlobalModalForm'
 import {Genba} from '@prisma/client'
 import {ColBuilder} from '@app/(apps)/sohken/class/ColBuilder'
-import {DH__convertDataType} from '@class/DataHandler/type-converter'
+import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export type shiftEditProps = {
   selectedData

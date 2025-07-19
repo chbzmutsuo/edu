@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -26,103 +22,12 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@app/*": [
-        "src/app/*"
-      ],
-      "@providers/*": [
-        "src/cm/providers/*"
-      ],
-      "@constants/*": [
-        "src/cm/constants/*"
-      ],
-      "@class/*": [
-        "src/cm/class/*"
-      ],
-      "@components/*": [
-        "src/cm/components/*"
-      ],
-      "@styles/*": [
-        "src/cm/styles/*"
-      ],
-      "@hooks/*": [
-        "src/cm/hooks/*"
-      ],
-      "@lib/*": [
-        "src/cm/lib/*"
-      ],
-      "@pages/*": [
-        "src/pages/*"
-      ],
-      "@fonts/*": [
-        "src/fonts/*"
-      ],
-      "@context/*": [
-        "src/cm/context/*"
-      ],
-      "@cm/*": [
-        "src/cm/*"
-      ]
+      "@app/*": ["src/app/*"],
+      "@cm/*": ["src/cm/*"],
+      "@shadcn/*": ["src/cm/shadcn/*"]
     },
     "strictNullChecks": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "**/*.dump", "public/**/*", "scripts/**/*", ".next/**/*"]
 }
-// {
-//   "compilerOptions": {
-//     "target": "ESNext",
-//     "lib": ["dom", "dom.iterable", "esnext"],
-//     "allowJs": true,
-//     "skipLibCheck": true,
-//     "strict": false,
-//     "forceConsistentCasingInFileNames": true,
-//     "experimentalDecorators": true,
-//     "noEmit": true,
-//     "esModuleInterop": true,
-//     "module": "ESNext",
-//     "moduleResolution": "node",
-//     "resolveJsonModule": true,
-//     "isolatedModules": true,
-//     "jsx": "preserve",
-//     "sourceMap": false,
-//     "incremental": true,
-//     "noImplicitAny": false, //anyを許容する
-//     "baseUrl": ".",
-//     "paths": {
-//       "@app/*": ["src/app/*"],
-//       "@providers/*": ["src/cm/providers/*"],
-//       "@constants/*": ["src/cm/constants/*"],
-//       "@class/*": ["src/cm/class/*"],
-//       "@components/*": ["src/cm/components/*"],
-//       "@styles/*": ["src/cm/styles/*"],
-//       "@hooks/*": ["src/cm/hooks/*"],
-//       "@lib/*": ["src/cm/lib/*"],
-//       "@fonts/*": ["src/fonts/*"],
-//       "@context/*": ["src/cm/context/*"],
-//       "@cm/*": ["src/cm/*"]
-//     },
-//     "plugins": [
-//       {
-//         "name": "next"
-//       }
-//     ],
-//     "strictNullChecks": true
-//   },
-//   "include": [
-//     "next-env.d.ts",
-//     "**/*.js",
-//     "**/*.jsx",
-//     "**/*.ts",
-//     "**/*.tsx",
-//     ".next/types/**/*.ts",
-//     "postcss.config.cjs",
-//   ],
-//   "exclude": ["node_modules"]
-// }

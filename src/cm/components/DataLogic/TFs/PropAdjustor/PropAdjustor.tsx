@@ -2,18 +2,18 @@
 import React, {useMemo} from 'react'
 import {C_Stack, Padding, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import {Z_INDEX} from '@lib/constants/constants'
+import {Z_INDEX} from '@cm/lib/constants/constants'
 
-import {TableSkelton} from '@components/utils/loader/TableSkelton'
-import DetailedPageCC from '@components/DataLogic/TFs/PropAdjustor/components/DetailedPageCC'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
+import {TableSkelton} from '@cm/components/utils/loader/TableSkelton'
+import DetailedPageCC from '@cm/components/DataLogic/TFs/PropAdjustor/components/DetailedPageCC'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 
-import EasySearcher from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
+import EasySearcher from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EasySearcher'
 
-import {usePropAdjustorLogic} from '@components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/usePropAdjustorLogic'
-import {PropAdjustorPropsType} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import useWindowSize from '@hooks/useWindowSize'
-import {SurroundingComponent} from '@components/DataLogic/TFs/PropAdjustor/components/SurroundingComponent'
+import {usePropAdjustorLogic} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/usePropAdjusctorLogic/usePropAdjustorLogic'
+import {PropAdjustorPropsType} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import {SurroundingComponent} from '@cm/components/DataLogic/TFs/PropAdjustor/components/SurroundingComponent'
 
 const PropAdjustor = React.memo<PropAdjustorPropsType>(props => {
   const {serverFetchProps} = props

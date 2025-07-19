@@ -1,7 +1,7 @@
 // 'use client'
 
 // import {colType, columnGetterType} from '@cm/types/types'
-// import {formatDate} from '@class/Days/date-utils/formatters'
+// import {formatDate} from '@cm/class/Days/date-utils/formatters'
 // import {Fields} from '@cm/class/Fields/Fields'
 // import {addQuerySentence} from '@cm/lib/methods/urls'
 // import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'

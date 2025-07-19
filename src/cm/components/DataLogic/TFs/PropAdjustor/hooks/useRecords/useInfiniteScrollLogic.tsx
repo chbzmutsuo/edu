@@ -1,7 +1,7 @@
 import {useState, useCallback, useMemo} from 'react'
-import {getMyTableId} from '@components/DataLogic/TFs/MyTable/helpers/getMyTableId'
-import {defaultCountPerPage} from '@class/PQuery'
-import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
+import {getMyTableId} from '@cm/components/DataLogic/TFs/MyTable/helpers/getMyTableId'
+import {defaultCountPerPage} from '@cm/class/PQuery'
+import {getInitModelRecordsProps, serverFetchProps} from '@cm/components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import {tableRecord} from './useRecords'
 
 export interface UseInfiniteScrollLogicProps {

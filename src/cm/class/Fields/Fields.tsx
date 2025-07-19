@@ -12,12 +12,12 @@ import {addColIndexs} from 'src/cm/class/Fields/lib/addColIndex'
 import {setAttribute} from 'src/cm/class/Fields/lib/setAttribute'
 import {transposeColumns} from 'src/cm/class/Fields/lib/transposeColumns'
 
-import {NestHandler} from '@class/NestHandler'
+import {NestHandler} from '@cm/class/NestHandler'
 
 import React from 'react'
-import {NumHandler} from '@class/NumHandler'
-import {TableInfo, TableInfoWrapper} from '@class/builders/ColBuilderVariables'
-import {DH__convertDataType} from '@class/DataHandler/type-converter'
+import {NumHandler} from '@cm/class/NumHandler'
+import {TableInfo, TableInfoWrapper} from '@cm/class/builders/ColBuilderVariables'
+import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export const defaultSelect = {id: true, name: true}
 export const masterDataSelect = {...defaultSelect, color: true}

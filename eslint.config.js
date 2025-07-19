@@ -17,7 +17,8 @@ module.exports = [
    sourceType: 'module',
    parser: tseslint.parser,
    parserOptions: {
-    project: './tsconfig.json',
+    // プロジェクト全体の型チェックを無効化してパフォーマンス向上
+    // project: './tsconfig.json',
    },
    globals: {
     // nodeの環境変数

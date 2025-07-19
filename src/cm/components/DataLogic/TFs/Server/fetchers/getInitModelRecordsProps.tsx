@@ -1,11 +1,11 @@
 'use server'
-import {makeEasySearcherQuery} from '@components/DataLogic/TFs/ClientConf/makeEasySearcherQuery'
+import {makeEasySearcherQuery} from '@cm/components/DataLogic/TFs/ClientConf/makeEasySearcherQuery'
 
-import {EasySearchDataSwrFetcher} from '@components/DataLogic/TFs/Server/fetchers/EasySearchDataSwrFetcher'
-import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
-import {searchByQuery} from '@lib/server-actions/common-server-actions/SerachByQuery/SerachByQuery'
+import {EasySearchDataSwrFetcher} from '@cm/components/DataLogic/TFs/Server/fetchers/EasySearchDataSwrFetcher'
+import {prismaDataExtractionQueryType} from '@cm/components/DataLogic/TFs/Server/Conf'
+import {searchByQuery} from '@cm/lib/server-actions/common-server-actions/SerachByQuery/SerachByQuery'
 import {EasySearchBuilderCollection} from 'src/non-common/EsCollection/EasySearchBuilderCollection'
-import {getQueryArgs} from '@components/DataLogic/TFs/Server/fetchers/getQueryArgs'
+import {getQueryArgs} from '@cm/components/DataLogic/TFs/Server/fetchers/getQueryArgs'
 
 export type serverFetchProps = {
   withEasySearch?: boolean

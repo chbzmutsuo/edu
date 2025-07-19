@@ -1,6 +1,6 @@
-import {NestHandler} from '@class/NestHandler'
-import TableForm from '@components/DataLogic/TFs/PropAdjustor/components/TableForm'
-import {SurroundingComponentProps} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {NestHandler} from '@cm/class/NestHandler'
+import TableForm from '@cm/components/DataLogic/TFs/PropAdjustor/components/TableForm'
+import {SurroundingComponentProps} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import React, {useMemo} from 'react'
 
 export const SurroundingComponent = React.memo<SurroundingComponentProps>(({type, ClientProps2}) => {

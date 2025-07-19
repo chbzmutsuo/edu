@@ -1,10 +1,10 @@
 'use client'
 import React, {createContext, useContext, ReactNode} from 'react'
-import useMySession from '@hooks/globalHooks/useMySession'
-import {SessionContextType} from '@providers/types'
-import Loader from '@components/utils/loader/Loader'
+import useMySession from '@cm/hooks/globalHooks/useMySession'
+import {SessionContextType} from '@cm/providers/types'
+import Loader from '@cm/components/utils/loader/Loader'
 import {Session} from 'next-auth'
-import {fetcher} from '@lib/swr'
+import {fetcher} from '@cm/lib/swr'
 
 const SessionContext = createContext<SessionContextType | null>(null)
 

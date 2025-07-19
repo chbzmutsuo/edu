@@ -1,13 +1,13 @@
 'use client'
 
-import {Fields} from '@class/Fields/Fields'
+import {Fields} from '@cm/class/Fields/Fields'
 import {ColBuilder} from './ColBuilder'
 import {DetailPagePropType} from '@cm/types/types'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
-import GlobalIdSelector from '@components/GlobalIdSelector/GlobalIdSelector'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
+import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
 
 export class PageBuilder {
   static masterKeyClient = {

@@ -5,17 +5,17 @@ import {
   getNameFromSelectOption,
   getSelectId,
   mapAdjustOptionValue,
-} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {
   getRecord,
   renewOptions,
-} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-client'
-import {ControlProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-client'
+import {ControlProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
 
 import {
   contextsType,
   MySelectContextType,
-} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
 
 import {OptionCreatorProps} from '@cm/types/types'
 

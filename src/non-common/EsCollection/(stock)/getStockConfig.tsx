@@ -1,7 +1,7 @@
 'use server'
 
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {StockConfig} from '@prisma/client'
 
 export type config = `riseWindowSize` | `riseThreshold` | `crashWindowSize` | `crashThreshold`

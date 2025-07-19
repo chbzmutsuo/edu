@@ -1,19 +1,19 @@
 'use client'
 
-import {Fields} from '@class/Fields/Fields'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import {C_Stack, FitMargin} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Fields} from '@cm/class/Fields/Fields'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import {C_Stack, FitMargin} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
-import {Button} from '@components/styles/common-components/Button'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {CODE_MASTER} from '@app/(apps)/shinsei/(constants)/CODE_MASTER'
-import {isDev} from '@lib/methods/common'
+import {isDev} from '@cm/lib/methods/common'
 import {chain_shinsei_kyuka_notifyWhenUpdate} from 'src/non-common/(chains)/shinsei/chain_shinsei_kyuka_notifyWhenUpdate'
-import {HREF} from '@lib/methods/urls'
-import {toastByResult} from '@lib/ui/notifications'
+import {HREF} from '@cm/lib/methods/urls'
+import {toastByResult} from '@cm/lib/ui/notifications'
 
 export default function PurchaseRequestPage() {
   const useGlobalProps = useGlobal()

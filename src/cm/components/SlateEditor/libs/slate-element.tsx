@@ -4,7 +4,7 @@ import {Transforms, Element as SlateElement} from 'slate'
 import {cl} from 'src/cm/lib/methods/common'
 
 import {slateStylesOnMark} from 'src/cm/components/SlateEditor/libs/slate-constants'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 export const getSlateElements = () => {
   return {

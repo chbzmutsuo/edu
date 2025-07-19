@@ -6,11 +6,11 @@ import {anyObject} from '@cm/types/utility-types'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {Prisma} from '@prisma/client'
 import {toast} from 'react-toastify'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import SimpleTable from '@cm/components/utils/SimpleTable'
 
 import NormalQuestions from '@app/(apps)/Grouping/components/Grouping/game/question/NormalQuestion'
-import {Alert} from '@components/styles/common-components/Alert'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 
 const PsychoQuestion = React.memo((props: any) => {
   const [sortedQuestions, setsortedQuestions] = useState<any[]>([])

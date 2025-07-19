@@ -1,8 +1,8 @@
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {anyObject} from '@cm/types/utility-types'
-import {arr__uniqArray} from '@class/ArrHandler/array-utils/basic-operations'
-import {DH__switchColType} from '@class/DataHandler/type-converter'
+import {arr__uniqArray} from '@cm/class/ArrHandler/array-utils/basic-operations'
+import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 
 export class OrSearchArray {
   // 特定のオブジェクトから、ORを作成する

@@ -1,10 +1,10 @@
 'use client'
 import React from 'react'
 
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {KeyValue} from '@components/styles/common-components/ParameterCard'
-import {HREF} from '@lib/methods/urls'
-import {T_LINK} from '@components/styles/common-components/links'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {KeyValue} from '@cm/components/styles/common-components/ParameterCard'
+import {HREF} from '@cm/lib/methods/urls'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {haishaListData} from './getListData'
 
 export default function UserTh({

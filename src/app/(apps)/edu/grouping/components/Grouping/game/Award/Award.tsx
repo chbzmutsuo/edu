@@ -7,14 +7,14 @@ import Rank from './Rank'
 import {anyObject} from '@cm/types/utility-types'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
 import {TrophyIcon} from 'lucide-react'
-import {Alert} from '@components/styles/common-components/Alert'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {jotai_showAwards, useJotai} from '@hooks/useJotai'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {jotai_showAwards, useJotai} from '@cm/hooks/useJotai'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export default function Award({GameCtxValue}) {
   const {Game, activeGroup, teacherId} = GameCtxValue as GameContextType

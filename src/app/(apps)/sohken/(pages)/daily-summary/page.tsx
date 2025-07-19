@@ -2,11 +2,11 @@ import {DailySummaryCC} from '@app/(apps)/sohken/(pages)/daily-summary/DailySumm
 import {genbaDaySorter} from '@app/(apps)/sohken/(pages)/genbaDay/genbaDaySorter'
 import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
 
-import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import Redirector from '@components/utils/Redirector'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import Redirector from '@cm/components/utils/Redirector'
 
-import {addQuerySentence} from '@lib/methods/urls'
+import {addQuerySentence} from '@cm/lib/methods/urls'
 import prisma from 'src/lib/prisma'
 
 export default async function Page(props) {

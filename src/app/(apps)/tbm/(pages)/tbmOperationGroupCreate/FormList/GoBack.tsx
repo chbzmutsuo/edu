@@ -1,10 +1,10 @@
-import {Fields} from '@class/Fields/Fields'
+import {Fields} from '@cm/class/Fields/Fields'
 import {goBackAdoptor} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmOperationGroupColBuilder'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import React from 'react'
 import {FormProps} from '@app/(apps)/tbm/(pages)/tbmOperationGroupCreate/FormList/formList'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export default function GoBack(props: FormProps) {
   const {userInput, type, labelAffix} = props

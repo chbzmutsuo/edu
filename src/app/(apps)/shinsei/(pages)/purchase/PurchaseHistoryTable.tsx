@@ -1,18 +1,18 @@
 'use client'
 
 import PurchaseApproveModal from '@app/(apps)/shinsei/(pages)/purchase/PurchaseApproveModal'
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {Paper} from '@components/styles/common-components/paper'
-import useModal from '@components/utils/modal/useModal'
-import MyPopover from '@components/utils/popover/MyPopover'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {isDev, shorten} from '@lib/methods/common'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import useModal from '@cm/components/utils/modal/useModal'
+import MyPopover from '@cm/components/utils/popover/MyPopover'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {isDev, shorten} from '@cm/lib/methods/common'
 import {Approval, Product, User} from '@prisma/client'
 import {useEffect, useState} from 'react'
 import {twMerge} from 'tailwind-merge'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 interface PurchaseRequest {
   id: number

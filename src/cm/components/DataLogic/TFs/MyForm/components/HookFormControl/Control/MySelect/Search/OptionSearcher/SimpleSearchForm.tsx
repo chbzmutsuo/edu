@@ -5,9 +5,9 @@ import useOnKeyDown from 'src/cm/hooks/useOnKeyDown'
 
 import React, {useEffect, useRef} from 'react'
 
-import {updateOptionsOrigin} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/updateOptionsOrigin'
+import {updateOptionsOrigin} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/updateOptionsOrigin'
 
-import {parseContexts} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
+import {parseContexts} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
 import useWindowSize from 'src/cm/hooks/useWindowSize'
 import {SearchIcon} from 'lucide-react'
 export const SimpleSearchForm = ({contexts}) => {

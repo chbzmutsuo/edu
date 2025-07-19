@@ -1,8 +1,8 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Button} from '@components/styles/common-components/Button'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {StockCl} from 'src/non-common/EsCollection/(stock)/StockCl'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'
 import StockChart from '@app/(apps)/stock/(components)/StockChart'

@@ -1,6 +1,6 @@
 import {nextPageProps} from '@cm/types/utility-types'
-import PropAdjustor from '@components/DataLogic/TFs/PropAdjustor/PropAdjustor'
-import {Conf} from '@components/DataLogic/TFs/Server/Conf'
+import PropAdjustor from '@cm/components/DataLogic/TFs/PropAdjustor/PropAdjustor'
+import {Conf} from '@cm/components/DataLogic/TFs/Server/Conf'
 import React from 'react'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 

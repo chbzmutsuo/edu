@@ -1,6 +1,6 @@
 'use server'
 import {requestResultType} from '@cm/types/types'
-import {handlePrismaError} from '@lib/prisma-helper'
+import {handlePrismaError} from '@cm/lib/prisma-helper'
 
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
 import {PrismaClient} from '@prisma/client'
@@ -10,7 +10,7 @@ import {
   doDelete,
   doDeleteMany,
   initQueryObject,
-} from '@lib/server-actions/common-server-actions/doStandardPrisma/lib'
+} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/lib'
 import {prismaChain} from 'src/non-common/prismaChain'
 import prisma from 'src/lib/prisma'
 

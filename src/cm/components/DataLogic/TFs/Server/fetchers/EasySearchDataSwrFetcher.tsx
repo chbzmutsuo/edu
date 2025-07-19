@@ -1,6 +1,6 @@
 'use server'
 import {getEasySearchPrismaDataOnServer} from 'src/cm/class/builders/QueryBuilderVariables'
-import {getEasySearchBtnCountData} from '@lib/server-actions/common-server-actions/serverEasySearch'
+import {getEasySearchBtnCountData} from '@cm/lib/server-actions/common-server-actions/serverEasySearch'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
 

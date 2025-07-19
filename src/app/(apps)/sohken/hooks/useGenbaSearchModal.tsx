@@ -1,12 +1,12 @@
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {atomKey} from '@hooks/useJotai'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {atomKey} from '@cm/hooks/useJotai'
 
-import {useGlobalModalForm} from '@components/utils/modal/useGlobalModalForm'
-import {Fields} from '@class/Fields/Fields'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import {Button} from '@components/styles/common-components/Button'
+import {useGlobalModalForm} from '@cm/components/utils/modal/useGlobalModalForm'
+import {Fields} from '@cm/class/Fields/Fields'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export type shiftEditProps = {
   selectedData

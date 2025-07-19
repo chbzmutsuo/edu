@@ -1,11 +1,11 @@
 'use client'
 
-import {convertColIdToModelName} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
-import {optionTakeCount} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/OptionSelector/OptionSelector'
+import {convertColIdToModelName} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+import {optionTakeCount} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/OptionSelector/OptionSelector'
 
-import {GetCaheOptionSWR_REQUEST_PARAMS} from '@lib/server-actions/common-server-actions/serverGetCaheOptions'
+import {GetCaheOptionSWR_REQUEST_PARAMS} from '@cm/lib/server-actions/common-server-actions/serverGetCaheOptions'
 
-import {ForSelectConfig} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/ForSelectConfig'
+import {ForSelectConfig} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/ForSelectConfig'
 import {forSelectConfig} from '@cm/types/select-types'
 
 export const generateUnivesalApiParamsForSelect = ({col, latestFormData}) => {

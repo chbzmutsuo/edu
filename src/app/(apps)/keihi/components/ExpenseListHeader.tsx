@@ -1,6 +1,6 @@
 'use client'
 
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 interface ExpenseListHeaderProps {
   totalCount: number

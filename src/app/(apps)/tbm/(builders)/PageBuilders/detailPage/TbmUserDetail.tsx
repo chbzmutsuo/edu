@@ -1,17 +1,17 @@
 'use client'
 
-import {R_Stack} from '@components/styles/common-components/common-components'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import {DetailPagePropType} from '@cm/types/types'
 
-import {Days} from '@class/Days/Days'
-import {toUtc} from '@class/Days/date-utils/calculations'
-import {TextBlue} from '@components/styles/common-components/Alert'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {toastByResult} from '@lib/ui/notifications'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
+import {Days} from '@cm/class/Days/Days'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {TextBlue} from '@cm/components/styles/common-components/Alert'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {toastByResult} from '@cm/lib/ui/notifications'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import BulkCalendarSetter from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/BulkCalendarSetter'
 
 export default function TbmUserDetail(props: DetailPagePropType) {
@@ -21,7 +21,7 @@ export default function TbmUserDetail(props: DetailPagePropType) {
   const userId = props.formData?.id
   const {data: calendar = []} = useDoStandardPrisma(`userWorkStatus`, `findMany`, {where: {userId}, orderBy: {date: 'asc'}})
 
-  const theMonth = toUtc(query.month ?? query.from)
+  const theMonth = toUtc(query.month ?? query.from ?? new Date())
   const theYear = theMonth.getFullYear()
 
   const {firstDateOfYear, lastDateOfYear, getAllMonthsInYear} = Days.year.getYearDatum(theYear)
@@ -35,46 +35,45 @@ export default function TbmUserDetail(props: DetailPagePropType) {
       {...{
         id: `tbmVechicleDetailPage`,
         showAll: false,
-
         TabComponentArray: [
           {label: `基本情報`, component: <MyForm {...props}></MyForm>},
-          {
-            label: `稼働予定`,
-            component: (
-              <div>
-                <BulkCalendarSetter
-                  {...{
-                    months,
-                    days: days,
-                    defaultSelectedDays: defaultSelectedDays,
-                    onConfirm: async ({selectedDays}) => {
-                      if (!confirm('変更を反映しますか？')) return
+          // {
+          //   label: `稼働予定`,
+          //   component: (
+          //     <div>
+          //       <BulkCalendarSetter
+          //         {...{
+          //           months,
+          //           days: days,
+          //           defaultSelectedDays: defaultSelectedDays,
+          //           onConfirm: async ({selectedDays}) => {
+          //             if (!confirm('変更を反映しますか？')) return
 
-                      const res = await doTransaction({
-                        transactionQueryList: days.map(day => {
-                          const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
-                          const unique_userId_date = {
-                            userId,
-                            date: day,
-                          }
+          //             const res = await doTransaction({
+          //               transactionQueryList: days.map(day => {
+          //                 const isSelected = selectedDays.some(d => Days.validate.isSameDate(d, day))
+          //                 const unique_userId_date = {
+          //                   userId,
+          //                   date: day,
+          //                 }
 
-                          return {
-                            model: 'userWorkStatus',
-                            method: 'upsert',
-                            queryObject: {
-                              where: {unique_userId_date},
-                              ...createUpdate({...unique_userId_date, workStatus: isSelected ? '稼働' : null}),
-                            },
-                          }
-                        }),
-                      })
-                      toastByResult(res)
-                    },
-                  }}
-                />
-              </div>
-            ),
-          },
+          //                 return {
+          //                   model: 'userWorkStatus',
+          //                   method: 'upsert',
+          //                   queryObject: {
+          //                     where: {unique_userId_date},
+          //                     ...createUpdate({...unique_userId_date, workStatus: isSelected ? '稼働' : null}),
+          //                   },
+          //                 }
+          //               }),
+          //             })
+          //             toastByResult(res)
+          //           },
+          //         }}
+          //       />
+          //     </div>
+          //   ),
+          // },
         ],
       }}
     />

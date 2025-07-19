@@ -1,8 +1,8 @@
 'use client'
 
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {TableBordered, TableWrapper} from '@components/styles/common-components/Table'
-import {NumHandler} from '@class/NumHandler'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
+import {NumHandler} from '@cm/class/NumHandler'
 import Image from 'next/image'
 export const OrderedItemTable = ({registerdItems, setregisterdItems, filterdRegisterdItems, total}) => {
   return (

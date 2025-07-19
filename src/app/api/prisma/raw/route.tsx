@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {isRouteAccessAllowed} from '@app/api/prisma/isAllowed'
-import {useRawSql} from '@class/SqlBuilder/useRawSql'
+import {useRawSql} from '@cm/class/SqlBuilder/useRawSql'
 
 export const POST = async (req: NextRequest) => {
   const body = await req.json()

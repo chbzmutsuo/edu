@@ -2,7 +2,7 @@
 
 import {ExpenseRecord} from '../types'
 import {formatAmount, formatDate} from '../utils'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 interface ExpenseListItemProps {
   expense: ExpenseRecord

@@ -1,10 +1,10 @@
 'use client'
 
-import {arr__insertItemAtIndex} from '@class/ArrHandler/array-utils/data-operations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {arr__insertItemAtIndex} from '@cm/class/ArrHandler/array-utils/data-operations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 
 import React from 'react'
 

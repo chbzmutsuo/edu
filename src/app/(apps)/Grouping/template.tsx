@@ -1,12 +1,12 @@
 'use client'
 import {PageBuilder} from '@app/(apps)/Grouping/class/PageBuilder'
 
-import {Alert} from '@components/styles/common-components/Alert'
-import {CenterScreen} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {CenterScreen} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
-import Redirector from '@components/utils/Redirector'
-import Admin from '@components/layout/Admin/Admin'
+import Redirector from '@cm/components/utils/Redirector'
+import Admin from '@cm/components/layout/Admin/Admin'
 
 const GroupingTemplate = props => {
   const {accessScopes, session, pathname, query, rootPath} = useGlobal()

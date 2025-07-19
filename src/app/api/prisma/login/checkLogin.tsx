@@ -1,6 +1,6 @@
 'use server'
 
-import {verifyPassword} from '@lib/crypt'
+import {verifyPassword} from '@cm/lib/crypt'
 import prisma from 'src/lib/prisma'
 import {SessionFaker} from 'src/non-common/SessionFaker'
 

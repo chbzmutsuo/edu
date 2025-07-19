@@ -4,7 +4,7 @@ const today = getMidnight()
 
 import {useState, useEffect, useRef, Fragment, useCallback} from 'react'
 import {useReactToPrint} from 'react-to-print'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {HOUR_SLOTS, HealthJournal} from '../../(constants)/types'
 import JournalTimelineEntry from './JournalTimelineEntry'
 import {
@@ -14,14 +14,14 @@ import {
   updateJournalEntry,
   getAllHealthRecordsForDate,
 } from '../../(lib)/journalActions'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {BreakBefore} from '@components/styles/common-components/print-components'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {BreakBefore} from '@cm/components/styles/common-components/print-components'
 import {HealthJournalEntry} from '@prisma/client'
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
 export default function JournalPage() {
   const global = useGlobal()

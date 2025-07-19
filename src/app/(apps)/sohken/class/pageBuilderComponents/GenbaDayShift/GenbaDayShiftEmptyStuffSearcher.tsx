@@ -1,10 +1,10 @@
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
 import {DetailPagePropType} from '@cm/types/types'
-import useWindowSize from '@hooks/useWindowSize'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 const GenbaDayShiftEmptyStuffSearcher = (props: DetailPagePropType) => {
   const {query} = props.useGlobalProps

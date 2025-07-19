@@ -1,8 +1,8 @@
-import useInitMySelect from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
+import useInitMySelect from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import React from 'react'
-import {getColorStyles} from '@lib/methods/colors'
+import {getColorStyles} from '@cm/lib/methods/colors'
 
 export default function MyRadio(props) {
   const {contexts} = useInitMySelect(props)

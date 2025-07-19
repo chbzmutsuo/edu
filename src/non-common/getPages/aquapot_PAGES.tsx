@@ -1,6 +1,6 @@
 import {PageGetterType, CleansePathSource} from 'src/non-common/path-title-constsnts'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
-import {arr__findCommonValues} from '@class/ArrHandler/array-utils/data-operations'
+import {arr__findCommonValues} from '@cm/class/ArrHandler/array-utils/data-operations'
 
 export const aquapot_PAGES = (props: PageGetterType) => {
   const {roles = []} = props

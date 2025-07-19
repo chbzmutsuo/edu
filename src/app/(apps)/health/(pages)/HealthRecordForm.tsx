@@ -10,7 +10,7 @@ import {
   HealthCategory,
   HealthRecordFormData,
 } from '../(constants)/types'
-import {StrHandler} from '@class/StrHandler'
+import {StrHandler} from '@cm/class/StrHandler'
 
 interface Medicine {
   id: number

@@ -1,8 +1,8 @@
-import {Downloader} from '@components/styles/common-components/CsvTable/CsvDownloader'
-import {CsvTableBody} from '@components/styles/common-components/CsvTable/CsvTableBody'
-import {CsvTableHead} from '@components/styles/common-components/CsvTable/CsvTableHead'
-import {TableBordered, TableWrapper} from '@components/styles/common-components/Table'
-import {htmlProps} from '@components/styles/common-components/type'
+import {Downloader} from '@cm/components/styles/common-components/CsvTable/CsvDownloader'
+import {CsvTableBody} from '@cm/components/styles/common-components/CsvTable/CsvTableBody'
+import {CsvTableHead} from '@cm/components/styles/common-components/CsvTable/CsvTableHead'
+import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
+import {htmlProps} from '@cm/components/styles/common-components/type'
 
 import React, {CSSProperties} from 'react'
 import {twMerge} from 'tailwind-merge'

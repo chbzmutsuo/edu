@@ -1,15 +1,15 @@
 import React from 'react'
 
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/edu/class/ColBuilder'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {ClipboardIcon} from 'lucide-react'
 
 import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
-import {CircledIcon} from '@components/styles/common-components/IconBtn'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
+import {CircledIcon} from '@cm/components/styles/common-components/IconBtn'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobal'
 
 export const RoleSetting = ({Game, useGlobalProps}) => {
   const {toggleLoad, accessScopes} = useGlobalProps as useGlobalPropType

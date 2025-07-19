@@ -1,7 +1,7 @@
 import {PageBuilder} from '@app/(apps)/kickswrap/class/PageBuilder'
 
-import Admin from '@components/layout/Admin/Admin'
-import {MyContainer} from '@components/styles/common-components/common-components'
+import Admin from '@cm/components/layout/Admin/Admin'
+import {MyContainer} from '@cm/components/styles/common-components/common-components'
 
 import Image from 'next/image'
 

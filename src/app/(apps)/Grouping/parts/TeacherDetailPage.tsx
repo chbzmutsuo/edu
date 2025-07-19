@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
 import MidTable from '@cm/components/DataLogic/RTs/MidTable/MidTable'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {DetailPagePropType} from '@cm/types/types'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function TeacherDetailPage(props: DetailPagePropType) {
   const {formData: teacher} = props

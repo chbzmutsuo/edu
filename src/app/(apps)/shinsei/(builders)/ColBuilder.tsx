@@ -1,10 +1,10 @@
 'use client'
 
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {Center, R_Stack} from '@components/styles/common-components/common-components'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {Center, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 export class ColBuilder {
   static department = (props: columnGetterType) => {

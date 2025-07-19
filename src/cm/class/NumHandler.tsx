@@ -1,4 +1,4 @@
-import {DH__convertDataType} from '@class/DataHandler/type-converter'
+import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export class NumHandler {
   // 数値を3桁ごとの小数点表記のStringに変換する

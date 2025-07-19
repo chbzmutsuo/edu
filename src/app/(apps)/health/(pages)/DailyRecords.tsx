@@ -1,9 +1,9 @@
 'use client'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {HEALTH_CATEGORY_LABELS, HEALTH_CATEGORY_COLORS} from '../(constants)/types'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import {COLORS} from '@lib/constants/constants'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import {COLORS} from '@cm/lib/constants/constants'
 
 interface HealthRecord {
   id: number

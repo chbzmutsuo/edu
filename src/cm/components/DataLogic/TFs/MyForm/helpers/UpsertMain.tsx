@@ -3,10 +3,10 @@
 import {additionalPropsType, requestResultType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
+import {prismaDataExtractionQueryType} from '@cm/components/DataLogic/TFs/Server/Conf'
 import {toast} from 'react-toastify'
-import {toastByResult} from '@lib/ui/notifications'
-import {myFormDefaultUpsert} from '@lib/formMethods/myFormDefaultUpsert'
+import {toastByResult} from '@cm/lib/ui/notifications'
+import {myFormDefaultUpsert} from '@cm/lib/formMethods/myFormDefaultUpsert'
 import {upsertControllerType} from '@cm/types/form-types'
 
 export type UpsertMainProps = {

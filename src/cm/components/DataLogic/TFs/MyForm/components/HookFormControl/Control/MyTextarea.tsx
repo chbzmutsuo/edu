@@ -1,4 +1,4 @@
-import {ControlProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+import {ControlProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
 import React, {useEffect, useRef, useState} from 'react'
 
 const MyTextarea = React.forwardRef((props: ControlProps, ref) => {

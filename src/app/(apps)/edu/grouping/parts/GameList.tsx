@@ -1,6 +1,6 @@
 'use client'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import {HREF} from '@cm/lib/methods/urls'
 
@@ -8,16 +8,16 @@ import {useState} from 'react'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 
 import GameCreateForm from '@app/(apps)/edu/Grouping/parts/GameCreateForm'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {Center, C_Stack, Flex, R_Stack} from '@components/styles/common-components/common-components'
-import {Button} from '@components/styles/common-components/Button'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {Center, C_Stack, Flex, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
 import {shorten} from '@cm/lib/methods/common'
 
-import {Paper} from '@components/styles/common-components/paper'
-import MyPopover from '@components/utils/popover/MyPopover'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
-import {getColorStyles} from '@lib/methods/colors'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import MyPopover from '@cm/components/utils/popover/MyPopover'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
+import {getColorStyles} from '@cm/lib/methods/colors'
 
 const GameList = ({myGame}) => {
   const {query, session, router, toggleLoad} = useGlobal()

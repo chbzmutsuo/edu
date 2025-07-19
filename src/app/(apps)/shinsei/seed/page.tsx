@@ -1,12 +1,12 @@
 import * as fs from 'fs'
-import {Button} from '@components/styles/common-components/Button'
-import {Absolute, C_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Absolute, C_Stack} from '@cm/components/styles/common-components/common-components'
 import React from 'react'
 import path from 'path'
-import {superTrim} from '@lib/methods/common'
+import {superTrim} from '@cm/lib/methods/common'
 import prisma from 'src/lib/prisma'
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 export default function page() {
   return (

@@ -1,4 +1,4 @@
-import {isDev} from '@lib/methods/common'
+import {isDev} from '@cm/lib/methods/common'
 import {toast} from 'react-toastify'
 
 export const showSpendTime = async (cb: () => Promise<any>, showToast = isDev) => {

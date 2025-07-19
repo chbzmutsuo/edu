@@ -1,9 +1,9 @@
 import {AqCustomerCl} from '@app/(apps)/aquapot/(models)/AqCustomerCl'
-import {Fields} from '@class/Fields/Fields'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
+import {Fields} from '@cm/class/Fields/Fields'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import React from 'react'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export default function useAqCustomerFilter() {
   const {query, addQuery} = useGlobal()

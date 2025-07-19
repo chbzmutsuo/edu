@@ -1,4 +1,4 @@
-import Redirector from '@components/utils/Redirector'
+import Redirector from '@cm/components/utils/Redirector'
 import LogoutForm from '@app/logout/LogoutForm'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 

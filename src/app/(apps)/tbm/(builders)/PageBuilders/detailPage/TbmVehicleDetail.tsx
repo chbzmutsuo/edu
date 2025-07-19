@@ -1,10 +1,10 @@
 'use client'
 
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import {DetailPagePropType} from '@cm/types/types'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import EtcConnetor from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/EtcConnector/EtcConnetor'
 
 export default function TbmVehicleDetail(props: DetailPagePropType) {

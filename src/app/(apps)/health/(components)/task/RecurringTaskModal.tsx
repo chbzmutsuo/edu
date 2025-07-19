@@ -3,7 +3,7 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {createRecurringTask} from '../../(lib)/task-actions'
 import {RecurringPattern} from '@prisma/client'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 type Props = {
   onClose: () => void

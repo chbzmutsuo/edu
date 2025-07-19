@@ -1,11 +1,11 @@
 'use client'
-import {Absolute} from '@components/styles/common-components/common-components'
-import {Paper} from '@components/styles/common-components/paper'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {Absolute} from '@cm/components/styles/common-components/common-components'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 
-import {basePath, cl} from '@lib/methods/common'
+import {basePath, cl} from '@cm/lib/methods/common'
 import React from 'react'
 import {twMerge} from 'tailwind-merge'
 

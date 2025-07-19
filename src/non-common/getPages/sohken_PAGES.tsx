@@ -1,8 +1,8 @@
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {CleansePathSource, PageGetterType, pathItemType} from 'src/non-common/path-title-constsnts'
 
 export const sohken_PAGES = (props: PageGetterType) => {

@@ -1,9 +1,12 @@
+import {badgeVariantStr} from '@cm/shadcn/lib/variant-types'
+
 export type codeItemCore = {
   label: string
-  color?: string
+  color?: badgeVariantStr
   colorCode?: string
   approved?: boolean
   onCreate?: boolean
+  active?: boolean
 }
 export type codeItem = {code: string} & codeItemCore
 export type codeObjectArgs = {[key: string]: codeItemCore}
@@ -44,21 +47,9 @@ export class Code {
 
   findByLabel(label: string) {
     return this.findByProperty('label', label)
-    // const hit = this.array.find(item => item.label === label);
-
-    // if (hit) {
-    //   return hit;
-    // }
-    // throw new Error(`${label} は見つかりませんでした`);
   }
 
   findByCode(code: string) {
     return this.findByProperty('code', code)
-    // const toObj = this.codeObject;
-    // const hit = toObj[code];
-    // if (hit) {
-    //   return hit;
-    // }
-    // throw new Error(`${code} は見つかりませんでした`);
   }
 }

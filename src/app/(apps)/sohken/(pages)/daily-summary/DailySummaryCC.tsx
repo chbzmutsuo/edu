@@ -4,18 +4,18 @@ import {GoogleDocs_batchUpdate} from '@app/api/google/actions/docsAPI'
 import {DocsRequests} from '@app/api/google/actions/DocsRequests'
 import {GoogleDrive_GetFilesInFolder, GoogleDrive_CopyFile} from '@app/api/google/actions/driveAPI'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {Button} from '@components/styles/common-components/Button'
-import {Padding, R_Stack} from '@components/styles/common-components/common-components'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 import {targetUsers} from '@app/(apps)/sohken/api/cron/targetUsers'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {T_LINK} from '@components/styles/common-components/links'
-import {isDev} from '@lib/methods/common'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import {isDev} from '@cm/lib/methods/common'
 import {createDocData} from '@app/(apps)/sohken/(pages)/daily-summary/(utils)/createDocData'
 
 export const DailySummaryCC = ({genbaDayList, allShiftBetweenDays, records, users, dayRemarksState, calendar}) => {

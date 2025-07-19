@@ -4,7 +4,7 @@ import utc from 'dayjs/plugin/utc'
 import 'dayjs/locale/ja'
 import {breakLines} from 'src/cm/lib/value-handler'
 import {arrToLines} from 'src/cm/components/utils/texts/MarkdownDisplay'
-import {DateInput} from '@class/Days/date-utils/date-utils-type'
+import {DateInput} from '@cm/class/Days/date-utils/date-utils-type'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)

@@ -3,12 +3,12 @@ import React from 'react'
 import GroupViewer from '../Teacher/GroupHandler/GroupViewer/GroupViewer'
 import {anyObject} from '@cm/types/utility-types'
 
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {Alert} from '@components/styles/common-components/Alert'
-import {Button} from '@components/styles/common-components/Button'
-import {Center, C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
-import {getColorStyles} from '@lib/methods/colors'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Center, C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
+import {getColorStyles} from '@cm/lib/methods/colors'
 
 export default function MainViewForStudent({GameCtxValue}) {
   const {Game, player, activeGroup, GAME_CLASS, activeGroupsWithRoles, randomSamplingInfo, toggleLoad} = GameCtxValue

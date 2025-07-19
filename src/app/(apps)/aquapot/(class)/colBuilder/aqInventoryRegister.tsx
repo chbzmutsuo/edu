@@ -1,10 +1,10 @@
 import {aqCustomerForSelectConfig} from '@app/(apps)/aquapot/(class)/colBuilder/aqCustomer'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 
-import {Fields} from '@class/Fields/Fields'
+import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export const aqInventoryRegister = (props: columnGetterType) => {
   return new Fields([

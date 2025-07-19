@@ -1,4 +1,4 @@
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 import {Stock, StockHistory} from '@prisma/client'
 
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'

@@ -1,5 +1,5 @@
-import {fetchRawSql} from '@class/Fields/lib/methods'
-import {StrHandler} from '@class/StrHandler'
+import {fetchRawSql} from '@cm/class/Fields/lib/methods'
+import {StrHandler} from '@cm/class/StrHandler'
 
 type phraseAtom = {
   select: string[]

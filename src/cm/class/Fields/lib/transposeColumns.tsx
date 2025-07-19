@@ -9,12 +9,12 @@ import {transposeColumnsOptionProps} from 'src/cm/class/Fields/col-operator-type
 import ContentPlayer from 'src/cm/components/utils/ContentPlayer'
 import {judgeColType} from 'src/cm/class/Fields/lib/methods'
 import {defaultFormat} from 'src/cm/class/Fields/lib/defaultFormat'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
-import {Code} from '@class/Code'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {Code} from '@cm/class/Code'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export const getColMinWidth = (col: colType) => {
   const dateTypeWidth = 140

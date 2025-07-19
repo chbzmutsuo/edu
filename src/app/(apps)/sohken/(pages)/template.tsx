@@ -6,9 +6,9 @@ import {useGenbaDetailModal} from '@app/(apps)/sohken/hooks/useGenbaDetailModal'
 import {useGenbaSearchModal} from '@app/(apps)/sohken/hooks/useGenbaSearchModal'
 import {useShiftEditFormModal} from '@app/(apps)/sohken/hooks/useShiftEditFormModal'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {useGlobalShortcut} from '@hooks/useGlobalShortcut'
-import {sleep} from '@lib/methods/common'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {useGlobalShortcut} from '@cm/hooks/useGlobalShortcut'
+import {sleep} from '@cm/lib/methods/common'
 
 import React from 'react'
 import {toast} from 'react-toastify'

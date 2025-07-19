@@ -8,11 +8,11 @@ import ProcessVisualizer from '@cm/components/List/ProcessVisualizer'
 
 import {Grouping} from '@app/(apps)/edu/class/Grouping'
 
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import {QueryBuilder} from '@app/(apps)/edu/class/QueryBuilder'
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
 import BasicModal from '@cm/components/utils/modal/BasicModal'

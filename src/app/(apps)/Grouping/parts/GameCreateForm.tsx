@@ -1,16 +1,16 @@
 import {ColBuilder} from '@app/(apps)/Grouping/class/ColBuilder'
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import SimpleTable from '@cm/components/utils/SimpleTable'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {Alert} from '@components/styles/common-components/Alert'
-import {Button} from '@components/styles/common-components/Button'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {toast} from 'react-toastify'
-import {myFormDefaultUpsert} from '@lib/formMethods/myFormDefaultUpsert'
+import {myFormDefaultUpsert} from '@cm/lib/formMethods/myFormDefaultUpsert'
 
 const GameCreateForm = ({newGameFormData, setnewGameFormData}) => {
   const useGlobalProps = useGlobal()

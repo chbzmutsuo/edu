@@ -1,14 +1,14 @@
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
-import {FitMargin, Padding} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import Redirector from '@components/utils/Redirector'
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {FitMargin, Padding} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import Redirector from '@cm/components/utils/Redirector'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
-import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import prisma from 'src/lib/prisma'
 
 export default async function Page(props) {

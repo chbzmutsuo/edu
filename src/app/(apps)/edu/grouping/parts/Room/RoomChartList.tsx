@@ -5,11 +5,11 @@ import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import useWindowSize from '@cm/hooks/useWindowSize'
 import React, {useState} from 'react'
 
-import {Days} from '@class/Days/Days'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 
 import Time_Score_Chart from '@app/(apps)/edu/Grouping/components/Grouping/game/Chart/Time_Score_Chart'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 const RoomChartList = React.memo((props: any) => {
   return <></>

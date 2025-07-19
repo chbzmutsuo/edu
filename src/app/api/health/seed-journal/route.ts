@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {HOUR_SLOTS} from '../../../(apps)/health/(constants)/types'
 
 export async function POST(request: NextRequest) {

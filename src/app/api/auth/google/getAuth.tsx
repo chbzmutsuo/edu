@@ -1,6 +1,6 @@
 'use server'
 
-import {basePath} from '@lib/methods/common'
+import {basePath} from '@cm/lib/methods/common'
 import {google} from 'googleapis'
 export const getAuth = async () => {
   let credential = process.env.GOOGLE_SHEET_API_SERVICE_ACCOUNT_CREDENTIALS ?? ''

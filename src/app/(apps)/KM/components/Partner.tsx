@@ -1,8 +1,8 @@
 'use client'
 
 import {cl} from '@cm/lib/methods/common'
-import {C_Stack, Flex, R_Stack} from '@components/styles/common-components/common-components'
-import {ImageLabel} from '@components/styles/common-components/ImageLabel'
+import {C_Stack, Flex, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {ImageLabel} from '@cm/components/styles/common-components/ImageLabel'
 import Link from 'next/link'
 import {Fragment} from 'react'
 

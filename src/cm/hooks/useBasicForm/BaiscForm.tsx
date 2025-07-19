@@ -7,12 +7,12 @@ import {FormProvider, UseFormReturn} from 'react-hook-form'
 import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 
-import {adjustBasicFormProps} from '@hooks/useBasicForm/lib/createBasicFormProps'
-import ControlGroup from '@hooks/useBasicForm/molecules/ControlGroup'
-import {Card} from '@cm/shadcn-ui/components/ui/card'
-import { DynamicGridContainer} from '@components/utils'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {adjustBasicFormProps} from '@cm/hooks/useBasicForm/lib/createBasicFormProps'
+import ControlGroup from '@cm/hooks/useBasicForm/molecules/ControlGroup'
+import {Card} from '@cm/shadcn/components/ui/card'
+import {DynamicGridContainer} from '@cm/components/utils'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -47,7 +47,7 @@ const FormSection = React.memo(
       <>
         {isNaN(colFormIndexGroupName) && colFormIndexGroupName ? (
           <>
-            <Card variant="gradient">
+            <Card>
               <div className={`  text-primary-main text-center text-lg font-bold `}>{colFormIndexGroupName}</div>
               {children}
             </Card>

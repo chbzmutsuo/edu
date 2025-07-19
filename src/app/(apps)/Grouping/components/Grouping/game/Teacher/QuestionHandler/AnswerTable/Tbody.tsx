@@ -1,10 +1,10 @@
 import {ClassRoom, Grouping} from '@app/(apps)/Grouping/class/Grouping'
 import StudentAnswerHistory from '@app/(apps)/Grouping/components/Grouping/game/Teacher/QuestionHandler/StudentAnswerHistory'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
-import {Center, Circle, R_Stack} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Center, Circle, R_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {Fragment} from 'react'
 

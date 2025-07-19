@@ -3,10 +3,10 @@ import 'src/cm/styles/globals.css'
 
 import React from 'react'
 
-import NavigationContextProvider from '@providers/NavigationContextProvider'
-import LoaderContextProvider from '@providers/LoaderContextProvider'
-import SessionContextProvider from '@providers/SessionContextProvider'
-// import {fetcher} from '@lib/swr'
+import NavigationContextProvider from '@cm/providers/NavigationContextProvider'
+import LoaderContextProvider from '@cm/providers/LoaderContextProvider'
+import SessionContextProvider from '@cm/providers/SessionContextProvider'
+// import {fetcher} from '@cm/lib/swr'
 import {SWRConfig} from 'swr'
 import {SessionProvider} from 'next-auth/react'
 const config = {

@@ -9,8 +9,8 @@ import {cl} from '@cm/lib/methods/common'
 
 import GradualTextGroup from '@cm/components/utils/texts/GradualTextGroup'
 import BackGroundImage from '@cm/components/utils/BackGroundImage'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {Button} from '@components/styles/common-components/Button'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export const GreetingLayer = ({children}) => {
   const [showGreeting, setshowGreeting] = useState<any>(true)

@@ -1,5 +1,5 @@
 import {Review} from '@app/(apps)/KM/components/Review'
-import {Padding} from '@components/styles/common-components/common-components'
+import {Padding} from '@cm/components/styles/common-components/common-components'
 
 const Page = async () => {
   return (

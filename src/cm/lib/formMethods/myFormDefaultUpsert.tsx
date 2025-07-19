@@ -1,8 +1,8 @@
-import {DH__convertDataType} from '@class/DataHandler/type-converter'
+import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 import {requestResultType} from '@cm/types/types'
-import {updateWithImageAndAddUrlToLatestFormData} from '@lib/file/image-handler'
-import {myFormDefaultUpsertPropType} from '@lib/formMethods/separateFormData'
-import {updateSimply} from '@lib/formMethods/updateSimply'
+import {updateWithImageAndAddUrlToLatestFormData} from '@cm/lib/file/image-handler'
+import {myFormDefaultUpsertPropType} from '@cm/lib/formMethods/separateFormData'
+import {updateSimply} from '@cm/lib/formMethods/updateSimply'
 
 export const myFormDefaultUpsert: (props: myFormDefaultUpsertPropType) => Promise<requestResultType> = async (
   props: myFormDefaultUpsertPropType

@@ -1,19 +1,19 @@
 'use client'
 import React from 'react'
 import MidTable from '@cm/components/DataLogic/RTs/MidTable/MidTable'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {Prisma} from '@prisma/client'
 
 import {HREF} from '@cm/lib/methods/urls'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {RoleSetting} from '@app/(apps)/Grouping/components/Grouping/game/Teacher/RoleSetting'
-import {Paper} from '@components/styles/common-components/paper'
+import {Paper} from '@cm/components/styles/common-components/paper'
 import TaskScoring from '@app/(apps)/Grouping/parts/TaskScoring'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 import Link from 'next/link'
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
 
 export default function GameDetailPage(props) {
   const useGlobalProps = useGlobal()

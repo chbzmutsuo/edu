@@ -1,8 +1,8 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Button} from '@components/styles/common-components/Button'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 interface TradeJournalEntry {
   id: number

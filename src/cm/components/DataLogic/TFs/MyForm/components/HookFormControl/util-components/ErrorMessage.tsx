@@ -1,5 +1,5 @@
 import {ControlContextType} from '@cm/types/form-control-type'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {cn} from '@cm/shadcn/lib/utils'
 
 const ErrorMessage = ({controlContextValue}) => {
   const {ReactHookForm, col, ControlOptions} = controlContextValue as ControlContextType

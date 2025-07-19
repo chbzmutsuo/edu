@@ -12,9 +12,9 @@ import StudentDisplay from '@app/(apps)/Grouping/components/Grouping/game/Studen
 import PlayerSelector from '@app/(apps)/Grouping/components/Grouping/game/PlayerSelector'
 
 import useInterval from '@cm/hooks/useInterval'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 export type GameContextType = {
   activeGroupsWithRoles
   isTeacher: boolean

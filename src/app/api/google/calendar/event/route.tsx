@@ -4,7 +4,7 @@ import {getClientConfig} from '@app/api/google/lib/server-actions'
 import {requestResultType} from '@cm/types/types'
 
 import {getValidToken} from '@app/api/google/lib/middleware'
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
 const defaultEvent = {
   calendarId: 'primary',

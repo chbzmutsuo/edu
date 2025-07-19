@@ -1,4 +1,4 @@
-import {Alert} from '@components/styles/common-components/Alert'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 
 export default function NotAvailable(props: {isAvailable?: boolean; reason?: any; alertOnClick?: string; children}) {
   const {isAvailable = false, reason, alertOnClick, children} = props

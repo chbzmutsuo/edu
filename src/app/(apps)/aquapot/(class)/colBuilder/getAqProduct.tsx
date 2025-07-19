@@ -4,19 +4,19 @@ import {aqCustomerForSelectConfig} from '@app/(apps)/aquapot/(class)/colBuilder/
 import {ColBuilder} from '@app/(apps)/aquapot/(class)/colBuilder/ColBuilder'
 import {AQ_CONST} from '@app/(apps)/aquapot/(constants)/options'
 
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {Paper} from '@components/styles/common-components/paper'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Paper} from '@cm/components/styles/common-components/paper'
 
-import GlobalModal from '@components/utils/modal/GlobalModal'
-import MyPopover from '@components/utils/popover/MyPopover'
+import GlobalModal from '@cm/components/utils/modal/GlobalModal'
+import MyPopover from '@cm/components/utils/popover/MyPopover'
 
 export const getAqProduct = (props: columnGetterType) => {
   return new Fields([

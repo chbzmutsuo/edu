@@ -1,6 +1,6 @@
 //classを切り替える
 
-import {setCustomParams} from '@components/DataLogic/helpers/SetCustomParams'
+import {setCustomParams} from '@cm/components/DataLogic/helpers/SetCustomParams'
 
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {PageBuilder} from '@app/(apps)/shinsei/(builders)/PageBuilder'
@@ -8,7 +8,7 @@ import {ColBuilder} from '@app/(apps)/shinsei/(builders)/ColBuilder'
 import {QueryBuilder} from '@app/(apps)/shinsei/(builders)/QueryBuilder'
 
 import {ViewParamBuilder} from '@app/(apps)/shinsei/(builders)/ViewParamBuilder'
-import {getMasterPageCommonConfig} from '@components/DataLogic/helpers/getMasterPageCommonConfig'
+import {getMasterPageCommonConfig} from '@cm/components/DataLogic/helpers/getMasterPageCommonConfig'
 
 export default async function DynamicMasterPage(props) {
   return getMasterPageCommonConfig({

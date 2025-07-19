@@ -1,9 +1,9 @@
 import {ColBuilder} from '@app/(apps)/Grouping/class/ColBuilder'
 
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 
-import BasicTabs from '@components/utils/tabs/BasicTabs'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import {HREF} from '@cm/lib/methods/urls'
 import {DetailPagePropType} from '@cm/types/types'
 

@@ -2,10 +2,10 @@
 import React, {useMemo} from 'react'
 import {getMyTableDefault, myFormDefault} from 'src/cm/constants/defaults'
 
-import BasicModal from '@components/utils/modal/BasicModal'
-import MyTable from '@components/DataLogic/TFs/MyTable/MyTable'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import BasicModal from '@cm/components/utils/modal/BasicModal'
+import MyTable from '@cm/components/DataLogic/TFs/MyTable/MyTable'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 // convertProps関数を分離して最適化
 const convertProps = (props: ClientPropsType2): ClientPropsType2 => {
   const myTableDefault = getMyTableDefault()

@@ -7,8 +7,8 @@ import SlateEditor from 'src/cm/components/SlateEditor/SlateEditor'
 import {MarkDownDisplay} from 'src/cm/components/utils/texts/MarkdownDisplay'
 import {CssString} from 'src/cm/components/styles/cssString'
 import JsonFormatter from 'react-json-formatter'
-import {formatDate, TimeFormatType} from '@class/Days/date-utils/formatters'
-import {Days} from '@class/Days/Days'
+import {formatDate, TimeFormatType} from '@cm/class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
 
 export const getValue = ({col, record, dataModelName, mutateRecords, tdStyle}) => {
   /**基本的な変換 */

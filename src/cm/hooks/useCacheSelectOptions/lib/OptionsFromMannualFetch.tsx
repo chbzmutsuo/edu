@@ -1,7 +1,7 @@
-import {mapAdjustOptionValue} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+import {mapAdjustOptionValue} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {useEffect, useState} from 'react'
 import useSWR from 'swr'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export const OptionsFromMannualFetch = ({CacheKeys, manualFetcheTargetCols, latestFormData}) => {
   const isReady = manualFetcheTargetCols?.length > 0

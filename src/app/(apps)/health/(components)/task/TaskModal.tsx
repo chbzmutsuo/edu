@@ -3,7 +3,7 @@
 import React, {useState, useEffect, useRef} from 'react'
 import {createTask, updateTask} from '../../(lib)/task-actions'
 import {Task} from '../../(lib)/task-actions'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {uploadTaskAttachment} from './uploadTaskAttachment'
 import {FileHandler} from '@cm/class/FileHandler'
 

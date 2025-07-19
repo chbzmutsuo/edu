@@ -1,6 +1,6 @@
 import SalesNewCC from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/SalesNewCC'
-import {Button} from '@cm/shadcn-ui/components/ui/button'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Button} from '@cm/shadcn/components/ui/button'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
 export default async function Page(props) {

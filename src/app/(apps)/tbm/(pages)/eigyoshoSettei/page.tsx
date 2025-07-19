@@ -1,8 +1,8 @@
-import {Days} from '@class/Days/Days'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import EigyoshoSetteiClient from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/EigyoshoSetteiClient'
 
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 import prisma from 'src/lib/prisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'

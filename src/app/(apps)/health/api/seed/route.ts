@@ -1,6 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server'
 import {seedHealthRecords} from '../../seed/healthRecordSeeder'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export async function POST(request: NextRequest) {
   try {

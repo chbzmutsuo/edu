@@ -1,10 +1,10 @@
 'use client'
 
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 
 import {DetailPagePropType} from '@cm/types/types'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 export const GenbaDayShiftForm = (props: DetailPagePropType) => {
   const genbaDay = props.formData ?? {}

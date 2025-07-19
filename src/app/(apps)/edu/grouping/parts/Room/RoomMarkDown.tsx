@@ -1,4 +1,4 @@
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 const RoomMarkDown = () => {
   const introductionMD = `

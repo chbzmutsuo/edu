@@ -1,11 +1,11 @@
 'use client'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {CenterScreen} from '@components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {CenterScreen} from '@cm/components/styles/common-components/common-components'
 
-import Redirector from '@components/utils/Redirector'
+import Redirector from '@cm/components/utils/Redirector'
 import LoginForm from '@app/login/LoginForm'
-import {Fields} from '@class/Fields/Fields'
-import {HREF} from '@lib/methods/urls'
+import {Fields} from '@cm/class/Fields/Fields'
+import {HREF} from '@cm/lib/methods/urls'
 
 export default function DynamicMasterPage(props) {
   const {query} = useGlobal()

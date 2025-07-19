@@ -4,7 +4,7 @@ import Image from 'next/image'
 import {Zen_Old_Mincho} from 'next/font/google'
 
 import {isDev} from '@cm/lib/methods/common'
-import Admin from '@components/layout/Admin/Admin'
+import Admin from '@cm/components/layout/Admin/Admin'
 
 const font = Zen_Old_Mincho({
   weight: ['400', '500', '600', '700', '900'],

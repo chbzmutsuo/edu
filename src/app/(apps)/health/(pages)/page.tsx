@@ -1,7 +1,7 @@
 'use client'
 
-import Redirector from '@components/utils/Redirector'
-import useWindowSize from '@hooks/useWindowSize'
+import Redirector from '@cm/components/utils/Redirector'
+import useWindowSize from '@cm/hooks/useWindowSize'
 import React from 'react'
 
 export default function HealthPage() {

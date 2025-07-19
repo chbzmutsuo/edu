@@ -5,24 +5,24 @@ import {
   upsertStockHistory,
   updateAlgorithm,
 } from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
-import {Days} from '@class/Days/Days'
-import {toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
-import {Button} from '@components/styles/common-components/Button'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import Redirector from '@components/utils/Redirector'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import Redirector from '@cm/components/utils/Redirector'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {twMerge} from 'tailwind-merge'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {HREF} from '@lib/methods/urls'
-import useWindowSize from '@hooks/useWindowSize'
-import {sleep} from '@lib/methods/common'
+import {HREF} from '@cm/lib/methods/urls'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import {sleep} from '@cm/lib/methods/common'
 
 export default function TemplateBottomButton() {
   const {toggleLoad, pathname, query} = useGlobal()

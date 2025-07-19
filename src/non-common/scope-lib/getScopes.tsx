@@ -1,4 +1,4 @@
-import {arr__findCommonValues} from '@class/ArrHandler/array-utils/data-operations'
+import {arr__findCommonValues} from '@cm/class/ArrHandler/array-utils/data-operations'
 import {anyObject} from '@cm/types/utility-types'
 
 import {judgeIsAdmin, roleIs, typeIs} from 'src/non-common/scope-lib/judgeIsAdmin'

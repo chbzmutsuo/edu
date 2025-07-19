@@ -1,4 +1,4 @@
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {toast} from 'react-toastify'
 import {requestResultType} from '@cm/types/types'
 

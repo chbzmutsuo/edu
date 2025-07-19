@@ -6,9 +6,9 @@ import {StudentClass} from '@app/(apps)/edu/class/Grouping'
 import {useState} from 'react'
 import {toast} from 'react-toastify'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 const UnfitStudentSelector = props => {
   const {Student} = props

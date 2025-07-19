@@ -1,5 +1,5 @@
 import {Contact} from '@app/(apps)/KM/components/Contact'
-import {Padding} from '@components/styles/common-components/common-components'
+import {Padding} from '@cm/components/styles/common-components/common-components'
 
 const Page = async () => {
   return (

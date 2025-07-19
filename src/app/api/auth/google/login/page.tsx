@@ -1,9 +1,9 @@
 'use client'
 import {getAuthUrl} from '@app/api/auth/google/getAuthUrl'
 
-import {Absolute} from '@components/styles/common-components/common-components'
-import {T_LINK} from '@components/styles/common-components/links'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Absolute} from '@cm/components/styles/common-components/common-components'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 import React from 'react'
 import useSWR from 'swr'

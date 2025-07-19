@@ -4,14 +4,14 @@ import {Grouping, ClassRoom} from '@app/(apps)/Grouping/class/Grouping'
 
 import {colType, columnGetterType} from '@cm/types/types'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import MemberViwer from '@cm/components/List/MemberViwer'
 import {Fields} from '@cm/class/Fields/Fields'
 import {addQuerySentence} from '@cm/lib/methods/urls'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {arrToLines} from '@cm/components/utils/texts/MarkdownDisplay'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export class ColBuilder {
   static learningRoleMaster = (props: columnGetterType) => {

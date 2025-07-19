@@ -1,5 +1,5 @@
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 import Image from 'next/image'
 import {twMerge} from 'tailwind-merge'

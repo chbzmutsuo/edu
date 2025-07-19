@@ -1,4 +1,4 @@
-import {htmlProps, mergeHtmlProps} from '@components/styles/common-components/type'
+import {htmlProps, mergeHtmlProps} from '@cm/components/styles/common-components/type'
 
 export const Head1 = (props: htmlProps & {}) => {
   return (

@@ -1,6 +1,6 @@
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import {isDev} from '@lib/methods/common'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {isDev} from '@cm/lib/methods/common'
 
 // 薬IDのマッピング（実際のDBから取得した値に調整してください）
 const MEDICINE_IDS = {

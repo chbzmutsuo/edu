@@ -1,7 +1,7 @@
 'use client'
 import React from 'react'
-import {Button} from '@components/styles/common-components/Button'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 interface PaginationControlProps {
   currentPage: number

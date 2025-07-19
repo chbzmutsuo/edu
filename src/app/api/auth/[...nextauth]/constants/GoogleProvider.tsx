@@ -1,4 +1,4 @@
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import GoogleProvider from 'next-auth/providers/google'
 export const googleProvider = GoogleProvider({
   clientId: process.env.GOOGLE_CLIENT_ID ?? '',

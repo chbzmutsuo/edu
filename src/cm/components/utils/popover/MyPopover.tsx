@@ -9,7 +9,7 @@ import React, {CSSProperties, useCallback, useMemo} from 'react'
 import {v4 as uuidv4} from 'uuid'
 import useCursorPosition from 'src/cm/hooks/useCursorPosition'
 
-import {atomTypes, useJotaiByKey} from '@hooks/useJotai'
+import {atomTypes, useJotaiByKey} from '@cm/hooks/useJotai'
 import {JSX} from 'react'
 const style: CSSProperties = {
   zIndex: Z_INDEX.popover,

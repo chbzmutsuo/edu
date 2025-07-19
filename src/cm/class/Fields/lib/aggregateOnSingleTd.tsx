@@ -5,14 +5,14 @@ import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/commo
 import {cl} from 'src/cm/lib/methods/common'
 import React, {Fragment} from 'react'
 
-import TdContent from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
+import TdContent from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
 import {Fields} from 'src/cm/class/Fields/Fields'
 import {converDataForClient} from 'src/cm/class/Fields/lib/methods'
 import {defaultFormat} from 'src/cm/class/Fields/lib/defaultFormat'
 import {CssString} from 'src/cm/components/styles/cssString'
 import {twMerge} from 'tailwind-merge'
-import {getColMinWidth} from '@class/Fields/lib/transposeColumns'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {getColMinWidth} from '@cm/class/Fields/lib/transposeColumns'
+import {cn} from '@cm/shadcn/lib/utils'
 const {table, border} = CssString
 const defaultStyle = {
   width: '100%',

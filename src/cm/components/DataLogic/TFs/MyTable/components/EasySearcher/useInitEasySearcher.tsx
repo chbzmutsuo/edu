@@ -3,8 +3,8 @@
 import {useState, useEffect} from 'react'
 import {makeEasySearchGroupsProp} from 'src/cm/class/builders/QueryBuilderVariables'
 
-import {EsGroupClientPropType} from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EsGroupClient'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {EsGroupClientPropType} from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EsGroupClient'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export default function useInitEasySearcher({
   availableEasySearchObj,

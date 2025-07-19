@@ -19,14 +19,14 @@ import type {PrismaModelNames} from '@cm/types/prisma-types'
 // 相対パスimport
 import type {optionType, transposeColumnsOptionProps} from 'src/cm/class/Fields/col-operator-types'
 import type {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobal'
-import type {myFormDefaultUpsertPropType} from '@lib/formMethods/separateFormData'
+import type {myFormDefaultUpsertPropType} from '@cm/lib/formMethods/separateFormData'
 import type {prismaDataExtractionQueryType} from 'src/cm/components/DataLogic/TFs/Server/Conf'
-import type {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import type {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import type {EasySearchObject} from 'src/cm/class/builders/QueryBuilderVariables'
 import {forSelcetType, multipleSelectProps} from '@cm/types/select-types'
 import {upsertControllerType} from '@cm/types/form-types'
 import {anyObject} from '@cm/types/utility-types'
-import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 
 // --- JSX関連 ---
 export type JSXReturnFunc = (props: any) => JSX.Element

@@ -1,4 +1,4 @@
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
@@ -6,8 +6,8 @@ import {R_Stack} from 'src/cm/components/styles/common-components/common-compone
 
 import {additionalPropsType, colType} from '@cm/types/types'
 
-import {IconBtnForSelect} from '@components/styles/common-components/IconBtn'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {IconBtnForSelect} from '@cm/components/styles/common-components/IconBtn'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {anyObject} from '@cm/types/utility-types'
 import {forSelcetType} from '@cm/types/select-types'
 

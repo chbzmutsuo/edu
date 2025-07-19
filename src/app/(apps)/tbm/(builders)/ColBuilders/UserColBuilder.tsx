@@ -1,6 +1,6 @@
 'use client'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
 
@@ -20,6 +20,7 @@ export const UserColBuilder = (props: columnGetterType) => {
       form: {defaultValue: `01`, ...defaultRegister},
     },
     {id: 'phone', label: '携帯番号', form: {}},
+    {id: 'tbmVehicleId', label: '利用車両', forSelect: {}, form: {...defaultRegister, defaultValue: tbmBaseId}},
 
     // {
     //   id: 'tbmVehicleId',

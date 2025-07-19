@@ -1,4 +1,4 @@
-import TableConfig from '@components/DataLogic/TFs/MyTable/components/TableConfig'
+import TableConfig from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import {IconBtn} from 'src/cm/components/styles/common-components/IconBtn'
 import MyPopover from 'src/cm/components/utils/popover/MyPopover'
 import {Settings} from 'lucide-react'

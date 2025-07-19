@@ -1,13 +1,13 @@
 'use client'
 import React, {useId, useMemo, useCallback} from 'react'
 import {DetailPagePropType} from '@cm/types/types'
-import FormHeader from '@components/DataLogic/TFs/MyForm/components/FormHeader'
-import { myFormDefault} from 'src/cm/constants/defaults'
+import FormHeader from '@cm/components/DataLogic/TFs/MyForm/components/FormHeader'
+import {myFormDefault} from 'src/cm/constants/defaults'
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {liftUpNewValueOnChangeType} from '@cm/types/form-control-type'
 import {UseFormReturn} from 'react-hook-form'
-import {prismaDataExtractionQueryType} from '@components/DataLogic/TFs/Server/Conf'
+import {prismaDataExtractionQueryType} from '@cm/components/DataLogic/TFs/Server/Conf'
 import {useFormSubmit} from './hooks/useFormSubmit'
 
 const MyForm = React.memo<DetailPagePropType>(props => {

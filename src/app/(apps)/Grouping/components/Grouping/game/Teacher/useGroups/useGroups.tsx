@@ -4,7 +4,7 @@ import {useState} from 'react'
 import {confirmGroupOrigin} from '@app/(apps)/Grouping/components/Grouping/game/Teacher/useGroups/lib/confirmGroupOrigin'
 import {GroupConfirmationModalOrigin} from '@app/(apps)/Grouping/components/Grouping/game/Teacher/useGroups/lib/GroupConfirmationModalOrigin'
 import {Grouping} from '@app/(apps)/Grouping/class/Grouping'
-import {jotaiStudentGroups, useJotai} from '@hooks/useJotai'
+import {jotaiStudentGroups, useJotai} from '@cm/hooks/useJotai'
 export type AnswerType = {
   id: string
   studentId: string

@@ -1,8 +1,8 @@
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import prisma from 'src/lib/prisma'
-import Redirector from '@components/utils/Redirector'
+import Redirector from '@cm/components/utils/Redirector'
 import Link from 'next/link'
-import {HREF} from '@lib/methods/urls'
+import {HREF} from '@cm/lib/methods/urls'
 
 const Page = async props => {
   const query = await props.searchParams

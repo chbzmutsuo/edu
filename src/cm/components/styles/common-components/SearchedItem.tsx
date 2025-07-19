@@ -1,5 +1,5 @@
 import {X} from 'lucide-react'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 export const SearchedItem = ({value, onClick, closeBtn = false}) => {
   return (

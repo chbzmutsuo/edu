@@ -1,4 +1,4 @@
-import {optionsType, setCustomParamsType} from '@components/DataLogic/types/customParams-types'
+import {optionsType, setCustomParamsType} from '@cm/components/DataLogic/types/customParams-types'
 
 export const setCustomParams = async (props: setCustomParamsType) => {
   const {dataModelName, variants} = props

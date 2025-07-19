@@ -1,5 +1,5 @@
 import {PageBuilder} from '@app/(apps)/shinsei/(builders)/PageBuilder'
-import Admin from '@components/layout/Admin/Admin'
+import Admin from '@cm/components/layout/Admin/Admin'
 
 export default async function AppLayout(props) {
   const {children} = props

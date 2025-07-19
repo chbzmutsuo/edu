@@ -1,4 +1,4 @@
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 import {TbmDriveSchedule, TbmMonthlyConfigForRouteGroup, TbmRouteGroup, TbmRouteGroupFee} from '@prisma/client'
 export type TbmRouteData = TbmRouteGroup & {
   TbmMonthlyConfigForRouteGroup: TbmMonthlyConfigForRouteGroup[]

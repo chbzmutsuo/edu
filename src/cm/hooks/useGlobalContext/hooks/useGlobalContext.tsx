@@ -1,10 +1,10 @@
 'use client'
-import {useSessionContext} from '@providers/SessionContextProvider'
+import {useSessionContext} from '@cm/providers/SessionContextProvider'
 
-import {useLoaderContext} from '@providers/LoaderContextProvider'
-import {useNavigationContext} from '@providers/NavigationContextProvider'
+import {useLoaderContext} from '@cm/providers/LoaderContextProvider'
+import {useNavigationContext} from '@cm/providers/NavigationContextProvider'
 import {useMemo} from 'react'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobalOrigin'
 
 // 結合された型を定義
 type CombinedGlobalData = useGlobalPropType

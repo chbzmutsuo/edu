@@ -1,6 +1,6 @@
-import {TableConfigPropsType} from '@components/DataLogic/TFs/MyTable/components/TableConfig'
+import {TableConfigPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import React, {useCallback, useMemo} from 'react'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 // 型定義を追加
 interface CreateBtnProps {

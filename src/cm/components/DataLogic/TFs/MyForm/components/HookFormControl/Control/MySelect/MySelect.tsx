@@ -1,14 +1,14 @@
 import React from 'react'
 
-import {ControlProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
-import BaseDisplay from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/BaseDisplay'
-import OptionSelector from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/OptionSelector/OptionSelector'
+import {ControlProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+import BaseDisplay from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/BaseDisplay'
+import OptionSelector from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/OptionSelector/OptionSelector'
 
-import useInitMySelect from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
-import MyRadio from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyRadio'
+import useInitMySelect from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
+import MyRadio from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyRadio'
 
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
+import ShadPopover from '@cm/shadcn/components/ShadPopover'
 
 const MySelect = React.memo((props: ControlProps) => {
   const {contexts} = useInitMySelect(props)

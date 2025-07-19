@@ -1,14 +1,14 @@
 import {Fields} from 'src/cm/class/Fields/Fields'
-import {SearchQuery, searchQueryKey, Sub} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
-import {confirmSearch} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
+import {SearchQuery, searchQueryKey, Sub} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
+import {confirmSearch} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import BasicModal from 'src/cm/components/utils/modal/BasicModal'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 
 import React from 'react'
-import {atomTypes, useJotaiByKey} from '@hooks/useJotai'
-import useWindowSize from '@hooks/useWindowSize'
+import {atomTypes, useJotaiByKey} from '@cm/hooks/useJotai'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export default function ColOptionModal() {
   const [colConfigModal, setcolConfigModal] = useJotaiByKey<atomTypes[`colConfigModal`]>(`colConfigModal`, null)

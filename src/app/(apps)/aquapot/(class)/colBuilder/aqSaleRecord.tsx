@@ -1,6 +1,6 @@
 'use client'
 
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'

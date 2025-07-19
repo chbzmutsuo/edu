@@ -1,9 +1,9 @@
 import {Fields} from 'src/cm/class/Fields/Fields'
 import {getItems} from '@cm/types/types'
-import {ForSelectConfig} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/ForSelectConfig'
-import {OrSearchArray} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/OrSearchArray'
-import {parseContexts} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {ForSelectConfig} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/ForSelectConfig'
+import {OrSearchArray} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Class/OrSearchArray'
+import {parseContexts} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/useInitMySelect'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export const getAllowCreateDefault = ({contexts}) => {
   const {latestFormData} = parseContexts(contexts)

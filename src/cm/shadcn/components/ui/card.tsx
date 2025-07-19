@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {cn} from '@cm/shadcn/lib/utils'
 import {cva} from 'class-variance-authority'
 
 function Card({

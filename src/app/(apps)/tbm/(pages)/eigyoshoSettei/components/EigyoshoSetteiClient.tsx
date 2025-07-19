@@ -1,19 +1,20 @@
 'use client'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
+import TbmUserDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmUserDetail'
 import TbmVehicleDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmVehicleDetail'
 import {autoCreateMonthConfig} from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/autoCreateMonthConfig'
 import RouteDisplay from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/RouteDisplay'
 
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import {TextBlue, TextRed} from '@components/styles/common-components/Alert'
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import {TextBlue, TextRed} from '@cm/components/styles/common-components/Alert'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 
-import BasicTabs from '@components/utils/tabs/BasicTabs'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useWindowSize from '@hooks/useWindowSize'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, whereQuery}) {
   const useGlobalProps = useGlobal()
@@ -45,10 +46,6 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
           id: 'driveSchedule',
           showAll: false,
           TabComponentArray: [
-            // {
-            //   label: <TextRed>配車管理【月別】</TextRed>,
-            //   component: <HaishaTable {...{tbmBase, days, whereQuery}} />,
-            // },
             {
               label: <TextRed>便設定【月別】</TextRed>,
               component: (
@@ -95,6 +92,25 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
                     EditForm: TbmVehicleDetail,
                     models: {parent: `tbmBase`, children: `tbmVehicle`},
                     columns: ColBuilder.tbmVehicle(ColBuiderProps),
+                  }}
+                />
+              ),
+            },
+
+            {
+              label: <TextBlue> ドライバーマスタ</TextBlue>,
+              component: (
+                <ChildCreator
+                  {...{
+                    ParentData: tbmBase,
+                    useGlobalProps,
+                    additional: {
+                      include: {TbmBase: {}},
+                      orderBy: [{name: `asc`}],
+                    },
+                    EditForm: TbmUserDetail,
+                    models: {parent: `tbmBase`, children: `user`},
+                    columns: ColBuilder.user({useGlobalProps}),
                   }}
                 />
               ),

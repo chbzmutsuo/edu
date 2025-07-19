@@ -8,7 +8,7 @@ import {useShiftEditFormModal} from '@app/(apps)/sohken/hooks/useShiftEditFormMo
 import {DSBM_List} from '@app/(apps)/sohken/(parts)/genbaDay/DistributionListByModel/DSBM_List'
 import {DSBM_Label} from '@app/(apps)/sohken/(parts)/genbaDay/DistributionListByModel/DSBM_Label'
 import {twMerge} from 'tailwind-merge'
-import {Alert, TextRed} from '@components/styles/common-components/Alert'
+import {Alert, TextRed} from '@cm/components/styles/common-components/Alert'
 
 export const DistributionListByModel = ({
   editable,

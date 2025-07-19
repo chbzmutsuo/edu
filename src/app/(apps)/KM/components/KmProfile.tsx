@@ -1,4 +1,4 @@
-import {Center} from '@components/styles/common-components/common-components'
+import {Center} from '@cm/components/styles/common-components/common-components'
 import Image from 'next/image'
 
 const KmProfile = () => {

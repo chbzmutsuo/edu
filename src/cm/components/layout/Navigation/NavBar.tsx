@@ -2,9 +2,9 @@
 import {pathItemType} from 'src/non-common/path-title-constsnts'
 import React, {useMemo, useCallback} from 'react'
 import {cl} from 'src/cm/lib/methods/common'
-import useNavMenu from '@components/layout/Navigation/useNavMenu'
-import {UserConfig} from '@components/layout/UserConfig'
-import NavItemWrapper from '@components/layout/Navigation/NavItem/NavItemWrapper'
+import useNavMenu from '@cm/components/layout/Navigation/useNavMenu'
+import {UserConfig} from '@cm/components/layout/UserConfig'
+import NavItemWrapper from '@cm/components/layout/Navigation/NavItem/NavItemWrapper'
 
 type NavBarProps = {
   useGlobalProps: any

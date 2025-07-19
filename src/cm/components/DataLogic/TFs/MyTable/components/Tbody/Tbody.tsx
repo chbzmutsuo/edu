@@ -1,16 +1,16 @@
 import React, {useCallback, useMemo} from 'react'
 import {Fragment} from 'react'
 
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
-import {DnDTableRowPropsType} from '@components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow'
+import {DnDTableRowPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow'
 
 import dynamic from 'next/dynamic'
-import {obj__filterObject} from '@class/ObjHandler/transformers'
-import {PlainObject} from '@class/ObjHandler/types'
-import useWindowSize from '@hooks/useWindowSize'
+import {obj__filterObject} from '@cm/class/ObjHandler/transformers'
+import {PlainObject} from '@cm/class/ObjHandler/types'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
-const DnDTableRow = dynamic(() => import(`@components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow`), {
+const DnDTableRow = dynamic(() => import(`@cm/components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow`), {
   ssr: false,
 })
 

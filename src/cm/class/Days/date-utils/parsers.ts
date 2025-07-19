@@ -1,4 +1,4 @@
-import {DateInput} from '@class/Days/date-utils/date-utils-type'
+import {DateInput} from '@cm/class/Days/date-utils/date-utils-type'
 
 // 日付オブジェクトから年月日時分秒の文字列を生成する。
 export const getDate = (

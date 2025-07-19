@@ -10,7 +10,7 @@ import ActiveGroupViwer from '@app/(apps)/Grouping/components/Grouping/game/Teac
 import TeacherDispChartWrapper from '@app/(apps)/Grouping/components/Grouping/game/Chart/TeacherDispChartWrapper'
 
 import Redirector from '@cm/components/utils/Redirector'
-import {useDisplaySelector} from '@components/utils/tabs/displaySelector/useDisplaySelector'
+import {useDisplaySelector} from '@cm/components/utils/tabs/displaySelector/useDisplaySelector'
 import SelectedItems from '@app/(apps)/Grouping/components/Grouping/game/Teacher/SelectedItems'
 import {DisplaySelector} from '@app/(apps)/Grouping/components/Grouping/game/Teacher/DisplaySelector'
 
@@ -21,8 +21,8 @@ import useGroups, {
 
 import useGroupSettingForm from '@app/(apps)/Grouping/components/Grouping/game/Teacher/useGroups/useGroupSettingForm'
 import GameInformation from '@app/(apps)/Grouping/components/Grouping/game/GameInformation'
-import {Paper} from '@components/styles/common-components/paper'
-import {C_Stack, R_Stack, Vr} from '@components/styles/common-components/common-components'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import {C_Stack, R_Stack, Vr} from '@cm/components/styles/common-components/common-components'
 
 export default function TeacherDisplay(props: {GameCtxValue: GameContextType}) {
   const {GameCtxValue} = props

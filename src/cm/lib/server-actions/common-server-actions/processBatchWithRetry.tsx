@@ -1,7 +1,7 @@
 'use server'
 
 import {requestResultType} from '@cm/types/types'
-import {sleep} from '@lib/methods/common'
+import {sleep} from '@cm/lib/methods/common'
 
 type processBatchWithRetryType = (props: {
   soruceList: any[]

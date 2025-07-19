@@ -1,11 +1,11 @@
 'use client'
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {Button} from '@components/styles/common-components/Button'
-import {Head2} from '@components/styles/common-components/heading'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Head2} from '@cm/components/styles/common-components/heading'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import React, {useState} from 'react'
-import {Card} from '@cm/shadcn-ui/components/ui/card'
+import {Card} from '@cm/shadcn/components/ui/card'
 import {Calendar} from '@prisma/client'
 
 export default function BulkCalendarSetter({days, defaultSelectedDays, onConfirm, months}) {

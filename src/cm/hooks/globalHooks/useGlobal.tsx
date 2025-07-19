@@ -1,7 +1,7 @@
 export type useGlobalPropType = ReturnType<typeof useGlobalOrigin>
 
-import {useGlobalContext} from '@hooks/useGlobalContext/hooks/useGlobalContext'
-import {atomTypes, useJotaiByKey} from '@hooks/useJotai'
+import {useGlobalContext} from '@cm/hooks/useGlobalContext/hooks/useGlobalContext'
+import {atomTypes, useJotaiByKey} from '@cm/hooks/useJotai'
 import useGlobalOrigin from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 
 export default function useGlobal(place?: any) {

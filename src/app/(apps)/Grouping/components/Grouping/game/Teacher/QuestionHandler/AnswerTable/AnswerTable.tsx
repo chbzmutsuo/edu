@@ -1,6 +1,6 @@
 import React from 'react'
 
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import {toast} from 'react-toastify'
 import {GameContextType} from '@app/(apps)/Grouping/components/Grouping/game/GameMainPage'

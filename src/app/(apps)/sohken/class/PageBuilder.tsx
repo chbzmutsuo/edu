@@ -3,10 +3,10 @@
 import {GenbaDayShiftForm} from '@app/(apps)/sohken/class/pageBuilderComponents/GenbaDayShift/GenbaDayShiftForm'
 import GenbaDayShiftEmptyStuffSearcher from '@app/(apps)/sohken/class/pageBuilderComponents/GenbaDayShift/GenbaDayShiftEmptyStuffSearcher'
 import {GenbaForm} from '@app/(apps)/sohken/class/pageBuilderComponents/GenbaDayShift/Genba/GenbaForm'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {Fields} from '@class/Fields/Fields'
-import GlobalIdSelector from '@components/GlobalIdSelector/GlobalIdSelector'
-import {DataModelBuilder, roleMaster} from '@class/builders/PageBuilderVariables'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {Fields} from '@cm/class/Fields/Fields'
+import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
+import {DataModelBuilder, roleMaster} from '@cm/class/builders/PageBuilderVariables'
 
 export class PageBuilder {
   static roleMaster: DataModelBuilder = roleMaster

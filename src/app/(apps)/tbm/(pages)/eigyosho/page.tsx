@@ -1,9 +1,10 @@
 import {getEigyoshoUriageData} from '@app/(apps)/tbm/(server-actions)/getEigyoshoUriageData'
-import {FitMargin} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import Redirector from '@components/utils/Redirector'
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {FitMargin} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import Redirector from '@cm/components/utils/Redirector'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 

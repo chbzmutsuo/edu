@@ -1,9 +1,9 @@
 'use client'
 
 import {tbmOperationGroup} from '@app/(apps)/tbm/(builders)/PageBuilders/tbmOperationGroup/tbmOperationGroup'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
-import {Fields} from '@class/Fields/Fields'
-import GlobalIdSelector from '@components/GlobalIdSelector/GlobalIdSelector'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobal'
+import {Fields} from '@cm/class/Fields/Fields'
+import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
 import TbmVehicleDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmVehicleDetail'
 import TbmRouteGroupDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmRouteGroupDetail'
 import TbmUserDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmUserDetail'

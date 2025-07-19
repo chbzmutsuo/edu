@@ -5,16 +5,16 @@
 // import {autoCreateMonthConfig} from '@app/(apps)/tbm/(pages)/eigyoshoSettei/ autoCreateMonthConfig'
 // import HaishaTable from '@app/(apps)/tbm/(pages)/DriveSchedule/HaishaTable/HaishaTable'
 // import RouteDisplay from '@app/(apps)/tbm/(pages)/eigyoshoSettei/RouteDisplay'
-// import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-// import {TextBlue, TextRed} from '@components/styles/common-components/Alert'
-// import {Button} from '@components/styles/common-components/Button'
-// import {C_Stack} from '@components/styles/common-components/common-components'
-// import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-// import PlaceHolder from '@components/utils/loader/PlaceHolder'
+// import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+// import {TextBlue, TextRed} from '@cm/components/styles/common-components/Alert'
+// import {Button} from '@cm/components/styles/common-components/Button'
+// import {C_Stack} from '@cm/components/styles/common-components/common-components'
+// import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+// import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 
-// import BasicTabs from '@components/utils/tabs/BasicTabs'
-// import useGlobal from '@hooks/globalHooks/useGlobal'
-// import useWindowSize from '@hooks/useWindowSize'
+// import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+// import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+// import useWindowSize from '@cm/hooks/useWindowSize'
 
 // export default function UnkoKanriClient({days, currentMonth, tbmBase, whereQuery}) {
 //   const useGlobalProps = useGlobal()

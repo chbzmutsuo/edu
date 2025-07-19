@@ -1,4 +1,4 @@
-import {C_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import React from 'react'
 
 export default function SelectedItems({selectedComponents}) {

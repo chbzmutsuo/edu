@@ -3,16 +3,16 @@
 import TenkoPaperHeader from '@app/(apps)/tbm/(pages)/tenko/TenkoPaperHeader'
 
 import TenkoPaperBody from '@app/(apps)/tbm/(pages)/tenko/TenkoPaperBody'
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
-import {Button} from '@components/styles/common-components/Button'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {TbmDriveSchedule, TbmRouteGroup, TbmVehicle, User} from '@prisma/client'
 import React, {useRef} from 'react'
 import {useReactToPrint} from 'react-to-print'
-import {Card} from '@cm/shadcn-ui/components/ui/card'
+import {Card} from '@cm/shadcn/components/ui/card'
 
 export default function TenkoPage(props) {
   const {query} = useGlobal()

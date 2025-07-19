@@ -1,9 +1,9 @@
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
 import {colType} from '@cm/types/types'
-import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobalOrigin'
 import {atom, useAtom} from 'jotai'
 import {atomFamily} from 'jotai/utils'
 import {useMemo} from 'react'

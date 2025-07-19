@@ -3,9 +3,9 @@ import {NextRequest, NextResponse} from 'next/server'
 import {anyObject} from '@cm/types/utility-types'
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
 import {isRouteAccessAllowed} from '@app/api/prisma/isAllowed'
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export const POST = async (req: NextRequest) => {
   if (await isRouteAccessAllowed(req)) {

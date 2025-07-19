@@ -1,17 +1,17 @@
 import MultipleUserSelector from '@app/(apps)/sohken/(parts)/genbaDay/DistributionListByModel/MultipleUserSelector'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {Paper} from '@components/styles/common-components/paper'
+import {Paper} from '@cm/components/styles/common-components/paper'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {Z_INDEX} from '@lib/constants/constants'
-import {atomTypes, useJotaiByKey} from '@hooks/useJotai'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {Z_INDEX} from '@cm/lib/constants/constants'
+import {atomTypes, useJotaiByKey} from '@cm/hooks/useJotai'
 
-import {C_Stack} from '@components/styles/common-components/common-components'
-import useFloatingDiv from '@hooks/useFloatingDiv/useFloatingDiv'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import useFloatingDiv from '@cm/hooks/useFloatingDiv/useFloatingDiv'
 import {useMemo} from 'react'
 import MultipleCarSelector from '@app/(apps)/sohken/(parts)/genbaDay/DistributionListByModel/MultipleCarSelector'
-import {StrHandler} from '@class/StrHandler'
+import {StrHandler} from '@cm/class/StrHandler'
 
 export type shiftEditProps = {
   selectedData

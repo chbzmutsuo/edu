@@ -1,10 +1,10 @@
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
-import {NumHandler} from '@class/NumHandler'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import {TextOrange} from '@components/styles/common-components/Alert'
-import {useGlobalModalForm} from '@components/utils/modal/useGlobalModalForm'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {atomKey} from '@hooks/useJotai'
+import {NumHandler} from '@cm/class/NumHandler'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import {TextOrange} from '@cm/components/styles/common-components/Alert'
+import {useGlobalModalForm} from '@cm/components/utils/modal/useGlobalModalForm'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {atomKey} from '@cm/hooks/useJotai'
 import React from 'react'
 
 export default function useGasolineGMF() {

@@ -1,4 +1,4 @@
-import {atomKey, useJotaiByKey} from '@hooks/useJotai'
+import {atomKey, useJotaiByKey} from '@cm/hooks/useJotai'
 
 export default function useSelectedBase() {
   const selectedBaseKey = `selectedBaseKey` as atomKey

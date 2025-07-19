@@ -1,4 +1,4 @@
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {colType} from '@cm/types/types'
 
 export function makeFormsByColumnObj(columns: any) {

@@ -1,5 +1,5 @@
-import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@cm/shadcn-ui/components/ui/card'
-import {cl} from '@lib/methods/common'
+import {Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from '@cm/shadcn/components/ui/card'
+import {cl} from '@cm/lib/methods/common'
 import {htmlProps} from 'src/cm/components/styles/common-components/type'
 export const Wrapper = (props: htmlProps) => {
   const {className, ...rest} = props

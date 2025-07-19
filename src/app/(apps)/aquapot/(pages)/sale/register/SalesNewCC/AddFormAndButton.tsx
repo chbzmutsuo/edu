@@ -1,7 +1,7 @@
 import {SaleRecordEditForm} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/SaleRecordEditForm'
-import {Button} from '@components/styles/common-components/Button'
-import {Center} from '@components/styles/common-components/common-components'
-import BasicModal from '@components/utils/modal/BasicModal'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Center} from '@cm/components/styles/common-components/common-components'
+import BasicModal from '@cm/components/utils/modal/BasicModal'
 import React, {Fragment} from 'react'
 
 export default function AddFormAndButton({formOpen, setformOpen, toggleForm, upsertToCart, aqProducts, aqCustomerPriceOption}) {

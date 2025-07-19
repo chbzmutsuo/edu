@@ -1,6 +1,6 @@
-import {bodyRecordsType, stylesInColumns} from '@components/styles/common-components/CsvTable/CsvTable'
-import {Counter} from '@components/styles/common-components/Table'
-import {cl} from '@lib/methods/common'
+import {bodyRecordsType, stylesInColumns} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import {Counter} from '@cm/components/styles/common-components/Table'
+import {cl} from '@cm/lib/methods/common'
 
 export type CsvTableBodyProps = {
   bodyRecords: bodyRecordsType

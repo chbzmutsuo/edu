@@ -1,6 +1,6 @@
 import PdfRenderer from '@app/(apps)/aquapot/(pages)/myPage/[id]/pdf/[month]/PdfRenderer'
 import {getCustomerDataWithSales} from '@app/(apps)/aquapot/(pages)/myPage/getCustomerDataWithSales'
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 import React from 'react'
 
 export default async function page(props: {searchParams: any; params: any}) {

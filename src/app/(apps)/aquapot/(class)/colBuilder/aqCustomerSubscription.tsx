@@ -1,13 +1,13 @@
 'use client'
 
 import {aqCustomerForSelectConfig} from '@app/(apps)/aquapot/(class)/colBuilder/aqCustomer'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {NumHandler} from '@class/NumHandler'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {NumHandler} from '@cm/class/NumHandler'
 
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {TextRed} from '@components/styles/common-components/Alert'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import {TextRed} from '@cm/components/styles/common-components/Alert'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
 export const aqCustomerSubscription = (props: columnGetterType) => {
   const {aqCustomerId} = props.ColBuilderExtraProps ?? {}

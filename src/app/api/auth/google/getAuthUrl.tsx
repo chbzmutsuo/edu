@@ -1,7 +1,7 @@
 'use server'
 
 import {getOauthClient} from '@app/api/auth/google/getAuth'
-import {basePath} from '@lib/methods/common'
+import {basePath} from '@cm/lib/methods/common'
 
 // 認証URLの生成
 export const getAuthUrl = async () => {

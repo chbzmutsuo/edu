@@ -3,11 +3,11 @@
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 import {TbmRouteGroupUpsertController} from '@app/(apps)/tbm/(builders)/PageBuilders/TbmRouteGroupUpsertController'
 import {DetailPagePropType} from '@cm/types/types'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 const Title = ({children}) => {
   return (

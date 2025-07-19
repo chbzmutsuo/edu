@@ -1,9 +1,9 @@
-import {Fields} from '@class/Fields/Fields'
-import {Button} from '@components/styles/common-components/Button'
-import {useGlobalModalForm} from '@components/utils/modal/useGlobalModalForm'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import {atomKey} from '@hooks/useJotai'
+import {Fields} from '@cm/class/Fields/Fields'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {useGlobalModalForm} from '@cm/components/utils/modal/useGlobalModalForm'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import {atomKey} from '@cm/hooks/useJotai'
 import React from 'react'
 
 export default function useProductMidEditor() {

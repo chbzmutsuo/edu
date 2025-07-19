@@ -1,10 +1,10 @@
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import {multipleSelectProps} from '@cm/types/select-types'
-import {ControlProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
+import {ControlProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
 import React, {useMemo, useState} from 'react'
 

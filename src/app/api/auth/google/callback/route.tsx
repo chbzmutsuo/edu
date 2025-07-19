@@ -4,7 +4,7 @@ import {serialize} from 'cookie'
 import {basePath} from 'src/cm/lib/methods/common'
 
 import {getOauthClient} from '@app/api/auth/google/getAuth'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export async function GET(req: NextRequest) {
   const url = new URL(req.url)

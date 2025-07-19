@@ -3,8 +3,8 @@ import {MenuButton} from 'src/cm/components/layout/MenuButton'
 
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
 
-import useWindowSize from '@hooks/useWindowSize'
-import {adminContext, adminProps, menuContext} from '@components/layout/Admin/type'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import {adminContext, adminProps, menuContext} from '@cm/components/layout/Admin/type'
 import {identifyPathItem, PAGES} from 'src/non-common/path-title-constsnts'
 
 export const useAdminContext = (props: adminProps, useGlobalProps: useGlobalPropType) => {

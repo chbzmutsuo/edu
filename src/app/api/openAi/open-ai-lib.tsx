@@ -1,5 +1,5 @@
 import {requestResultType} from '@cm/types/types'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 
 import OpenAI from 'openai'
 import {ChatCompletionCreateParamsBase} from 'openai/resources/chat/completions'

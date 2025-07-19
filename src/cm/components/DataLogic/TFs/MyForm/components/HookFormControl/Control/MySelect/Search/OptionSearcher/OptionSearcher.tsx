@@ -6,13 +6,13 @@ import React from 'react'
 
 import {colType} from '@cm/types/types'
 
-import {contextsType} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
 
 import {
   ComplexSearchForm,
   SearchFormHookType,
-} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/ComplexSearchForm'
-import {SimpleSearchForm} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/SimpleSearchForm'
+} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/ComplexSearchForm'
+import {SimpleSearchForm} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/SimpleSearchForm'
 
 export const OptionSearcher = (props: {
   SearchFormHook: SearchFormHookType

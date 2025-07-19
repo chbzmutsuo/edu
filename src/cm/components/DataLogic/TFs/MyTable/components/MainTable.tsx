@@ -1,12 +1,12 @@
 import React, {useCallback, useMemo} from 'react'
 import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import {DndContext, closestCenter} from '@dnd-kit/core'
-import {TableWrapper} from '@components/styles/common-components/Table'
+import {TableWrapper} from '@cm/components/styles/common-components/Table'
 import Tbody from './Tbody/Tbody'
 import Thead from './Thead/Thead'
 import {colType, MyTableType} from '@cm/types/types'
 import {TableConfigPropsType} from './TableConfig'
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
 interface MainTableProps {
   myTable: MyTableType

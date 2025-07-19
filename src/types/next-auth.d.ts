@@ -1,4 +1,4 @@
-import {userClData} from '@class/UserCl'
+import {userClData} from '@cm/class/UserCl'
 import 'next-auth'
 
 declare module 'next-auth' {

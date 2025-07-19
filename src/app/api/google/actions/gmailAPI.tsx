@@ -2,7 +2,7 @@
 
 import {google} from 'googleapis'
 
-import {isDev, systemEmailTo} from '@lib/methods/common'
+import {isDev, systemEmailTo} from '@cm/lib/methods/common'
 import {getOauthClient} from '@app/api/auth/google/getAuth'
 import {getValidToken} from '@app/api/google/lib/middleware'
 

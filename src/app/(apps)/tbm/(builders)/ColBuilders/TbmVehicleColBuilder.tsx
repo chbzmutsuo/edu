@@ -1,10 +1,10 @@
 'use client'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
 import {TbmFuelCard, TbmVehicleMaintenanceRecord} from '@prisma/client'
-import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
+import ShadPopover from '@cm/shadcn/components/ShadPopover'
 import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 
 export const TbmVehicleColBuilder = (props: columnGetterType) => {

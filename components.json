@@ -11,11 +11,11 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@cm/shadcn-ui/components",
-    "utils": "@cm/shadcn-ui/utils",
-    "ui": "@cm/shadcn-ui/components/ui",
-    "lib": "@cm/shadcn-ui/lib",
-    "hooks": "@cm/shadcn-ui/hooks"
+    "components": "@cm/shadcn/components",
+    "utils": "@cm/shadcn/utils",
+    "ui": "@cm/shadcn/components/ui",
+    "lib": "@cm/shadcn/lib",
+    "hooks": "@cm/shadcn/hooks"
   },
   "iconLibrary": "lucide"
 }

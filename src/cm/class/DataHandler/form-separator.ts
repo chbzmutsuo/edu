@@ -1,7 +1,7 @@
 // // フォームデータ分離専用モジュール
 // import {SeparatedFormData, FormDataSeparationInput} from './types'
-// import {Days} from '@class/Days/Days'
-// import {StrHandler} from '@class/StrHandler'
+// import {Days} from '@cm/class/Days/Days'
+// import {StrHandler} from '@cm/class/StrHandler'
 
 // /**
 //  * リレーションフィールドかどうかの判定

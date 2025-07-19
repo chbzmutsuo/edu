@@ -1,15 +1,15 @@
 'use client'
 
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 import {UserCircleIcon} from 'lucide-react'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {cl} from '@cm/lib/methods/common'
 import {CSSProperties, useEffect} from 'react'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
 export const Review = () => {
   const {data: fetchedReviews} = useDoStandardPrisma(`kaizenReview`, `findMany`, {

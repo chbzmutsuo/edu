@@ -1,6 +1,6 @@
 //classを切り替える
 
-import {setCustomParams} from '@components/DataLogic/helpers/SetCustomParams'
+import {setCustomParams} from '@cm/components/DataLogic/helpers/SetCustomParams'
 
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {PageBuilder} from '@app/(apps)/stock/(builders)/PageBuilder'
@@ -8,9 +8,9 @@ import {ColBuilder} from '@app/(apps)/stock/(builders)/ColBuilder'
 import {QueryBuilder} from '@app/(apps)/stock/(builders)/QueryBuilder'
 
 import {ViewParamBuilder} from '@app/(apps)/stock/(builders)/ViewParamBuilder'
-import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
 import {getStockConfig} from 'src/non-common/EsCollection/(stock)/getStockConfig'
-import {getMasterPageCommonConfig} from '@components/DataLogic/helpers/getMasterPageCommonConfig'
+import {getMasterPageCommonConfig} from '@cm/components/DataLogic/helpers/getMasterPageCommonConfig'
 
 export default async function DynamicMasterPage(props) {
   return getMasterPageCommonConfig({

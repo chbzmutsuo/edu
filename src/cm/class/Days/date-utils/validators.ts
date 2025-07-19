@@ -1,4 +1,4 @@
-// import {DateInput} from '@class/Days/date-utils/date-utils-type'
+// import {DateInput} from '@cm/class/Days/date-utils/date-utils-type'
 
 // export const isValidDate = (date: any): date is Date => {
 //   return date instanceof Date && !isNaN(date.getTime())

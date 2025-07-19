@@ -3,9 +3,9 @@ import {getChildrenCount, getItemProps, navItemProps} from 'src/cm/components/la
 
 import {HREF} from 'src/cm/lib/methods/urls'
 
-import {cl} from '@lib/methods/common'
+import {cl} from '@cm/lib/methods/common'
 import React from 'react'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {twMerge} from 'tailwind-merge'
 const NavItemParent = React.memo((props: navItemProps) => {
   const {item, nestLevel = 1, navWrapperIdx, useGlobalProps, HK_NAV, horizontalMenu} = props

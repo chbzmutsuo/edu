@@ -1,6 +1,6 @@
 'use client'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import SlateEditor from '@cm/components/SlateEditor/SlateEditor'
 import {Kaizen} from '@app/(apps)/KM/class/Kaizen'
 

@@ -1,6 +1,6 @@
 import {deleteGenbaDayWithoutAnyResource} from '@app/(apps)/sohken/(parts)/Tasks/handleUpdateSchedule'
-import {Button} from '@components/styles/common-components/Button'
-import useMatchMutate from '@hooks/useMatchMutate'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useMatchMutate from '@cm/hooks/useMatchMutate'
 import React from 'react'
 import {toast} from 'react-toastify'
 

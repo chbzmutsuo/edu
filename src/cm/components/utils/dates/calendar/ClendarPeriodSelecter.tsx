@@ -1,6 +1,6 @@
 import React from 'react'
 import {useEffect} from 'react'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 export default function ClendarPeriodSelecter() {

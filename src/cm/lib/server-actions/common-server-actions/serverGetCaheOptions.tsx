@@ -1,10 +1,10 @@
 'use server'
 
-import {handlePrismaError} from '@lib/prisma-helper'
+import {handlePrismaError} from '@cm/lib/prisma-helper'
 
 import {colType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
-import {getSelectId} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+import {getSelectId} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
 import prisma from 'src/lib/prisma'
 

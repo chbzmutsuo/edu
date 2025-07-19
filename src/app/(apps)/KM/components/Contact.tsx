@@ -1,9 +1,9 @@
 'use client'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import SlateEditor from '@cm/components/SlateEditor/SlateEditor'
 import useWindowSize from '@cm/hooks/useWindowSize'
-import {MyContainer, R_Stack} from '@components/styles/common-components/common-components'
+import {MyContainer, R_Stack} from '@cm/components/styles/common-components/common-components'
 
 export const Contact = () => {
   const {width} = useWindowSize()

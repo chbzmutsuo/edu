@@ -1,11 +1,11 @@
 'use client'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {useEffect, useMemo, useCallback} from 'react'
-import useDateSwitcherFunc from '@components/utils/dates/DateSwitcher/useDateSwitcherFunc'
+import useDateSwitcherFunc from '@cm/components/utils/dates/DateSwitcher/useDateSwitcherFunc'
 import {colType} from '@cm/types/types'
-import {FitMargin} from '@components/styles/common-components/common-components'
-import useWindowSize from '@hooks/useWindowSize'
+import {FitMargin} from '@cm/components/styles/common-components/common-components'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 interface NewDateSwitcherProps {
   yearOnly?: boolean

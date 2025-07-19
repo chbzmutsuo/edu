@@ -1,5 +1,5 @@
 import {colType} from '@cm/types/types'
-import {dynamicMasterModel} from '@class/builders/ColBuilderVariables'
+import {dynamicMasterModel} from '@cm/class/builders/ColBuilderVariables'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
 // 型定義を追加

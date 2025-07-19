@@ -152,10 +152,10 @@ import JsonFormatter from 'react-json-formatter'
 import {htmlProps, styling} from 'src/cm/components/styles/common-components/type'
 
 import {CssString} from 'src/cm/components/styles/cssString'
-import {Z_INDEX} from '@lib/constants/constants'
-import {colorVariants} from '@lib/methods/colors'
-import {iconBtnColorVariants} from '@components/styles/common-components/IconBtn'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {Z_INDEX} from '@cm/lib/constants/constants'
+import {colorVariants} from '@cm/lib/methods/colors'
+import {iconBtnColorVariants} from '@cm/components/styles/common-components/IconBtn'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export const ParseJSON = ({json}) => {
   const jsonStyle = {

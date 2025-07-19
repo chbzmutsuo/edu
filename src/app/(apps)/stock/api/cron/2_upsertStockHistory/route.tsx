@@ -1,5 +1,5 @@
 import {upsertStockHistory} from '@app/(apps)/stock/api/jquants-server-actions/jquants-getter'
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import {NextRequest, NextResponse} from 'next/server'
 
 export const GET = async (req: NextRequest) => {

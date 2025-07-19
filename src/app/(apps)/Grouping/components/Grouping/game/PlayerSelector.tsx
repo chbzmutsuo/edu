@@ -6,7 +6,7 @@ import {GameContextType} from '@app/(apps)/Grouping/components/Grouping/game/Gam
 import {ClassRoom} from '@app/(apps)/Grouping/class/Grouping'
 import SimpleTable from '@cm/components/utils/SimpleTable'
 import {CenterScreen} from '@cm/components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function PlayerSelector({GameCtxValue}) {
   const {players, player, Game, isTeacher} = GameCtxValue as GameContextType

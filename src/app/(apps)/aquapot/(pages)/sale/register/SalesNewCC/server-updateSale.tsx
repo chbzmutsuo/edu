@@ -2,7 +2,7 @@
 
 import {createSaleRecordArgs} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/createSaleRecordArgs'
 import {CartItem} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/SalesNewCC'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 import prisma from 'src/lib/prisma'
 import {Prisma} from '@prisma/client'

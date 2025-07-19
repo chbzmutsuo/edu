@@ -4,7 +4,7 @@ import {useState} from 'react'
 
 import {Prisma} from '@prisma/client'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {CartItem} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/SalesNewCC'
 import {v4 as uuidv4} from 'uuid'
 export const useAddFormAndButton = ({latestFormData, setcartItems}) => {

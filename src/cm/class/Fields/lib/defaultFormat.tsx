@@ -5,7 +5,7 @@ import {T_LINK} from 'src/cm/components/styles/common-components/links'
 import {NestHandler} from 'src/cm/class/NestHandler'
 
 import {optionType} from 'src/cm/class/Fields/col-operator-types'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import {IconBtn, IconBtnForSelect} from 'src/cm/components/styles/common-components/IconBtn'
 
@@ -13,13 +13,13 @@ import {
   convertColIdToModelName,
   getNameFromSelectOption,
   mapAdjustOptionValue,
-} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 import {isRelationalData} from 'src/cm/class/Fields/lib/methods'
 import {cl} from 'src/cm/lib/methods/common'
 import ContentPlayer from 'src/cm/components/utils/ContentPlayer'
 import {colType} from '@cm/types/types'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {StrHandler} from '@class/StrHandler'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import {StrHandler} from '@cm/class/StrHandler'
 
 export const defaultFormat = (value, row, col) => {
   try {

@@ -2,8 +2,8 @@
 
 import {Fields} from '@cm/class/Fields/Fields'
 
-import GlobalIdSelector from '@components/GlobalIdSelector/GlobalIdSelector'
-import useMySession from '@hooks/globalHooks/useMySession'
+import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
+import useMySession from '@cm/hooks/globalHooks/useMySession'
 
 export class PageBuilder {
   static getGlobalIdSelector = ({useGlobalProps}) => {

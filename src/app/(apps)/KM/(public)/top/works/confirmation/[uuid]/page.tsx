@@ -4,9 +4,9 @@ import {Kaizen} from '@app/(apps)/KM/class/Kaizen'
 import {Partner} from '@app/(apps)/KM/components/Partner'
 
 import prisma from 'src/lib/prisma'
-import {Alert} from '@components/styles/common-components/Alert'
-import {CenterScreen, C_Stack, Padding, R_Stack} from '@components/styles/common-components/common-components'
-import {T_LINK} from '@components/styles/common-components/links'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {CenterScreen, C_Stack, Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 const WorkConfirmationPage = async props => {
   const {uuid} = await props.params

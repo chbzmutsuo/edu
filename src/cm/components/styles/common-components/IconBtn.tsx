@@ -1,6 +1,6 @@
 import React, {useMemo} from 'react'
-import {htmlProps} from '@components/styles/common-components/type'
-import {colorVariants, getColorStyles} from '@lib/methods/colors'
+import {htmlProps} from '@cm/components/styles/common-components/type'
+import {colorVariants, getColorStyles} from '@cm/lib/methods/colors'
 import {CSSProperties} from 'react'
 
 import {twMerge} from 'tailwind-merge'

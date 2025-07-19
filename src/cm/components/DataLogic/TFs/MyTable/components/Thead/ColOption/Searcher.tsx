@@ -3,11 +3,11 @@ import {Fields} from 'src/cm/class/Fields/Fields'
 import {Button} from 'src/cm/components/styles/common-components/Button'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import React from 'react'
-import {SearchQuery, searchQueryKey, Sub} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
+import {SearchQuery, searchQueryKey, Sub} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
 
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
-import {confirmSearch} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
-import useWindowSize from '@hooks/useWindowSize'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobalOrigin'
+import {confirmSearch} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export default function Searcher({dataModelName, col, useGlobalProps}) {
   const {query, addQuery, toggleLoad} = useGlobalProps as useGlobalPropType

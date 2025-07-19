@@ -1,4 +1,4 @@
-import Loader from '@components/utils/loader/Loader'
+import Loader from '@cm/components/utils/loader/Loader'
 import React, {useState} from 'react'
 
 export default function useLocalLoading() {

@@ -7,12 +7,12 @@ import 'dayjs/locale/ja'
 
 import {colTypeStr} from '@cm/types/types'
 
-import {getColorStyles} from '@lib/methods/colors'
+import {getColorStyles} from '@cm/lib/methods/colors'
 import {Calendar} from '@prisma/client'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {DateInput} from '@class/Days/date-utils/date-utils-type'
-import {toJst, toUtc} from '@class/Days/date-utils/calculations'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {DateInput} from '@cm/class/Days/date-utils/date-utils-type'
+import {toJst, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 
 dayjs.extend(utc)
 dayjs.extend(timezone)

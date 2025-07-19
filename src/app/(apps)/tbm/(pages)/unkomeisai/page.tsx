@@ -1,10 +1,10 @@
 import UnkoMeisaiCC from '@app/(apps)/tbm/(pages)/unkomeisai/UnkoMeisaiCC'
 import {getMonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import {FitMargin} from '@components/styles/common-components/common-components'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import Redirector from '@components/utils/Redirector'
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {FitMargin} from '@cm/components/styles/common-components/common-components'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import Redirector from '@cm/components/utils/Redirector'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 

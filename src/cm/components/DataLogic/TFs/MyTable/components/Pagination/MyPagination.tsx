@@ -1,4 +1,4 @@
-import {getPaginationPropsType} from '@components/DataLogic/TFs/MyTable/hooks/useMyTableParams'
+import {getPaginationPropsType} from '@cm/components/DataLogic/TFs/MyTable/hooks/useMyTableParams'
 
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
@@ -13,7 +13,7 @@ const partClasses = {
 }
 
 import {ChevronsLeft, ChevronsRight} from 'lucide-react'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export type PaginationPropType = {
   useGlobalProps: useGlobalPropType

@@ -1,15 +1,15 @@
 'use client'
 
 import {ColBuilder} from '@app/(apps)/shinsei/(builders)/ColBuilder'
-import {roleMaster} from '@class/builders/PageBuilderVariables'
-import {Fields} from '@class/Fields/Fields'
+import {roleMaster} from '@cm/class/builders/PageBuilderVariables'
+import {Fields} from '@cm/class/Fields/Fields'
 import {DetailPagePropType} from '@cm/types/types'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import GlobalIdSelector from '@components/GlobalIdSelector/GlobalIdSelector'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export class PageBuilder {
   static roleMaster = roleMaster

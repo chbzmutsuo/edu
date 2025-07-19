@@ -4,7 +4,7 @@ import {toast} from 'react-toastify'
 import {FileUploadFormProps, FileData} from './types'
 import {createCSVParser, parseCSVSimple, type CSVParseOptions} from './csv-utils'
 
-import FileUploader from '@hooks/useFileUpload/FileUploader'
+import FileUploader from '@cm/hooks/useFileUpload/FileUploader'
 
 /**
  * 最適化されたファイルアップロードフック

@@ -1,11 +1,11 @@
 'use client'
 
 import React, {useEffect, useState, useMemo} from 'react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import {PAGES, pathItemType} from 'src/non-common/path-title-constsnts'
-import {HREF} from '@lib/methods/urls'
-import {T_LINK} from '@components/styles/common-components/links'
+import {HREF} from '@cm/lib/methods/urls'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 const TopPage = React.memo(() => {
   const {session, rootPath, pathname, query, roles} = useGlobal()

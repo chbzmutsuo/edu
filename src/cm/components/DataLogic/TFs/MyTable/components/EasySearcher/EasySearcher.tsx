@@ -7,19 +7,19 @@ import {Center, C_Stack, R_Stack} from 'src/cm/components/styles/common-componen
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
-import GlobalModal from '@components/utils/modal/GlobalModal'
+import GlobalModal from '@cm/components/utils/modal/GlobalModal'
 
-import useInitEasySearcher from '@components/DataLogic/TFs/MyTable/components/EasySearcher/useInitEasySearcher'
+import useInitEasySearcher from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/useInitEasySearcher'
 
-import EsGroupClient from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EsGroupClient'
-import {CircledIcon, IconBtn} from '@components/styles/common-components/IconBtn'
+import EsGroupClient from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EsGroupClient'
+import {CircledIcon, IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {SquareArrowRight} from 'lucide-react'
-import {Wrapper} from '@components/styles/common-components/paper'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import {easySearchDataSwrType} from '@class/builders/QueryBuilderVariables'
+import {Wrapper} from '@cm/components/styles/common-components/paper'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
+import {easySearchDataSwrType} from '@cm/class/builders/QueryBuilderVariables'
 import {Filter} from 'lucide-react'
-import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
-import useWindowSize from '@hooks/useWindowSize'
+import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export default function EasySearcher(props: {
   easySearchPrismaDataOnServer: easySearchDataSwrType

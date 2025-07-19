@@ -1,12 +1,12 @@
-import {DnDTableRowPropsType} from '@components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow'
-import {tbodyParamsType} from '@components/DataLogic/TFs/MyTable/components/Tbody/Tbody'
+import {DnDTableRowPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/DndTableRow'
+import {tbodyParamsType} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/Tbody'
 
 import React, {useMemo} from 'react'
 import {colType} from '@cm/types/types'
 
-import {getValue} from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/lib/getValue'
+import {getValue} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/lib/getValue'
 
-import TdContent from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
+import TdContent from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
 
 export type TableCellPropsType = {
   columnIdx: number

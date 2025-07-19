@@ -1,10 +1,10 @@
 import {ColBuilder} from '@app/(apps)/aquapot/(class)/colBuilder/ColBuilder'
 import {AQ_CONST} from '@app/(apps)/aquapot/(constants)/options'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {Fields} from '@class/Fields/Fields'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
 export const aqCustomerRecordCol = (props: columnGetterType) => {
   const {useGlobalProps} = props

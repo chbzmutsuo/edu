@@ -3,10 +3,10 @@ import {formatDate} from './formatters'
 import {toUtc, toJst, addDays} from './calculations'
 
 import {isServer} from 'src/cm/lib/methods/common'
-import {getColorStyles} from '@lib/methods/colors'
+import {getColorStyles} from '@cm/lib/methods/colors'
 import {Calendar} from '@prisma/client'
 import {colTypeStr} from '@cm/types/types'
-import {DateInput} from '@class/Days/date-utils/date-utils-type'
+import {DateInput} from '@cm/class/Days/date-utils/date-utils-type'
 
 // Week関連のヘルパー
 export const weekHelpers = {

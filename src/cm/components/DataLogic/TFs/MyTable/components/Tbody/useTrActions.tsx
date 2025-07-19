@@ -3,11 +3,11 @@ import {SquarePen, Trash2} from 'lucide-react'
 
 import {cl} from 'src/cm/lib/methods/common'
 import {HREF} from 'src/cm/lib/methods/urls'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
-import {T_LINK} from '@components/styles/common-components/links'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobalOrigin'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {useCallback} from 'react'
-import {toastByResult} from '@lib/ui/notifications'
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {toastByResult} from '@cm/lib/ui/notifications'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export const TrActionIconClassName = `onHover`
 

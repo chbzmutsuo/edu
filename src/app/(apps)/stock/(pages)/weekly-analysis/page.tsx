@@ -1,8 +1,8 @@
 'use client'
 
 import React, {useState} from 'react'
-import {Button} from '@components/styles/common-components/Button'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function WeeklyAnalysisPage() {
   const [selectedWeek, setSelectedWeek] = useState(formatDate(new Date(), 'YYYY-MM-DD'))

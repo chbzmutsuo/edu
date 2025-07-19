@@ -97,10 +97,14 @@
  // テーブル
  .table-wrapper {
   padding: 0;
-  border-radius: 0.5rem;
+
+  border-radius: var(--radius-md);
+  // border: 1px solid var(--color-border-gray);
+  // ボーダー関係
 
   overflow: auto;
   white-space: normal;
+  border: 1px solid var(--color-gray-300);
 
   table {
    width: 100%;
@@ -110,7 +114,6 @@
    thead,
    tfoot {
     position: sticky;
-    // z-index: 100;
     top: 0;
    }
 
@@ -123,27 +126,6 @@
     padding-right: 0.5rem;
     padding-top: 0.625rem;
     padding-bottom: 0.625rem;
-   }
-
-   tbody {
-    tr {
-     &:first-child {
-      td {
-       border-top-width: 0.5px;
-      }
-      th {
-       border-top-width: 0.5px;
-      }
-     }
-     &:last-child {
-      td {
-       border-bottom-width: 0;
-      }
-      th {
-       border-bottom-width: 0;
-      }
-     }
-    }
    }
 
    th {
@@ -161,10 +143,20 @@
    }
 
    thead {
+    z-index: 20 !important;
+
+    tr:first-child {
+     th:first-child {
+      position: sticky;
+      top: 0;
+      left: 0;
+      border-right: 1px solid var(--color-gray-500);
+     }
+    }
     th,
     td {
+     z-index: 100;
      background-color: #f8f8f8;
-
      color: var(--color-gray-800);
      border-color: var(--color-gray-500);
      border-bottom-width: 1px;
@@ -174,23 +166,28 @@
    }
 
    tbody {
+    // 左端のtd, thを固定
     tr {
-     th:first-child {
-      padding-right: 0 !important;
-      position: sticky;
-      z-index: 31; // 固定列のz-indexを上げる
-      left: 0;
-      border-right: 2px solid #c8c8c8; // より明確な境界線
-      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1); // 固定列の影を追加
-     }
-
-     // 仮想化テーブル用の固定列スタイル追加
+     th,
      td:first-child {
+      background-color: white;
       position: sticky;
+
+      z-index: 10; // 固定列のz-indexを上げる
       left: 0;
-      z-index: 31;
-      border-right: 2px solid #c8c8c8;
-      box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+     }
+    }
+
+    // 最終行のボーダーを削除
+    tr {
+     &:first-child,
+     &:last-child {
+      td {
+       border-top-width: 0.5px;
+      }
+      th {
+       border-top-width: 0.5px;
+      }
      }
     }
    }
@@ -372,7 +369,6 @@
  .qr-sheet {
   table {
    border: 1px solid var(--color-sub-main);
-
    white-space: normal;
    td:nth-child(odd) {
     background-color: var(--color-sub-light);

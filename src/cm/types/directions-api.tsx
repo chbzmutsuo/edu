@@ -1,6 +1,6 @@
 import {addQuerySentence} from 'src/cm/lib/methods/urls'
 import {anyObject} from '@cm/types/utility-types'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 
 export type geocoded_waypointsType = {place_id: any; types: any[]; geocoder_status: any}
 export type latLon = {latitude: number; longtitude: number}

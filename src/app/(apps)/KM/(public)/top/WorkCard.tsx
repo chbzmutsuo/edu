@@ -15,7 +15,7 @@ import useWindowSize from '@cm/hooks/useWindowSize'
 import {cl} from '@cm/lib/methods/common'
 
 import {useEffect, useState} from 'react'
-import {Paper} from '@components/styles/common-components/paper'
+import {Paper} from '@cm/components/styles/common-components/paper'
 import {twMerge} from 'tailwind-merge'
 
 export const WorkCard = ({work}) => {

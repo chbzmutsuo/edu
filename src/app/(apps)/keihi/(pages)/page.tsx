@@ -9,8 +9,8 @@ import {ExpenseListItem} from '../components/ExpenseListItem'
 import {Pagination} from '../components/Pagination'
 import {LoadingSpinner} from '../components/ui/LoadingSpinner'
 import {ProcessingStatus} from '../components/ui/ProcessingStatus'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {StickyBottom, StickyTop} from '@components/styles/common-components/Sticky'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {StickyBottom, StickyTop} from '@cm/components/styles/common-components/Sticky'
 
 const ExpenseListPage = () => {
   const {query, shallowAddQuery} = useGlobal()

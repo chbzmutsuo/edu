@@ -1,10 +1,10 @@
 'use client'
 import {pathItemType} from 'src/non-common/path-title-constsnts'
 
-import useNavMenu from '@components/layout/Navigation/useNavMenu'
+import useNavMenu from '@cm/components/layout/Navigation/useNavMenu'
 import React from 'react'
-import NavItemParent from '@components/layout/Navigation/NavItem/NavItemParent'
-import NavItemChildren from '@components/layout/Navigation/NavItem/NavItemChildren'
+import NavItemParent from '@cm/components/layout/Navigation/NavItem/NavItemParent'
+import NavItemChildren from '@cm/components/layout/Navigation/NavItem/NavItemChildren'
 
 export type navItemProps = {
   useGlobalProps: any

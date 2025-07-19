@@ -5,7 +5,7 @@ import {CSSProperties} from 'react'
 import {UseFormReturn} from 'react-hook-form'
 import {colType, colTypeStr, extraFormStateType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
-import {BaseColTypes} from '@class/DataHandler/types'
+import {BaseColTypes} from '@cm/class/DataHandler/types'
 
 export type liftUpNewValueOnChangeType = (props: {id: string; newValue: any; ReactHookForm: any}) => void
 

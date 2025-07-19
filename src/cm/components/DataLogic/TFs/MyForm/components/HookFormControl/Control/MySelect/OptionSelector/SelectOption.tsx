@@ -1,10 +1,10 @@
 import {optionType} from 'src/cm/class/Fields/col-operator-types'
-import {contextsType} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
+import {contextsType} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/my-select-types'
 
 import {breakLines} from 'src/cm/lib/value-handler'
 
-import {IconBtnForSelect} from '@components/styles/common-components/IconBtn'
-import {colorVariants} from '@lib/methods/colors'
+import {IconBtnForSelect} from '@cm/components/styles/common-components/IconBtn'
+import {colorVariants} from '@cm/lib/methods/colors'
 
 export const SelectOption = (props: {contexts: contextsType; option: optionType; optionStyle: any}) => {
   const contexts = props.contexts

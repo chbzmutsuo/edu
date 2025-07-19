@@ -1,8 +1,8 @@
 'use client'
 
-import {LabelValue} from '@components/styles/common-components/ParameterCard'
+import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import React from 'react'
 
@@ -10,11 +10,11 @@ import {useGenbaDayCardEditorModalGMF} from '@app/(apps)/sohken/hooks/useGenbaDa
 import GanbaName from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/GanbaName'
 import {TaskWithNinku} from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/TaskWithNinku'
 import {useGenbaDayBasicEditor} from '@app/(apps)/sohken/hooks/useGenbaDayBasicEditor'
-import {Alert} from '@components/styles/common-components/Alert'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {HREF} from '@lib/methods/urls'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
-import {T_LINK} from '@components/styles/common-components/links'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import {HREF} from '@cm/lib/methods/urls'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 export default function Main(props: {
   GenbaDayBasicEditor_HK: ReturnType<typeof useGenbaDayBasicEditor>
   pathname: string

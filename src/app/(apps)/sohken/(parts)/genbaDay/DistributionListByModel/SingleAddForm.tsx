@@ -1,10 +1,10 @@
 import {ColBuilder} from '@app/(apps)/sohken/class/ColBuilder'
 import {PrismaModelNames} from '@cm/types/prisma-types'
-import {Button} from '@components/styles/common-components/Button'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import {generalDoStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {toastByResult} from '@lib/ui/notifications'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import {generalDoStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {toastByResult} from '@cm/lib/ui/notifications'
 
 import React from 'react'
 

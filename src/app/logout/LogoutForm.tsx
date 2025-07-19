@@ -1,7 +1,7 @@
 'use client'
 import {signOut} from 'next-auth/react'
 import {useEffect} from 'react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 const LogoutForm = () => {
   const {router, toggleLoad, session, query} = useGlobal()

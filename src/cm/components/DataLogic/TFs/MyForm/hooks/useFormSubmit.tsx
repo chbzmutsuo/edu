@@ -1,7 +1,7 @@
 import {useState, useCallback} from 'react'
 import {toast} from 'react-toastify'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {UpsertMain} from '@components/DataLogic/TFs/MyForm/helpers/UpsertMain'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {UpsertMain} from '@cm/components/DataLogic/TFs/MyForm/helpers/UpsertMain'
 
 import {requestResultType} from '@cm/types/types'
 import {PrismaModelNames} from '@cm/types/prisma-types'

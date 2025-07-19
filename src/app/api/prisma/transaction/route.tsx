@@ -1,6 +1,6 @@
 // search route api
 
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {NextRequest, NextResponse} from 'next/server'
 
 export const POST = async (req: NextRequest) => {

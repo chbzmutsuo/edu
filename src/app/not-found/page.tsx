@@ -1,8 +1,8 @@
 'use client'
-import {T_LINK} from '@components/styles/common-components/links'
-import Redirector from '@components/utils/Redirector'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {HREF} from '@lib/methods/urls'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import Redirector from '@cm/components/utils/Redirector'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {HREF} from '@cm/lib/methods/urls'
 import {Absolute, Center, C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 const UnAuthorizedPage = () => {

@@ -10,11 +10,11 @@ import useWindowSize from 'src/cm/hooks/useWindowSize'
 
 import {Center, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {cl} from 'src/cm/lib/methods/common'
-import {pathToNoImage} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
+import {pathToNoImage} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MyFileControl/MyFileControl'
 import {DownloadIcon} from 'lucide-react'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {useMemo, memo} from 'react'
-import ShadModal from '@cm/shadcn-ui/components/ShadModal'
+import ShadModal from '@cm/shadcn/components/ShadModal'
 
 const ReactPlayer = dynamic(() => import('react-player'), {
   ssr: false,

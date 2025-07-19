@@ -3,17 +3,17 @@
 import {StockCl} from 'src/non-common/EsCollection/(stock)/StockCl'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 import StockChart from '../(components)/StockChart'
-import {NumHandler} from '@class/NumHandler'
-import {LabelValue} from '@components/styles/common-components/ParameterCard'
+import {NumHandler} from '@cm/class/NumHandler'
+import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
 
 import {STOCK_CODE} from '@app/(apps)/stock/(constants)/STOCK_CODE'
-import {shorten} from '@lib/methods/common'
+import {shorten} from '@cm/lib/methods/common'
 import {toast} from 'react-toastify'
-import {Wrapper} from '@components/styles/common-components/paper'
+import {Wrapper} from '@cm/components/styles/common-components/paper'
 
 const Flag = ({flag, label}) => {
   return (

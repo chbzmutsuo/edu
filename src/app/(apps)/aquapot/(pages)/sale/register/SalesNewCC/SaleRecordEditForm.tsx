@@ -1,17 +1,17 @@
 'use client'
 
 import {AQ_CONST} from '@app/(apps)/aquapot/(constants)/options'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {NumHandler} from '@class/NumHandler'
-import {Fields} from '@class/Fields/Fields'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {NumHandler} from '@cm/class/NumHandler'
+import {Fields} from '@cm/class/Fields/Fields'
 import {colType} from '@cm/types/types'
 
-import {Button} from '@components/styles/common-components/Button'
-import {Center, C_Stack} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {Center, C_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
 import React, {useEffect} from 'react'
 

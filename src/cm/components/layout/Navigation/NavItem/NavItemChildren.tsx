@@ -3,9 +3,9 @@ import React from 'react'
 import NavItemWrapper, {getItemProps, navItemProps} from 'src/cm/components/layout/Navigation/NavItem/NavItemWrapper'
 
 import {anyObject} from '@cm/types/utility-types'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {Card} from '@cm/shadcn-ui/components/ui/card'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {Card} from '@cm/shadcn/components/ui/card'
+import {cn} from '@cm/shadcn/lib/utils'
 
 const NavItemChildren = React.memo((props: navItemProps) => {
   const {HK_NAV, item, nestLevel = 1, navWrapperIdx, horizontalMenu} = props

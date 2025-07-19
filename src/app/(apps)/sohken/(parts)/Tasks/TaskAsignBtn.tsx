@@ -2,13 +2,13 @@
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import React, {useEffect, useState} from 'react'
 
-import {Button} from '@components/styles/common-components/Button'
-import useModal from '@components/utils/modal/useModal'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {toUtc} from '@class/Days/date-utils/calculations'
-import BasicModal from '@components/utils/modal/BasicModal'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useModal from '@cm/components/utils/modal/useModal'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import BasicModal from '@cm/components/utils/modal/BasicModal'
 
-import { CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 
 import {handleCopyTask, taskObj} from '@app/(apps)/sohken/(parts)/Tasks/HandleBulkUpsertTask'
 

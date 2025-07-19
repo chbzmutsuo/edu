@@ -2,8 +2,8 @@
 import {Kaizen, KM} from '@app/(apps)/KM/class/Kaizen'
 import TextAccordion from '@cm/components/utils/Accordions/TextAccordiong./TextAccordion'
 import Loader from '@cm/components/utils/loader/Loader'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 export const Category = () => {
   const master = [
     {

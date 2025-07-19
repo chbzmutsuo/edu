@@ -1,4 +1,4 @@
-import {attachment, knockEmailApi} from '@lib/methods/knockEmailApi'
+import {attachment, knockEmailApi} from '@cm/lib/methods/knockEmailApi'
 
 export const sendEmailWrapper = async (props: {
   subject: string

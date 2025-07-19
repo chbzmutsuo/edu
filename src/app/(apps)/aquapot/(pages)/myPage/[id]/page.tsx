@@ -1,11 +1,11 @@
 import MyPageCC from '@app/(apps)/aquapot/(pages)/myPage/[id]/MyPageCC'
 import {getCustomerDataWithSales} from '@app/(apps)/aquapot/(pages)/myPage/getCustomerDataWithSales'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import {C_Stack, FitMargin} from '@components/styles/common-components/common-components'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import {C_Stack, FitMargin} from '@cm/components/styles/common-components/common-components'
 
-import Redirector from '@components/utils/Redirector'
+import Redirector from '@cm/components/utils/Redirector'
 
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 
 import React from 'react'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'

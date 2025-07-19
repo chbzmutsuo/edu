@@ -1,9 +1,9 @@
-import {makePrismaDataExtractionQuery} from '@components/DataLogic/TFs/ClientConf/makePrismaDataExtractionQuery'
+import {makePrismaDataExtractionQuery} from '@cm/components/DataLogic/TFs/ClientConf/makePrismaDataExtractionQuery'
 
-import {getEasySearchWhereAnd} from '@class/builders/QueryBuilderVariables'
-import {SearchQuery} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
-import {P_Query} from '@class/PQuery'
-import {getMyTableId} from '@components/DataLogic/TFs/MyTable/helpers/getMyTableId'
+import {getEasySearchWhereAnd} from '@cm/class/builders/QueryBuilderVariables'
+import {SearchQuery} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
+import {P_Query} from '@cm/class/PQuery'
+import {getMyTableId} from '@cm/components/DataLogic/TFs/MyTable/helpers/getMyTableId'
 
 export const getQueryArgs = ({
   dataModelName,

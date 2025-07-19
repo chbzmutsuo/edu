@@ -1,4 +1,4 @@
-import {basePath} from '@lib/methods/common'
+import {basePath} from '@cm/lib/methods/common'
 
 // 一括登録用の基本レコード作成
 export const fetchAnalyzeReceiptImage = async (imageDataList: string[]): Promise<createBulkExpensesBasicReturn> => {

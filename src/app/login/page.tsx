@@ -4,7 +4,7 @@ import {Absolute, C_Stack} from 'src/cm/components/styles/common-components/comm
 import Redirector from 'src/cm/components/utils/Redirector'
 import PlaceHolder from 'src/cm/components/utils/loader/PlaceHolder'
 import LoginForm from './LoginForm'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 const AdminLogin = props => {
   const {session, query} = useGlobal()
 

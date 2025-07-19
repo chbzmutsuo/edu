@@ -1,5 +1,5 @@
 // --- テーブル関連型 ---
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 import type {anyObject} from './utility-types'
 import type {MyFormType} from './form-types'
 

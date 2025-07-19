@@ -1,11 +1,11 @@
 'use client'
 
 import {MonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList: MonthlyTbmDriveData[]}) {
   const minWidth = 80

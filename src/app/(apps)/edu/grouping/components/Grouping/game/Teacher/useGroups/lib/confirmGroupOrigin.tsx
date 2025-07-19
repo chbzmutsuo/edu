@@ -1,4 +1,4 @@
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {Prisma} from '@prisma/client'
 import {toast} from 'react-toastify'
 

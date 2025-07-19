@@ -1,6 +1,6 @@
 import React from 'react'
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import TestCc from './TestCc'
 

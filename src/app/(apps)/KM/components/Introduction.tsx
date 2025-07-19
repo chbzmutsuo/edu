@@ -4,7 +4,7 @@ import {Kaizen, KM} from '@app/(apps)/KM/class/Kaizen'
 
 import BackGroundImage from '@cm/components/utils/BackGroundImage'
 import useWindowSize from '@cm/hooks/useWindowSize'
-import {C_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import {useEffect} from 'react'
 
 export const Introducation = () => {

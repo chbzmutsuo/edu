@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react'
 import {anyObject} from '@cm/types/utility-types'
 import {ControlContextType} from '@cm/types/form-control-type'
-import {DH__switchColType} from '@class/DataHandler/type-converter'
+import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 const MyInput = React.forwardRef((props: {controlContextValue: ControlContextType}, ref) => {
   const {latestFormData, col, ReactHookForm, formProps, Register, currentValue, liftUpNewValueOnChange, field, ControlStyle} =
     props.controlContextValue as ControlContextType

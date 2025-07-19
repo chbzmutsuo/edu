@@ -1,7 +1,7 @@
 'use client'
 
 import {base64ToDataUrl} from '../../../utils'
-import ContentPlayer from '@components/utils/ContentPlayer'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
 
 interface ImageUploadSectionProps {
   uploadedImages: string[]

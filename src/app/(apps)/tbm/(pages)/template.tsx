@@ -5,11 +5,11 @@ import useOdometerInputGMF from '@app/(apps)/tbm/(globalHooks)/useOdometerInputG
 import useProductMidEditor from '@app/(apps)/tbm/(globalHooks)/useProductMidEditorGMF'
 import useCarWashGMF from '@app/(apps)/tbm/(globalHooks)/useCarWashGMF'
 import React from 'react'
-import {createUpdate} from '@lib/methods/createUpdate'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
 
 import useUnchinChildCreator from '@app/(apps)/tbm/(globalHooks)/useUnchinChildCreator'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 export default function Template({children}) {
   const HK_OdometerInputGMF = useOdometerInputGMF()

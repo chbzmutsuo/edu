@@ -1,14 +1,14 @@
 'use client'
 
 import {AQ_CONST} from '@app/(apps)/aquapot/(constants)/options'
-import {defaultMultipleSelectFormat} from '@class/Fields/lib/defaultFormat'
-import {obj__objectToArray} from '@class/ObjHandler/transformers'
+import {defaultMultipleSelectFormat} from '@cm/class/Fields/lib/defaultFormat'
+import {obj__objectToArray} from '@cm/class/ObjHandler/transformers'
 
 import {Fields} from '@cm/class/Fields/Fields'
 import {forSelectConfig} from '@cm/types/select-types'
 import {columnGetterType} from '@cm/types/types'
 
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 
 const defaultSummaryInTdArgs = {
   hideUndefinedValue: false,

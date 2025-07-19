@@ -2,11 +2,11 @@ import React from 'react'
 import {cl} from 'src/cm/lib/methods/common'
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import TableConfig, {TableConfigPropsType} from '../TableConfig'
-import MyPagination from '@components/DataLogic/TFs/MyTable/components/Pagination/MyPagination'
+import MyPagination from '@cm/components/DataLogic/TFs/MyTable/components/Pagination/MyPagination'
 
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import {RecordCountDisplay} from '@components/DataLogic/TFs/MyTable/components/MyTableControls/RecordCountDisplay'
-import {InfiniteScrollToggle} from '@components/DataLogic/TFs/MyTable/components/MyTableControls/InfiniteScrollToggle'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {RecordCountDisplay} from '@cm/components/DataLogic/TFs/MyTable/components/MyTableControls/RecordCountDisplay'
+import {InfiniteScrollToggle} from '@cm/components/DataLogic/TFs/MyTable/components/MyTableControls/InfiniteScrollToggle'
 
 interface MyTableControlsProps {
   SearchingStatusMemo: React.ReactNode

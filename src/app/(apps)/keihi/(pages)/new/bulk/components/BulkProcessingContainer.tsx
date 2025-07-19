@@ -8,7 +8,7 @@ import {BulkProcessingResults} from './BulkProcessingResults'
 import {BulkProcessingStatus} from './BulkProcessingStatus'
 
 import {fetchAnalyzeReceiptImage} from '@app/(apps)/keihi/api/analyzeReceiptImage/fetchAnalyzeReceiptImage'
-import useLogOnRender from '@hooks/useLogOnRender'
+import useLogOnRender from '@cm/hooks/useLogOnRender'
 
 interface BulkProcessingContainerProps {
   onComplete?: () => void

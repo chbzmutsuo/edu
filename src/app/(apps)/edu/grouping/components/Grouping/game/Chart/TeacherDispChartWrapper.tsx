@@ -8,8 +8,8 @@ import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game
 import {Fields} from '@cm/class/Fields/Fields'
 
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
-import {Button} from '@components/styles/common-components/Button'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 import React, {useState} from 'react'
 

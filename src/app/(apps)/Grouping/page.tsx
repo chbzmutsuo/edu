@@ -6,7 +6,7 @@ import prisma from 'src/lib/prisma'
 
 import {QueryBuilder} from '@app/(apps)/Grouping/class/QueryBuilder'
 import GameList from '@app/(apps)/Grouping/parts/GameList'
-import Redirector from '@components/utils/Redirector'
+import Redirector from '@cm/components/utils/Redirector'
 
 const Page = async props => {
   const query = await props.searchParams

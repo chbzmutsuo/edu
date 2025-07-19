@@ -1,14 +1,14 @@
-import {TableBordered, TableWrapper} from '@components/styles/common-components/Table'
+import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
 
-import GlobalModal from '@components/utils/modal/GlobalModal'
+import GlobalModal from '@cm/components/utils/modal/GlobalModal'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
 import {DetailPagePropType} from '@cm/types/types'
 import {useEffect, useState} from 'react'
 import {RoleMaster, User, UserRole} from '@prisma/client'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {surroundings} from '@components/DataLogic/types/customParams-types'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {surroundings} from '@cm/components/DataLogic/types/customParams-types'
 import {anyObject} from '@cm/types/utility-types'
 
 export type PageBuidlerClassType = {

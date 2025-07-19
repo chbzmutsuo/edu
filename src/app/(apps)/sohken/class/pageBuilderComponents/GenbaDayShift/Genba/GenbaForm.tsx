@@ -2,27 +2,27 @@
 
 import {DetailPagePropType} from '@cm/types/types'
 
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/sohken/class/ColBuilder'
 import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
-import {C_Stack, FitMargin, R_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
-import PlaceHolder from '@components/utils/loader/PlaceHolder'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 
-import BasicTabs from '@components/utils/tabs/BasicTabs'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import UnUsedScheduleDeleteBtn from '@app/(apps)/sohken/(parts)/Tasks/UnUsedScheduleDeleteBtn'
 
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 import {Prisma} from '@prisma/client'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {GenbaCl} from '@app/(apps)/sohken/class/GenbaCl'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {chain_sohken_genbaDayUpdateChain} from 'src/non-common/(chains)/getGenbaScheduleStatus/chain_sohken_genbaDayUpdateChain'
-import {Alert} from '@components/styles/common-components/Alert'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 import {TaskAsignBtn} from '@app/(apps)/sohken/(parts)/Tasks/TaskAsignBtn'
 import {handleUpdateSchedule} from '@app/(apps)/sohken/(parts)/Tasks/handleUpdateSchedule'
 

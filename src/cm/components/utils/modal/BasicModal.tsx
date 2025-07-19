@@ -1,7 +1,7 @@
 'use client'
 import React, {useState} from 'react'
 
-import {basicModalPropType, ModalCore} from '@components/utils/modal/ModalCore'
+import {basicModalPropType, ModalCore} from '@cm/components/utils/modal/ModalCore'
 
 const BasicModal = React.memo((props: basicModalPropType) => {
   const [openState, setopenState] = useState(false)

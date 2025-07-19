@@ -4,8 +4,8 @@ import {R_Stack} from 'src/cm/components/styles/common-components/common-compone
 import {Search} from 'lucide-react'
 import {cl} from 'src/cm/lib/methods/common'
 
-import {T_LINK} from '@components/styles/common-components/links'
-import {arr__createUpdateDelete} from '@class/ArrHandler/array-utils/data-operations'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import {arr__createUpdateDelete} from '@cm/class/ArrHandler/array-utils/data-operations'
 
 const MidTableRowGroup = ({
   listForGroup,

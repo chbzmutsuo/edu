@@ -1,11 +1,11 @@
 import {targetUsers} from '@app/(apps)/sohken/api/cron/targetUsers'
 import {GoogleCalendar_Get} from '@app/api/google/actions/calendarAPI'
-import {Days} from '@class/Days/Days'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 
-import {createUpdate} from '@lib/methods/createUpdate'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 import {NextRequest, NextResponse} from 'next/server'
 

@@ -1,18 +1,18 @@
 'use client'
 
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 import {DetailPagePropType} from '@cm/types/types'
 
-import {Days} from '@class/Days/Days'
-import {toUtc} from '@class/Days/date-utils/calculations'
-import useDoStandardPrisma from '@hooks/useDoStandardPrisma'
-import {createUpdate} from '@lib/methods/createUpdate'
+import {Days} from '@cm/class/Days/Days'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import {createUpdate} from '@cm/lib/methods/createUpdate'
 toastByResult
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {toastByResult} from '@lib/ui/notifications'
-import BasicTabs from '@components/utils/tabs/BasicTabs'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {toastByResult} from '@cm/lib/ui/notifications'
+import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import BulkCalendarSetter from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/BulkCalendarSetter'
 
 export default function TbmRouteGroupDetail(props: DetailPagePropType) {

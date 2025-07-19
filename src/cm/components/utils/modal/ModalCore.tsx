@@ -1,7 +1,7 @@
 'use client'
 import React, {JSX} from 'react'
 
-import ShadModal from '@cm/shadcn-ui/components/ShadModal'
+import ShadModal from '@cm/shadcn/components/ShadModal'
 
 export type basicModalPropType = {
   Trigger?: JSX.Element

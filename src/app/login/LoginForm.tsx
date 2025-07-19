@@ -6,9 +6,9 @@ import useGlobal from 'src/cm/hooks/globalHooks/useGlobal'
 import {toast} from 'react-toastify'
 import useBasicFormProps from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {Fields} from 'src/cm/class/Fields/Fields'
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 import {CheckLogin} from '@app/api/prisma/login/checkLogin'
-import {sleep} from '@lib/methods/common'
+import {sleep} from '@cm/lib/methods/common'
 
 export default function LoginForm(props) {
   const {error} = props

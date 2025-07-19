@@ -1,10 +1,10 @@
 import {dataMinimumServerType, dataModelNameType, form_table_modal_config, PageBuilderGetterType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
-import {UseRecordsReturn} from '@components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
+import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/useRecords/useRecords'
 
-import {getInitModelRecordsProps, serverFetchProps} from '@components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
-import {surroundings} from '@components/DataLogic/types/customParams-types'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobal'
+import {getInitModelRecordsProps, serverFetchProps} from '@cm/components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
+import {surroundings} from '@cm/components/DataLogic/types/customParams-types'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobal'
 import {CSSProperties} from 'react'
 
 export interface PropAdjustorPropsType {

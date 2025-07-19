@@ -8,13 +8,13 @@ import {ClassRoom, Grouping} from '@app/(apps)/edu/class/Grouping'
 
 import MyPopover from '@cm/components/utils/popover/MyPopover'
 
-import {Circle, C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {Circle, C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {jotai_moveStudent, useJotai} from '@hooks/useJotai'
+import {jotai_moveStudent, useJotai} from '@cm/hooks/useJotai'
 
 import MemberSwitchTd from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/MemberSwitchTd'
 import RoleControll from '@app/(apps)/edu/Grouping/components/Grouping/game/Teacher/GroupHandler/GroupViewer/RoleControll'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 export default function GroupViewer(props: {
   GameCtxValue: GameContextType

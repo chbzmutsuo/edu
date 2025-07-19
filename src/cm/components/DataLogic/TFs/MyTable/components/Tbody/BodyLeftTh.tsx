@@ -5,8 +5,8 @@ import {Circle, R_Stack} from 'src/cm/components/styles/common-components/common
 import {cl} from 'src/cm/lib/methods/common'
 
 import {ArrowUpDownIcon} from 'lucide-react'
-import useWindowSize from '@hooks/useWindowSize'
-import {getColorStyles} from '@lib/methods/colors'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import {getColorStyles} from '@cm/lib/methods/colors'
 
 export const BodyLeftTh = ({myTable, showHeader, rowColor, dndProps, rowSpan, colSpan, recordIndex, children}) => {
   const {SP, PC} = useWindowSize()

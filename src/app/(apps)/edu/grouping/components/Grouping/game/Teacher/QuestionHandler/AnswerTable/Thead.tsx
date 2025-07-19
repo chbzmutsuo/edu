@@ -1,5 +1,5 @@
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {Trash2} from 'lucide-react'
 import {cl} from '@cm/lib/methods/common'
 

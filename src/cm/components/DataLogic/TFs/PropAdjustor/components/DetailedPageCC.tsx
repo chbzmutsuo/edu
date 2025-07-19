@@ -3,7 +3,7 @@
 import {cl} from 'src/cm/lib/methods/common'
 import {useEffect, useState, useMemo} from 'react'
 import MyForm from 'src/cm/components/DataLogic/TFs/MyForm/MyForm'
-import {ClientPropsType2} from '@components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
+import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
 
 // 型定義を追加
 interface DetailedPageCCProps {

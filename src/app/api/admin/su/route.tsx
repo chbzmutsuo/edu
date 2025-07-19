@@ -1,4 +1,4 @@
-import {isDev} from '@lib/methods/common'
+import {isDev} from '@cm/lib/methods/common'
 import prisma from 'src/lib/prisma'
 import {NextResponse} from 'next/server'
 

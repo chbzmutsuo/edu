@@ -9,12 +9,12 @@ import {DetailPagePropType} from '@cm/types/types'
 import ClassroomDetailPage from '@app/(apps)/Grouping/parts/ClassroomDetailPage'
 import StudentDetailById from '@app/(apps)/Grouping/components/Grouping/student/StudentDetailById'
 
-import MyForm from '@components/DataLogic/TFs/MyForm/MyForm'
+import MyForm from '@cm/components/DataLogic/TFs/MyForm/MyForm'
 
 import GameDetailPage from '@app/(apps)/Grouping/parts/GameDetailPage'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import MyAccordion from '@components/utils/Accordions/MyAccordion'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import MyAccordion from '@cm/components/utils/Accordions/MyAccordion'
 
 export class PageBuilder {
   static school = {

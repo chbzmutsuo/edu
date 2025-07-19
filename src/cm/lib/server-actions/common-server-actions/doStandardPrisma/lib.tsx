@@ -1,9 +1,9 @@
-import {createSuccessMessage} from '@lib/prisma-helper'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {createSuccessMessage} from '@cm/lib/prisma-helper'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 import {hashPassword} from 'src/cm/lib/crypt'
 
-import {getRelationalModels, getSchema} from '@lib/methods/prisma-schema'
+import {getRelationalModels, getSchema} from '@cm/lib/methods/prisma-schema'
 
 export async function initQueryObject({model, method, queryObject, prismaModel}) {
   const {create, update, data} = queryObject

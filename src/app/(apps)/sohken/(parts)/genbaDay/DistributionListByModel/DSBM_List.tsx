@@ -4,7 +4,7 @@ import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-c
 import {Pipette} from 'lucide-react'
 
 import {twMerge} from 'tailwind-merge'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 export const DSBM_List = ({
   editable,
   iconBtn,

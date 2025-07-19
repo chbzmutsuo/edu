@@ -1,7 +1,7 @@
-import {bodyRecordsType, stylesInColumns} from '@components/styles/common-components/CsvTable/CsvTable'
-import {Counter} from '@components/styles/common-components/Table'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {cl} from '@lib/methods/common'
+import {bodyRecordsType, stylesInColumns} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import {Counter} from '@cm/components/styles/common-components/Table'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import {cl} from '@cm/lib/methods/common'
 
 export type CsvTableHeadProps = {
   headerRecords: bodyRecordsType

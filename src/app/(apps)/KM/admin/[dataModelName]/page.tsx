@@ -1,11 +1,11 @@
-import {setCustomParams} from '@components/DataLogic/helpers/SetCustomParams'
+import {setCustomParams} from '@cm/components/DataLogic/helpers/SetCustomParams'
 
 import {PageBuilder} from '@app/(apps)/KM/class/PageBuilder'
 import {ColBuilder} from '@app/(apps)/KM/class/ColBuilder'
 import {QueryBuilder} from '@app/(apps)/KM/class/QueryBuilder'
 
 import {ViewParamBuilder} from '@app/(apps)/KM/class/ViewParamBuilder'
-import {getMasterPageCommonConfig} from '@components/DataLogic/helpers/getMasterPageCommonConfig'
+import {getMasterPageCommonConfig} from '@cm/components/DataLogic/helpers/getMasterPageCommonConfig'
 
 export default async function DynamicMasterPage(props) {
   return getMasterPageCommonConfig({

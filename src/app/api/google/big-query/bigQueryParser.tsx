@@ -1,5 +1,5 @@
-import {toUtc} from '@class/Days/date-utils/calculations'
-import {sql} from '@class/SqlBuilder/SqlBuilder'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+import {sql} from '@cm/class/SqlBuilder/SqlBuilder'
 export const BQ_parser = {
   castStrToDate: (col = 'DD_FR') => {
     const result = sql`

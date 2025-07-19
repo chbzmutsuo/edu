@@ -1,13 +1,13 @@
 'use client'
 
 import {getFormList, UserInputType} from '@app/(apps)/tbm/(pages)/tbmOperationGroupCreate/FormList/formList'
-import {TextBlue, TextRed} from '@components/styles/common-components/Alert'
-import {Button} from '@components/styles/common-components/Button'
+import {TextBlue, TextRed} from '@cm/components/styles/common-components/Alert'
+import {Button} from '@cm/components/styles/common-components/Button'
 
-import {Absolute, C_Stack, Center, R_Stack} from '@components/styles/common-components/common-components'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {atomKey, useJotaiByKey} from '@hooks/useJotai'
-import {colorVariants} from '@lib/methods/colors'
+import {Absolute, C_Stack, Center, R_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {atomKey, useJotaiByKey} from '@cm/hooks/useJotai'
+import {colorVariants} from '@cm/lib/methods/colors'
 
 import React from 'react'
 

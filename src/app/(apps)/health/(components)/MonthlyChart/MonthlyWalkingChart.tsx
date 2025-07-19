@@ -2,7 +2,7 @@ import React, {useState, useMemo} from 'react'
 import {BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList} from 'recharts'
 import {DailySummary} from '../../(constants)/types'
 import {upsertMonthlyGoal} from '@app/(apps)/health/api/monthly-setting'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 const WALKING_COLORS = {
   shortDistance: '#3b82f6', // 青

@@ -5,14 +5,14 @@ import {NestHandler} from 'src/cm/class/NestHandler'
 import {nestIsolatorType} from 'src/cm/class/NestHandler'
 import {additionalPropsType} from '@cm/types/types'
 import {anyObject} from '@cm/types/utility-types'
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {PrismaModelNames} from '@cm/types/prisma-types'
 
 import useLoader from 'src/cm/hooks/globalHooks/useLoader'
-import {StrHandler} from '@class/StrHandler'
+import {StrHandler} from '@cm/class/StrHandler'
 
-import {arr__createUpdateDelete} from '@class/ArrHandler/array-utils/data-operations'
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {arr__createUpdateDelete} from '@cm/class/ArrHandler/array-utils/data-operations'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export type MidTableProps = {
   ParentData: anyObject

@@ -1,13 +1,13 @@
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Fields} from 'src/cm/class/Fields/Fields'
 
 import {colType, columnGetterType} from '@cm/types/types'
 import {Absolute, Vr} from 'src/cm/components/styles/common-components/common-components'
 
-import {LabelValue} from '@components/styles/common-components/ParameterCard'
-import {getColorStyles} from '@lib/methods/colors'
-import ShadPopover from '@cm/shadcn-ui/components/ShadPopover'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
+import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
+import {getColorStyles} from '@cm/lib/methods/colors'
+import ShadPopover from '@cm/shadcn/components/ShadPopover'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 export const defaultRegister = {register: {required: '必須'}}
 export const textAreaDefaultStyle = {width: 600, height: 150}

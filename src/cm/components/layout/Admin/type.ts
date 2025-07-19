@@ -1,7 +1,7 @@
 import {PageBuilderGetterType} from '@cm/types/types'
 
-import {getPathItemRelatedProps} from '@components/layout/Admin/hooks/useAdminContext'
-import {useGlobalPropType} from '@hooks/globalHooks/useGlobalOrigin'
+import {getPathItemRelatedProps} from '@cm/components/layout/Admin/hooks/useAdminContext'
+import {useGlobalPropType} from '@cm/hooks/globalHooks/useGlobalOrigin'
 
 export type adminProps = {
   AppName: string | React.ReactNode

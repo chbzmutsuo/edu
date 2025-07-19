@@ -1,19 +1,19 @@
 'use client'
 //classを切り替える
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import GenbaDaySummary from '@app/(apps)/sohken/(parts)/genbaDay/GenbaDaySummary/GenbaDaySummary'
-import {C_Stack, Circle, FitMargin, R_Stack} from '@components/styles/common-components/common-components'
-import {Paper} from '@components/styles/common-components/paper'
+import {C_Stack, Circle, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Paper} from '@cm/components/styles/common-components/paper'
 
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 import {useGenbaDayBasicEditor} from '@app/(apps)/sohken/hooks/useGenbaDayBasicEditor'
 import React from 'react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {DayRemarkComponent, TopDayRemarkComponent} from '@app/(apps)/sohken/(pages)/genbaDay/DayRemarkComponent'
 import {chechIsHoliday} from '@app/(apps)/sohken/api/cron/refreshGoogleCalendar/chechIsHoliday'
 
-import {Alert} from '@components/styles/common-components/Alert'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 import useGDS_DND from '@app/(apps)/sohken/hooks/useGDS_DND'
 
 export const GenbadayListClient = React.memo(

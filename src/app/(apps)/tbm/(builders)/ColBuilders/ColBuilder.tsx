@@ -11,17 +11,17 @@ import {TbmDriveScheduleBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/Tb
 import {tbmOperationBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/tbmOperationBuilder'
 import {tbmMonthlyConfigForRouteGroupBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/tbmMonthlyConfigForRouteGroupBuilder'
 import {columnGetterType} from '@cm/types/types'
-import {Fields} from '@class/Fields/Fields'
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {Fields} from '@cm/class/Fields/Fields'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {tbmProductColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/tbmProductColBuilder'
 import {odometerInputColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/odometerInputColBuilder'
 import {tbmCustomerColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/tbmCustomerColBuilder'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 
 import {tbmVehicleMaintananceRecordColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/tbmVehicleMaintananceRecordColBuilder'
 import {TbmBillingAddressColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmBillingAddressColBuilder'
 import {TbmFuelCardColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmFuelCardColBuilder'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 export class ColBuilder {
   static user = UserColBuilder
@@ -46,6 +46,16 @@ export class ColBuilder {
       {id: 'amount', label: '金額', type: 'float', form: {...defaultRegister}},
       {id: 'date', label: '日付', type: 'date', form: {...defaultRegister}},
       {id: 'remark', label: '備考', type: 'textarea', form: {}},
+    ]).transposeColumns()
+  }
+  static tbmDriveScheduleImage = (props: columnGetterType) => {
+    return new Fields([
+      {
+        id: 'imageUrl',
+        label: '画像',
+        form: {},
+        type: 'file',
+      },
     ]).transposeColumns()
   }
   static tbmEtcMeisai = (props: columnGetterType) => {

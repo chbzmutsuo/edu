@@ -1,5 +1,5 @@
 import {createEventPath} from '@app/api/google/lib/constants'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 
 export type eventCreateObjectPropsType = {
   calendarId: 'primary'

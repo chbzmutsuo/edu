@@ -1,5 +1,5 @@
 import React from 'react'
-import {cn} from '../../shadcn-ui/lib/utils'
+import {cn} from '../../shadcn/lib/utils'
 
 type DynamicGridContainerProps = {
   children: React.ReactNode

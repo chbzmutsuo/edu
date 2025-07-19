@@ -4,8 +4,8 @@ import {useState, useEffect} from 'react'
 import {HOUR_SLOT_LABELS, HEALTH_CATEGORY_LABELS, HEALTH_CATEGORY_COLORS, HealthJournalEntry} from '../../(constants)/types'
 import {addJournalImage, deleteJournalImage} from '../../(lib)/journalActions'
 import {FileHandler} from '@cm/class/FileHandler'
-import ContentPlayer from '@components/utils/ContentPlayer'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 interface HealthRecord {
   id: number

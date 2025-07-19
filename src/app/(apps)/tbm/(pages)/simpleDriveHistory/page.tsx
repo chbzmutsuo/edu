@@ -2,10 +2,10 @@ import React from 'react'
 import SimpleDriveHistoryCC from './SimpleDriveHistoryCC'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import prisma from 'src/lib/prisma'
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import Redirector from '@components/utils/Redirector'
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import Redirector from '@cm/components/utils/Redirector'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 
 export default async function SimpleDriveHistoryPage(props) {
   const query = await props.searchParams

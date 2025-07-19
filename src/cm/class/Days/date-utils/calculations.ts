@@ -1,6 +1,6 @@
-import {DateInput} from '@class/Days/date-utils/date-utils-type'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {isServer} from '@lib/methods/common'
+import {DateInput} from '@cm/class/Days/date-utils/date-utils-type'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {isServer} from '@cm/lib/methods/common'
 
 export const getMidnight = (date = new Date()) => {
   const dt = new Date(date)
@@ -26,7 +26,7 @@ export const toUtc = (date: DateInput): Date => {
 
   const isDate = isValidDate(dt)
   if (!isDate) {
-    throw new Error(`toUtc: ${dt} is not a date object`)
+    // throw new Error(`toUtc: ${dt} is not a date object`)
   }
 
   const result = addHours(dt, -9)

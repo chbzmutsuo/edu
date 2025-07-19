@@ -3,11 +3,11 @@
 import React, {useCallback, useMemo} from 'react'
 import {TableVirtuoso} from 'react-virtuoso'
 import {CsvTableProps, separateHeaderAndBody, VirtualizedOptions} from './CsvTable'
-import {Counter} from '@components/styles/common-components/Table'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import {cl} from '@lib/methods/common'
+import {Counter} from '@cm/components/styles/common-components/Table'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import {cl} from '@cm/lib/methods/common'
 import {twMerge} from 'tailwind-merge'
-import {htmlProps} from '@components/styles/common-components/type'
+import {htmlProps} from '@cm/components/styles/common-components/type'
 import {Downloader} from './CsvDownloader'
 
 export type CsvTableVirtualizedProps = CsvTableProps & {

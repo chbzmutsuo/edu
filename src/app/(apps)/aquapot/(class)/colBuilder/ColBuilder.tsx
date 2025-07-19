@@ -7,7 +7,7 @@ import {aqInventoryRegister} from '@app/(apps)/aquapot/(class)/colBuilder/aqInve
 import {aqSaleRecord} from '@app/(apps)/aquapot/(class)/colBuilder/aqSaleRecord'
 import {getAqProduct} from '@app/(apps)/aquapot/(class)/colBuilder/getAqProduct'
 
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'

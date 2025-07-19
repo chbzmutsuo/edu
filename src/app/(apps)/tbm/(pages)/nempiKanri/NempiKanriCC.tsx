@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {NumHandler} from '@class/NumHandler'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import {KeyValue} from '@components/styles/common-components/ParameterCard'
-import EmptyPlaceholder from '@components/utils/loader/EmptyPlaceHolder'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {NumHandler} from '@cm/class/NumHandler'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import {KeyValue} from '@cm/components/styles/common-components/ParameterCard'
+import EmptyPlaceholder from '@cm/components/utils/loader/EmptyPlaceHolder'
 
 export default function NempiKanriCC({vehicleList, nenpiKanriDataListByCar, lastRefuelHistoryByCar}) {
   return (

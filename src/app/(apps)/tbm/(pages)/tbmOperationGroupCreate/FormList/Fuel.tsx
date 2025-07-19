@@ -1,8 +1,8 @@
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import React from 'react'
 
 import {FormProps} from '@app/(apps)/tbm/(pages)/tbmOperationGroupCreate/FormList/formList'
-import ChildCreator from '@components/DataLogic/RTs/ChildCreator/ChildCreator'
+import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 
 export default function Fuel(props: FormProps) {

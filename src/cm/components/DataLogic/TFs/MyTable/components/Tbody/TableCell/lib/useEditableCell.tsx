@@ -9,7 +9,7 @@ import {CssString} from 'src/cm/components/styles/cssString'
 
 import {colType} from '@cm/types/types'
 import {Fields} from 'src/cm/class/Fields/Fields'
-import {UpsertMain} from '@components/DataLogic/TFs/MyForm/helpers/UpsertMain'
+import {UpsertMain} from '@cm/components/DataLogic/TFs/MyForm/helpers/UpsertMain'
 
 const useEditableCell = (props: {record; col: colType; dataModelName; mutateRecords}) => {
   const {record, col, dataModelName, mutateRecords} = props

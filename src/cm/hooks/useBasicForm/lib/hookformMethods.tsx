@@ -3,8 +3,8 @@ import {isMultiItem, parseMultiId} from 'src/cm/lib/methods/multipleItemLib'
 import {useForm, UseFormReturn, useWatch} from 'react-hook-form'
 import {formPropType} from '@cm/types/form-control-type'
 import {colType} from '@cm/types/types'
-import {controlDefaultStyle} from '@constants/defaults'
-import {DH__switchColType} from '@class/DataHandler/type-converter'
+import {controlDefaultStyle} from '@cm/constants/defaults'
+import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 
 export const initColumns = props => {
   const {autoApplyProps} = props

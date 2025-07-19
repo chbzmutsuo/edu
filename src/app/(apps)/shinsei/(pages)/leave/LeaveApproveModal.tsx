@@ -1,14 +1,14 @@
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
-import {Fields} from '@class/Fields/Fields'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
+import {Fields} from '@cm/class/Fields/Fields'
 import React from 'react'
 import {Approval, PurchaseRequest} from '@prisma/client'
 import {CODE_MASTER} from '@app/(apps)/shinsei/(constants)/CODE_MASTER'
-import {Button} from '@components/styles/common-components/Button'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {TextRed} from '@components/styles/common-components/Alert'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {isDev} from '@lib/methods/common'
-import {toastByResult} from '@lib/ui/notifications'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {TextRed} from '@cm/components/styles/common-components/Alert'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {isDev} from '@cm/lib/methods/common'
+import {toastByResult} from '@cm/lib/ui/notifications'
 
 export default function PurchaseApproveModal(props: {
   Approval: Approval

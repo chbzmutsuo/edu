@@ -8,9 +8,9 @@ import {CSSProperties, useEffect} from 'react'
 
 import {anyObject} from '@cm/types/utility-types'
 
-import {useJotaiByKey, atomTypes} from '@hooks/useJotai'
-import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn-ui/components/ui/tabs'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {useJotaiByKey, atomTypes} from '@cm/hooks/useJotai'
+import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn/components/ui/tabs'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export type tabComponent = {
   style?: CSSProperties
@@ -36,7 +36,7 @@ export default function BasicTabs({
   TabComponentArray,
   className,
   style,
-  forcedWidth = '95vw',
+  forcedWidth,
   ...props
 }: BasicTabsType) {
   const {width} = useWindowSize()

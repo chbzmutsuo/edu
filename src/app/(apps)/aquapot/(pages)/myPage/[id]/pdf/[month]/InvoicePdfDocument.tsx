@@ -4,7 +4,7 @@ import {Page, View, Document, Text} from '@react-pdf/renderer'
 
 import React from 'react'
 
-import {ReactPdfStyles, Table, Td, Tr} from '@hooks/usePdfGenerator'
+import {ReactPdfStyles, Table, Td, Tr} from '@cm/hooks/usePdfGenerator'
 
 export default function InvoicePdfDocument({saleRecordOnThisMonth}) {
   const tableStyle = {

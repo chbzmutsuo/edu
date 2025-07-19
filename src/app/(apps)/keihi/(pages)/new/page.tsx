@@ -13,7 +13,7 @@ import {ExpenseAIDraftSection} from '@app/(apps)/keihi/components/ExpenseAIDraft
 import FormActions from '@app/(apps)/keihi/components/FormActions'
 import {PreviewModal} from '@app/(apps)/keihi/components/ui/PreviewModal'
 import {ProcessingStatus} from '@app/(apps)/keihi/components/ui/ProcessingStatus'
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'

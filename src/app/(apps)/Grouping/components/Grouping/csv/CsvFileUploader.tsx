@@ -9,15 +9,15 @@ import {useState} from 'react'
 
 import {CSVLink} from 'react-csv'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
-import {toastByResult} from '@lib/ui/notifications'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
-import useFileUploadPropsOptimized from '@hooks/useFileUpload/useFileUploadPropsOptimized'
-import {Alert} from '@components/styles/common-components/Alert'
+import {toastByResult} from '@cm/lib/ui/notifications'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import useFileUploadPropsOptimized from '@cm/hooks/useFileUpload/useFileUploadPropsOptimized'
+import {Alert} from '@cm/components/styles/common-components/Alert'
 
 const CsvFileUploader = () => {
   const {toggleLoad, session, query, accessScopes} = useGlobal()

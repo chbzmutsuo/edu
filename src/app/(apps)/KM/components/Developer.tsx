@@ -1,9 +1,9 @@
 'use client'
 
 import {Kaizen} from '@app/(apps)/KM/class/Kaizen'
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {ImageLabel} from '@components/styles/common-components/ImageLabel'
-import {T_LINK} from '@components/styles/common-components/links'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {ImageLabel} from '@cm/components/styles/common-components/ImageLabel'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 export const Developer = () => {
   return (

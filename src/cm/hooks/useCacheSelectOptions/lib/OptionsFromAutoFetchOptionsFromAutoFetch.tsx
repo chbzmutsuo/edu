@@ -1,9 +1,9 @@
-import {mapAdjustOptionValue} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
+import {mapAdjustOptionValue} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/lib/MySelectMethods-server'
 
 import {apiPath} from 'src/cm/lib/methods/common'
 import {useEffect, useState} from 'react'
 import useSWR from 'swr'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 
 export const OptionsFromAutoFetch = ({CacheKeys, SWR_REQUEST_PARAMS, columns}) => {
   const isReady = Object.keys(SWR_REQUEST_PARAMS)?.length > 0

@@ -1,8 +1,8 @@
-import {StrHandler} from '@class/StrHandler'
-import {fetchAlt} from '@lib/http/fetch-client'
+import {StrHandler} from '@cm/class/StrHandler'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
 
-import {basePath} from '@lib/methods/common'
-import {getSchema} from '@lib/methods/prisma-schema'
+import {basePath} from '@cm/lib/methods/common'
+import {getSchema} from '@cm/lib/methods/prisma-schema'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
 import {SessionFaker} from 'src/non-common/SessionFaker'
 

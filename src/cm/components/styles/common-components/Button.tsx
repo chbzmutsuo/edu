@@ -1,6 +1,6 @@
-import {cn} from '@cm/shadcn-ui/lib/utils'
-import {htmlProps} from '@components/styles/common-components/type'
-import {colorVariants} from '@lib/methods/colors'
+import {cn} from '@cm/shadcn/lib/utils'
+import {htmlProps} from '@cm/components/styles/common-components/type'
+import {colorVariants} from '@cm/lib/methods/colors'
 
 import {tv} from 'tailwind-variants'
 

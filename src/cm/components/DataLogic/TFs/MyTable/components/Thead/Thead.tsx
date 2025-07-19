@@ -1,11 +1,11 @@
-import {Kado, ThDisplayJSX} from '@components/DataLogic/TFs/MyTable/components/Thead/thead-methods'
+import {Kado, ThDisplayJSX} from '@cm/components/DataLogic/TFs/MyTable/components/Thead/thead-methods'
 import {funcOrVar} from 'src/cm/lib/methods/common'
 import React, {CSSProperties, useMemo} from 'react'
 import {colType, MyTableType} from '@cm/types/types'
-import {TableConfigPropsType} from '@components/DataLogic/TFs/MyTable/components/TableConfig'
+import {TableConfigPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
-import {COLORS} from '@lib/constants/constants'
-import useWindowSize from '@hooks/useWindowSize'
+import {COLORS} from '@cm/lib/constants/constants'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 // 型定義を改善
 interface TheadPropsType {

@@ -1,7 +1,7 @@
 'use client'
 
-import {C_Stack} from '@components/styles/common-components/common-components'
-import {sleep} from '@lib/methods/common'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {sleep} from '@cm/lib/methods/common'
 import {useState, useRef, useCallback, useEffect, useMemo} from 'react'
 import {toast} from 'react-toastify'
 

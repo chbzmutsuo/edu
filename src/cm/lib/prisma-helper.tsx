@@ -1,6 +1,6 @@
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
 
-import {isDev} from '@lib/methods/common'
+import {isDev} from '@cm/lib/methods/common'
 
 /**
  * Prismaエラーコードの型定義

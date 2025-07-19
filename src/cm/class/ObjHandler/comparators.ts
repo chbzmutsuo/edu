@@ -1,7 +1,7 @@
 import {isPlainObject, isArray, isPrimitive} from './validators'
 
 import type {ObjectComparisonResult, DeepMergeOptions, PlainObject} from './types'
-import {obj__deepClone} from '@class/ObjHandler/cloners'
+import {obj__deepClone} from '@cm/class/ObjHandler/cloners'
 
 /**
  * オブジェクトの深い比較

@@ -1,12 +1,12 @@
 //classを切り替える
 import {QueryBuilder} from '@app/(apps)/sohken/class/QueryBuilder'
 
-import {Days} from '@class/Days/Days'
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import GenbadayListClient from '@app/(apps)/sohken/(pages)/genbaDay/GenbadayListClient'
 import prisma from 'src/lib/prisma'
 
-import {C_Stack} from '@components/styles/common-components/common-components'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
 import {getHolidayCalendar} from '@app/(apps)/sohken/api/cron/refreshGoogleCalendar/getHolidayCalendar'
 import {genbaDaySorter} from '@app/(apps)/sohken/(pages)/genbaDay/genbaDaySorter'

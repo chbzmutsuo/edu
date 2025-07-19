@@ -1,5 +1,5 @@
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
-import {prismaSchemaString} from '@lib/methods/scheme-json-export'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
+import {prismaSchemaString} from '@cm/lib/methods/scheme-json-export'
 
 export const getSchema = () => {
   const schemaAsStr = prismaSchemaString

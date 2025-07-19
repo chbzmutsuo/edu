@@ -1,14 +1,14 @@
 'use client'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {T_LINK} from '@components/styles/common-components/links'
+import {T_LINK} from '@cm/components/styles/common-components/links'
 
 import {GenbaCl} from '@app/(apps)/sohken/class/GenbaCl'
 import React from 'react'
 import {useGenbaDetailModal} from '@app/(apps)/sohken/hooks/useGenbaDetailModal'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {HREF} from '@lib/methods/urls'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {HREF} from '@cm/lib/methods/urls'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
 
 export default function GanbaName({GenbaDay, editable}) {
   const {query} = useMyNavigation()

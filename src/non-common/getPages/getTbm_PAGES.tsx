@@ -1,4 +1,4 @@
-import IconLetter from '@components/styles/common-components/IconLetter'
+import IconLetter from '@cm/components/styles/common-components/IconLetter'
 import {
   Calculator,
   JapaneseYenIcon,
@@ -42,6 +42,8 @@ export const tbm_PAGES = (props: PageGetterType) => {
           tabId: 'haisha',
           label: <IconLetter {...{Icon: Truck}}>配車設定</IconLetter>,
         },
+
+        {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
       ],
     },
 
@@ -50,6 +52,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
       label: <IconLetter {...{Icon: FileText}}>各種レポート等</IconLetter>,
       children: [
         //
+        {tabId: 'attendance', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
         {tabId: 'unkomeisai', label: <IconLetter {...{Icon: ListIcon}}>運行明細</IconLetter>},
         {tabId: 'nempiKanri', label: <IconLetter {...{Icon: JapaneseYenIcon}}>燃費管理</IconLetter>},
         {tabId: 'ruiseki', label: <IconLetter {...{Icon: Calculator}}>累積距離記帳</IconLetter>},
@@ -57,16 +60,6 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'etc', label: <IconLetter {...{Icon: JapaneseYenIcon}}>ETC明細連携</IconLetter>},
         {tabId: 'kyuyo', label: <IconLetter {...{Icon: JapaneseYenIcon}}>給与</IconLetter>},
         {tabId: 'simpleDriveHistory', label: <IconLetter {...{Icon: FileText}}>簡易走行記録（PDF）</IconLetter>},
-      ],
-    },
-
-    {
-      tabId: '',
-      label: <IconLetter {...{Icon: Users}}>マイページ</IconLetter>,
-      children: [
-        //
-        {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
-        // {tabId: 'myPage', label: <IconLetter {...{Icon: Check}}>実績確認</IconLetter>},
       ],
     },
 

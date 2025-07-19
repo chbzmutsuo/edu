@@ -1,9 +1,9 @@
 'use server'
 
-import {obj__initializeProperty} from '@class/ObjHandler/transformers'
+import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import prisma from 'src/lib/prisma'
 import {requestResultType} from '@cm/types/types'
-import {doTransaction, transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction, transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 
 export const createStudentDataFromCsv = async (props: {csvArr: any[]; schoolId: number}) => {
   type studentData = {

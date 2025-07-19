@@ -3,7 +3,7 @@ import {Center} from 'src/cm/components/styles/common-components/common-componen
 import {ObjectMap} from 'src/cm/lib/methods/common'
 import {CSSProperties} from 'react'
 import {key_toolHandlerObjType, slateKeyDownParamsType, toolHandlerType} from '@cm/types/slate-types'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 export type elementcolTypeString = 'checkListItem' | 'link' | 'code' | 'paragraph' | 'heading' | 'listItem' | 'button' | 'badge'
 

@@ -1,13 +1,13 @@
 import {calcGenbaDayStatus} from 'src/non-common/(chains)/getGenbaScheduleStatus/calcGenbaDayStatus'
 import React from 'react'
 import {GENBA_DAY_STATUS} from 'src/non-common/(chains)/getGenbaScheduleStatus/GENBA_DAY_STATUS'
-import {Button} from '@components/styles/common-components/Button'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {toast} from 'react-toastify'
 
-import {colorVariants} from '@lib/methods/colors'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {isDev} from '@lib/methods/common'
+import {colorVariants} from '@cm/lib/methods/colors'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {isDev} from '@cm/lib/methods/common'
 
 export const ButtonDisplay = ({active, GenbaDay, toggleLoad}) => {
   const theStatus = GENBA_DAY_STATUS.find(d => d.label === (GenbaDay.status || '未完了'))

@@ -1,8 +1,8 @@
 'use client'
-import {Fields} from '@class/Fields/Fields'
-import {Button} from '@components/styles/common-components/Button'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
+import {Fields} from '@cm/class/Fields/Fields'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import React from 'react'
 
 export default function Filter_MyPage() {

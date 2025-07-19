@@ -1,14 +1,14 @@
 'use client'
 import useGlobalSaleEditor from '@app/(apps)/aquapot/(pages)/(template)/useGlobalSaleEditor'
 
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
-import {CircledIcon} from '@components/styles/common-components/IconBtn'
+import {CircledIcon} from '@cm/components/styles/common-components/IconBtn'
 
 import {SquarePen, Trash2} from 'lucide-react'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import React from 'react'
 
 export const Cell = ({rec}) => {

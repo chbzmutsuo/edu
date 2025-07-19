@@ -1,16 +1,16 @@
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {T_LINK} from '@components/styles/common-components/links'
-import {Paper} from '@components/styles/common-components/paper'
-import {LabelValue} from '@components/styles/common-components/ParameterCard'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
 
-import MyPopover from '@components/utils/popover/MyPopover'
+import MyPopover from '@cm/components/utils/popover/MyPopover'
 import {CircleUserIcon} from 'lucide-react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
-import useWindowSize from '@hooks/useWindowSize'
-import {HREF} from '@lib/methods/urls'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import {HREF} from '@cm/lib/methods/urls'
 import {signOut} from 'next-auth/react'
 import React, {useMemo} from 'react'
-import {sleep} from '@lib/methods/common'
+import {sleep} from '@cm/lib/methods/common'
 
 // 型定義を改善
 interface UserConfigSession {

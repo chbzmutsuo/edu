@@ -1,5 +1,5 @@
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {sheets_v4} from 'googleapis'
 
 // ヘルパー関数群

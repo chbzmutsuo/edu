@@ -1,5 +1,5 @@
-import {doTransaction} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {transactionQuery} from '@lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
+import {transactionQuery} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {Prisma} from '@prisma/client'
 
 export type taskObj = {

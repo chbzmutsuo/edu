@@ -1,17 +1,17 @@
-import {Days} from '@class/Days/Days'
+import {Days} from '@cm/class/Days/Days'
 
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {Head2} from '@components/styles/common-components/heading'
-import {Paper} from '@components/styles/common-components/paper'
-import ContentPlayer from '@components/utils/ContentPlayer'
-import NewDateSwitcher from '@components/utils/dates/DateSwitcher/NewDateSwitcher'
-import BasicModal from '@components/utils/modal/BasicModal'
-import Redirector from '@components/utils/Redirector'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Head2} from '@cm/components/styles/common-components/heading'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import BasicModal from '@cm/components/utils/modal/BasicModal'
+import Redirector from '@cm/components/utils/Redirector'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 import prisma from 'src/lib/prisma'
-import {getMidnight, toUtc} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 const Top = async props => {
   const query = await props.searchParams

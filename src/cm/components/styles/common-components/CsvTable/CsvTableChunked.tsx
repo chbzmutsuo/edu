@@ -1,8 +1,8 @@
 'use client'
 
 import React, {useMemo} from 'react'
-import {useChunkedRendering} from '@hooks/useChunkedRendering'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {useChunkedRendering} from '@cm/hooks/useChunkedRendering'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import {createCsvTableCore, CsvTableProps} from './CsvTable'
 
 /**

@@ -1,8 +1,8 @@
 'use client'
 import {useState, useEffect, useCallback} from 'react'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {showSpendTime} from '@lib/methods/toast-helper'
-import useLocalLoading from '@hooks/globalHooks/useLocalLoading'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {showSpendTime} from '@cm/lib/methods/toast-helper'
+import useLocalLoading from '@cm/hooks/globalHooks/useLocalLoading'
 import {getListData, haishaListData} from '../components/getListData'
 import {haishaTableMode} from '../components/HaishaTable'
 

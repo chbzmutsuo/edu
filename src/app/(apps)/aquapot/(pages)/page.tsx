@@ -1,8 +1,8 @@
-import {TextRed} from '@components/styles/common-components/Alert'
-import {Absolute, C_Stack, CenterScreen, R_Stack} from '@components/styles/common-components/common-components'
-import {T_LINK} from '@components/styles/common-components/links'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {addQuerySentence, HREF} from '@lib/methods/urls'
+import {TextRed} from '@cm/components/styles/common-components/Alert'
+import {Absolute, C_Stack, CenterScreen, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {addQuerySentence, HREF} from '@cm/lib/methods/urls'
 import Link from 'next/link'
 import React from 'react'
 

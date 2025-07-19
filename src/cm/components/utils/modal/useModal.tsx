@@ -1,5 +1,5 @@
 import {useCallback, useState} from 'react'
-import {basicModalPropType, ModalCore} from '@components/utils/modal/ModalCore'
+import {basicModalPropType, ModalCore} from '@cm/components/utils/modal/ModalCore'
 
 const useModal = (props?: {defaultOpen?: boolean; defaultState?: any; alertOnClose?: boolean}) => {
   const [open, setopen] = useState<any>(props?.defaultState || props?.defaultOpen ? true : false)

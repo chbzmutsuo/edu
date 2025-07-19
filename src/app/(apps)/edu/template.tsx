@@ -1,12 +1,12 @@
 'use client'
 
-import {Alert} from '@components/styles/common-components/Alert'
-import {CenterScreen} from '@components/styles/common-components/common-components'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {CenterScreen} from '@cm/components/styles/common-components/common-components'
 import {Metadata} from 'next'
 
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {PageBuilder} from '@app/(apps)/edu/class/PageBuilder'
-import Admin from '@components/layout/Admin/Admin'
+import Admin from '@cm/components/layout/Admin/Admin'
 
 export const metadata: Metadata = {title: 'Grouping   |Colabo'}
 

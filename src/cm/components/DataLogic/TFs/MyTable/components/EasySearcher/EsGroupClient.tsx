@@ -4,15 +4,15 @@ import React from 'react'
 
 import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
-import {EasySearchObject} from '@class/builders/QueryBuilderVariables'
+import {EasySearchObject} from '@cm/class/builders/QueryBuilderVariables'
 
-import MyPopover from '@components/utils/popover/MyPopover'
-import {EsButton} from '@components/DataLogic/TFs/MyTable/components/EasySearcher/EsButton'
-import {Paper} from '@components/styles/common-components/paper'
-import BasicModal from '@components/utils/modal/BasicModal'
-import {IconBtn} from '@components/styles/common-components/IconBtn'
+import MyPopover from '@cm/components/utils/popover/MyPopover'
+import {EsButton} from '@cm/components/DataLogic/TFs/MyTable/components/EasySearcher/EsButton'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import BasicModal from '@cm/components/utils/modal/BasicModal'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {SquareArrowOutUpLeft, Trash2} from 'lucide-react'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function EsGroupClient(props: {
   groupNameAlign?: string

@@ -1,8 +1,8 @@
-import {C_Stack, Center} from '@components/styles/common-components/common-components'
-import {MarkDownDisplay} from '@components/utils/texts/MarkdownDisplay'
+import {C_Stack, Center} from '@cm/components/styles/common-components/common-components'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import React, {useMemo} from 'react'
 import {colType} from '@cm/types/types'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {cn} from '@cm/shadcn/lib/utils'
 
 // 型定義を追加
 interface KadoProps {

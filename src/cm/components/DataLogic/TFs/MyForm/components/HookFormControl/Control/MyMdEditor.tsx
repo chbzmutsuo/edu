@@ -1,4 +1,4 @@
-import {ControlProps} from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+import {ControlProps} from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
 import {liftUpNewValueOnChange} from 'src/cm/components/DataLogic/TFs/MyForm/MyForm'
 import SlateEditor from 'src/cm/components/SlateEditor/SlateEditor'
 import {controlDefaultStyle} from 'src/cm/constants/defaults'

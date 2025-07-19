@@ -1,6 +1,6 @@
 'use client'
 import React, {createContext, useContext, ReactNode} from 'react'
-import useLoader from '@hooks/globalHooks/useLoader'
+import useLoader from '@cm/hooks/globalHooks/useLoader'
 import {LoaderContextType} from './types'
 
 const LoaderContext = createContext<LoaderContextType | null>(null)

@@ -4,12 +4,12 @@ import React from 'react'
 import {myFormDefault} from 'src/cm/constants/defaults'
 import {cl} from 'src/cm/lib/methods/common'
 
-import {SearchQuery, searchQueryKey} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
+import {SearchQuery, searchQueryKey} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/search-methods'
 
-import {Button} from '@components/styles/common-components/Button'
+import {Button} from '@cm/components/styles/common-components/Button'
 
-import {confirmSearch} from '@components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
-import {Padding} from '@components/styles/common-components/common-components'
+import {confirmSearch} from '@cm/components/DataLogic/TFs/MyTable/components/SearchHandler/SearchHandler'
+import {Padding} from '@cm/components/styles/common-components/common-components'
 
 export const Main = ({
   SearchBasicForm,

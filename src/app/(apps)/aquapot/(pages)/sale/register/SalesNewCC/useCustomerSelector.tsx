@@ -1,14 +1,14 @@
 'use client'
 
-import {Fields} from '@class/Fields/Fields'
+import {Fields} from '@cm/class/Fields/Fields'
 
-import useBasicFormProps from '@hooks/useBasicForm/useBasicFormProps'
+import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 
 import {useEffect} from 'react'
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
-import {defaultRegister} from '@class/builders/ColBuilderVariables'
-import {getMidnight} from '@class/Days/date-utils/calculations'
+import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {AQ_CONST} from '@app/(apps)/aquapot/(constants)/options'
 import {aqCustomerForSelectConfig} from '@app/(apps)/aquapot/(class)/colBuilder/aqCustomer'
 export const useCustomerSelector = ({cartUser, setcartUser, maxWidth}) => {

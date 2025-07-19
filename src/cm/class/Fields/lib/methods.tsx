@@ -1,9 +1,9 @@
 import {colType} from '@cm/types/types'
-import {sqlResponse} from '@class/SqlBuilder/useRawSql'
+import {sqlResponse} from '@cm/class/SqlBuilder/useRawSql'
 
-import {apiPath} from '@lib/methods/common'
-import {fetchAlt} from '@lib/http/fetch-client'
-import {DH__convertDataType} from '@class/DataHandler/type-converter'
+import {apiPath} from '@cm/lib/methods/common'
+import {fetchAlt} from '@cm/lib/http/fetch-client'
+import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export const converDataForClient = (data, col) => {
   return DH__convertDataType(data, col.type, 'client')

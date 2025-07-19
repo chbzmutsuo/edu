@@ -1,12 +1,12 @@
 import {GameContextType} from '@app/(apps)/edu/Grouping/components/Grouping/game/GameMainPage'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 import React from 'react'
 
 import AnswerTable from './AnswerTable/AnswerTable'
-import {Alert} from '@components/styles/common-components/Alert'
-import {Button} from '@components/styles/common-components/Button'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {twMerge} from 'tailwind-merge'
 
 export default function QuestionHandler({

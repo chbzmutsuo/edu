@@ -1,7 +1,7 @@
 // import {MinusIcon} from 'lucide-react'
-// import {showResetBtn} from '@hooks/useBasicForm/hookformMethods'
+// import {showResetBtn} from '@cm/hooks/useBasicForm/hookformMethods'
 // import {useCallback} from 'react'
-// import {DH__switchColType} from '@class/DataHandler/type-converter'
+// import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 
 // export const useResetBtn = ({col, field, useResetValue, isBooleanType, Register, currentValue, ControlOptions}) => {
 //   const convertedType = DH__switchColType({type: col.type})

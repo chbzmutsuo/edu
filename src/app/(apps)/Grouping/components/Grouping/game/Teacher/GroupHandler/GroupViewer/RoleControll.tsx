@@ -1,6 +1,6 @@
-import {IconBtn} from '@components/styles/common-components/IconBtn'
-import {Paper} from '@components/styles/common-components/paper'
-import MyPopover from '@components/utils/popover/MyPopover'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
+import {Paper} from '@cm/components/styles/common-components/paper'
+import MyPopover from '@cm/components/utils/popover/MyPopover'
 import React from 'react'
 
 export default function RoleControll(props: {Game; Student; LearningRoleMasterOnGame; editable?: any; answer}) {

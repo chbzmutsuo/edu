@@ -9,7 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogPortal,
-} from '@cm/shadcn-ui/components/ui/dialog'
+} from '@cm/shadcn/components/ui/dialog'
 import {
   Drawer,
   DrawerContent,
@@ -19,10 +19,10 @@ import {
   DrawerPortal,
   DrawerTitle,
   DrawerTrigger,
-} from '@cm/shadcn-ui/components/ui/drawer'
+} from '@cm/shadcn/components/ui/drawer'
 
-import {useIsMobile} from '@cm/shadcn-ui/hooks/use-mobile'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
+import {cn} from '@cm/shadcn/lib/utils'
 
 import React from 'react'
 import {JSX} from 'react'
@@ -98,7 +98,13 @@ const ShadModal = React.memo((props: ShadModalProps) => {
         <DialogContent
           showCloseButton={false}
           onOpenAutoFocus={onOpenAutoFocus}
-          style={{...style, maxHeight: '85vh', maxWidth: '90vw', overflow: 'auto'}}
+          style={{
+            ...style,
+            width: 'fit-content',
+            maxHeight: '85vh',
+            maxWidth: '90vw',
+            overflow: 'auto',
+          }}
           className={cn(` ModalContent w-fit mx-auto shadow-lg shadow-gray-500   ${className}`)}
         >
           <DialogHeader className={headerClass}>

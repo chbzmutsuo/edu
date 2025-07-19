@@ -1,15 +1,15 @@
 'use client'
-import {Days} from '@class/Days/Days'
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import {formatDate} from '@class/Days/date-utils/formatters'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {CsvTable} from '@components/styles/common-components/CsvTable/CsvTable'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {Days} from '@cm/class/Days/Days'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 import React from 'react'
-import {TextGray} from '@components/styles/common-components/Alert'
+import {TextGray} from '@cm/components/styles/common-components/Alert'
 import {showPdf} from '@app/(apps)/aquapot/(pages)/myPage/[id]/pdf/[month]/showPdf'
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 
 export default function MyPageCC(props: {customer: any; salesByMonth: any}) {
   const {toggleLoad, router} = useGlobal()

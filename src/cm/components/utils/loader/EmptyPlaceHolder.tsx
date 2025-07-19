@@ -1,6 +1,6 @@
 import React from 'react'
 import {FileText} from 'lucide-react'
-import {R_Stack} from '@components/styles/common-components/common-components'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 const EmptyPlaceholder = (props: {className?: string; children?: React.ReactNode}) => {
   const {className = `text-gray-400 text-sm`, children} = props

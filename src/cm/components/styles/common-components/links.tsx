@@ -5,10 +5,10 @@ import {htmlProps} from 'src/cm/components/styles/common-components/type'
 
 import {cl} from 'src/cm/lib/methods/common'
 import Link from 'next/link'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 import {twMerge} from 'tailwind-merge'
-import useLoader from '@hooks/globalHooks/useLoader'
+import useLoader from '@cm/hooks/globalHooks/useLoader'
 
 export const T_LINK = React.memo((props: htmlProps & {href: string; target?: '_blank'; simple?: boolean}) => {
   const {className, style, href = '#', target, simple = false, ...rest} = props

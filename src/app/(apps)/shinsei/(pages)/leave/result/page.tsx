@@ -1,7 +1,7 @@
 'use client'
 
 import LeaveHistoryTable from '@app/(apps)/shinsei/(pages)/leave/LeaveHistoryTable'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function PurchaseResultPage() {
   const useGlobalProps = useGlobal()

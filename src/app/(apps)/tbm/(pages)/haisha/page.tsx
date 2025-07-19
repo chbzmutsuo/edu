@@ -1,9 +1,9 @@
 import HaishaTable from '@app/(apps)/tbm/(pages)/haisha/components/HaishaTable'
-import {Days} from '@class/Days/Days'
-import {getMidnight} from '@class/Days/date-utils/calculations'
-import Redirector from '@components/utils/Redirector'
+import {Days} from '@cm/class/Days/Days'
+import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import Redirector from '@cm/components/utils/Redirector'
 
-import {dateSwitcherTemplate} from '@lib/methods/redirect-method'
+import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 import prisma from 'src/lib/prisma'
 
 import {initServerComopnent} from 'src/non-common/serverSideFunction'

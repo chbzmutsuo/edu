@@ -9,10 +9,10 @@ import {
   DrawerPortal,
   DrawerTitle,
   DrawerTrigger,
-} from '@cm/shadcn-ui/components/ui/drawer'
-import {Popover, PopoverContent, PopoverTrigger} from '@cm/shadcn-ui/components/ui/popover'
+} from '@cm/shadcn/components/ui/drawer'
+import {Popover, PopoverContent, PopoverTrigger} from '@cm/shadcn/components/ui/popover'
 
-import {useIsMobile} from '@cm/shadcn-ui/hooks/use-mobile'
+import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 import {PopoverPortal} from '@radix-ui/react-popover'
 
 import React from 'react'

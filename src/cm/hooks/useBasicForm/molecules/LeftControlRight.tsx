@@ -1,8 +1,8 @@
 import React from 'react'
-import {R_Stack} from '@components/styles/common-components/common-components'
-import {funcOrVar} from '@lib/methods/common'
-import Control from '@components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
-import {cn} from '@cm/shadcn-ui/lib/utils'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {funcOrVar} from '@cm/lib/methods/common'
+import Control from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export default function LeftControlRight({col, controlContextValue, shownButDisabled}) {
   return (

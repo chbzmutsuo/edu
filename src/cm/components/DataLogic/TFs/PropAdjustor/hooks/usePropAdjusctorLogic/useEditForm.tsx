@@ -1,4 +1,4 @@
-import {NestHandler} from '@class/NestHandler'
+import {NestHandler} from '@cm/class/NestHandler'
 import {useMemo} from 'react'
 
 // 型定義を追加

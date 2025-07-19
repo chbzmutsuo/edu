@@ -2,7 +2,7 @@
 
 import {sendEmailWrapper} from 'src/non-common/(chains)/shinsei/sendEmailWrapper'
 
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import prisma from 'src/lib/prisma'
 
 export const chain_shinsei_kyuka_notifyWhenUpdate = async ({leaveRequestId}) => {

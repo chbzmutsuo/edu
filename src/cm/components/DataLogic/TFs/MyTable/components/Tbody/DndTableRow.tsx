@@ -2,13 +2,13 @@ import React, {useMemo} from 'react'
 
 import {CSS} from '@dnd-kit/utilities'
 import {useSortable} from '@dnd-kit/sortable'
-import {tbodyParamsType} from '@components/DataLogic/TFs/MyTable/components/Tbody/Tbody'
-import {createRowColor, createTrClassName} from '@components/DataLogic/TFs/MyTable/components/Tbody/Tbody-methods'
+import {tbodyParamsType} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/Tbody'
+import {createRowColor, createTrClassName} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/Tbody-methods'
 import {cl} from 'src/cm/lib/methods/common'
-import {BodyLeftTh} from '@components/DataLogic/TFs/MyTable/components/Tbody/BodyLeftTh'
+import {BodyLeftTh} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/BodyLeftTh'
 
 import {MyTableType} from '@cm/types/types'
-import TableCell from '@components/DataLogic/TFs/MyTable/components/Tbody/TableCell/TableCell'
+import TableCell from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/TableCell'
 import {twMerge} from 'tailwind-merge'
 
 export type DnDTableRowPropsType = {

@@ -2,13 +2,13 @@
 
 import {CartItem} from '@app/(apps)/aquapot/(pages)/sale/register/SalesNewCC/SalesNewCC'
 
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
-import {CircledIcon} from '@components/styles/common-components/IconBtn'
-import {Paper} from '@components/styles/common-components/paper'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {CircledIcon} from '@cm/components/styles/common-components/IconBtn'
+import {Paper} from '@cm/components/styles/common-components/paper'
 
 import {SquarePen, Trash2} from 'lucide-react'
 
-import {NumHandler} from '@class/NumHandler'
+import {NumHandler} from '@cm/class/NumHandler'
 import React from 'react'
 
 export const Cart = ({cartItems, setcartItems, setformOpen}) => {

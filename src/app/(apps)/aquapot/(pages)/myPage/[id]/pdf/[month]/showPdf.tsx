@@ -4,8 +4,8 @@ import {GoogleDrive_GeneratePdf} from '@app/api/google/actions/driveAPI'
 import {GoogleSheet_BatchUpdate, GoogleSheet_copy} from '@app/api/google/actions/sheetAPI'
 import {SheetRequests} from '@app/api/google/actions/SheetRequests'
 
-import {Days} from '@class/Days/Days'
-import {formatDate} from '@class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {sheets_v4} from 'googleapis'
 import {AQ_CONST} from '@app/(apps)/aquapot/(constants)/options'
 

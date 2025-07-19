@@ -1,11 +1,11 @@
 import React from 'react'
 
-import {adminContext, menuContext} from '@components/layout/Admin/type'
+import {adminContext, menuContext} from '@cm/components/layout/Admin/type'
 import {useGlobalPropType} from 'src/cm/hooks/globalHooks/useGlobalOrigin'
-import useWindowSize from '@hooks/useWindowSize'
-import Header from '@components/layout/Header'
-import Drawer from '@components/layout/Navigation/Drawer'
-import NavBar from '@components/layout/Navigation/NavBar'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import Header from '@cm/components/layout/Header'
+import Drawer from '@cm/components/layout/Navigation/Drawer'
+import NavBar from '@cm/components/layout/Navigation/NavBar'
 
 type AdminLayoutProps = {
   children: React.ReactNode

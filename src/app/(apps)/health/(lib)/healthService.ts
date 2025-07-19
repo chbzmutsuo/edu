@@ -1,6 +1,6 @@
 import {HealthRecordFormData, DailySummary, WALKING_MULTIPLIERS} from '../(constants)/types'
-import {Days} from '@class/Days/Days'
-import {toUtc} from '@class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import prisma from 'src/lib/prisma'
 
 export class HealthService {

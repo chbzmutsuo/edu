@@ -1,7 +1,7 @@
-import {colorVariants} from '@lib/methods/colors'
+import {colorVariants} from '@cm/lib/methods/colors'
 import {tv} from 'tailwind-variants'
 import React from 'react'
-import {htmlProps} from '@components/styles/common-components/type'
+import {htmlProps} from '@cm/components/styles/common-components/type'
 
 export const textColorVariants: Record<colorVariants, string> = {
   gray: 'text-gray-500 ',

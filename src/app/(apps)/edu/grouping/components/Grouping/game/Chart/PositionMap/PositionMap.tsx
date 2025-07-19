@@ -6,8 +6,8 @@ import {ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Cell, Refer
 import {cl, shorten} from '@cm/lib/methods/common'
 
 import {useLongPress} from '@cm/hooks/useLongPress'
-import {KeyValuePair, NoData} from '@components/styles/common-components/common-components'
-import {getColorStyles} from '@lib/methods/colors'
+import {KeyValuePair, NoData} from '@cm/components/styles/common-components/common-components'
+import {getColorStyles} from '@cm/lib/methods/colors'
 
 const C_E_PositionMap = ({height, width, data, activeGroupIdx, setactiveGroupIdx, setchartPageSelecedData}) => {
   if (!data || !data[0]) return <NoData style={{width, height}}>データが見つかりません</NoData>

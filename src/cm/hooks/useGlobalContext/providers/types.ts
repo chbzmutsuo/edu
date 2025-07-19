@@ -1,8 +1,8 @@
-import useLoader from '@hooks/globalHooks/useLoader'
-import useMyNavigation from '@hooks/globalHooks/useMyNavigation'
-import useCustomSession from '@hooks/globalHooks/useMySession'
+import useLoader from '@cm/hooks/globalHooks/useLoader'
+import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
+import useCustomSession from '@cm/hooks/globalHooks/useMySession'
 
-import useWindowSize from '@hooks/useWindowSize'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export type SessionContextType = ReturnType<typeof useCustomSession>
 export type DeviceContextType = ReturnType<typeof useWindowSize>

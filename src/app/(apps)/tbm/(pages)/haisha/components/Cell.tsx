@@ -1,9 +1,9 @@
 'use client'
 import React, {useMemo} from 'react'
-import {Days} from '@class/Days/Days'
-import {C_Stack, R_Stack} from '@components/styles/common-components/common-components'
+import {Days} from '@cm/class/Days/Days'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {TbmRouteGroup, TbmBase} from '@prisma/client'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {haishaListData} from './getListData'
 import {WorkStatusSelector, AddScheduleButton, ScheduleCard} from './CellComponents'
 export const Cell = React.memo(

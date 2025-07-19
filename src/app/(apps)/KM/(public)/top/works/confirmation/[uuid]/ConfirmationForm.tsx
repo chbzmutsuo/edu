@@ -3,10 +3,10 @@ import {Fields} from '@cm/class/Fields/Fields'
 
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 
-import {doStandardPrisma} from '@lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {knockEmailApi} from '@lib/methods/knockEmailApi'
-import {Button} from '@components/styles/common-components/Button'
-import useGlobal from '@hooks/globalHooks/useGlobal'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
+import {knockEmailApi} from '@cm/lib/methods/knockEmailApi'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {toast} from 'react-toastify'
 
 export const ConfirmationForm = ({work}) => {
