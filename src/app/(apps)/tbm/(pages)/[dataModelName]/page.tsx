@@ -9,6 +9,7 @@ import {QueryBuilder} from '@app/(apps)/tbm/(builders)/QueryBuilder'
 
 import {ViewParamBuilder} from '@app/(apps)/tbm/(builders)/ViewParamBuilder'
 import {getMasterPageCommonConfig} from '@cm/components/DataLogic/helpers/getMasterPageCommonConfig'
+import {isDev} from '@cm/lib/methods/common'
 
 export default async function DynamicMasterPage(props) {
   return getMasterPageCommonConfig({
@@ -69,18 +70,20 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
             additional: {
               orderBy: [{vehicleNumber: 'asc'}],
             },
-
             editType: {type: `pageOnSame`},
           }
         },
       },
+      {modelNames: [`tbmCustomer`], setParams: async () => ({additional: {orderBy: [{code: 'asc'}]}})},
       {
-        modelNames: [`tbmCustomer`],
-        setParams: async () => {
-          return {
-            additional: {orderBy: [{code: 'asc'}]},
-          }
-        },
+        modelNames: [`roleMaster`],
+        setParams: async () => ({
+          myTable: {
+            edit: isDev ? undefined : false,
+            create: isDev ? undefined : false,
+            delete: isDev ? undefined : false,
+          },
+        }),
       },
     ],
   })
