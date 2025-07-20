@@ -106,24 +106,7 @@ export const TableInfo = (props: {label; children?: any; value?: any; labelWidth
         },
       }}
     >
-      {content ? (
-        <ShadPopover
-          {...{
-            PopoverTrigger: (
-              <div className={`relative`}>
-                {/* <ZoomIn className={`w-4 h-4 text-gray-600 absolute  -right-0! top-1 `} /> */}
-                <div style={{width: wrapperWidthPx - labelWidthPx, maxHeight: 40}} className={` truncate`}>
-                  {Content}
-                </div>
-              </div>
-            ),
-          }}
-        >
-          {Content}
-        </ShadPopover>
-      ) : (
-        <div></div>
-      )}
+      {Content}
     </LabelValue>
   )
 }

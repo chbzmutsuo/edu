@@ -18,6 +18,7 @@ import React from 'react'
 import {NumHandler} from '@cm/class/NumHandler'
 import {TableInfo, TableInfoWrapper} from '@cm/class/builders/ColBuilderVariables'
 import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export const defaultSelect = {id: true, name: true}
 export const masterDataSelect = {...defaultSelect, color: true}
@@ -51,9 +52,6 @@ export class Fields {
       convertColId?: {[key: string]: string}
     } & colTypeOptional
   ) => {
-    const MemoizedTableInfo = React.memo(TableInfo)
-    const MemoizedTableInfoWrapper = React.memo(TableInfoWrapper)
-
     const columns = this.plain
     const cacheKey = `summary_${columns.map(d => d.id).join('_')}_${JSON.stringify(props)}`
     if (this.cache.has(cacheKey)) {
@@ -86,27 +84,24 @@ export class Fields {
       })
 
       return (
-        <MemoizedTableInfoWrapper
-          {...{
-            showShadow,
-            label: props.wrapperLabel ?? '',
-          }}
-        >
+        <TableInfoWrapper {...{showShadow, label: props.wrapperLabel ?? ''}}>
           {existingValues.map((d, i) => (
             <div key={i}>
               <div
-                className={`
-              ${i !== existingValues.length - 1 ? 'border-b border-dashed border-gray-300 py-1' : ''}
-              `}
+                className={cn(
+                  //
+                  i !== existingValues.length - 1 ? 'border-b border-dashed border-gray-300 py-1' : '',
+                  'py-1'
+                )}
               >
-                <MemoizedTableInfo {...{...d, wrapperWidthPx, labelWidthPx}} />
+                <TableInfo {...{...d, wrapperWidthPx, labelWidthPx}} />
               </div>
             </div>
           ))}
           {hideUndefinedValue && undefinedLabels.length > 0 && (
             <div className="mt-1">
               <small>
-                <MemoizedTableInfo
+                <TableInfo
                   {...{
                     label: 'データ無',
                     value: <div className="text-xs opacity-50">{undefinedLabels.map(d => d.label).join(', ')}</div>,
@@ -117,7 +112,7 @@ export class Fields {
               </small>
             </div>
           )}
-        </MemoizedTableInfoWrapper>
+        </TableInfoWrapper>
       )
     })
 

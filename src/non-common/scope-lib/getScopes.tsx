@@ -64,7 +64,9 @@ export const getScopes = (session: anyObject, options: getScopeOptionsProps) => 
       const userId = !admin ? session?.id : Number(query?.g_userId ?? session?.id ?? 0)
       const tbmBaseId = !admin ? session?.tbmBaseId : Number(query?.g_tbmBaseId ?? session?.tbmBaseId ?? 0)
 
-      return {userId, tbmBaseId}
+      const isSystemAdmin = !!arr__findCommonValues([`管理者`], roleNames)
+
+      return {userId, tbmBaseId, isSystemAdmin}
     },
 
     getShinseiScopes: () => {

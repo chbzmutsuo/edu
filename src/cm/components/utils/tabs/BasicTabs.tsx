@@ -27,7 +27,6 @@ type BasicTabsType = {
   showAll?: boolean
   className?: string
   style?: anyObject
-  forcedWidth?: CSSProperties['width']
 }
 export default function BasicTabs({
   headingText,
@@ -36,7 +35,7 @@ export default function BasicTabs({
   TabComponentArray,
   className,
   style,
-  forcedWidth,
+
   ...props
 }: BasicTabsType) {
   const {width} = useWindowSize()
@@ -59,11 +58,6 @@ export default function BasicTabs({
     }
   }, [anyTabIsActive])
 
-  // const maxComponentWidth =
-  //   (filteredTabComponentArray.length > 0 &&
-  //     filteredTabComponentArray.map(data => (data?.style?.width ?? 0) as number)?.reduce((a, b) => Math.max(a, b))) ||
-  //   undefined
-
   if (!width) return <PlaceHolder />
 
   // shadcn/uiのTabsを使用する場合は、文字列のvalueが必要
@@ -72,13 +66,8 @@ export default function BasicTabs({
     setcurrentTabIdx(parseInt(value))
   }
 
-  // const wrapperStyle = {
-  //   minWidth: maxComponentWidth,
-  //   ...style,
-  // }
-
   return (
-    <div style={{width: forcedWidth}} className={cn('mx-auto', className)} {...props}>
+    <div style={{maxWidth: '95vw', ...style}} className={cn('mx-auto', className)} {...props}>
       {headingText && (
         <div className="mb-4">
           {typeof headingText === 'string' ? <h2 className="text-xl font-semibold text-gray-800">{headingText}</h2> : headingText}
@@ -88,7 +77,6 @@ export default function BasicTabs({
       {showAll
         ? renderShowAll({filteredTabComponentArray})
         : renderTabsComponent({
-            forcedWidth,
             filteredTabComponentArray,
             currentTabValue,
             handleTabChange,
@@ -128,12 +116,12 @@ const renderShowAll = ({filteredTabComponentArray}) => {
   )
 }
 
-const renderTabsComponent = ({forcedWidth, filteredTabComponentArray, currentTabValue, handleTabChange}) => {
+const renderTabsComponent = ({filteredTabComponentArray, currentTabValue, handleTabChange}) => {
   return (
     <div>
       <Tabs value={currentTabValue} onValueChange={handleTabChange} className="w-full ">
         <TabsList
-          className="grid w-full bg-gray-100 "
+          className="grid w-full bg-gray-200 "
           style={{gridTemplateColumns: `repeat(${filteredTabComponentArray.length}, 1fr)`}}
         >
           {filteredTabComponentArray
@@ -160,7 +148,7 @@ const renderTabsComponent = ({forcedWidth, filteredTabComponentArray, currentTab
             >
               <div className={cl('animate-in fade-in-50 duration-300', containerClass)}>
                 <div>
-                  <div style={{width: forcedWidth}}>
+                  <div>
                     <div className={`mx-auto w-fit`}>{obj?.component}</div>
                   </div>
                 </div>

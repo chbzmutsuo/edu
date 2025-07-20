@@ -19,6 +19,7 @@ export default function Template({children}) {
   const HK_UnchinChildCreator = useUnchinChildCreator()
 
   const {
+    session,
     query: {g_tbmBaseId},
   } = useGlobal()
 
@@ -30,7 +31,7 @@ export default function Template({children}) {
     await seedCustomer()
   }
 
-  if (!g_tbmBaseId) {
+  if (!session?.scopes.getTbmScopes()?.tbmBaseId) {
     return <div>営業所が設定されていません。</div>
   }
 

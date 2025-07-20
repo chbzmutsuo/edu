@@ -2377,7 +2377,7 @@ model TbmRouteGroup {
  updatedAt DateTime? @default(now()) @updatedAt()
  sortOrder Float     @default(0)
 
- code      String  @unique
+ code      String? @unique
  name      String
  routeName String?
 
@@ -2517,8 +2517,8 @@ model TbmCustomer {
  bankInformation               String?
  Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer[]
 
- TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
- tbmBaseId Int
+ TbmBase   TbmBase? @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+ tbmBaseId Int?
 
  @@unique([tbmBaseId, name], name: "unique_tbmBaseId_name")
 }

@@ -7,6 +7,7 @@ import GlobalIdSelector from '@cm/components/GlobalIdSelector/GlobalIdSelector'
 import TbmVehicleDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmVehicleDetail'
 import TbmRouteGroupDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmRouteGroupDetail'
 import TbmUserDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmUserDetail'
+import {DataModelBuilder, roleMaster} from '@cm/class/builders/PageBuilderVariables'
 
 export class PageBuilder {
   // static tbmBase = tbmBase
@@ -16,6 +17,8 @@ export class PageBuilder {
   static tbmRouteGroup = {
     form: TbmRouteGroupDetail,
   }
+  static roleMaster: DataModelBuilder = roleMaster
+
   static user = {
     form: TbmUserDetail,
   }

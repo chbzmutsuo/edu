@@ -206,20 +206,20 @@
     border-left-width: 0;
     border-right-width: 0;
     border-color: var(--color-gray-400);
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
   }
   .table-wrapper table th {
     border-bottom-width: 0.5px;
     border-left-width: 0;
     border-right-width: 0;
     border-color: var(--color-gray-400);
-    padding-left: 0.5rem;
-    padding-right: 0.5rem;
-    padding-top: 0.625rem;
-    padding-bottom: 0.625rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
     color: var(--color-gray-600);
     font-weight: bolder;
     text-align: start;
@@ -231,7 +231,6 @@
     position: sticky;
     top: 0;
     left: 0;
-    border-right: 1px solid var(--color-gray-500);
   }
   .table-wrapper table thead th,
   .table-wrapper table thead td {
@@ -250,11 +249,11 @@
     z-index: 10;
     left: 0;
   }
-  .table-wrapper table tbody tr:first-child td, .table-wrapper table tbody tr:last-child td {
-    border-top-width: 0.5px;
+  .table-wrapper table tbody tr:last-child td {
+    border-bottom-width: 0px;
   }
-  .table-wrapper table tbody tr:first-child th, .table-wrapper table tbody tr:last-child th {
-    border-top-width: 0.5px;
+  .table-wrapper table tbody tr:last-child th {
+    border-bottom-width: 0px;
   }
   .table-wrapper table tfoot {
     z-index: 100;
@@ -304,19 +303,6 @@
     .columns-responsive {
       -moz-columns: 4;
            columns: 4;
-    }
-  }
-  .text-responsive {
-    font-size: 11px;
-  }
-  @media (min-width: var(--screen-lg)) {
-    .text-responsive {
-      font-size: 12px;
-    }
-  }
-  @media (min-width: var(--screen-xl)) {
-    .text-responsive {
-      font-size: 15px;
     }
   }
   .w-responsive {

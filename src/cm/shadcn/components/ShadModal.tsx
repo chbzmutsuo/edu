@@ -101,8 +101,8 @@ const ShadModal = React.memo((props: ShadModalProps) => {
           style={{
             ...style,
             width: 'fit-content',
-            maxHeight: '85vh',
-            maxWidth: '90vw',
+            maxHeight: '90vh',
+            maxWidth: '95vw',
             overflow: 'auto',
           }}
           className={cn(` ModalContent w-fit mx-auto shadow-lg shadow-gray-500   ${className}`)}

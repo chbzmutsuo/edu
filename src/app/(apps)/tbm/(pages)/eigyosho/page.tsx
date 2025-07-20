@@ -1,5 +1,4 @@
 import {getEigyoshoUriageData} from '@app/(apps)/tbm/(server-actions)/getEigyoshoUriageData'
-import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import {FitMargin} from '@cm/components/styles/common-components/common-components'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
@@ -13,6 +12,7 @@ export default async function Page(props) {
   const {session, scopes} = await initServerComopnent({query})
   const {tbmBaseId} = scopes.getTbmScopes()
   const {redirectPath, whereQuery} = await dateSwitcherTemplate({query})
+
   if (redirectPath) return <Redirector {...{redirectPath}} />
 
   const {EigyoshoUriageRecords} = await getEigyoshoUriageData({whereQuery, tbmBaseId})

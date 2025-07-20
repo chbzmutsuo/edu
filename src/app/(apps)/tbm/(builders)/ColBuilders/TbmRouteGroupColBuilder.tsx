@@ -15,16 +15,16 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
 
   const {useGlobalProps} = props
 
-  const regularStyle = {minWidth: 100, color: `#43639a`, fontSize: 12}
+  const regularStyle = {color: `#43639a`, fontSize: 14}
 
   let colsource: colType[] = [
     ...new Fields([
-      // {
-      //   id: 'code',
-      //   label: 'CD',
-      //   form: {...defaultRegister, defaultValue: null},
-      //   td: {style: {...regularStyle, minWidth: 60}},
-      // },
+      {
+        id: 'code',
+        label: 'CD',
+        form: {defaultValue: null},
+        td: {style: {...regularStyle, minWidth: 60}},
+      },
 
       {
         id: 'tbmBaseId',
@@ -35,7 +35,7 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
           defaultValue: tbmBaseId,
           disabled: tbmBaseId,
         },
-        td: {style: {...regularStyle}},
+        td: {style: {...regularStyle, minWidth: 120}},
       },
       {
         id: 'seikyuKbn',
@@ -64,19 +64,19 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         id: 'vehicleType',
         label: '車種',
         type: 'text',
-        td: {style: {...regularStyle, width: 80}},
+        td: {style: {...regularStyle, minWidth: 60}},
         form: {},
       },
-      {
-        id: 'delegatePattern',
-        label: '委託パターン',
-        td: {style: {...regularStyle, minWidth: 200}},
-        form: {hidden: true},
-      },
+      // {
+      //   id: 'delegatePattern',
+      //   label: '委託パターン',
+      //   td: {style: {...regularStyle, minWidth: 200}},
+      //   form: {hidden: true},
+      // },
       {
         id: `productName`,
         label: `品名`,
-        td: {style: {...regularStyle, minWidth: 150}},
+        td: {style: {...regularStyle, minWidth: 60}},
         form: {},
       },
 

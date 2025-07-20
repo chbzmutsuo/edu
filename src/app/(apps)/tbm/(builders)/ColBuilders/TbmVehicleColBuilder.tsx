@@ -13,7 +13,7 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
       ...new Fields([
         // {id: 'code', label: 'コード', form: {...defaultRegister}},
         {id: 'frameNo', label: 'フレームNo', form: {...defaultRegister}},
-        {id: 'tbmBaseId', label: '営業所(旧:仕様区分)', forSelect: {}, form: {...defaultRegister}},
+        {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {...defaultRegister}},
         {id: 'vehicleNumber', label: '車両番号', form: {...defaultRegister}},
         {id: 'shodoTorokubi', label: '初度登録日', form: {}, type: `date`},
       ]).showSummaryInTd({}).plain,

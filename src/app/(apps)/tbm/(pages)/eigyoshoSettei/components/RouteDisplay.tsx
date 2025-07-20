@@ -10,7 +10,7 @@ import {R_Stack} from '@cm/components/styles/common-components/common-components
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import React from 'react'
 
-export default function RouteDisplay({tbmBase, whereQuery}) {
+export default function RouteDisplay({tbmBase, whereQuery, theMonth}) {
   const useGlobalProps = useGlobal()
 
   const {query, session} = useGlobalProps
@@ -33,7 +33,6 @@ export default function RouteDisplay({tbmBase, whereQuery}) {
               TbmBase: {},
               TbmDriveSchedule: {
                 where: {
-                  // finished: true,
                   date: whereQuery,
                 },
               },

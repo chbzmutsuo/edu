@@ -30,12 +30,6 @@ export const transposeColumns = (columns: colType[], transposeColumnsOptions?: t
 
     const minWidth = getColMinWidth(col)
 
-    // col = {
-    //   ...col,
-    //   td: {...col.td, style: {minWidth, ...col?.td?.style}},
-    //   originalColIdx,
-    //   type: type,
-    // }
     col.td = {...col.td, style: {minWidth, ...col?.td?.style}}
     col.originalColIdx = originalColIdx
     col.type = type

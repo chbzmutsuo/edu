@@ -74,6 +74,14 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
           }
         },
       },
+      {
+        modelNames: [`tbmCustomer`],
+        setParams: async () => {
+          return {
+            additional: {orderBy: [{code: 'asc'}]},
+          }
+        },
+      },
     ],
   })
   return customParams

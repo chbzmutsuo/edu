@@ -8,6 +8,7 @@ export const TbmRouteGroupUpsertController = {
       tbmProductId,
       name,
       routeName,
+      productName,
       pickupTime,
       vehicleType,
       seikyuKbn,
@@ -23,6 +24,7 @@ export const TbmRouteGroupUpsertController = {
       tbmBaseId,
       routeName,
       pickupTime,
+      productName,
       vehicleType,
       seikyuKbn,
     }

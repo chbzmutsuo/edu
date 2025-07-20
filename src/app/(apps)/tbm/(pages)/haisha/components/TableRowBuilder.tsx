@@ -91,7 +91,7 @@ export const TableRowBuilder = {
     const {mode, tbmBase, days, holidays, fetchData, setModalOpen, query, scheduleByDateAndRoute = {}} = props
 
     return tbmRouteGroup
-      .sort((a, b) => a.code.localeCompare(b.code))
+      .sort((a, b) => a.code?.localeCompare(b.code ?? '') ?? 0)
       .map(route => ({
         csvTableRow: [
           // ルート情報（固定列）

@@ -51,7 +51,7 @@ const TableForm = (props: ClientPropsType2) => {
           setopen: setformData,
         }}
       >
-        <div id="editFormOnMyDataViwe" className={` gradient-base  p-2`}>
+        <div id="editFormOnMyDataViwe" className={` bg-gray-50   p-2`}>
           {myForm?.caption}
           {formComponent}
         </div>

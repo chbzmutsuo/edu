@@ -6,7 +6,7 @@ import {autoCreateMonthConfig} from '@app/(apps)/tbm/(pages)/eigyoshoSettei/comp
 import RouteDisplay from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/RouteDisplay'
 
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
-import {TextBlue, TextRed} from '@cm/components/styles/common-components/Alert'
+
 import {Button} from '@cm/components/styles/common-components/Button'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
@@ -16,7 +16,7 @@ import BasicTabs from '@cm/components/utils/tabs/BasicTabs'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import useWindowSize from '@cm/hooks/useWindowSize'
 
-export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, whereQuery}) {
+export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, whereQuery, theMonth}) {
   const useGlobalProps = useGlobal()
 
   const {pathname, query, toggleLoad} = useGlobalProps
@@ -47,7 +47,7 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
           showAll: false,
           TabComponentArray: [
             {
-              label: <TextRed>便設定【月別】</TextRed>,
+              label: <div>便設定【月別】</div>,
               component: (
                 <C_Stack>
                   <Button
@@ -59,27 +59,13 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
                   >
                     前月データ引き継ぎ
                   </Button>
-                  <RouteDisplay {...{tbmBase, whereQuery}} />
+                  <RouteDisplay {...{theMonth, tbmBase, whereQuery}} />
                 </C_Stack>
               ),
             },
 
             {
-              label: <TextRed>ガソリン・軽油</TextRed>,
-              component: (
-                <ChildCreator
-                  {...{
-                    ...childCreatorProps,
-
-                    models: {parent: `tbmBase`, children: `tbmBase_MonthConfig`},
-                    columns: ColBuilder.tbmBase_MonthConfig(ColBuiderProps),
-                  }}
-                />
-              ),
-            },
-
-            {
-              label: <TextBlue> 車両マスタ</TextBlue>,
+              label: <div> 車両マスタ</div>,
               component: (
                 <ChildCreator
                   {...{
@@ -98,7 +84,7 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
             },
 
             {
-              label: <TextBlue> ドライバーマスタ</TextBlue>,
+              label: <div> ドライバーマスタ</div>,
               component: (
                 <ChildCreator
                   {...{
@@ -116,20 +102,20 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
               ),
             },
 
+            // {
+            //   label: <div> 荷主マスタ</div>,
+            //   component: (
+            //     <ChildCreator
+            //       {...{
+            //         ...childCreatorProps,
+            //         models: {parent: `tbmBase`, children: `tbmCustomer`},
+            //         columns: ColBuilder.tbmCustomer(ColBuiderProps),
+            //       }}
+            //     />
+            //   ),
+            // },
             {
-              label: <TextBlue> 荷主マスタ</TextBlue>,
-              component: (
-                <ChildCreator
-                  {...{
-                    ...childCreatorProps,
-                    models: {parent: `tbmBase`, children: `tbmCustomer`},
-                    columns: ColBuilder.tbmCustomer(ColBuiderProps),
-                  }}
-                />
-              ),
-            },
-            {
-              label: <TextBlue> 経費</TextBlue>,
+              label: <div> 経費</div>,
               component: (
                 <ChildCreator
                   {...{
@@ -144,8 +130,22 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
                 />
               ),
             },
+            {
+              label: <div>ガソリン・軽油【月別】</div>,
+              component: (
+                <ChildCreator
+                  {...{
+                    ...childCreatorProps,
+
+                    models: {parent: `tbmBase`, children: `tbmBase_MonthConfig`},
+                    columns: ColBuilder.tbmBase_MonthConfig(ColBuiderProps),
+                  }}
+                />
+              ),
+            },
+
             // {
-            //   label: <TextBlue> 商品マスタ</TextBlue>,
+            //   label: <div> 商品マスタ</div>,
             //   component: (
             //     <ChildCreator
             //       {...{

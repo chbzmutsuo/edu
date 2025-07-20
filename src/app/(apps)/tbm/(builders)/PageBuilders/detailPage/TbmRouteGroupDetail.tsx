@@ -24,14 +24,13 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
     orderBy: {date: 'asc'},
   })
 
-  const theMonth = toUtc(query.from || query.month)
+  const theMonth = toUtc(query.from || query.month || new Date())
   const theYear = theMonth.getFullYear()
 
   const {firstDateOfYear, lastDateOfYear, getAllMonthsInYear} = Days.year.getYearDatum(theYear)
   const months = getAllMonthsInYear()
 
   const days = Days.day.getDaysBetweenDates(firstDateOfYear, lastDateOfYear)
-  // .filter(d => d.getTime() >= theMonth.getTime())
 
   const defaultSelectedDays = calendar.filter(c => c.holidayType === '稼働').map(c => c.date)
   const tbmRouteGroupId = props.formData?.id
@@ -59,7 +58,7 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
         ),
       },
       {
-        label: `配車予定`,
+        label: `委託パターン`,
         component: (
           <div>
             <BulkCalendarSetter
@@ -104,6 +103,7 @@ export default function TbmRouteGroupDetail(props: DetailPagePropType) {
       <div>{props.formData?.name}</div>
       <BasicTabs
         {...{
+          style: {width: '90vw', height: '90vh'},
           id: `tbmVechicleDetailPage`,
           showAll: false,
           TabComponentArray,

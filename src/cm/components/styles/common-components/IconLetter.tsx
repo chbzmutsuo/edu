@@ -6,11 +6,12 @@ type Props = {
   colorClass?: string
   children?: ReactNode
   style?: CSSProperties
+  className?: string
 }
 const IconLetter = (props: Props) => {
-  const {Icon, colorClass = '', children, style} = props
+  const {Icon, colorClass = '', children, style, className} = props
   return (
-    <div className={`row-stack w-fit gap-1`}>
+    <div className={`row-stack w-fit gap-1 ${className}`}>
       <Icon strokeWidth={2.5} className={cl(`h-6 w-6  p-[3px]  text-sky-700   `, colorClass)} style={style} />
       {children}
     </div>

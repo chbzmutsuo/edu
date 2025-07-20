@@ -64,12 +64,13 @@ export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) =>
 
         const latestTbmRouteGroupFee = row.TbmRouteGroupFee[0]
         const {futaiFee = 0, driverFee = 0} = latestTbmRouteGroupFee ?? {}
+
         return (
           <div style={{width: 240}} className={`grid grid-cols-2`}>
-            <KeyValue {...{label: '運賃', value: NumHandler.WithUnit(futaiFee ?? 0, '')}} />
-            <KeyValue {...{label: '付帯作業', value: NumHandler.WithUnit(driverFee ?? 0, '')}} />
-            <KeyValue {...{label: '実働回数', value: jitsudoKaisu}} />
-            <KeyValue {...{label: '通行料(郵便)', value: NumHandler.WithUnit(tsukoryo, '')}} />
+            <KeyValue {...{label: '運賃'}}>{NumHandler.WithUnit(futaiFee ?? 0, '')}</KeyValue>
+            <KeyValue {...{label: '実働回数'}}>{jitsudoKaisu}</KeyValue>
+            <KeyValue {...{label: '付帯作業'}}>{NumHandler.WithUnit(driverFee ?? 0, '')}</KeyValue>
+            <KeyValue {...{label: '通行料(郵便)'}}>{NumHandler.WithUnit(tsukoryo, '')}</KeyValue>
           </div>
         )
       },

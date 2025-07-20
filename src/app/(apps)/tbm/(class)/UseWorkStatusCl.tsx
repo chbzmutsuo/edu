@@ -108,8 +108,6 @@ export class UseWorkStatusCl {
 
     const originalShoteiTotal = monthlyTotals.shoteinai
 
-    console.log() //logs
-
     const shoteiTotal = Math.min(160 * 60, originalShoteiTotal)
 
     monthlyTotals.shoteinai = shoteiTotal
@@ -119,7 +117,6 @@ export class UseWorkStatusCl {
 
     const jikangai1 = monthlyTotals.jikangai1
 
-    // console.log(jikangai1 / 60) //logs
     const jikangai1_b = jikangai1 + rest
 
     const jikangai1_c = Math.min(jikangai1_b, 60 * 60)

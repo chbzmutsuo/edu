@@ -7,6 +7,7 @@ import {colType} from '@cm/types/types'
 import {getValue} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/lib/getValue'
 
 import TdContent from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/TdContent'
+import {getR_StackClass} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/TableCell/childrens/DisplayedState'
 
 export type TableCellPropsType = {
   columnIdx: number
@@ -42,7 +43,7 @@ const TableCell = React.memo(
         id: `${col.id}-${record.id}`,
         colSpan: col.td?.colSpan,
         rowSpan: col.td?.rowSpan,
-        className: `align-top tableCell text-responsive    `,
+        className: `align-top tableCell     `,
         style: {...tdStyle},
       }
     }, [col, record, tdStyle])
@@ -51,9 +52,11 @@ const TableCell = React.memo(
       return <TdContent {...{showHeader, dataModelName, col, record, value, tdStyle, mutateRecords}} />
     }, [showHeader, dataModelName, col, record, value, tdStyle, mutateRecords])
 
+    const rStackClass = getR_StackClass(col)
+
     return (
       <td key={`${col?.id}_dbId${record?.id}_index${columnIdx}`} {...tdProps}>
-        <div className={`flex h-full w-full items-start  justify-center`}>{TdContentMemo}</div>
+        <div className={`flex    ${rStackClass}`}>{TdContentMemo}</div>
       </td>
     )
   }

@@ -16,7 +16,6 @@ import {Code} from '@cm/class/Code'
 import {Time} from '@cm/class/Time'
 import {UseWorkStatusCl} from '@app/(apps)/tbm/(class)/UseWorkStatusCl'
 import {Days} from '@cm/class/Days/Days'
-import Link from 'next/link'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import {HREF} from '@cm/lib/methods/urls'
 
@@ -113,6 +112,9 @@ export default function AttendancePage() {
   }, [UserWorkStatus, selectedUserId, daysInMonth])
 
   const DailyRecordsTable = useMemo(() => {
+    if (!selectedUserId) {
+      return <div>ユーザーを選択してください</div>
+    }
     // 各ユーザーの各日付のレコードを作成
     const records = daysInMonth.map(date => {
       const userWorkStatus = UserWorkStatus.find(item => {
@@ -337,10 +339,6 @@ export default function AttendancePage() {
 
   if (isLoading) {
     return <div>読み込み中...</div>
-  }
-
-  if (!selectedUserId) {
-    return <div>ユーザーを選択してください</div>
   }
 
   return (

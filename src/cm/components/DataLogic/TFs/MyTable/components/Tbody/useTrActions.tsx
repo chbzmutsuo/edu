@@ -133,7 +133,7 @@ const useTrActions = props => {
             await handleTrashItem?.({record, columns})
           }
         }}
-        className={cl('text-sub-main  opacity-60', TrActionIconClassName, `w-5 `)}
+        className={cl('text-error-main  opacity-60', TrActionIconClassName, `w-5 `)}
       >
         <Trash2 />
       </div>
