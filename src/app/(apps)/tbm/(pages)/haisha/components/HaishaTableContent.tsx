@@ -20,7 +20,7 @@ type props = {
   query
 }
 
-export const TableContent = React.memo((props: props) => {
+export const HaishaTableContent = React.memo((props: props) => {
   const {
     mode,
     tbmBase,
@@ -104,4 +104,4 @@ const getScheduleByDateAndRoute = ({TbmDriveSchedule}) => {
 
   return {scheduleByDateAndRoute} as {scheduleByDateAndRoute: Record<string, Record<string, any[]>>}
 }
-export default TableContent
+export default HaishaTableContent

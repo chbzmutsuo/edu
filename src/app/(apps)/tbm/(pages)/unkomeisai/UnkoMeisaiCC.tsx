@@ -68,7 +68,9 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
             }),
           }
         }),
-      }).WithWrapper({className: `max-w-[calc(95vw-50px)] `})}
+      }).WithWrapper({
+        className: `w-[calc(95vw)] `,
+      })}
     </div>
   )
 }

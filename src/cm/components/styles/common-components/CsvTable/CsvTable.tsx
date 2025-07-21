@@ -1,6 +1,7 @@
-import {Downloader} from '@cm/components/styles/common-components/CsvTable/CsvDownloader'
-import {CsvTableBody} from '@cm/components/styles/common-components/CsvTable/CsvTableBody'
-import {CsvTableHead} from '@cm/components/styles/common-components/CsvTable/CsvTableHead'
+import {Downloader} from '@cm/components/styles/common-components/CsvTable/components/CsvDownloader'
+import {CsvTableBody} from '@cm/components/styles/common-components/CsvTable/components/CsvTableBody'
+import {CsvTableHead} from '@cm/components/styles/common-components/CsvTable/components/CsvTableHead'
+import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTable/CsvTableVirtualized'
 import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
 import {htmlProps} from '@cm/components/styles/common-components/type'
 
@@ -106,17 +107,18 @@ export const separateHeaderAndBody = (records: bodyRecordsType) => {
  * @note 仮想化が必要な場合は、CsvTableVirtualizedを直接使用してください
  */
 export const CsvTable = (props: CsvTableProps) => {
-  // 🔥 Server Componentではチャンク処理・仮想化をサポートしない
-  if (props.chunked?.enabled) {
-    console.warn('CsvTable: チャンク処理はServer Componentでは利用できません。CsvTableChunkedを使用してください。')
-  }
+  return CsvTableVirtualized(props)
+  // // 🔥 Server Componentではチャンク処理・仮想化をサポートしない
+  // if (props.chunked?.enabled) {
+  //   console.error('CsvTable: チャンク処理はServer Componentでは利用できません。CsvTableChunkedを使用してください。')
+  // }
 
-  if (props.virtualized?.enabled) {
-    console.warn('CsvTable: 仮想化はServer Componentでは利用できません。CsvTableVirtualizedを使用してください。')
-  }
+  // if (props.virtualized?.enabled) {
+  //   console.error('CsvTable: 仮想化はServer Componentでは利用できません。CsvTableVirtualizedを使用してください。')
+  // }
 
-  // 🔥 通常のServer Component版
-  return createCsvTableCore(props)
+  // // 🔥 通常のServer Component版
+  // return createCsvTableCore(props)
 }
 
 /**
@@ -138,9 +140,6 @@ export const createCsvTableCore = (props: CsvTableProps) => {
 
   return {
     WithWrapper,
-
-    Thead: () => <CsvTableHead headerRecords={headerRecords} stylesInColumns={props.stylesInColumns} />,
-    Tbody: () => <CsvTableBody bodyRecords={bodyRecords} stylesInColumns={props.stylesInColumns} />,
     Downloader: () => <Downloader records={props.records} csvOutput={props.csvOutput} />,
   }
 }

@@ -5,7 +5,7 @@ import useHaishaTableEditorGMF from '@app/(apps)/tbm/(globalHooks)/useHaishaTabl
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import HaishaTableSwitcher from './HaishaTableSwitcher'
-import TableContent from './TableContent'
+import TableContent from './HaishaTableContent'
 import PaginationControl from './PaginationControl'
 import {TbmBase} from '@prisma/client'
 import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'

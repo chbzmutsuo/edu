@@ -8,7 +8,8 @@ import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {cl} from '@cm/lib/methods/common'
 import {twMerge} from 'tailwind-merge'
 import {htmlProps} from '@cm/components/styles/common-components/type'
-import {Downloader} from './CsvDownloader'
+import {Downloader} from './components/CsvDownloader'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export type CsvTableVirtualizedProps = CsvTableProps & {
   virtualized?: VirtualizedOptions
@@ -55,11 +56,7 @@ export const CsvTableVirtualized = (props: CsvTableVirtualizedProps) => {
               <th
                 key={celIdx}
                 {...restPropsOnTd}
-                style={{
-                  ...stylesInThisColumn?.style,
-                  ...style,
-                  ...thStyle,
-                }}
+                style={{...stylesInThisColumn?.style, ...style, ...thStyle}}
                 className={cl(
                   'text-center! bg-gray-100 font-bold border border-gray-300 px-2 py-1',
                   stylesInThisColumn?.className,
@@ -125,11 +122,7 @@ export const CsvTableVirtualized = (props: CsvTableVirtualizedProps) => {
           {...props}
           ref={ref}
           className={twMerge('w-full', props.className)}
-          style={{
-            borderCollapse: 'separate',
-            borderSpacing: 0,
-            ...props.style,
-          }}
+          style={{borderCollapse: 'separate', borderSpacing: 0, ...props.style}}
         />
       )),
 
@@ -156,8 +149,8 @@ export const CsvTableVirtualized = (props: CsvTableVirtualizedProps) => {
     return (
       <div
         {...wrapperProps}
-        className={twMerge(
-          'max-h-[80vh] max-w-[90vw] mx-auto overflow-hidden rounded-md border border-gray-300',
+        className={cn(
+          'max-h-[80vh] max-w-[95vw] mx-auto overflow-hidden rounded-md border border-gray-300',
           wrapperProps.className
         )}
       >
@@ -177,10 +170,6 @@ export const CsvTableVirtualized = (props: CsvTableVirtualizedProps) => {
 
   return {
     WithWrapper,
-
-    // 通常のCsvTableと同じAPIを提供
-    Thead: () => fixedHeaderContent?.() || null,
-    Tbody: () => null, // 仮想化では使用しない
     Downloader: () => <Downloader records={records} csvOutput={csvOutput} />,
   }
 }

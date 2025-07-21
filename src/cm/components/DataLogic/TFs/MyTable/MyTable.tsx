@@ -31,7 +31,6 @@ const MyTable = React.memo<MyTableProps>(props => {
 
   const {sectionStyle, TableConfigProps, mainTableProps, paginationProps} = styleData
   const mainTable = useMemo(() => <VirtualMainTable {...mainTableProps} />, [mainTableProps])
-  // const mainTable = useMemo(() => <MainTable {...mainTableProps} />, [mainTableProps])
 
   // 🔧 条件分岐による表示切り替え
   const renderTableContent = () => {

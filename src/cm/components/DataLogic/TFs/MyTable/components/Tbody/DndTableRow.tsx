@@ -77,13 +77,6 @@ const DnDTableRow = React.memo(
       [dataModelName, mutateRecords, tbodyRowParams, DnDTableRowProps, dndStyle, rowColor]
     )
 
-    // const TableCellCallBack = useCallback(
-    //   ({columnIdx, col}) => {
-    //     return <TableCell {...tableCellCallBackProps} {...{TableCellProps: {columnIdx, col}}} />
-    //   },
-    //   [tableCellCallBackProps]
-    // )
-
     const trClassName = useMemo(() => cl(createTrClassName({myTable, record, formData})), [myTable, record, formData])
 
     const bodyLeftThProps = useMemo(() => {

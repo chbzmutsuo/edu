@@ -34,13 +34,7 @@ export default async function Page(props) {
 
   return (
     <div className="print-target ">
-      <HaishaTable
-        {...{
-          tbmBase,
-          days: currentMonthData.days,
-          whereQuery,
-        }}
-      />
+      <HaishaTable {...{tbmBase, days: currentMonthData.days, whereQuery}} />
     </div>
   )
 }
