@@ -44,7 +44,13 @@ const Tbody = React.memo((props: {rows: any[][]; ClientProps2: ClientPropsType2;
     ({DnDTableRowProps}) => {
       return (
         <DnDTableRow
-          {...{from, totalCount: ClientProps2.totalCount, ...stableDnDTableRowCallbackProps, rows, DnDTableRowProps}}
+          {...{
+            from,
+            totalCount: ClientProps2.totalCount,
+            ...stableDnDTableRowCallbackProps,
+            rows,
+            DnDTableRowProps,
+          }}
         />
       )
     },

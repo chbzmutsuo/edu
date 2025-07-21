@@ -2,8 +2,6 @@
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import React, {useMemo} from 'react'
-import {cl} from 'src/cm/lib/methods/common'
-import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 import {cn} from '@cm/shadcn/lib/utils'
 
 export const DisplayedState = React.memo((props: {col; record; value}) => {

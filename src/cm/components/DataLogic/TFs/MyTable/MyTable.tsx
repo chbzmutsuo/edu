@@ -9,8 +9,9 @@ import {UseRecordsReturn} from '@cm/components/DataLogic/TFs/PropAdjustor/hooks/
 import {MyTableInfiniteScroll} from './MyTableInfiniteScroll'
 import {MyTableControls} from './components/MyTableControls/MyTableControls'
 import {useMyTableLogic} from './hooks/useMyTableLogic'
-import {MainTable} from './components/MainTable'
-import useLogOnRender from '@cm/hooks/useLogOnRender'
+
+import {VertualMainTable} from './components/VirtualMainTable/VirtualMainTable'
+import {MainTable} from '@cm/components/DataLogic/TFs/MyTable/components/MainTable'
 
 // 型定義
 interface MyTableProps {
@@ -30,8 +31,8 @@ const MyTable = React.memo<MyTableProps>(props => {
   const {SearchingStatusMemo} = searchData
 
   const {sectionStyle, TableConfigProps, mainTableProps, paginationProps} = styleData
+  // const mainTable = useMemo(() => <VertualMainTable {...mainTableProps} />, [mainTableProps])
   const mainTable = useMemo(() => <MainTable {...mainTableProps} />, [mainTableProps])
-  useLogOnRender('')
 
   // 🔧 条件分岐による表示切り替え
   const renderTableContent = () => {

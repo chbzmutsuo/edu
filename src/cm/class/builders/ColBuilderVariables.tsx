@@ -6,7 +6,6 @@ import {Absolute, Vr} from 'src/cm/components/styles/common-components/common-co
 
 import {LabelValue} from '@cm/components/styles/common-components/ParameterCard'
 import {getColorStyles} from '@cm/lib/methods/colors'
-import ShadPopover from '@cm/shadcn/components/ShadPopover'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 export const defaultRegister = {register: {required: '必須'}}

@@ -1,6 +1,6 @@
 import React, {Fragment} from 'react'
 
-import {Circle, R_Stack} from 'src/cm/components/styles/common-components/common-components'
+import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import {cl} from 'src/cm/lib/methods/common'
 
@@ -31,7 +31,7 @@ export const BodyLeftTh = ({myTable, showHeader, rowColor, dndProps, rowSpan, co
             </>
           )}
           <div className={className}>
-            {dndProps && PC && <ArrowUpDownIcon className={`w-4`} />}
+            {dndProps && PC && <ArrowUpDownIcon className={`w-4 onHover`} />}
             {children}
           </div>
         </R_Stack>

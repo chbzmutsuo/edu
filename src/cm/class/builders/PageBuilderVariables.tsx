@@ -1,4 +1,3 @@
-import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
 
 import GlobalModal from '@cm/components/utils/modal/GlobalModal'
 
@@ -10,7 +9,6 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {surroundings} from '@cm/components/DataLogic/types/customParams-types'
 import {anyObject} from '@cm/types/utility-types'
-import {Card} from '@cm/shadcn/components/ui/card'
 import IconLetter from '@cm/components/styles/common-components/IconLetter'
 import {Settings, Search, Filter} from 'lucide-react'
 import {Center} from '@cm/components/styles/common-components/common-components'
