@@ -10,8 +10,7 @@ import {MyTableInfiniteScroll} from './MyTableInfiniteScroll'
 import {MyTableControls} from './components/MyTableControls/MyTableControls'
 import {useMyTableLogic} from './hooks/useMyTableLogic'
 
-import {VertualMainTable} from './components/VirtualMainTable/VirtualMainTable'
-import {MainTable} from '@cm/components/DataLogic/TFs/MyTable/components/MainTable'
+import {VirtualMainTable} from './components/VirtualMainTable/VirtualMainTable'
 
 // 型定義
 interface MyTableProps {
@@ -31,8 +30,8 @@ const MyTable = React.memo<MyTableProps>(props => {
   const {SearchingStatusMemo} = searchData
 
   const {sectionStyle, TableConfigProps, mainTableProps, paginationProps} = styleData
-  // const mainTable = useMemo(() => <VertualMainTable {...mainTableProps} />, [mainTableProps])
-  const mainTable = useMemo(() => <MainTable {...mainTableProps} />, [mainTableProps])
+  const mainTable = useMemo(() => <VirtualMainTable {...mainTableProps} />, [mainTableProps])
+  // const mainTable = useMemo(() => <MainTable {...mainTableProps} />, [mainTableProps])
 
   // 🔧 条件分岐による表示切り替え
   const renderTableContent = () => {

@@ -36,7 +36,6 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
           return {
             additional: {
               where: {apps: {has: `aquapot`}},
-
               payload: {apps: [`aquapot`]},
             },
           }

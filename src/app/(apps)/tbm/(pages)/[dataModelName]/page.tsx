@@ -46,11 +46,11 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
         modelNames: [`user`],
         setParams: async () => {
           return {
-            myTable: {drag: true},
+            myTable: {pagination: {countPerPage: 100}},
             additional: {
               where: {apps: {has: `tbm`}},
               payload: {apps: [`tbm`]},
-              orderBy: [{sortOrder: 'asc'}, {TbmBase: {code: 'asc'}}, {code: 'asc'}],
+              orderBy: [{TbmBase: {code: 'asc'}}, {code: 'asc'}],
             },
           }
         },

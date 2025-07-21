@@ -52,7 +52,7 @@ interface RelationalIncludeProps {
 }
 
 // 定数（メモ化で最適化）
-export const defaultCountPerPage = 10
+export const defaultCountPerPage = 50
 export const defaultOrderByArray = Object.freeze([{sortOrder: 'asc'}, {id: 'asc'}] as const)
 
 // 検索タイプマスター（メモ化）
