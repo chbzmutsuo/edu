@@ -231,6 +231,7 @@
     position: sticky;
     top: 0;
     left: 0;
+    z-index: 30;
   }
   .table-wrapper table thead th,
   .table-wrapper table thead td {
