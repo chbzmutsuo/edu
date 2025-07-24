@@ -1541,17 +1541,20 @@ model User {
   PurchaseRequest   PurchaseRequest[]
   LeaveRequest      LeaveRequest[]
   Approval          Approval[]
-  TbmVehicle        TbmVehicle?
-  KyuyoTableRecord  KyuyoTableRecord[]
-  Department        Department?         @relation(fields: [departmentId], references: [id])
-  departmentId      Int?
-  HealthRecord      HealthRecord[]
-  HealthJournal     HealthJournal[]
+
+  KyuyoTableRecord KyuyoTableRecord[]
+  Department       Department?        @relation(fields: [departmentId], references: [id])
+  departmentId     Int?
+  HealthRecord     HealthRecord[]
+  HealthJournal    HealthJournal[]
 
   // Sara App リレーション
   Family               Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
   RequestedEvaluations ActivityEvaluationRequest[] @relation("RequestedBy")
   ApprovedEvaluations  ActivityEvaluationRequest[] @relation("ApprovedBy")
+  // TbmVehicle           TbmVehicle?
+  TbmVehicle           TbmVehicle?                 @relation(fields: [tbmVehicleId], references: [id])
+  tbmVehicleId         Int?
 }
 
 model ReleaseNotes {
@@ -2330,11 +2333,12 @@ model TbmVehicle {
  OdometerInput     OdometerInput[]
  TbmCarWashHistory TbmCarWashHistory[]
 
- User   User? @relation(fields: [userId], references: [id])
- userId Int?  @unique
+ // User   User? @relation(fields: [userId], references: [id])
+ // userId Int?  @unique
 
  TbmVehicleMaintenanceRecord TbmVehicleMaintenanceRecord[]
  TbmEtcMeisai                TbmEtcMeisai[]
+ User                        User[]
 
  @@unique([tbmBaseId, vehicleNumber], name: "unique_tbmBaseId_vehicleNumber")
 }

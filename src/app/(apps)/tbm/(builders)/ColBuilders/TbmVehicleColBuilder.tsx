@@ -16,7 +16,9 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
         {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {...defaultRegister}},
         {id: 'vehicleNumber', label: '車両番号', form: {...defaultRegister}},
         {id: 'shodoTorokubi', label: '初度登録日', form: {}, type: `date`},
-      ]).showSummaryInTd({}).plain,
+      ]).showSummaryInTd({
+        wrapperWidthPx: 200,
+      }).plain,
     ]).buildFormGroup({groupName: '車両情報①'}).plain,
     ...new Fields([
       ...new Fields([
@@ -31,6 +33,7 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
       {id: 'oilTireParts', label: '油脂/タイヤ/備品代', form: {}},
       {id: 'maintenance', label: '整備代', form: {}},
       {id: 'insurance', label: '保険代', form: {}},
+      {id: 'sakenManryobi', label: '車検満了日', form: {}, type: 'date'},
     ])
       .showSummaryInTd({labelWidthPx: 120, wrapperWidthPx: 200})
       .buildFormGroup({groupName: '車両情報③'}).plain,
@@ -125,25 +128,6 @@ export const TbmVehicleColBuilder = (props: columnGetterType) => {
     // ...new Fields([
     //   //
 
-    //   {
-    //     id: 'sakenManryobi',
-    //     label: '車検満了日',
-    //     form: {hidden: true},
-
-    //     format: (value, row) => {
-    //       const {TbmVehicleMaintenanceRecord} = row
-    //       const lastInspection = TbmVehicleMaintenanceRecord.sort((a, b) => {
-    //         return new Date(b.date).getTime() - new Date(a.date).getTime()
-    //       }).find(item => item.type === '車検')
-
-    //       if (lastInspection) {
-    //         const nextInspection = Days.year.add(lastInspection.date, 2)
-    //         return <div style={{minWidth: 140}}>{formatDate(nextInspection, 'short')}</div>
-    //       }
-
-    //       return `過去の点検なし`
-    //     },
-    //   },
     //   {
     //     id: 'sankagetsuTenkenbi',
     //     label: '3ヶ月点検',

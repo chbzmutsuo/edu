@@ -8,7 +8,6 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList: MonthlyTbmDriveData[]}) {
-  const minWidth = 80
   const {toastIfFailed} = useGlobal()
   return (
     <div className={` relative`}>
@@ -17,7 +16,7 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
         records: monthlyTbmDriveList.map((row, rowIdx) => {
           const {keyValue, schedule} = row
 
-          const cols = Object.entries(keyValue).filter(([dataKey, item]) => !item.label.includes(`CD`))
+          const cols = Object.entries(keyValue).filter(([dataKey, item]) => !String(item.label).includes(`CD`))
 
           return {
             csvTableRow: cols.map((props: any, colIdx) => {
@@ -63,7 +62,7 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
               return {
                 label: <div className="text-xs">{item.label}</div>,
                 style,
-                cellValue: <div>{value}</div>,
+                cellValue: value,
               }
             }),
           }

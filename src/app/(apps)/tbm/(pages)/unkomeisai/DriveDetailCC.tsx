@@ -16,7 +16,7 @@ export default function DriveDetailCC({monthlyTbmDriveList}: {monthlyTbmDriveLis
           records: monthlyTbmDriveList.map((row, rowIdx) => {
             const {keyValue, schedule} = row
 
-            const cols = Object.entries(keyValue).filter(([dataKey, item]) => !item.label.includes(`CD`))
+            const cols = Object.values(keyValue).filter(item => !String(item.label).includes(`CD`))
 
             return {
               csvTableRow: cols.map((props: any, colIdx) => {
@@ -61,12 +61,23 @@ export default function DriveDetailCC({monthlyTbmDriveList}: {monthlyTbmDriveLis
 
                 const sticky = colIdx <= 1
                 const totalLeft = sticky
-                  ? cols.reduce((acc, [key, item], idx) => {
-                      if (idx < colIdx) {
-                        return acc + (item.style?.width ?? baseWidth)
-                      }
-                      return acc
-                    }, 0)
+                  ? cols.reduce(
+                      (
+                        acc,
+                        item: {
+                          cellValue
+                          style
+                          label
+                        },
+                        idx
+                      ) => {
+                        if (idx < colIdx) {
+                          return acc + (item?.style?.width ?? baseWidth)
+                        }
+                        return acc
+                      },
+                      0
+                    )
                   : null
 
                 return {

@@ -11,7 +11,6 @@ import {MyTableControls} from './components/MyTableControls/MyTableControls'
 import {useMyTableLogic} from './hooks/useMyTableLogic'
 
 import {VirtualMainTable} from './components/VirtualMainTable/VirtualMainTable'
-import {MainTable} from '@cm/components/DataLogic/TFs/MyTable/components/MainTable'
 
 // 型定義
 interface MyTableProps {

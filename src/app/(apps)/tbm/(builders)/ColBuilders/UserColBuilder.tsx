@@ -10,7 +10,7 @@ export const UserColBuilder = (props: columnGetterType) => {
     {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {...defaultRegister, defaultValue: tbmBaseId}},
     {id: 'employeeCode', label: '社員コード', form: {}},
     {id: 'name', label: '名称', form: {...defaultRegister}, search: {}},
-    {id: 'email', label: 'Email', form: {...defaultRegister}},
+    {id: 'email', label: 'Email', form: {}},
     {id: 'password', label: 'パスワード', type: `password`, form: {}},
 
     {
@@ -20,7 +20,7 @@ export const UserColBuilder = (props: columnGetterType) => {
       form: {defaultValue: `01`, ...defaultRegister},
     },
     {id: 'phone', label: '携帯番号', form: {}},
-    {id: 'tbmVehicleId', label: '利用車両', forSelect: {}, form: {defaultValue: tbmBaseId}},
+    // {id: 'tbmVehicleId', label: '利用車両', forSelect: {}, form: {defaultValue: tbmBaseId}},
 
     // {
     //   id: 'tbmVehicleId',

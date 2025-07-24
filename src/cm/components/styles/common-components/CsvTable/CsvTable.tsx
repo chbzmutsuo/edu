@@ -90,10 +90,12 @@ export const separateHeaderAndBody = (records: bodyRecordsType) => {
   // ボディ用の変換：labelを除去
   const bodyRecords = bodyRows.map(row => ({
     ...row,
-    csvTableRow: row.csvTableRow.map(col => ({
-      ...col,
-      label: undefined,
-    })),
+    csvTableRow: row.csvTableRow.map(col => {
+      return {
+        ...col,
+        label: undefined,
+      }
+    }),
   }))
 
   return {headerRecords, bodyRecords}

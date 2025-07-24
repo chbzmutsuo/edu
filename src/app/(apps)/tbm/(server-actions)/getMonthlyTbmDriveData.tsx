@@ -37,12 +37,9 @@ export type tbmTableKeyValue = {
 }
 
 type userType = User & {TbmVehicle?: TbmVehicle}
-export type MonthlyTbmDriveData = {
-  schedule: TbmDriveSchedule & {User: userType; TbmVehicle: TbmVehicle}
-  keyValue: {
-    [key in meisaiKey]: tbmTableKeyValue
-  }
-}
+
+export type getMonthlyTbmDriveDataReturn = Awaited<ReturnType<typeof getMonthlyTbmDriveData>>
+export type MonthlyTbmDriveData = getMonthlyTbmDriveDataReturn['monthlyTbmDriveList'][number]
 
 import prisma from 'src/lib/prisma'
 import {TbmDriveSchedule, TbmVehicle, User} from '@prisma/client'
@@ -80,7 +77,7 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
     },
   })
 
-  const monthlyTbmDriveList: MonthlyTbmDriveData[] = tbmDriveSchedule.map(schedule => {
+  const monthlyTbmDriveList = tbmDriveSchedule.map(schedule => {
     const jitsudoKaisu = 1
     const ConfigForRoute = schedule.TbmRouteGroup.TbmMonthlyConfigForRouteGroup.find(
       config => config.tbmRouteGroupId === schedule.TbmRouteGroup.id
@@ -155,22 +152,38 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
           cellValue: schedule.User?.name,
         },
         N_postalFee: {
-          label: '通行料(郵便)',
+          label: (
+            <div>
+              <div>通行料</div> <div>(郵便)</div>
+            </div>
+          ),
           cellValue: N_postalFee,
           style: {backgroundColor: '#fcdede'},
         },
         O_postalHighwayFee: {
-          label: '高速代（郵便）',
+          label: (
+            <div>
+              <div>高速代</div> <div>(郵便)</div>
+            </div>
+          ),
           cellValue: O_postalHighwayFee,
           style: {backgroundColor: '#fcdede'},
         },
         P_generalFee: {
-          label: '通行料(一般)',
+          label: (
+            <div>
+              <div>通行料</div> <div>(一般)</div>
+            </div>
+          ),
           cellValue: P_generalFee,
           style: {backgroundColor: '#deebfc'},
         },
         Q_generalHighwayFee: {
-          label: '高速代（一般）',
+          label: (
+            <div>
+              <div>高速代</div> <div>(一般)</div>
+            </div>
+          ),
           cellValue: Q_generalHighwayFee,
           style: {backgroundColor: '#deebfc'},
         },
@@ -185,15 +198,26 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
         T_JomuinUnchin: {
           label: '給与算定運賃',
           cellValue: T_JomuinUnchin,
-          style: {backgroundColor: '#defceb'},
+          style: {
+            minWidth: 100,
+            backgroundColor: '#defceb',
+          },
         },
         U_jomuinFutan: {
-          label: ['乗務員負担', '高速代-(通行料+30％)'].join(`\n`),
+          label: (
+            <div>
+              <div>乗務員負担</div> <div>高速代-(通行料+30％)</div>
+            </div>
+          ),
           cellValue: U_jomuinFutan,
           style: {backgroundColor: '#defceb'},
         },
         V_thirteenPercentOfPostalHighway: {
-          label: ['運賃から負担', '高速代の30％'].join(`\n`),
+          label: (
+            <div>
+              <div>運賃から負担</div> <div>高速代の30％</div>
+            </div>
+          ),
           cellValue: V_thirteenPercentOfPostalHighway,
           style: {backgroundColor: '#defceb'},
         },
@@ -230,5 +254,9 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
     }, [] as userType[])
     .sort((a, b) => -String(a.code ?? '').localeCompare(String(b.code ?? '')))
 
-  return {monthlyTbmDriveList, ConfigForMonth, userList}
+  return {
+    monthlyTbmDriveList,
+    ConfigForMonth,
+    userList,
+  }
 }
