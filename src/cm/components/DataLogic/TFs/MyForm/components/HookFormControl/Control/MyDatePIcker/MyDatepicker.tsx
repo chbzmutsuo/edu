@@ -109,7 +109,7 @@ const DateInputter = ({col, currentValue, formProps, selectedDate, toggleCalenda
       onKeyDown={e => e.key === 'Enter' && toggleCalendar()}
       onClick={toggleCalendar}
     >
-      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
+      <div className="absolute right-2 top-1/2 transform -translate-y-1/2 ">
         <CalendarDays className="text-gray-500 h-5" />
       </div>
       <Center style={{fontSize: 18, justifyContent: `start`}}>
