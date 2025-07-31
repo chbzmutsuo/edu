@@ -8,6 +8,8 @@ import DateThCell from './DateThCell'
 import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {haishaListData} from './getListData'
 import {haishaTableMode} from './HaishaTable'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {mergeHtmlProps} from '@cm/types/utility-types'
 
 // 固定列のスタイル定数
 const STICKY_COLUMN_STYLE = {
@@ -56,12 +58,20 @@ export const TableRowBuilder = {
 
     return userList
       .sort((a, b) => a.code?.localeCompare(b.code ?? '') ?? 0)
-      .map(user => ({
+      .map((user, i) => ({
         csvTableRow: [
           // ユーザー情報（固定列）
+
           {
             label: 'ユーザー',
-            cellValue: <UserTh {...{user, admin, query, userWorkStatusCount}} />,
+            cellValue: (
+              <R_Stack className={`gap-0.5`}>
+                <span>{i + 1}. </span>
+                <span>
+                  <UserTh {...{user, admin, query, userWorkStatusCount}} />
+                </span>
+              </R_Stack>
+            ),
             style: {
               ...STICKY_COLUMN_STYLE,
               minWidth: 130,
@@ -92,12 +102,18 @@ export const TableRowBuilder = {
 
     return tbmRouteGroup
       .sort((a, b) => a.code?.localeCompare(b.code ?? '') ?? 0)
-      .map(route => ({
+      .map((route, i) => ({
         csvTableRow: [
           // ルート情報（固定列）
           {
             label: '便',
-            cellValue: <span>{route.name}</span>,
+            cellValue: (
+              <R_Stack className={`gap-0.5`}>
+                <span>{i + 1}. </span>
+
+                <span>{route.name}</span>
+              </R_Stack>
+            ),
             style: {
               ...STICKY_COLUMN_STYLE,
               minWidth: 240,
@@ -122,6 +138,7 @@ export const TableRowBuilder = {
                 fetchData,
                 setModalOpen,
                 query,
+                // user: rout,
               }),
               style: {
                 height: 1,

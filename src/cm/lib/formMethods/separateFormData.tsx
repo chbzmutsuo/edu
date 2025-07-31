@@ -15,11 +15,11 @@ export type myFormDefaultUpsertPropType = {
 }
 
 export const separateFormData = ({latestFormData, additionalPayload, columns}) => {
-  Object.keys(additionalPayload ?? {}).forEach(key => {
-    if (latestFormData[key]) {
-      delete additionalPayload[key]
-    }
-  })
+  // Object.keys(additionalPayload ?? {}).forEach(key => {
+  //   if (latestFormData[key]) {
+  //     delete additionalPayload[key]
+  //   }
+  // })
 
   const prismaDataObject = {...latestFormData, ...additionalPayload}
 

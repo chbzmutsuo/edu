@@ -50,7 +50,7 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
             additional: {
               where: {apps: {has: `tbm`}},
               payload: {apps: [`tbm`]},
-              orderBy: [{TbmBase: {code: 'asc'}}, {code: 'asc'}],
+              orderBy: [{code: 'asc'}],
             },
           }
         },

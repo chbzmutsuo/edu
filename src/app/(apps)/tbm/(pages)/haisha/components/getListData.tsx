@@ -89,7 +89,7 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
       },
     },
     where: commonWhere,
-    orderBy: {code: 'asc'},
+    orderBy: [{code: 'asc'}, {name: 'asc'}],
     ...(mode === 'ROUTE' ? {...takeSkip} : {}),
   })
 

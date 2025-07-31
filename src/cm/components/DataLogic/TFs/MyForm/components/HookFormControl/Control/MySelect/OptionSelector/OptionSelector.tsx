@@ -14,7 +14,7 @@ import {useEffect, useState, useRef} from 'react'
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn/components/ui/accordion'
 
 import {Search} from 'lucide-react'
-export const optionTakeCount = 50
+export const optionTakeCount = 100
 const OptionSelector = (props: {contexts: contextsType}) => {
   const contexts = props.contexts
 

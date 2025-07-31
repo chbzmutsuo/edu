@@ -146,24 +146,18 @@ export const CsvTableVirtualized = (props: CsvTableVirtualizedProps) => {
       return <div className="p-4 text-center text-gray-500">データがありません</div>
     }
 
+    const {className, ...otherWrapperProps} = wrapperProps
     return (
-      <div
-        {...wrapperProps}
-        className={cn(
-          'max-h-[80vh] max-w-[95vw] mx-auto overflow-hidden rounded-md border border-gray-300',
-          wrapperProps.className
-        )}
-      >
-        <div>
-          <TableVirtuoso
-            style={{height: '100vh'}}
-            data={bodyRecords}
-            fixedHeaderContent={fixedHeaderContent}
-            itemContent={itemContent}
-            components={components}
-            overscan={virtualized?.overscan || 5}
-          />
-        </div>
+      <div {...otherWrapperProps}>
+        <TableVirtuoso
+          className={cn('max-h-[80vh] max-w-[95vw] mx-auto overflow-hidden rounded-md border border-gray-300', className)}
+          style={{height: '100vh'}}
+          data={bodyRecords}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={itemContent}
+          components={components}
+          overscan={virtualized?.overscan || 5}
+        />
       </div>
     )
   }

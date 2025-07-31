@@ -8,7 +8,7 @@ export const UserColBuilder = (props: columnGetterType) => {
   const {tbmBaseId} = props.ColBuilderExtraProps ?? {}
   return new Fields([
     {id: 'tbmBaseId', label: '営業所', forSelect: {}, form: {...defaultRegister, defaultValue: tbmBaseId}},
-    {id: 'employeeCode', label: '社員コード', form: {}},
+    {id: 'code', label: '社員コード', form: {}},
     {id: 'name', label: '名称', form: {...defaultRegister}, search: {}},
     {id: 'email', label: 'Email', form: {}},
     {id: 'password', label: 'パスワード', type: `password`, form: {}},

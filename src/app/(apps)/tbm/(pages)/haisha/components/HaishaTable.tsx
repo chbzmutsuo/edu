@@ -46,11 +46,9 @@ export default function HaishaTable({
   const HK_HaishaTableEditorGMF = useHaishaTableEditorGMF({
     afterDelete: ({res, tbmDriveSchedule}) => {
       fetchData()
-      // removeScheduleFromState(tbmDriveSchedule?.id)
     },
     afterUpdate: ({res}) => {
       fetchData()
-      // updateScheduleInState(res.result)
     },
   })
 
@@ -94,18 +92,16 @@ export default function HaishaTable({
     <C_Stack className="p-3">
       <LocalLoader />
       {ModalMemo}
-
       <HaishaTableSwitcher />
-
       {HaishaTableMemo}
-
-      <PaginationControl
+      <div className={` flex justify-around text-gray-500`}>{maxRecord}件のデータを表示</div>
+      {/* <PaginationControl
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}
         maxRecord={maxRecord}
         onPageChange={handlePageChange}
         onItemsPerPageChange={handleItemsPerPageChange}
-      />
+      /> */}
     </C_Stack>
   )
 }

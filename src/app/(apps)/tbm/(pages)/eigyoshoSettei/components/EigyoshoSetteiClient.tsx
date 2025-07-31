@@ -92,7 +92,8 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
                     useGlobalProps,
                     additional: {
                       include: {TbmBase: {}},
-                      orderBy: [{name: `asc`}],
+                      orderBy: [{code: `asc`}],
+                      payload: {apps: [`tbm`]},
                     },
                     EditForm: TbmUserDetail,
                     models: {parent: `tbmBase`, children: `user`},
@@ -136,7 +137,6 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
                 <ChildCreator
                   {...{
                     ...childCreatorProps,
-
                     models: {parent: `tbmBase`, children: `tbmBase_MonthConfig`},
                     columns: ColBuilder.tbmBase_MonthConfig(ColBuiderProps),
                   }}

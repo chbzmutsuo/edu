@@ -104,7 +104,6 @@
     "**/CoLab/**": true,
     "**/Grouping/**": true,
     "**/KM/**": true,
-    "**/aquapot/**": true,
     "**/edu/**": true,
     "**/health/**": true,
     "**/keihi/**": true,
@@ -114,7 +113,8 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tmp/**": true
+    "**/tmp/**": true,
+    "**/aquapot/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,

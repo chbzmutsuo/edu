@@ -66,16 +66,7 @@ export default function SimpleDriveHistoryCC({tbmBase, driveHistory, query, wher
   const selectedDriver = driveHistory.length > 0 ? driveHistory[0]?.User?.name : null
   const selectedMonth = query.month
 
-  // CSVテーブル用のデータ準備
-  const csvData = driveHistory.map(record => ({
-    日付: formatDate(record.date, 'YYYY/MM/DD'),
-    担当ドライバ: record.User?.name || '-',
-    便名: record.TbmRouteGroup?.name || '-',
-    車両番号: record.TbmVehicle?.vehicleNumber || '-',
-    // 完了状況: record.finished ? '完了' : '未完了',
-    // 確認状況: record.confirmed ? '確認済' : '未確認',
-    // 承認状況: record.approved ? '承認済' : '未承認',
-  }))
+
 
   const componentRef = useRef(null)
   const handlePrint = useReactToPrint({

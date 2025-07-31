@@ -29,7 +29,13 @@ export default function UserTh({
     return (
       <C_Stack className={`text-xs h-full justify-start gap-0`}>
         <KeyValue label="">
-          {admin ? <T_LINK href={HREF(`/tbm/user/${user.id}`, {userId: user.id}, query)}>{user.name} </T_LINK> : user.name}
+          {admin ? (
+            <T_LINK simple href={HREF(`/tbm/user/${user.id}`, {userId: user.id}, query)}>
+              {user.name}{' '}
+            </T_LINK>
+          ) : (
+            user.name
+          )}
           <span className={`text-xs`}>({user.code})</span>
         </KeyValue>
 

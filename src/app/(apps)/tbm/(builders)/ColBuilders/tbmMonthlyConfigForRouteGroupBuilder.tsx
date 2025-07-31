@@ -12,24 +12,6 @@ export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) =>
   const HK_UnchinChildCreator = useUnchinChildCreator()
 
   return new Fields([
-    // {
-    //   id: `fee-history`,
-    //   label: '付帯作業 / 運賃 \n(最新を表示)',
-    //   form: {hidden: true},
-    //   format: (value, row) => {
-    //     const latestTbmRouteGroupFee = row.TbmRouteGroupFee[0]
-    //     const {futaiFee = 0, driverFee = 0} = latestTbmRouteGroupFee ?? {}
-
-    //     return (
-    //       <R_Stack className={`gap-1 flex-nowrap w-[220px]`}>
-    //         <div className={`min-w-[100px]`}>{NumHandler.WithUnit(futaiFee ?? 0, '')}</div>
-
-    //         <div className={`min-w-[100px]`}>{NumHandler.WithUnit(driverFee ?? 0, '')}</div>
-    //       </R_Stack>
-    //     )
-    //   },
-    // },
-
     {
       id: 'seikyuKaisu',
       label: '請求回数\n(チェック用)',
@@ -67,9 +49,9 @@ export const tbmMonthlyConfigForRouteGroupBuilder = (props: columnGetterType) =>
 
         return (
           <div style={{width: 240}} className={`grid grid-cols-2`}>
-            <KeyValue {...{label: '運賃'}}>{NumHandler.WithUnit(futaiFee ?? 0, '')}</KeyValue>
+            <KeyValue {...{label: '運賃'}}>{NumHandler.WithUnit(driverFee ?? 0, '')}</KeyValue>
             <KeyValue {...{label: '実働回数'}}>{jitsudoKaisu}</KeyValue>
-            <KeyValue {...{label: '付帯作業'}}>{NumHandler.WithUnit(driverFee ?? 0, '')}</KeyValue>
+            <KeyValue {...{label: '付帯作業'}}>{NumHandler.WithUnit(futaiFee ?? 0, '')}</KeyValue>
             <KeyValue {...{label: '通行料(郵便)'}}>{NumHandler.WithUnit(tsukoryo, '')}</KeyValue>
           </div>
         )

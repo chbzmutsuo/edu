@@ -61,7 +61,6 @@ const FIELD_DISPLAY_NAMES: Record<string, string> = {
   role: '権限',
   // その他
   customerNumber: '顧客番号',
-  employeeCode: '従業員コード',
   vehicleNumber: '車両番号',
   frameNo: '車台番号',
   // 必要に応じて追加
