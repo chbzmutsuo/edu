@@ -107,12 +107,14 @@ model User {
   HealthJournal    HealthJournal[]
 
   // Sara App リレーション
-  Family               Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
-  RequestedEvaluations ActivityEvaluationRequest[] @relation("RequestedBy")
-  ApprovedEvaluations  ActivityEvaluationRequest[] @relation("ApprovedBy")
+  Family                Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
+  RequestedEvaluations  ActivityEvaluationRequest[] @relation("RequestedBy")
+  ApprovedEvaluations   ActivityEvaluationRequest[] @relation("ApprovedBy")
   // TbmVehicle           TbmVehicle?
-  TbmVehicle           TbmVehicle?                 @relation(fields: [tbmVehicleId], references: [id])
-  tbmVehicleId         Int?
+  TbmVehicle            TbmVehicle?                 @relation(fields: [tbmVehicleId], references: [id])
+  tbmVehicleId          Int?
+  SbmReservation        SbmReservation[]
+  SbmDeliveryAssignment SbmDeliveryAssignment[]
 }
 
 model ReleaseNotes {

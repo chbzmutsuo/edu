@@ -1440,6 +1440,252 @@ model MonthlySetting {
 }
 
  
+// SBM - 仕出し弁当管理システム Prisma Schema
+
+model SbmCustomer {
+ id              String  @id @default(cuid())
+ companyName     String  @db.VarChar(200)
+ contactName     String? @db.VarChar(100)
+ phoneNumber     String  @db.VarChar(20)
+ deliveryAddress String  @db.VarChar(500)
+ postalCode      String? @db.VarChar(10)
+ email           String? @db.VarChar(255)
+ availablePoints Int     @default(0)
+ notes           String? @db.Text
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ reservations SbmReservation[]
+ rfmAnalysis  SbmRfmAnalysis[]
+
+ @@map("sbm_customers")
+}
+
+model SbmProduct {
+ id           String  @id @default(cuid())
+ name         String  @db.VarChar(200)
+ description  String? @db.Text
+ currentPrice Int // 現在価格（円）
+ currentCost  Int // 現在原価（円）
+ category     String  @db.VarChar(100)
+ isActive     Boolean @default(true)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ priceHistory     SbmProductPriceHistory[]
+ reservationItems SbmReservationItem[]
+
+ @@map("sbm_products")
+}
+
+model SbmProductPriceHistory {
+ id            String   @id @default(cuid())
+ productId     String
+ price         Int // 価格（円）
+ cost          Int // 原価（円）
+ effectiveDate DateTime
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+
+ // リレーション
+ product SbmProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+ @@map("sbm_product_price_history")
+}
+
+model SbmUser {
+ id       String  @id @default(cuid())
+ username String  @unique @db.VarChar(100)
+ name     String  @db.VarChar(100)
+ email    String  @unique @db.VarChar(255)
+ role     String  @db.VarChar(50) // 'admin', 'manager', 'staff'
+ isActive Boolean @default(true)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ reservations        SbmReservation[]
+ deliveryAssignments SbmDeliveryAssignment[]
+
+ @@map("sbm_users")
+}
+
+model SbmReservation {
+ id              String  @id @default(cuid())
+ customerId      String
+ customerName    String  @db.VarChar(200)
+ contactName     String? @db.VarChar(100)
+ phoneNumber     String  @db.VarChar(20)
+ deliveryAddress String  @db.VarChar(500)
+
+ // 配達情報
+ deliveryDate   DateTime
+ pickupLocation String   @db.VarChar(50) // '配達', '店舗受取'
+
+ // 注文情報
+ purpose       String @db.VarChar(100) // '会議', '研修', '接待', 'イベント', '懇親会', 'その他'
+ paymentMethod String @db.VarChar(50) // '現金', '銀行振込', '請求書', 'クレジットカード'
+ orderChannel  String @db.VarChar(50) // '電話', 'FAX', 'メール', 'Web', '営業', 'その他'
+
+ // 金額情報
+ totalAmount Int // 合計金額（円）
+ pointsUsed  Int @default(0)
+ finalAmount Int // 最終金額（円）
+
+ // 管理情報
+ orderStaff   String  @db.VarChar(100)
+ orderStaffId String?
+ notes        String? @db.Text
+
+ // タスク管理
+ deliveryCompleted Boolean @default(false)
+ recoveryCompleted Boolean @default(false)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ customer            SbmCustomer                   @relation(fields: [customerId], references: [id], onDelete: Restrict)
+ orderStaffUser      SbmUser?                      @relation(fields: [orderStaffId], references: [id], onDelete: SetNull)
+ items               SbmReservationItem[]
+ tasks               SbmReservationTask[]
+ changeHistory       SbmReservationChangeHistory[]
+ deliveryAssignments SbmDeliveryAssignment[]
+
+ @@map("sbm_reservations")
+}
+
+model SbmReservationItem {
+ id            String @id @default(cuid())
+ reservationId String
+ productId     String
+ productName   String @db.VarChar(200)
+ quantity      Int
+ unitPrice     Int // 単価（円）
+ totalPrice    Int // 小計（円）
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+
+ // リレーション
+ reservation SbmReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+ product     SbmProduct     @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+ @@map("sbm_reservation_items")
+}
+
+model SbmReservationTask {
+ id            String    @id @default(cuid())
+ reservationId String
+ taskType      String    @db.VarChar(50) // 'delivery', 'recovery'
+ isCompleted   Boolean   @default(false)
+ completedAt   DateTime?
+ notes         String?   @db.Text
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ reservation SbmReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+ @@map("sbm_reservation_tasks")
+}
+
+model SbmReservationChangeHistory {
+ id            String @id @default(cuid())
+ reservationId String
+ changedBy     String @db.VarChar(100)
+ changeType    String @db.VarChar(50) // 'create', 'update', 'delete'
+ changedFields Json? // 変更されたフィールドの詳細
+ oldValues     Json? // 変更前の値
+ newValues     Json? // 変更後の値
+
+ // タイムスタンプ
+ changedAt DateTime @default(now())
+
+ // リレーション
+ reservation SbmReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+
+ @@map("sbm_reservation_change_history")
+}
+
+model SbmDeliveryTeam {
+ id          String  @id @default(cuid())
+ name        String  @db.VarChar(100)
+ driverName  String  @db.VarChar(100)
+ vehicleInfo String? @db.VarChar(200)
+ capacity    Int // 配達可能数
+ isActive    Boolean @default(true)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ deliveryAssignments SbmDeliveryAssignment[]
+
+ @@map("sbm_delivery_teams")
+}
+
+model SbmDeliveryAssignment {
+ id                String   @id @default(cuid())
+ teamId            String
+ reservationId     String
+ assignedBy        String   @db.VarChar(100)
+ assignedById      String?
+ deliveryDate      DateTime
+ estimatedDuration Int? // 予想配達時間（分）
+ actualDuration    Int? // 実際の配達時間（分）
+ route             Json? // 配達ルート情報
+ status            String   @default("assigned") @db.VarChar(50) // 'assigned', 'in_progress', 'completed', 'cancelled'
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ team           SbmDeliveryTeam @relation(fields: [teamId], references: [id], onDelete: Restrict)
+ reservation    SbmReservation  @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+ assignedByUser SbmUser?        @relation(fields: [assignedById], references: [id], onDelete: SetNull)
+
+ @@map("sbm_delivery_assignments")
+}
+
+model SbmRfmAnalysis {
+ id           String   @id @default(cuid())
+ customerId   String
+ analysisDate DateTime @default(now())
+ recency      Int // 最新購入からの日数
+ frequency    Int // 購入回数
+ monetary     Int // 累計購入金額（円）
+ rScore       Int // Recency Score (1-5)
+ fScore       Int // Frequency Score (1-5)
+ mScore       Int // Monetary Score (1-5)
+ totalScore   Int // 合計スコア
+ rank         String   @db.VarChar(50) // 'VIP', '優良', '安定', '一般', '離反懸念'
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+
+ // リレーション
+ customer SbmCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+ @@unique([customerId, analysisDate])
+ @@map("sbm_rfm_analysis")
+}
+
+ 
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")

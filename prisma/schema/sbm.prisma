@@ -1,0 +1,205 @@
+// SBM - 仕出し弁当管理システム Prisma Schema
+
+model SbmCustomer {
+ id              Int     @id @default(autoincrement())
+ companyName     String  @db.VarChar(200)
+ contactName     String? @db.VarChar(100)
+ phoneNumber     String  @db.VarChar(20)
+ deliveryAddress String  @db.VarChar(500)
+ postalCode      String? @db.VarChar(10)
+ email           String? @db.VarChar(255)
+ availablePoints Int     @default(0)
+ notes           String? @db.Text
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ SbmReservation SbmReservation[]
+ SbmRfmAnalysis SbmRfmAnalysis[]
+}
+
+model SbmProduct {
+ id           Int     @id @default(autoincrement())
+ name         String  @db.VarChar(200)
+ description  String? @db.Text
+ currentPrice Int // 現在価格（円）
+ currentCost  Int // 現在原価（円）
+ category     String  @db.VarChar(100)
+ isActive     Boolean @default(true)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ SbmProductPriceHistory SbmProductPriceHistory[]
+ SbmReservationItem     SbmReservationItem[]
+}
+
+model SbmProductPriceHistory {
+ id            Int      @id @default(autoincrement())
+ productId     String
+ price         Int // 価格（円）
+ cost          Int // 原価（円）
+ effectiveDate DateTime
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+
+ // リレーション
+ SbmProduct   SbmProduct @relation(fields: [sbmProductId], references: [id])
+ sbmProductId Int
+}
+
+model SbmReservation {
+ id              Int     @id @default(autoincrement())
+ sbmCustomerId   Int
+ customerName    String  @db.VarChar(200)
+ contactName     String? @db.VarChar(100)
+ phoneNumber     String  @db.VarChar(20)
+ deliveryAddress String  @db.VarChar(500)
+
+ // 配達情報
+ deliveryDate   DateTime
+ pickupLocation String   @db.VarChar(50) // '配達', '店舗受取'
+
+ // 注文情報
+ purpose       String @db.VarChar(100) // '会議', '研修', '接待', 'イベント', '懇親会', 'その他'
+ paymentMethod String @db.VarChar(50) // '現金', '銀行振込', '請求書', 'クレジットカード'
+ orderChannel  String @db.VarChar(50) // '電話', 'FAX', 'メール', 'Web', '営業', 'その他'
+
+ // 金額情報
+ totalAmount Int // 合計金額（円）
+ pointsUsed  Int @default(0)
+ finalAmount Int // 最終金額（円）
+
+ // 管理情報
+ orderStaff String  @db.VarChar(100)
+ userId     Int?
+ notes      String? @db.Text
+
+ // タスク管理
+ deliveryCompleted Boolean @default(false)
+ recoveryCompleted Boolean @default(false)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ SbmCustomer                 SbmCustomer                   @relation(fields: [sbmCustomerId], references: [id], onDelete: Restrict)
+ User                        User?                         @relation(fields: [userId], references: [id], onDelete: SetNull)
+ SbmReservationItem          SbmReservationItem[]
+ SbmReservationTask          SbmReservationTask[]
+ SbmReservationChangeHistory SbmReservationChangeHistory[]
+ SbmDeliveryAssignment       SbmDeliveryAssignment[]
+}
+
+model SbmReservationItem {
+ id               String @id @default(cuid())
+ sbmReservationId Int
+ sbmProductId     Int
+ productName      String @db.VarChar(200)
+ quantity         Int
+ unitPrice        Int // 単価（円）
+ totalPrice       Int // 小計（円）
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+
+ // リレーション
+ SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+ SbmProduct     SbmProduct     @relation(fields: [sbmProductId], references: [id], onDelete: Restrict)
+}
+
+model SbmReservationTask {
+ id               Int       @id @default(autoincrement())
+ sbmReservationId Int
+ taskType         String    @db.VarChar(50) // 'delivery', 'recovery'
+ isCompleted      Boolean   @default(false)
+ completedAt      DateTime?
+ notes            String?   @db.Text
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+}
+
+model SbmReservationChangeHistory {
+ id               String @id @default(cuid())
+ sbmReservationId Int
+ changedBy        String @db.VarChar(100)
+ changeType       String @db.VarChar(50) // 'create', 'update', 'delete'
+ changedFields    Json? // 変更されたフィールドの詳細
+ oldValues        Json? // 変更前の値
+ newValues        Json? // 変更後の値
+
+ // タイムスタンプ
+ changedAt DateTime @default(now())
+
+ // リレーション
+ SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+}
+
+model SbmDeliveryTeam {
+ id          Int     @id @default(autoincrement())
+ name        String  @db.VarChar(100)
+ driverName  String  @db.VarChar(100)
+ vehicleInfo String? @db.VarChar(200)
+ capacity    Int // 配達可能数
+ isActive    Boolean @default(true)
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ deliveryAssignments SbmDeliveryAssignment[]
+}
+
+model SbmDeliveryAssignment {
+ id                Int      @id @default(autoincrement())
+ sbmDeliveryTeamId Int
+ sbmReservationId  Int
+ assignedBy        String   @db.VarChar(100)
+ userId            Int?
+ deliveryDate      DateTime
+ estimatedDuration Int? // 予想配達時間（分）
+ actualDuration    Int? // 実際の配達時間（分）
+ route             Json? // 配達ルート情報
+ status            String   @default("assigned") @db.VarChar(50) // 'assigned', 'in_progress', 'completed', 'cancelled'
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+
+ // リレーション
+ SbmDeliveryTeam SbmDeliveryTeam @relation(fields: [sbmDeliveryTeamId], references: [id], onDelete: Restrict)
+ SbmReservation  SbmReservation  @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+ User            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model SbmRfmAnalysis {
+ id            Int      @id @default(autoincrement())
+ sbmCustomerId Int
+ analysisDate  DateTime @default(now())
+ recency       Int // 最新購入からの日数
+ frequency     Int // 購入回数
+ monetary      Int // 累計購入金額（円）
+ rScore        Int // Recency Score (1-5)
+ fScore        Int // Frequency Score (1-5)
+ mScore        Int // Monetary Score (1-5)
+ totalScore    Int // 合計スコア
+ rank          String   @db.VarChar(50) // 'VIP', '優良', '安定', '一般', '離反懸念'
+
+ // タイムスタンプ
+ createdAt DateTime @default(now())
+
+ // リレーション
+ SbmCustomer SbmCustomer @relation(fields: [sbmCustomerId], references: [id], onDelete: Cascade)
+}
