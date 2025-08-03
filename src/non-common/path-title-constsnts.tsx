@@ -167,6 +167,51 @@ export const PAGES: any = {
       breads,
     }
   },
+
+  sbm_PAGES: (props: PageGetterType) => {
+    const {roles, query, session, rootPath, pathname} = props
+
+    const {login, admin} = getScopes(session, {query, roles})
+
+    const loginPaths = [
+      {tabId: 'dashboard', label: 'ダッシュボード', ROOT: [rootPath]},
+      {tabId: 'reservations', label: '予約管理', ROOT: [rootPath]},
+
+      {tabId: 'delivery-route', label: '配達ルート管理', ROOT: [rootPath]},
+      {tabId: 'invoices', label: '伝票印刷', ROOT: [rootPath]},
+      {tabId: 'rfm', label: 'RFM分析', ROOT: [rootPath]},
+
+      {
+        tabId: '',
+        label: '管理',
+        ROOT: [rootPath],
+        children: [
+          {tabId: 'customers', label: '顧客マスタ', ROOT: [rootPath]},
+          {tabId: 'products', label: '商品マスタ', ROOT: [rootPath]},
+          {tabId: 'users', label: 'ユーザーマスタ', ROOT: [rootPath]},
+          {tabId: 'seed', label: 'データ管理・シード', ROOT: [rootPath]},
+        ],
+      },
+    ].map((item, i) => {
+      return {...item, ROOT: [rootPath], exclusiveTo: !!login}
+    })
+
+    const pathSource: pathItemType[] = [...loginPaths]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      session,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
 }
 
 export const CleansePathSource = (props: anyObject) => {

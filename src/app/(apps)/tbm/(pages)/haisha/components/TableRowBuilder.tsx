@@ -1,7 +1,7 @@
 'use client'
-import React from 'react'
+import React, {CSSProperties} from 'react'
 import {Days} from '@cm/class/Days/Days'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {formatDate, formatDateTimeOrDate} from '@cm/class/Days/date-utils/formatters'
 import {Cell} from './Cell'
 import UserTh from './UserTh'
 import DateThCell from './DateThCell'
@@ -102,52 +102,59 @@ export const TableRowBuilder = {
 
     return tbmRouteGroup
       .sort((a, b) => a.code?.localeCompare(b.code ?? '') ?? 0)
-      .map((route, i) => ({
-        csvTableRow: [
-          // ルート情報（固定列）
-          {
-            label: '便',
-            cellValue: (
-              <R_Stack className={`gap-0.5`}>
-                <span>{i + 1}. </span>
+      .map((route, i) => {
+        const workingDaysOfRoute = route.TbmRouteGroupCalendar.filter(calendar => {
+          return calendar.holidayType === '稼働'
+        })
 
-                <span>{route.name}</span>
-              </R_Stack>
-            ),
-            style: {
-              ...STICKY_COLUMN_STYLE,
-              minWidth: 240,
-            },
-          },
-          // 日付別セル
-          ...days.map(date => {
-            const scheduleListOnDate = scheduleByDateAndRoute[formatDate(date)]?.[String(route.id)] ?? []
-            const holidayType = route.TbmRouteGroupCalendar.find(calendar =>
-              Days.validate.isSameDate(calendar.date, date)
-            )?.holidayType
-            const must = route?.id > 0 && holidayType === '稼働'
+        return {
+          csvTableRow: [
+            // ルート情報（固定列）
+            {
+              label: '便',
+              cellValue: (
+                <R_Stack className={`gap-0.5`}>
+                  <span>{i + 1}. </span>
 
-            return {
-              ...TableRowBuilder.buildDateCell({
-                date,
-                scheduleListOnDate,
-                tbmRouteGroup: route,
-                mode,
-                tbmBase,
-                holidays,
-                fetchData,
-                setModalOpen,
-                query,
-                // user: rout,
-              }),
+                  <span>{route.name}</span>
+                </R_Stack>
+              ),
               style: {
-                height: 1,
-                background: must ? '#fff1cd' : '',
+                ...STICKY_COLUMN_STYLE,
+                minWidth: 240,
               },
-            }
-          }),
-        ],
-      }))
+            },
+            // 日付別セル
+            ...days.map(date => {
+              const must = workingDaysOfRoute.find(calendar => {
+                return formatDate(calendar.date) === formatDate(date)
+              })
+
+              const scheduleListOnDate = scheduleByDateAndRoute[formatDate(date)]?.[String(route.id)] ?? []
+
+              const cellStyle = must ? {background: '#fff1cd'} : {}
+
+              return {
+                ...TableRowBuilder.buildDateCell({
+                  date,
+                  scheduleListOnDate,
+                  tbmRouteGroup: route,
+                  mode,
+                  tbmBase,
+                  holidays,
+                  fetchData,
+                  setModalOpen,
+                  query,
+                  cellStyle,
+                  // user: rout,
+                }),
+
+                style: cellStyle,
+              }
+            }),
+          ],
+        }
+      })
   },
 
   // 日付セルの共通ビルダー
@@ -162,6 +169,7 @@ export const TableRowBuilder = {
     fetchData,
     setModalOpen,
     query,
+    cellStyle,
   }: {
     date: Date
     scheduleListOnDate: any[]
@@ -173,6 +181,7 @@ export const TableRowBuilder = {
     fetchData: () => void
     setModalOpen: (props: any) => void
     query: any
+    cellStyle?: CSSProperties
   }) => {
     const dateStr = formatDate(date, 'M/D(ddd)')
     const isHoliday = Days.day.isHoliday(date, holidays)
@@ -180,7 +189,7 @@ export const TableRowBuilder = {
 
     return {
       label: (
-        <div id={`#${dateStr}`}>
+        <div id={`#${dateStr}`} style={cellStyle}>
           <DateThCell
             {...{
               tbmBase,

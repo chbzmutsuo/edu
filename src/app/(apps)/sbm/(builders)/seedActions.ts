@@ -1,6 +1,7 @@
 'use server'
 
-import {Reservation, ReservationItem} from '@app/(apps)/sbm/types'
+import {OrderChannel, PaymentMethod, Purpose, Reservation, ReservationItem} from '@app/(apps)/sbm/types'
+import {PickupLocation} from '@app/(apps)/sbm/types'
 import {revalidatePath} from 'next/cache'
 import prisma from 'src/lib/prisma'
 
@@ -129,38 +130,6 @@ export async function seedDatabase() {
       },
     ]
 
-    // サンプルユーザーデータ
-    const users = [
-      {
-        username: 'admin',
-        name: '管理者',
-        email: 'admin@sbm.local',
-        role: 'admin',
-        isActive: true,
-      },
-      {
-        username: 'manager1',
-        name: '店長 田中',
-        email: 'manager1@sbm.local',
-        role: 'manager',
-        isActive: true,
-      },
-      {
-        username: 'staff1',
-        name: 'スタッフ 佐藤',
-        email: 'staff1@sbm.local',
-        role: 'staff',
-        isActive: true,
-      },
-      {
-        username: 'staff2',
-        name: 'スタッフ 鈴木',
-        email: 'staff2@sbm.local',
-        role: 'staff',
-        isActive: true,
-      },
-    ]
-
     // 配達チームデータ
     const teams = [
       {
@@ -194,8 +163,9 @@ export async function seedDatabase() {
         prisma.sbmProduct.create({
           data: {
             ...product,
-            priceHistory: {
+            SbmProductPriceHistory: {
               create: {
+                productId: '1', // 仮の値、後で更新
                 price: product.currentPrice,
                 cost: product.currentCost,
                 effectiveDate: new Date(),
@@ -206,13 +176,21 @@ export async function seedDatabase() {
       )
     )
 
-    const createdUsers = await Promise.all(users.map(user => prisma.sbmUser.create({data: user})))
+    // 価格履歴のproductIdを正しい値で更新
+    for (const product of createdProducts) {
+      await prisma.sbmProductPriceHistory.updateMany({
+        where: {sbmProductId: product.id},
+        data: {productId: product.id.toString()},
+      })
+    }
 
     const createdTeams = await Promise.all(teams.map(team => prisma.sbmDeliveryTeam.create({data: team})))
 
     // サンプル予約データ（直近1ヶ月分）
     const today = new Date()
-    const reservations: Reservation[] = []
+    const reservations: any[] = []
+
+    const staffNames = ['田中太郎', '佐藤花子', '鈴木次郎', '高橋美咲']
 
     for (let i = 0; i < 15; i++) {
       const deliveryDate = new Date(today)
@@ -220,7 +198,7 @@ export async function seedDatabase() {
       deliveryDate.setHours(12, 0, 0, 0) // 12:00固定
 
       const customer = createdCustomers[Math.floor(Math.random() * createdCustomers.length)]
-      const staff = createdUsers[Math.floor(Math.random() * createdUsers.length)]
+      const staff = staffNames[Math.floor(Math.random() * staffNames.length)]
 
       // ランダムに1-4個の商品を選択
       const numItems = Math.floor(Math.random() * 4) + 1
@@ -229,7 +207,7 @@ export async function seedDatabase() {
         const product = createdProducts[Math.floor(Math.random() * createdProducts.length)]
         const quantity = Math.floor(Math.random() * 10) + 1
         selectedProducts.push({
-          productId: product.id,
+          sbmProductId: product.id,
           productName: product.name,
           quantity,
           unitPrice: product.currentPrice,
@@ -237,7 +215,7 @@ export async function seedDatabase() {
         })
       }
 
-      const totalAmount = selectedProducts.reduce((sum, item) => sum + item.totalPrice, 0)
+      const totalAmount = selectedProducts.reduce((sum, item) => sum + (item?.totalPrice ?? 0), 0)
       const pointsUsed = Math.floor(Math.random() * Math.min(customer.availablePoints, totalAmount * 0.1))
       const finalAmount = totalAmount - pointsUsed
 
@@ -247,22 +225,21 @@ export async function seedDatabase() {
       const pickupLocations = ['配達', '店舗受取']
 
       reservations.push({
-        customerId: customer.id,
+        sbmCustomerId: customer.id,
         customerName: customer.companyName,
-        contactName: customer.contactName,
+        contactName: customer.contactName ?? undefined,
         phoneNumber: customer.phoneNumber,
         deliveryAddress: customer.deliveryAddress,
         deliveryDate,
-        pickupLocation: pickupLocations[Math.floor(Math.random() * pickupLocations.length)],
-        purpose: purposes[Math.floor(Math.random() * purposes.length)],
-        paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)],
-        orderChannel: orderChannels[Math.floor(Math.random() * orderChannels.length)],
+        pickupLocation: pickupLocations[Math.floor(Math.random() * pickupLocations.length)] as PickupLocation,
+        purpose: purposes[Math.floor(Math.random() * purposes.length)] as Purpose,
+        paymentMethod: paymentMethods[Math.floor(Math.random() * paymentMethods.length)] as PaymentMethod,
+        orderChannel: orderChannels[Math.floor(Math.random() * orderChannels.length)] as OrderChannel,
         totalAmount,
         pointsUsed,
         finalAmount,
-        orderStaff: staff.name,
-        orderStaffId: staff.id,
-        notes: Math.random() > 0.7 ? 'サンプル備考テキスト' : null,
+        orderStaff: staff,
+        notes: Math.random() > 0.7 ? 'サンプル備考テキスト' : undefined,
         deliveryCompleted: deliveryDate < today ? Math.random() > 0.2 : false,
         recoveryCompleted: deliveryDate < today ? Math.random() > 0.3 : false,
         items: selectedProducts,
@@ -273,7 +250,7 @@ export async function seedDatabase() {
       reservations.map(reservation =>
         prisma.sbmReservation.create({
           data: {
-            customerId: reservation.customerId,
+            sbmCustomerId: reservation.sbmCustomerId,
             customerName: reservation.customerName,
             contactName: reservation.contactName,
             phoneNumber: reservation.phoneNumber,
@@ -287,20 +264,26 @@ export async function seedDatabase() {
             pointsUsed: reservation.pointsUsed,
             finalAmount: reservation.finalAmount,
             orderStaff: reservation.orderStaff,
-            orderStaffId: reservation.orderStaffId,
+            userId: reservation.userId,
             notes: reservation.notes,
             deliveryCompleted: reservation.deliveryCompleted,
             recoveryCompleted: reservation.recoveryCompleted,
-            items: {
-              create: reservation.items,
+            SbmReservationItem: {
+              create: reservation.items.map(item => ({
+                sbmProductId: item.sbmProductId,
+                productName: item.productName,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+              })),
             },
-            tasks: {
+            SbmReservationTask: {
               create: [
                 {taskType: 'delivery', isCompleted: reservation.deliveryCompleted},
                 {taskType: 'recovery', isCompleted: reservation.recoveryCompleted},
               ],
             },
-            changeHistory: {
+            SbmReservationChangeHistory: {
               create: {
                 changedBy: reservation.orderStaff,
                 changeType: 'create',
@@ -319,7 +302,6 @@ export async function seedDatabase() {
         counts: {
           customers: createdCustomers.length,
           products: createdProducts.length,
-          users: createdUsers.length,
           teams: createdTeams.length,
           reservations: createdReservations.length,
         },
@@ -344,7 +326,6 @@ export async function clearDatabase() {
     await prisma.sbmProductPriceHistory.deleteMany()
     await prisma.sbmProduct.deleteMany()
     await prisma.sbmDeliveryTeam.deleteMany()
-    await prisma.sbmUser.deleteMany()
     await prisma.sbmCustomer.deleteMany()
 
     revalidatePath('/sbm')
@@ -358,10 +339,9 @@ export async function clearDatabase() {
 // データベースステータス確認
 export async function checkDatabaseStatus() {
   try {
-    const [customers, products, users, reservations, teams] = await Promise.all([
+    const [customers, products, reservations, teams] = await Promise.all([
       prisma.sbmCustomer.count(),
       prisma.sbmProduct.count(),
-      prisma.sbmUser.count(),
       prisma.sbmReservation.count(),
       prisma.sbmDeliveryTeam.count(),
     ])
@@ -369,7 +349,7 @@ export async function checkDatabaseStatus() {
     return {
       customers,
       products,
-      users,
+      users: 0, // Userモデルがないため0
       reservations,
       teams,
     }
@@ -388,17 +368,16 @@ export async function checkDatabaseStatus() {
 // データエクスポート
 export async function exportData() {
   try {
-    const [customers, products, users, teams, reservations] = await Promise.all([
-      prisma.sbmCustomer.findMany({include: {reservations: true, rfmAnalysis: true}}),
-      prisma.sbmProduct.findMany({include: {priceHistory: true, reservationItems: true}}),
-      prisma.sbmUser.findMany({include: {reservations: true, deliveryAssignments: true}}),
+    const [customers, products, teams, reservations] = await Promise.all([
+      prisma.sbmCustomer.findMany({include: {SbmReservation: true, SbmRfmAnalysis: true}}),
+      prisma.sbmProduct.findMany({include: {SbmProductPriceHistory: true, SbmReservationItem: true}}),
       prisma.sbmDeliveryTeam.findMany({include: {deliveryAssignments: true}}),
       prisma.sbmReservation.findMany({
         include: {
-          items: true,
-          tasks: true,
-          changeHistory: true,
-          deliveryAssignments: true,
+          SbmReservationItem: true,
+          SbmReservationTask: true,
+          SbmReservationChangeHistory: true,
+          SbmDeliveryAssignment: true,
         },
       }),
     ])
@@ -409,7 +388,6 @@ export async function exportData() {
       data: {
         customers,
         products,
-        users,
         teams,
         reservations,
       },
@@ -432,7 +410,7 @@ export async function importData(importData: any) {
     // まずデータをクリア
     await clearDatabase()
 
-    const {customers, products, users, teams, reservations} = importData.data
+    const {customers, products, teams, reservations} = importData.data
 
     // 顧客データをインポート
     if (customers?.length > 0) {
@@ -440,7 +418,6 @@ export async function importData(importData: any) {
         customers.map((customer: any) =>
           prisma.sbmCustomer.create({
             data: {
-              id: customer.id,
               companyName: customer.companyName,
               contactName: customer.contactName,
               phoneNumber: customer.phoneNumber,
@@ -463,7 +440,6 @@ export async function importData(importData: any) {
         products.map((product: any) =>
           prisma.sbmProduct.create({
             data: {
-              id: product.id,
               name: product.name,
               description: product.description,
               currentPrice: product.currentPrice,
@@ -472,10 +448,10 @@ export async function importData(importData: any) {
               isActive: product.isActive,
               createdAt: new Date(product.createdAt),
               updatedAt: new Date(product.updatedAt),
-              priceHistory: {
+              SbmProductPriceHistory: {
                 create:
-                  product.priceHistory?.map((history: any) => ({
-                    id: history.id,
+                  product.SbmProductPriceHistory?.map((history: any) => ({
+                    productId: history.productId,
                     price: history.price,
                     cost: history.cost,
                     effectiveDate: new Date(history.effectiveDate),
@@ -488,33 +464,12 @@ export async function importData(importData: any) {
       )
     }
 
-    // ユーザーデータをインポート
-    if (users?.length > 0) {
-      await Promise.all(
-        users.map((user: any) =>
-          prisma.sbmUser.create({
-            data: {
-              id: user.id,
-              username: user.username,
-              name: user.name,
-              email: user.email,
-              role: user.role,
-              isActive: user.isActive,
-              createdAt: new Date(user.createdAt),
-              updatedAt: new Date(user.updatedAt),
-            },
-          })
-        )
-      )
-    }
-
     // チームデータをインポート
     if (teams?.length > 0) {
       await Promise.all(
         teams.map((team: any) =>
           prisma.sbmDeliveryTeam.create({
             data: {
-              id: team.id,
               name: team.name,
               driverName: team.driverName,
               vehicleInfo: team.vehicleInfo,
@@ -534,8 +489,7 @@ export async function importData(importData: any) {
         reservations.map((reservation: any) =>
           prisma.sbmReservation.create({
             data: {
-              id: reservation.id,
-              customerId: reservation.customerId,
+              sbmCustomerId: reservation.sbmCustomerId,
               customerName: reservation.customerName,
               contactName: reservation.contactName,
               phoneNumber: reservation.phoneNumber,
@@ -549,17 +503,16 @@ export async function importData(importData: any) {
               pointsUsed: reservation.pointsUsed,
               finalAmount: reservation.finalAmount,
               orderStaff: reservation.orderStaff,
-              orderStaffId: reservation.orderStaffId,
+              userId: reservation.userId,
               notes: reservation.notes,
               deliveryCompleted: reservation.deliveryCompleted,
               recoveryCompleted: reservation.recoveryCompleted,
               createdAt: new Date(reservation.createdAt),
               updatedAt: new Date(reservation.updatedAt),
-              items: {
+              SbmReservationItem: {
                 create:
-                  reservation.items?.map((item: any) => ({
-                    id: item.id,
-                    productId: item.productId,
+                  reservation.SbmReservationItem?.map((item: any) => ({
+                    sbmProductId: item.sbmProductId,
                     productName: item.productName,
                     quantity: item.quantity,
                     unitPrice: item.unitPrice,
@@ -567,10 +520,9 @@ export async function importData(importData: any) {
                     createdAt: new Date(item.createdAt),
                   })) || [],
               },
-              tasks: {
+              SbmReservationTask: {
                 create:
-                  reservation.tasks?.map((task: any) => ({
-                    id: task.id,
+                  reservation.SbmReservationTask?.map((task: any) => ({
                     taskType: task.taskType,
                     isCompleted: task.isCompleted,
                     completedAt: task.completedAt ? new Date(task.completedAt) : null,
@@ -579,10 +531,9 @@ export async function importData(importData: any) {
                     updatedAt: new Date(task.updatedAt),
                   })) || [],
               },
-              changeHistory: {
+              SbmReservationChangeHistory: {
                 create:
-                  reservation.changeHistory?.map((history: any) => ({
-                    id: history.id,
+                  reservation.SbmReservationChangeHistory?.map((history: any) => ({
                     changedBy: history.changedBy,
                     changeType: history.changeType,
                     changedFields: history.changedFields,

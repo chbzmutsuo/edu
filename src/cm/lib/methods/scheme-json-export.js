@@ -1443,7 +1443,7 @@ model MonthlySetting {
 // SBM - 仕出し弁当管理システム Prisma Schema
 
 model SbmCustomer {
- id              String  @id @default(cuid())
+ id              Int     @id @default(autoincrement())
  companyName     String  @db.VarChar(200)
  contactName     String? @db.VarChar(100)
  phoneNumber     String  @db.VarChar(20)
@@ -1458,14 +1458,12 @@ model SbmCustomer {
  updatedAt DateTime @updatedAt
 
  // リレーション
- reservations SbmReservation[]
- rfmAnalysis  SbmRfmAnalysis[]
-
- @@map("sbm_customers")
+ SbmReservation SbmReservation[]
+ SbmRfmAnalysis SbmRfmAnalysis[]
 }
 
 model SbmProduct {
- id           String  @id @default(cuid())
+ id           Int     @id @default(autoincrement())
  name         String  @db.VarChar(200)
  description  String? @db.Text
  currentPrice Int // 現在価格（円）
@@ -1478,14 +1476,12 @@ model SbmProduct {
  updatedAt DateTime @updatedAt
 
  // リレーション
- priceHistory     SbmProductPriceHistory[]
- reservationItems SbmReservationItem[]
-
- @@map("sbm_products")
+ SbmProductPriceHistory SbmProductPriceHistory[]
+ SbmReservationItem     SbmReservationItem[]
 }
 
 model SbmProductPriceHistory {
- id            String   @id @default(cuid())
+ id            Int      @id @default(autoincrement())
  productId     String
  price         Int // 価格（円）
  cost          Int // 原価（円）
@@ -1495,33 +1491,13 @@ model SbmProductPriceHistory {
  createdAt DateTime @default(now())
 
  // リレーション
- product SbmProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
-
- @@map("sbm_product_price_history")
-}
-
-model SbmUser {
- id       String  @id @default(cuid())
- username String  @unique @db.VarChar(100)
- name     String  @db.VarChar(100)
- email    String  @unique @db.VarChar(255)
- role     String  @db.VarChar(50) // 'admin', 'manager', 'staff'
- isActive Boolean @default(true)
-
- // タイムスタンプ
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
-
- // リレーション
- reservations        SbmReservation[]
- deliveryAssignments SbmDeliveryAssignment[]
-
- @@map("sbm_users")
+ SbmProduct   SbmProduct @relation(fields: [sbmProductId], references: [id])
+ sbmProductId Int
 }
 
 model SbmReservation {
- id              String  @id @default(cuid())
- customerId      String
+ id              Int     @id @default(autoincrement())
+ sbmCustomerId   Int
  customerName    String  @db.VarChar(200)
  contactName     String? @db.VarChar(100)
  phoneNumber     String  @db.VarChar(20)
@@ -1542,9 +1518,9 @@ model SbmReservation {
  finalAmount Int // 最終金額（円）
 
  // 管理情報
- orderStaff   String  @db.VarChar(100)
- orderStaffId String?
- notes        String? @db.Text
+ orderStaff String  @db.VarChar(100)
+ userId     Int?
+ notes      String? @db.Text
 
  // タスク管理
  deliveryCompleted Boolean @default(false)
@@ -1555,73 +1531,65 @@ model SbmReservation {
  updatedAt DateTime @updatedAt
 
  // リレーション
- customer            SbmCustomer                   @relation(fields: [customerId], references: [id], onDelete: Restrict)
- orderStaffUser      SbmUser?                      @relation(fields: [orderStaffId], references: [id], onDelete: SetNull)
- items               SbmReservationItem[]
- tasks               SbmReservationTask[]
- changeHistory       SbmReservationChangeHistory[]
- deliveryAssignments SbmDeliveryAssignment[]
-
- @@map("sbm_reservations")
+ SbmCustomer                 SbmCustomer                   @relation(fields: [sbmCustomerId], references: [id], onDelete: Restrict)
+ User                        User?                         @relation(fields: [userId], references: [id], onDelete: SetNull)
+ SbmReservationItem          SbmReservationItem[]
+ SbmReservationTask          SbmReservationTask[]
+ SbmReservationChangeHistory SbmReservationChangeHistory[]
+ SbmDeliveryAssignment       SbmDeliveryAssignment[]
 }
 
 model SbmReservationItem {
- id            String @id @default(cuid())
- reservationId String
- productId     String
- productName   String @db.VarChar(200)
- quantity      Int
- unitPrice     Int // 単価（円）
- totalPrice    Int // 小計（円）
+ id               String @id @default(cuid())
+ sbmReservationId Int
+ sbmProductId     Int
+ productName      String @db.VarChar(200)
+ quantity         Int
+ unitPrice        Int // 単価（円）
+ totalPrice       Int // 小計（円）
 
  // タイムスタンプ
  createdAt DateTime @default(now())
 
  // リレーション
- reservation SbmReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
- product     SbmProduct     @relation(fields: [productId], references: [id], onDelete: Restrict)
-
- @@map("sbm_reservation_items")
+ SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+ SbmProduct     SbmProduct     @relation(fields: [sbmProductId], references: [id], onDelete: Restrict)
 }
 
 model SbmReservationTask {
- id            String    @id @default(cuid())
- reservationId String
- taskType      String    @db.VarChar(50) // 'delivery', 'recovery'
- isCompleted   Boolean   @default(false)
- completedAt   DateTime?
- notes         String?   @db.Text
+ id               Int       @id @default(autoincrement())
+ sbmReservationId Int
+ taskType         String    @db.VarChar(50) // 'delivery', 'recovery'
+ isCompleted      Boolean   @default(false)
+ completedAt      DateTime?
+ notes            String?   @db.Text
 
  // タイムスタンプ
  createdAt DateTime @default(now())
  updatedAt DateTime @updatedAt
 
  // リレーション
- reservation SbmReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
-
- @@map("sbm_reservation_tasks")
+ SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
 }
 
 model SbmReservationChangeHistory {
- id            String @id @default(cuid())
- reservationId String
- changedBy     String @db.VarChar(100)
- changeType    String @db.VarChar(50) // 'create', 'update', 'delete'
- changedFields Json? // 変更されたフィールドの詳細
- oldValues     Json? // 変更前の値
- newValues     Json? // 変更後の値
+ id               String @id @default(cuid())
+ sbmReservationId Int
+ changedBy        String @db.VarChar(100)
+ changeType       String @db.VarChar(50) // 'create', 'update', 'delete'
+ changedFields    Json? // 変更されたフィールドの詳細
+ oldValues        Json? // 変更前の値
+ newValues        Json? // 変更後の値
 
  // タイムスタンプ
  changedAt DateTime @default(now())
 
  // リレーション
- reservation SbmReservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
-
- @@map("sbm_reservation_change_history")
+ SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
 }
 
 model SbmDeliveryTeam {
- id          String  @id @default(cuid())
+ id          Int     @id @default(autoincrement())
  name        String  @db.VarChar(100)
  driverName  String  @db.VarChar(100)
  vehicleInfo String? @db.VarChar(200)
@@ -1634,16 +1602,14 @@ model SbmDeliveryTeam {
 
  // リレーション
  deliveryAssignments SbmDeliveryAssignment[]
-
- @@map("sbm_delivery_teams")
 }
 
 model SbmDeliveryAssignment {
- id                String   @id @default(cuid())
- teamId            String
- reservationId     String
+ id                Int      @id @default(autoincrement())
+ sbmDeliveryTeamId Int
+ sbmReservationId  Int
  assignedBy        String   @db.VarChar(100)
- assignedById      String?
+ userId            Int?
  deliveryDate      DateTime
  estimatedDuration Int? // 予想配達時間（分）
  actualDuration    Int? // 実際の配達時間（分）
@@ -1655,34 +1621,29 @@ model SbmDeliveryAssignment {
  updatedAt DateTime @updatedAt
 
  // リレーション
- team           SbmDeliveryTeam @relation(fields: [teamId], references: [id], onDelete: Restrict)
- reservation    SbmReservation  @relation(fields: [reservationId], references: [id], onDelete: Cascade)
- assignedByUser SbmUser?        @relation(fields: [assignedById], references: [id], onDelete: SetNull)
-
- @@map("sbm_delivery_assignments")
+ SbmDeliveryTeam SbmDeliveryTeam @relation(fields: [sbmDeliveryTeamId], references: [id], onDelete: Restrict)
+ SbmReservation  SbmReservation  @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+ User            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 model SbmRfmAnalysis {
- id           String   @id @default(cuid())
- customerId   String
- analysisDate DateTime @default(now())
- recency      Int // 最新購入からの日数
- frequency    Int // 購入回数
- monetary     Int // 累計購入金額（円）
- rScore       Int // Recency Score (1-5)
- fScore       Int // Frequency Score (1-5)
- mScore       Int // Monetary Score (1-5)
- totalScore   Int // 合計スコア
- rank         String   @db.VarChar(50) // 'VIP', '優良', '安定', '一般', '離反懸念'
+ id            Int      @id @default(autoincrement())
+ sbmCustomerId Int
+ analysisDate  DateTime @default(now())
+ recency       Int // 最新購入からの日数
+ frequency     Int // 購入回数
+ monetary      Int // 累計購入金額（円）
+ rScore        Int // Recency Score (1-5)
+ fScore        Int // Frequency Score (1-5)
+ mScore        Int // Monetary Score (1-5)
+ totalScore    Int // 合計スコア
+ rank          String   @db.VarChar(50) // 'VIP', '優良', '安定', '一般', '離反懸念'
 
  // タイムスタンプ
  createdAt DateTime @default(now())
 
  // リレーション
- customer SbmCustomer @relation(fields: [customerId], references: [id], onDelete: Cascade)
-
- @@unique([customerId, analysisDate])
- @@map("sbm_rfm_analysis")
+ SbmCustomer SbmCustomer @relation(fields: [sbmCustomerId], references: [id], onDelete: Cascade)
 }
 
  
@@ -1795,12 +1756,14 @@ model User {
   HealthJournal    HealthJournal[]
 
   // Sara App リレーション
-  Family               Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
-  RequestedEvaluations ActivityEvaluationRequest[] @relation("RequestedBy")
-  ApprovedEvaluations  ActivityEvaluationRequest[] @relation("ApprovedBy")
+  Family                Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
+  RequestedEvaluations  ActivityEvaluationRequest[] @relation("RequestedBy")
+  ApprovedEvaluations   ActivityEvaluationRequest[] @relation("ApprovedBy")
   // TbmVehicle           TbmVehicle?
-  TbmVehicle           TbmVehicle?                 @relation(fields: [tbmVehicleId], references: [id])
-  tbmVehicleId         Int?
+  TbmVehicle            TbmVehicle?                 @relation(fields: [tbmVehicleId], references: [id])
+  tbmVehicleId          Int?
+  SbmReservation        SbmReservation[]
+  SbmDeliveryAssignment SbmDeliveryAssignment[]
 }
 
 model ReleaseNotes {

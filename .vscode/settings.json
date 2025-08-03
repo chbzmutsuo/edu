@@ -115,7 +115,7 @@
     "**/stock/**": true,
     "**/tmp/**": true,
     "**/aquapot/**": true,
-    "**/tbm/**": true
+    "**/sbm/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -135,10 +135,10 @@
     "kickswrap",
     "page",
     "sara",
+    "sbm",
     "shinsei",
     "sohken",
     "stock",
-    "tbm",
     "tmp"
   ],
   "editor.stickyScroll.enabled": false

@@ -20,7 +20,7 @@ import {
   PICKUP_LOCATION_OPTIONS,
   DEFAULT_RESERVATION_STATE,
 } from '../../(constants)'
-import {formatDate, formatDateTime, formatTime} from '@cm/class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 
 export default function ReservationPage() {
@@ -85,7 +85,7 @@ export default function ReservationPage() {
   const handleSave = async (reservationData: Partial<Reservation>) => {
     try {
       if (editingReservation) {
-        await updateReservation(editingReservation.id, reservationData)
+        await updateReservation(Number(editingReservation.id), reservationData)
       } else {
         await createReservation(reservationData as any)
       }
@@ -99,7 +99,7 @@ export default function ReservationPage() {
   const handleDelete = async () => {
     if (deletingId) {
       try {
-        await deleteReservation(deletingId)
+        await deleteReservation(Number(deletingId))
         await loadReservations()
         setDeletingId(null)
       } catch (error) {
@@ -188,7 +188,7 @@ export default function ReservationPage() {
             <tbody>
               {reservations.map(reservation => (
                 <tr key={reservation.id} className="bg-white border-b hover:bg-gray-50">
-                  <td className="px-6 py-4">{formatDateTime(reservation.deliveryDate)}</td>
+                  <td className="px-6 py-4">{formatDate(reservation.deliveryDate)}</td>
                   <td className="px-6 py-4 font-medium">{reservation.customerName}</td>
                   <td className="px-6 py-4">
                     <span
@@ -199,16 +199,16 @@ export default function ReservationPage() {
                       {reservation.pickupLocation}
                     </span>
                   </td>
-                  <td className="px-6 py-4 font-semibold">¥{reservation.totalAmount.toLocaleString()}</td>
+                  <td className="px-6 py-4 font-semibold">¥{reservation.totalAmount?.toLocaleString()}</td>
                   <td className="px-6 py-4">{reservation.orderStaff}</td>
                   <td className="px-6 py-4">
                     <div className="flex items-center space-x-2">
-                      {reservation.tasks.delivered ? (
+                      {reservation.tasks?.some(task => task.taskType === 'delivery' && task.isCompleted) ? (
                         <CheckSquare size={18} className="text-green-500" />
                       ) : (
                         <Square size={18} className="text-gray-300" />
                       )}
-                      {reservation.tasks.collected ? (
+                      {reservation.tasks?.some(task => task.taskType === 'recovery' && task.isCompleted) ? (
                         <CheckSquare size={18} className="text-green-500" />
                       ) : (
                         <Square size={18} className="text-gray-300" />
@@ -221,7 +221,7 @@ export default function ReservationPage() {
                         <Edit size={18} />
                       </button>
                       <button
-                        onClick={() => setDeletingId(reservation.id)}
+                        onClick={() => setDeletingId(reservation.id?.toString() ?? null)}
                         className="text-red-600 hover:text-red-800"
                         title="削除"
                       >
@@ -286,7 +286,7 @@ const ReservationModal = ({
       return {
         ...reservation,
         deliveryDate: formatDate(reservation.deliveryDate),
-        deliveryTime: formatTime(reservation.deliveryDate),
+        deliveryTime: formatDate(reservation.deliveryDate, 'HH:mm'),
       }
     }
     return {

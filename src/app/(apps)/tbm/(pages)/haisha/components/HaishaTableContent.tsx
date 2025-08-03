@@ -42,7 +42,7 @@ export const HaishaTableContent = React.memo((props: props) => {
       scheduleByDateAndUser: getScheduleByDateAndUser({TbmDriveSchedule}),
       scheduleByDateAndRoute: getScheduleByDateAndRoute({TbmDriveSchedule}),
     }
-  }, [TbmDriveSchedule])
+  }, [TbmDriveSchedule, days, holidays])
 
   const tableRowBuilderProps = {
     mode,
@@ -65,7 +65,6 @@ export const HaishaTableContent = React.memo((props: props) => {
 
   if (mode === 'ROUTE') {
     const records = TableRowBuilder.buildRouteRows(tbmRouteGroup, tableRowBuilderProps)
-
     return <div>{CsvTableVirtualized({records}).WithWrapper({})}</div>
   }
 

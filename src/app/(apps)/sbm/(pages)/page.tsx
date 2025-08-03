@@ -15,9 +15,9 @@ import {
   Database,
 } from 'lucide-react'
 import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
-import DashboardPage from './(pages)/dashboard/page'
-import ReservationPage from './(pages)/reservations/page'
-import SeedPage from './(pages)/seed/page'
+import DashboardPage from './dashboard/page'
+import ReservationPage from './reservations/page'
+import SeedPage from './seed/page'
 
 // メインアプリケーション
 export default function SBMApp() {

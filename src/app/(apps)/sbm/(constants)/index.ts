@@ -1,40 +1,34 @@
 import {OrderChannel, Purpose, PaymentMethod, PickupLocation} from '../types'
 
 // 選択肢定数
-export const ORDER_CHANNEL_OPTIONS: OrderChannel[] = ['電話', 'Web', '店頭', 'その他']
+export const ORDER_CHANNEL_OPTIONS: OrderChannel[] = ['電話', 'FAX', 'メール', 'Web', '営業', 'その他']
 
-export const PURPOSE_OPTIONS: Purpose[] = ['会議', 'お祝い事', '法事', 'イベント', '個人', 'その他']
+export const PURPOSE_OPTIONS: Purpose[] = ['会議', '研修', '接待', 'イベント', '懇親会', 'その他']
 
-export const PAYMENT_METHOD_OPTIONS: PaymentMethod[] = ['現金', '請求書', 'クレジットカード', 'その他']
+export const PAYMENT_METHOD_OPTIONS: PaymentMethod[] = ['現金', '銀行振込', '請求書', 'クレジットカード']
 
-export const PICKUP_LOCATION_OPTIONS: PickupLocation[] = ['配達', '店舗']
+export const PICKUP_LOCATION_OPTIONS: PickupLocation[] = ['配達', '店舗受取']
 
 // デフォルト値
 export const DEFAULT_RESERVATION_STATE = {
-  customerId: '',
+  sbmCustomerId: 0,
   customerName: '',
   contactName: '',
   phoneNumber: '',
-  postalCode: '',
-  prefecture: '',
-  city: '',
-  street: '',
+  deliveryAddress: '',
   deliveryDate: new Date(),
   orderChannel: '電話' as OrderChannel,
   purpose: '会議' as Purpose,
   paymentMethod: '現金' as PaymentMethod,
   pickupLocation: '配達' as PickupLocation,
-  pointUsage: 0,
+  pointsUsed: 0,
   orderStaff: '',
   notes: '',
   items: [],
   totalAmount: 0,
-  totalCost: 0,
-  tasks: {
-    delivered: false,
-    collected: false,
-    bagProvided: false,
-  },
+  finalAmount: 0,
+  deliveryCompleted: false,
+  recoveryCompleted: false,
 }
 
 // RFMスコア計算基準
