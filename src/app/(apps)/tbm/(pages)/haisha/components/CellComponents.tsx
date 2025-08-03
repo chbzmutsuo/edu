@@ -8,10 +8,10 @@ import {HREF} from '@cm/lib/methods/urls'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {TBM_STATUS} from '@app/(apps)/tbm/(constants)/TBM_STATUS'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {twMerge} from 'tailwind-merge'
 import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 import {Code} from '@cm/class/Code'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
+import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 
 const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
 
@@ -80,18 +80,22 @@ export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: {tbmDriv
       const active = tbmDriveSchedule[key]
 
       return (
-        <button
+        <IconBtn
           key={i}
-          className={twMerge(
-            'px-2 py-0.5 text-[10px] rounded-sm border transition-opacity',
-            !active && 'opacity-30',
-            key === 'approved' && 'cursor-pointer hover:opacity-100',
-            active ? 'bg-gray-100' : 'bg-white'
-          )}
-          style={{
-            borderColor: color,
-            color: active ? color : '#999',
-          }}
+          active={active}
+          // className={twMerge(
+          //   'px-2 py-0.5 text-[10px] rounded-sm border transition-opacity',
+          //   !active && 'opacity-30',
+          //   key === 'approved' && 'cursor-pointer hover:opacity-100',
+          //   active ? 'bg-gray-100' : 'bg-white'
+          // )}
+          // style={{
+          //   borderColor: color,
+          //   color: active ? color : '#999',
+          // }}
+          rounded={false}
+          className={`text-[12px] !px-1.5   cursor-pointer`}
+          color={color}
           onClick={async () => {
             if (key === 'approved') {
               const isApproved = tbmDriveSchedule.approved
@@ -132,7 +136,7 @@ export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: {tbmDriv
           }}
         >
           {label}
-        </button>
+        </IconBtn>
       )
     })}
   </R_Stack>

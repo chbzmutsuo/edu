@@ -263,7 +263,7 @@ const CustomerModal = ({
 
     // バリデーション
     if (!formData.companyName || !formData.phoneNumber || !formData.deliveryAddress) {
-      alert('会社名、電話番号、配達先住所は必須です')
+      alert('電話番号、配達先住所は必須です')
       return
     }
 
@@ -283,25 +283,25 @@ const CustomerModal = ({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">会社名 *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">会社名</label>
               <input
                 type="text"
                 name="companyName"
                 value={formData.companyName || ''}
                 onChange={handleInputChange}
-                required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">担当者名</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">担当者名*</label>
               <input
                 type="text"
                 name="contactName"
                 value={formData.contactName || ''}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
               />
             </div>
 

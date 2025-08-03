@@ -23,6 +23,10 @@ export default async function Page(props) {
   const {userId} = scopes.getTbmScopes()
   const user = await prisma.user.findUnique({where: {id: userId}})
 
+  if (!user) {
+    return <div>ユーザーが見つかりません</div>
+  }
+
   const driveScheduleList: any = await getDriveInputPageData({
     user,
     whereQuery,

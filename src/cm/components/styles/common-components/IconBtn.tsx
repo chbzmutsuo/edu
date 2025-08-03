@@ -38,7 +38,7 @@ export const IconBtn = React.memo(
       base: twMerge(color ? `shadow-2xs border-[0.5px]  inline-block` : '', IconBtnBaseClass, className),
       variants: {
         color: iconBtnColorVariants,
-        active: {false: 'opacity-40'},
+        active: {false: 'opacity-30', true: 'opacity-100'},
         rounded: {false: 'rounded'},
         vivid: {true: 'text-inherit bg-inherit border-inherit'},
         disabled: {true: 'disabled !cursor-not-allowed'},

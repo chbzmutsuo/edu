@@ -1,6 +1,6 @@
 'use client'
 
-import React, {useState, useEffect, useMemo} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, X} from 'lucide-react'
 import {
   getReservations,
@@ -9,8 +9,6 @@ import {
   createReservation,
   updateReservation,
   deleteReservation,
-  lookupCustomerByPhone,
-  lookupAddressByPostalCode,
 } from '../../(builders)/serverActions'
 import {Reservation, Customer, Product, ReservationFilter} from '../../types'
 import {

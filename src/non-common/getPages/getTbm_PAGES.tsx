@@ -36,7 +36,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
 
         {
           tabId: 'driveInput',
-          label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>,
+          label: <IconLetter {...{Icon: Truck}}>ドライバ入力</IconLetter>,
           exclusiveTo: onlyAdmin,
         },
       ],

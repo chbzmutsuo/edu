@@ -6,11 +6,11 @@ import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import HaishaTableSwitcher from './HaishaTableSwitcher'
 import TableContent from './HaishaTableContent'
-import PaginationControl from './PaginationControl'
 import {TbmBase} from '@prisma/client'
 import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {useHaishaData} from '../hooks/useHaishaData'
 import {usePagination} from '../hooks/usePagination'
+import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 
 export type haishaTableMode = 'ROUTE' | 'DRIVER'
 
@@ -90,6 +90,7 @@ export default function HaishaTable({
 
   return (
     <C_Stack className="p-3">
+      <NewDateSwitcher {...{monthOnly: true}} />
       <LocalLoader />
       {ModalMemo}
       <HaishaTableSwitcher />

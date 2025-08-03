@@ -1,6 +1,6 @@
 'use server'
 
-import {OrderChannel, PaymentMethod, Purpose, Reservation, ReservationItem} from '@app/(apps)/sbm/types'
+import {OrderChannel, PaymentMethod, Purpose, ReservationItem} from '@app/(apps)/sbm/types'
 import {PickupLocation} from '@app/(apps)/sbm/types'
 import {revalidatePath} from 'next/cache'
 import prisma from 'src/lib/prisma'

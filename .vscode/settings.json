@@ -104,6 +104,7 @@
     "**/CoLab/**": true,
     "**/Grouping/**": true,
     "**/KM/**": true,
+    "**/aquapot/**": true,
     "**/edu/**": true,
     "**/health/**": true,
     "**/keihi/**": true,
@@ -113,9 +114,8 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tmp/**": true,
-    "**/aquapot/**": true,
-    "**/sbm/**": true
+    "**/tbm/**": true,
+    "**/tmp/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -135,10 +135,10 @@
     "kickswrap",
     "page",
     "sara",
-    "sbm",
     "shinsei",
     "sohken",
     "stock",
+    "tbm",
     "tmp"
   ],
   "editor.stickyScroll.enabled": false

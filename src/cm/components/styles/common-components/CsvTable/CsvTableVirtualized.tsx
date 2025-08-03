@@ -150,8 +150,8 @@ export const CsvTableVirtualized = (props: CsvTableVirtualizedProps) => {
     return (
       <div {...otherWrapperProps}>
         <TableVirtuoso
-          className={cn('max-h-[80vh] max-w-[95vw] mx-auto overflow-hidden rounded-md border border-gray-300', className)}
-          style={{height: '100vh'}}
+          className={cn('max-h-[80vh] max-w-[95vw] mx-auto overflow-auto rounded-md border border-gray-300', className)}
+          style={{height: '100vh', overflow: 'auto'}}
           data={bodyRecords}
           fixedHeaderContent={fixedHeaderContent}
           itemContent={itemContent}

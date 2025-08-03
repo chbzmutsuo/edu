@@ -13,7 +13,7 @@ export default async function AppLayout(props) {
       }}
     >
       <div>
-        <div>{children}</div>
+        <div className={` p-2`}>{children}</div>
       </div>
     </Admin>
   )

@@ -6,7 +6,7 @@ import {TbmRouteGroup, TbmBase} from '@prisma/client'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {haishaListData} from './getListData'
 import {WorkStatusSelector, AddScheduleButton, ScheduleCard} from './CellComponents'
-export const Cell = React.memo(
+export const HaishaCard = React.memo(
   (props: {
     //
     fetchData

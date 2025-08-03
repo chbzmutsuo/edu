@@ -1,15 +1,14 @@
 'use client'
 import React, {CSSProperties} from 'react'
 import {Days} from '@cm/class/Days/Days'
-import {formatDate, formatDateTimeOrDate} from '@cm/class/Days/date-utils/formatters'
-import {Cell} from './Cell'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {HaishaCard} from './HaishaCard'
 import UserTh from './UserTh'
 import DateThCell from './DateThCell'
 import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {haishaListData} from './getListData'
 import {haishaTableMode} from './HaishaTable'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
-import {mergeHtmlProps} from '@cm/types/utility-types'
 
 // 固定列のスタイル定数
 const STICKY_COLUMN_STYLE = {
@@ -132,7 +131,7 @@ export const TableRowBuilder = {
 
               const scheduleListOnDate = scheduleByDateAndRoute[formatDate(date)]?.[String(route.id)] ?? []
 
-              const cellStyle = must ? {background: '#fff1cd'} : {}
+              const cellStyle = must ? {background: '#fff1cd'} : undefined
 
               return {
                 ...TableRowBuilder.buildDateCell({
@@ -148,8 +147,6 @@ export const TableRowBuilder = {
                   cellStyle,
                   // user: rout,
                 }),
-
-                style: cellStyle,
               }
             }),
           ],
@@ -206,7 +203,7 @@ export const TableRowBuilder = {
         </div>
       ),
       cellValue: (
-        <Cell
+        <HaishaCard
           {...{
             fetchData,
             setModalOpen,
@@ -219,6 +216,7 @@ export const TableRowBuilder = {
         />
       ),
       thStyle,
+      style: cellStyle,
     }
   },
 }

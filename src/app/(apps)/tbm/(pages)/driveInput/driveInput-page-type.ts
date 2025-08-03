@@ -6,7 +6,7 @@ export type driveInputPageType = {
 
 export const getDriveInputPageData = async ({user, whereQuery}: {user: any; whereQuery: any}) => {
   const driveScheduleList = await prisma.tbmDriveSchedule.findMany({
-    where: {userId: user.id, date: {equals: whereQuery.gte}},
+    where: {userId: user?.id, date: {equals: whereQuery.gte}},
     orderBy: {sortOrder: `asc`},
     include: {
       TbmBase: {},
