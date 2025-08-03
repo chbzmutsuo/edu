@@ -1,9 +1,10 @@
 'use server'
 
 import {revalidatePath} from 'next/cache'
-import prisma from '../../../../lib/prisma'
-import {Customer, Product, User, Reservation, ReservationFilter, DashboardStats, RFMCustomer, DeliveryTeam} from '../types'
+
+import {Customer, Product, User, Reservation, ReservationFilter, DashboardStats, DeliveryTeam} from '../types'
 import {RFM_SCORE_CRITERIA} from '../(constants)'
+import prisma from 'src/lib/prisma'
 
 // データ取得アクション
 export async function getAllCustomers(): Promise<Customer[]> {
@@ -16,14 +17,110 @@ export async function getAllCustomers(): Promise<Customer[]> {
     companyName: c.companyName,
     contactName: c.contactName || '',
     phoneNumber: c.phoneNumber,
-    deliveryAddress: c.deliveryAddress,
     postalCode: c.postalCode || '',
+    prefecture: c.prefecture || '',
+    city: c.city || '',
+    street: c.street || '',
+    building: c.building || '',
     email: c.email || '',
     availablePoints: c.availablePoints,
     notes: c.notes || '',
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
   }))
+}
+
+// 電話番号で顧客を検索
+export async function getCustomerByPhone(phoneNumber: string): Promise<Customer | null> {
+  const customer = await prisma.sbmCustomer.findFirst({
+    where: {
+      phoneNumber: phoneNumber,
+    },
+  })
+
+  if (!customer) return null
+
+  return {
+    id: customer.id,
+    companyName: customer.companyName,
+    contactName: customer.contactName || '',
+    phoneNumber: customer.phoneNumber,
+    postalCode: customer.postalCode || '',
+    prefecture: customer.prefecture || '',
+    city: customer.city || '',
+    street: customer.street || '',
+    building: customer.building || '',
+    email: customer.email || '',
+    availablePoints: customer.availablePoints,
+    notes: customer.notes || '',
+    createdAt: customer.createdAt,
+    updatedAt: customer.updatedAt,
+  }
+}
+
+// 顧客情報をUPSERT（電話番号をキーとして）
+export async function createOrUpdateCustomer(
+  customerData: Partial<Customer>
+): Promise<{success: boolean; customer?: Customer; error?: string}> {
+  try {
+    if (!customerData.phoneNumber) {
+      return {success: false, error: '電話番号は必須です'}
+    }
+
+    const customer = await prisma.sbmCustomer.upsert({
+      where: {
+        phoneNumber: customerData.phoneNumber || '',
+      },
+      update: {
+        companyName: customerData.companyName || '',
+        contactName: customerData.contactName || '',
+        postalCode: customerData.postalCode || '',
+        prefecture: customerData.prefecture || '',
+        city: customerData.city || '',
+        street: customerData.street || '',
+        building: customerData.building || '',
+        email: customerData.email || '',
+        availablePoints: customerData.availablePoints || 0,
+        notes: customerData.notes || '',
+      },
+      create: {
+        companyName: customerData.companyName || '',
+        contactName: customerData.contactName || '',
+        phoneNumber: customerData.phoneNumber || '',
+        postalCode: customerData.postalCode || '',
+        prefecture: customerData.prefecture || '',
+        city: customerData.city || '',
+        street: customerData.street || '',
+        building: customerData.building || '',
+        email: customerData.email || '',
+        availablePoints: customerData.availablePoints || 0,
+        notes: customerData.notes || '',
+      },
+    })
+
+    return {
+      success: true,
+      customer: {
+        id: customer.id,
+        companyName: customer.companyName,
+        contactName: customer.contactName || '',
+        phoneNumber: customer.phoneNumber,
+        postalCode: customer.postalCode || '',
+        prefecture: customer.prefecture || '',
+        city: customer.city || '',
+        street: customer.street || '',
+        building: customer.building || '',
+        email: customer.email || '',
+        availablePoints: customer.availablePoints,
+        notes: customer.notes || '',
+        createdAt: customer.createdAt,
+        updatedAt: customer.updatedAt,
+      },
+    }
+  } catch (error) {
+    console.error('顧客データの保存エラー:', error)
+    return {success: false, error: '顧客データの保存に失敗しました'}
+  }
 }
 
 export async function getAllProducts(): Promise<Product[]> {
@@ -123,7 +220,7 @@ export async function getAllTeams(): Promise<DeliveryTeam[]> {
   }))
 }
 
-export async function getReservations(filter: ReservationFilter = {}): Promise<Reservation[]> {
+export async function getReservations(filter: ReservationFilter = {}) {
   const where: any = {}
 
   // 日付範囲フィルター
@@ -184,7 +281,11 @@ export async function getReservations(filter: ReservationFilter = {}): Promise<R
     customerName: r.customerName,
     contactName: r.contactName || '',
     phoneNumber: r.phoneNumber,
-    deliveryAddress: r.deliveryAddress,
+    postalCode: r.postalCode,
+    prefecture: r.prefecture,
+    city: r.city,
+    street: r.street,
+    building: r.building,
     deliveryDate: r.deliveryDate,
     pickupLocation: r.pickupLocation as '配達' | '店舗受取',
     purpose: r.purpose as '会議' | '研修' | '接待' | 'イベント' | '懇親会' | 'その他',
@@ -238,11 +339,14 @@ export async function createCustomer(customerData: Omit<Customer, 'id' | 'create
   try {
     const newCustomer = await prisma.sbmCustomer.create({
       data: {
-        companyName: customerData.companyName,
+        companyName: customerData.companyName || '',
         contactName: customerData.contactName || null,
-        phoneNumber: customerData.phoneNumber,
-        deliveryAddress: customerData.deliveryAddress,
+        phoneNumber: customerData.phoneNumber || '',
         postalCode: customerData.postalCode || null,
+        prefecture: customerData.prefecture || null,
+        city: customerData.city || null,
+        street: customerData.street || null,
+        building: customerData.building || null,
         email: customerData.email || null,
         availablePoints: customerData.availablePoints || 0,
         notes: customerData.notes || null,
@@ -265,8 +369,11 @@ export async function updateCustomer(id: number, customerData: Partial<Customer>
         companyName: customerData.companyName,
         contactName: customerData.contactName || null,
         phoneNumber: customerData.phoneNumber,
-        deliveryAddress: customerData.deliveryAddress,
         postalCode: customerData.postalCode || null,
+        prefecture: customerData.prefecture || null,
+        city: customerData.city || null,
+        street: customerData.street || null,
+        building: customerData.building || null,
         email: customerData.email || null,
         availablePoints: customerData.availablePoints,
         notes: customerData.notes || null,
@@ -309,17 +416,17 @@ export async function createProduct(productData: Omit<Product, 'id' | 'priceHist
   try {
     const newProduct = await prisma.sbmProduct.create({
       data: {
-        name: productData.name,
+        name: productData.name ?? '',
         description: productData.description || null,
-        currentPrice: productData.currentPrice,
-        currentCost: productData.currentCost,
-        category: productData.category,
+        currentPrice: productData.currentPrice || 0,
+        currentCost: productData.currentCost || 0,
+        category: productData.category ?? '',
         isActive: productData.isActive,
         SbmProductPriceHistory: {
           create: {
             productId: '', // 後で設定
-            price: productData.currentPrice,
-            cost: productData.currentCost,
+            price: productData.currentPrice || 0,
+            cost: productData.currentCost || 0,
             effectiveDate: new Date(),
           },
         },
@@ -388,6 +495,7 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
 export async function deleteProduct(id: number) {
   try {
     // 予約アイテムで使用されている場合は削除を防ぐ
+    console.log({id}) //logs
     const itemCount = await prisma.sbmReservationItem.count({
       where: {sbmProductId: id},
     })
@@ -415,33 +523,36 @@ export async function createReservation(
   try {
     const newReservation = await prisma.sbmReservation.create({
       data: {
-        sbmCustomerId: reservationData.sbmCustomerId,
-        customerName: reservationData.customerName,
-        contactName: reservationData.contactName || null,
-        phoneNumber: reservationData.phoneNumber,
-        deliveryAddress: reservationData.deliveryAddress,
-        deliveryDate: reservationData.deliveryDate,
-        pickupLocation: reservationData.pickupLocation,
-        purpose: reservationData.purpose,
-        paymentMethod: reservationData.paymentMethod,
-        orderChannel: reservationData.orderChannel,
-        totalAmount: reservationData.totalAmount,
-        pointsUsed: reservationData.pointsUsed,
-        finalAmount: reservationData.finalAmount,
-        orderStaff: reservationData.orderStaff,
-        userId: reservationData.userId,
-        notes: reservationData.notes || null,
-        deliveryCompleted: reservationData.deliveryCompleted,
-        recoveryCompleted: reservationData.recoveryCompleted,
+        sbmCustomerId: reservationData.sbmCustomerId || 0,
+        customerName: reservationData.customerName || '',
+        contactName: reservationData.contactName || '',
+        phoneNumber: reservationData.phoneNumber || '',
+        postalCode: reservationData.postalCode || '',
+        prefecture: reservationData.prefecture || '',
+        city: reservationData.city || '',
+        street: reservationData.street || '',
+        building: reservationData.building || '',
+        deliveryDate: reservationData.deliveryDate || '',
+        pickupLocation: reservationData.pickupLocation || '',
+        purpose: reservationData.purpose || '',
+        paymentMethod: reservationData.paymentMethod || '',
+        orderChannel: reservationData.orderChannel || '',
+        totalAmount: reservationData.totalAmount || 0,
+        pointsUsed: reservationData.pointsUsed || 0,
+        finalAmount: reservationData.finalAmount || 0,
+        orderStaff: reservationData.orderStaff || '',
+        userId: reservationData.userId || 0,
+        notes: reservationData.notes || '',
+        deliveryCompleted: reservationData.deliveryCompleted || false,
+        recoveryCompleted: reservationData.recoveryCompleted || false,
         SbmReservationItem: {
           create:
             reservationData.items?.map(item => ({
-              id: item.id,
-              sbmProductId: item.sbmProductId,
-              productName: item.productName,
-              quantity: item.quantity,
-              unitPrice: item.unitPrice,
-              totalPrice: item.totalPrice,
+              sbmProductId: item.sbmProductId || 0,
+              productName: item.productName || '',
+              quantity: item.quantity || 0,
+              unitPrice: item.unitPrice || 0,
+              totalPrice: item.totalPrice || 0,
             })) || [],
         },
         SbmReservationTask: {
@@ -452,7 +563,7 @@ export async function createReservation(
         },
         SbmReservationChangeHistory: {
           create: {
-            changedBy: reservationData.orderStaff,
+            changedBy: reservationData.orderStaff || 'system',
             changeType: 'create',
             newValues: reservationData as any,
           },
@@ -468,7 +579,7 @@ export async function createReservation(
     revalidatePath('/sbm')
     return {success: true, data: newReservation}
   } catch (error) {
-    console.error('予約作成エラー:', error)
+    console.error('予約作成エラー:', error.message)
     return {success: false, error: '予約の作成に失敗しました'}
   }
 }
@@ -484,13 +595,22 @@ export async function updateReservation(id: number, reservationData: Partial<Res
       return {success: false, error: '予約が見つかりません'}
     }
 
+    // 既存の商品明細を削除
+    await prisma.sbmReservationItem.deleteMany({
+      where: {sbmReservationId: id},
+    })
+
     const updatedReservation = await prisma.sbmReservation.update({
       where: {id},
       data: {
         customerName: reservationData.customerName,
-        contactName: reservationData.contactName || null,
+        contactName: reservationData.contactName,
         phoneNumber: reservationData.phoneNumber,
-        deliveryAddress: reservationData.deliveryAddress,
+        postalCode: reservationData.postalCode,
+        prefecture: reservationData.prefecture,
+        city: reservationData.city,
+        street: reservationData.street,
+        building: reservationData.building,
         deliveryDate: reservationData.deliveryDate,
         pickupLocation: reservationData.pickupLocation,
         purpose: reservationData.purpose,
@@ -503,6 +623,17 @@ export async function updateReservation(id: number, reservationData: Partial<Res
         notes: reservationData.notes || null,
         deliveryCompleted: reservationData.deliveryCompleted,
         recoveryCompleted: reservationData.recoveryCompleted,
+        // 新しい商品明細を作成
+        SbmReservationItem: {
+          create:
+            reservationData.items?.map(item => ({
+              sbmProductId: item.sbmProductId || 0,
+              productName: item.productName || '',
+              quantity: item.quantity || 0,
+              unitPrice: item.unitPrice || 0,
+              totalPrice: item.totalPrice || 0,
+            })) || [],
+        },
         SbmReservationChangeHistory: {
           create: {
             changedBy: reservationData.orderStaff || 'system',
@@ -618,7 +749,7 @@ export async function getDashboardStats(date: string): Promise<DashboardStats> {
 }
 
 // RFM分析
-export async function getRFMAnalysis(): Promise<RFMCustomer[]> {
+export async function getRFMAnalysis() {
   const customers = await prisma.sbmCustomer.findMany({
     include: {
       SbmReservation: {
@@ -737,7 +868,10 @@ export async function lookupCustomerByPhone(phoneNumber: string): Promise<Custom
     companyName: customer.companyName,
     contactName: customer.contactName || '',
     phoneNumber: customer.phoneNumber,
-    deliveryAddress: customer.deliveryAddress,
+    prefecture: customer.prefecture || '',
+    city: customer.city || '',
+    street: customer.street || '',
+    building: customer.building || '',
     postalCode: customer.postalCode || '',
     email: customer.email || '',
     availablePoints: customer.availablePoints,

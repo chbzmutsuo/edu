@@ -184,13 +184,61 @@ export default function SeedPage() {
           </div>
         )}
 
+        {/* シードデータプレビュー */}
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">シードデータ内容</h2>
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">顧客データ（9件）</h3>
+              <div className="text-sm text-gray-600 space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-semibold">東京都内企業（5件）</div>
+                    <div>千代田区、新宿区、渋谷区、港区、品川区</div>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded">
+                    <div className="font-semibold">首都圏企業（4件）</div>
+                    <div>神奈川県、埼玉県、千葉県</div>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500">※ 住所は5区分（郵便番号、都道府県、市区町村、町名番地、建物名）で管理</div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">商品データ（6件）</h3>
+              <div className="text-sm text-gray-600">
+                <div className="bg-gray-50 p-3 rounded">
+                  和食・洋食の弁当各種（幕の内、唐揚げ、焼き魚、オムライス、とんかつ等）
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">配達チーム（3チーム）</h3>
+              <div className="text-sm text-gray-600">
+                <div className="bg-gray-50 p-3 rounded">チームA・B・C（配達員、車両情報、配達能力設定済み）</div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-gray-800 mb-2">予約データ（15件）</h3>
+              <div className="text-sm text-gray-600">
+                <div className="bg-gray-50 p-3 rounded">
+                  過去15日〜未来15日のランダムな予約データ（商品選択、ポイント利用含む）
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* 操作パネル */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* シード操作 */}
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">データシード</h2>
             <p className="text-gray-600 mb-6">
-              開発・テスト用のサンプルデータを生成します。 既存のデータに追加される形で実行されます。
+              開発・テスト用のサンプルデータを生成します。住所は5区分管理（郵便番号、都道府県、市区町村、町名番地、建物名）で構築されます。既存のデータに追加される形で実行されます。
             </p>
             <button
               onClick={handleSeedDatabase}

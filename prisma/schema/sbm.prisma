@@ -4,9 +4,12 @@ model SbmCustomer {
  id              Int     @id @default(autoincrement())
  companyName     String  @db.VarChar(200)
  contactName     String? @db.VarChar(100)
- phoneNumber     String  @db.VarChar(20)
- deliveryAddress String  @db.VarChar(500)
+ phoneNumber     String  @unique @db.VarChar(20)
  postalCode      String? @db.VarChar(10)
+ prefecture      String? @db.VarChar(50) // 都道府県
+ city            String? @db.VarChar(100) // 市区町村
+ street          String? @db.VarChar(200) // 町名番地
+ building        String? @db.VarChar(100) // その他（建物名等）
  email           String? @db.VarChar(255)
  availablePoints Int     @default(0)
  notes           String? @db.Text
@@ -49,17 +52,23 @@ model SbmProductPriceHistory {
  createdAt DateTime @default(now())
 
  // リレーション
- SbmProduct   SbmProduct @relation(fields: [sbmProductId], references: [id])
+ SbmProduct   SbmProduct @relation(fields: [sbmProductId], references: [id], onDelete: Cascade)
  sbmProductId Int
 }
 
 model SbmReservation {
- id              Int     @id @default(autoincrement())
- sbmCustomerId   Int
- customerName    String  @db.VarChar(200)
- contactName     String? @db.VarChar(100)
- phoneNumber     String  @db.VarChar(20)
- deliveryAddress String  @db.VarChar(500)
+ id            Int     @id @default(autoincrement())
+ sbmCustomerId Int
+ customerName  String  @db.VarChar(200)
+ contactName   String? @db.VarChar(100)
+ phoneNumber   String  @db.VarChar(20)
+
+ // 配達先住所（5区分）
+ postalCode String? @db.VarChar(10)
+ prefecture String? @db.VarChar(50) // 都道府県
+ city       String? @db.VarChar(100) // 市区町村
+ street     String? @db.VarChar(200) // 町名番地
+ building   String? @db.VarChar(100) // その他（建物名等）
 
  // 配達情報
  deliveryDate   DateTime

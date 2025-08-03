@@ -4,7 +4,7 @@ import React, {useState, useEffect} from 'react'
 import {Map, Truck, Clock, Users, CheckCircle, AlertCircle, Navigation} from 'lucide-react'
 import {getReservations, getAllTeams} from '../../(builders)/serverActions'
 import {Reservation, DeliveryTeam} from '../../types'
-import {formatDate, formatTime} from '@cm/class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function DeliveryRoutePage() {
   const [reservations, setReservations] = useState<Reservation[]>([])
@@ -29,7 +29,7 @@ export default function DeliveryRoutePage() {
       ])
 
       // 配達のみフィルタリング
-      const deliveryReservations = reservationsData.filter(r => r.pickupLocation === '配達')
+      const deliveryReservations = reservationsData.filter(r => r.pickupLocation === '配達') as Reservation[]
       setReservations(deliveryReservations)
       setTeams(teamsData)
     } catch (error) {
@@ -231,7 +231,10 @@ export default function DeliveryRoutePage() {
                                 <h4 className="text-lg font-medium text-gray-900">{reservation.customerName}</h4>
                                 <span className="text-sm text-gray-500">({reservation.contactName || '担当者不明'})</span>
                               </div>
-                              <p className="text-sm text-gray-600 mb-1">📍 {reservation.deliveryAddress}</p>
+                              <p className="text-sm text-gray-600 mb-1">
+                                📍 {reservation.postalCode} {reservation.prefecture} {reservation.city} {reservation.street}{' '}
+                                {reservation.building}
+                              </p>
                               <p className="text-sm text-gray-600">
                                 📞 {reservation.phoneNumber} | 💰 ¥{reservation.totalAmount?.toLocaleString()} | 📦{' '}
                                 {reservation.items?.length || 0}アイテム
@@ -240,7 +243,9 @@ export default function DeliveryRoutePage() {
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-sm text-gray-600 mb-1">配達時刻: {formatTime(reservation.deliveryDate!)}</div>
+                          <div className="text-sm text-gray-600 mb-1">
+                            配達時刻: {formatDate(reservation.deliveryDate!, 'YYYY/MM/DD HH:mm')}
+                          </div>
                           <div className="flex items-center space-x-2">
                             <span
                               className={`px-2 py-1 text-xs font-semibold rounded-full ${

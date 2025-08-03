@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, PlusCircle, Edit, Trash2, X, Users2, Shield, User, Crown} from 'lucide-react'
+import {Search, PlusCircle, Edit, Trash2, X, Users2, Shield, Crown, UserIcon} from 'lucide-react'
 import {getAllUsers} from '../../(builders)/serverActions'
 import {User} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -92,9 +92,9 @@ export default function UsersPage() {
       case 'manager':
         return <Shield className="text-blue-600" size={18} />
       case 'staff':
-        return <User className="text-gray-600" size={18} />
+        return <UserIcon className="text-gray-600" size={18} />
       default:
-        return <User className="text-gray-400" size={18} />
+        return <UserIcon className="text-gray-400" size={18} />
     }
   }
 

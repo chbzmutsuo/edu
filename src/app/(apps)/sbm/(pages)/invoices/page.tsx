@@ -4,7 +4,7 @@ import React, {useState, useEffect} from 'react'
 import {Printer, FileText, Download, Search, CheckSquare, Square} from 'lucide-react'
 import {getReservations} from '../../(builders)/serverActions'
 import {Reservation} from '../../types'
-import {formatDate, formatDateTime} from '@cm/class/Days/date-utils/formatters'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function InvoicesPage() {
   const [reservations, setReservations] = useState<Reservation[]>([])
@@ -25,7 +25,7 @@ export default function InvoicesPage() {
         startDate: selectedDate,
         endDate: endDate,
       })
-      setReservations(data)
+      setReservations(data as Reservation[])
     } catch (error) {
       console.error('予約データの取得に失敗しました:', error)
     } finally {
@@ -134,7 +134,7 @@ export default function InvoicesPage() {
               </div>
               <div>
                 <p style="margin: 5px 0;"><strong>配達先住所:</strong></p>
-                <p style="margin: 5px 0; padding-left: 10px;">${reservation.deliveryAddress}</p>
+                <p style="margin: 5px 0; padding-left: 10px;">${reservation.postalCode} ${reservation.prefecture} ${reservation.city} ${reservation.street} ${reservation.building}</p>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ export default function InvoicesPage() {
             <h3 style="margin: 0 0 10px 0; font-size: 16px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">注文情報</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
               <div>
-                <p style="margin: 5px 0;"><strong>配達日時:</strong> ${formatDateTime(reservation.deliveryDate!)}</p>
+                <p style="margin: 5px 0;"><strong>配達日時:</strong> ${formatDate(reservation.deliveryDate!, 'YYYY/MM/DD HH:mm')}</p>
                 <p style="margin: 5px 0;"><strong>受取方法:</strong> ${reservation.pickupLocation}</p>
                 <p style="margin: 5px 0;"><strong>用途:</strong> ${reservation.purpose}</p>
               </div>
@@ -295,7 +295,7 @@ export default function InvoicesPage() {
         r.customerName,
         r.contactName || '',
         r.phoneNumber,
-        formatDateTime(r.deliveryDate!),
+        formatDate(r.deliveryDate!, 'YYYY/MM/DD HH:mm'),
         r.pickupLocation,
         r.purpose,
         r.paymentMethod,
@@ -433,7 +433,7 @@ export default function InvoicesPage() {
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap font-mono text-sm">#{reservation.id}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDateTime(reservation.deliveryDate!)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(reservation.deliveryDate!, 'YYYY/MM/DD HH:mm')}</td>
                     <td className="px-6 py-4 font-medium text-gray-900">{reservation.customerName}</td>
                     <td className="px-6 py-4 text-gray-900">{reservation.contactName || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">

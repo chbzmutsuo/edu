@@ -4,8 +4,11 @@ export type Customer = Partial<{
   companyName: string
   contactName?: string
   phoneNumber: string
-  deliveryAddress: string
   postalCode?: string
+  prefecture?: string
+  city?: string
+  street?: string
+  building?: string
   email?: string
   availablePoints: number
   notes?: string
@@ -52,7 +55,11 @@ export type Reservation = Partial<{
   customerName: string
   contactName?: string
   phoneNumber: string
-  deliveryAddress: string
+  postalCode?: string
+  prefecture?: string
+  city?: string
+  street?: string
+  building?: string
   deliveryDate: Date
   pickupLocation: PickupLocation
   purpose: Purpose
@@ -80,6 +87,7 @@ export type ReservationItem = Partial<{
   productName: string
   quantity: number
   unitPrice: number
+  unitCost: number
   totalPrice: number
   createdAt: Date
 }>

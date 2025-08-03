@@ -5,16 +5,18 @@ import {Search, PlusCircle, Edit, Trash2, X, Package, History} from 'lucide-reac
 import {getAllProducts, createProduct, updateProduct, deleteProduct} from '../../(builders)/serverActions'
 import {Product} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import useModal from '@cm/components/utils/modal/useModal'
+import {Padding} from '@cm/components/styles/common-components/common-components'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  const [deletingId, setDeletingId] = useState<number | null>(null)
-  const [showPriceHistory, setShowPriceHistory] = useState<number | null>(null)
+  // const [isModalOpen, setIsModalOpen] = useState(false)
+  // const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+  // const [deletingId, setDeletingId] = useState<number | null>(null)
+  // const [showPriceHistory, setShowPriceHistory] = useState<number | null>(null)
 
   useEffect(() => {
     loadProducts()
@@ -54,23 +56,19 @@ export default function ProductsPage() {
 
   const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
 
-  const openModal = (product: Product | null = null) => {
-    setEditingProduct(product)
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setIsModalOpen(false)
-    setEditingProduct(null)
-  }
+  const EditProductModalReturn = useModal()
+  const DeleteProductModalReturn = useModal()
+  const PriceHistoryModalReturn = useModal()
 
   const handleSave = async (productData: Partial<Product>) => {
     try {
+      const editingProduct = EditProductModalReturn.open.product
+
       if (editingProduct) {
         const result = await updateProduct(editingProduct.id!, productData)
         if (result.success) {
           await loadProducts()
-          closeModal()
+          EditProductModalReturn.handleClose()
         } else {
           alert(result.error || '更新に失敗しました')
         }
@@ -78,7 +76,7 @@ export default function ProductsPage() {
         const result = await createProduct(productData as Omit<Product, 'id' | 'priceHistory' | 'createdAt' | 'updatedAt'>)
         if (result.success) {
           await loadProducts()
-          closeModal()
+          EditProductModalReturn.handleClose()
         } else {
           alert(result.error || '作成に失敗しました')
         }
@@ -90,19 +88,23 @@ export default function ProductsPage() {
   }
 
   const handleDelete = async () => {
-    if (!deletingId) return
+    if (confirm('この商品を削除してもよろしいですか？')) {
+      const deletingId = DeleteProductModalReturn?.open?.product?.id
 
-    try {
-      const result = await deleteProduct(deletingId)
-      if (result.success) {
-        await loadProducts()
-        setDeletingId(null)
-      } else {
-        alert(result.error || '削除に失敗しました')
+      if (!deletingId) return
+
+      try {
+        const result = await deleteProduct(deletingId)
+        if (result.success) {
+          await loadProducts()
+          DeleteProductModalReturn.handleClose()
+        } else {
+          alert(result.error || '削除に失敗しました')
+        }
+      } catch (error) {
+        console.error('削除エラー:', error)
+        alert('削除中にエラーが発生しました')
       }
-    } catch (error) {
-      console.error('削除エラー:', error)
-      alert('削除中にエラーが発生しました')
     }
   }
 
@@ -127,7 +129,7 @@ export default function ProductsPage() {
             <h1 className="text-3xl font-bold text-gray-900">商品マスタ</h1>
           </div>
           <button
-            onClick={() => openModal()}
+            onClick={() => EditProductModalReturn.handleOpen({product: undefined})}
             className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
           >
             <PlusCircle size={20} />
@@ -237,17 +239,21 @@ export default function ProductsPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-3">
                           <button
-                            onClick={() => setShowPriceHistory(product.id!)}
+                            onClick={() => PriceHistoryModalReturn.handleOpen({product})}
                             className="text-green-600 hover:text-green-800"
                             title="価格履歴"
                           >
                             <History size={18} />
                           </button>
-                          <button onClick={() => openModal(product)} className="text-blue-600 hover:text-blue-800" title="編集">
+                          <button
+                            onClick={() => EditProductModalReturn.handleOpen({product})}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="編集"
+                          >
                             <Edit size={18} />
                           </button>
                           <button
-                            onClick={() => setDeletingId(product.id!)}
+                            onClick={() => DeleteProductModalReturn.handleOpen({product})}
                             className="text-red-600 hover:text-red-800"
                             title="削除"
                           >
@@ -274,25 +280,37 @@ export default function ProductsPage() {
       </div>
 
       {/* 商品フォームモーダル */}
-      {isModalOpen && <ProductModal product={editingProduct} onSave={handleSave} onClose={closeModal} />}
+      <EditProductModalReturn.Modal>
+        <Padding>
+          <ProductModal
+            product={EditProductModalReturn.open.product}
+            onSave={handleSave}
+            onClose={EditProductModalReturn.handleClose}
+          />
+        </Padding>
+      </EditProductModalReturn.Modal>
 
       {/* 価格履歴モーダル */}
-      {showPriceHistory && (
-        <PriceHistoryModal
-          product={products.find(p => p.id === showPriceHistory) || null}
-          onClose={() => setShowPriceHistory(null)}
-        />
-      )}
+      <PriceHistoryModalReturn.Modal>
+        <Padding>
+          <PriceHistoryModal
+            product={PriceHistoryModalReturn.open.product}
+            onClose={() => PriceHistoryModalReturn.handleClose()}
+          />
+        </Padding>
+      </PriceHistoryModalReturn.Modal>
 
       {/* 削除確認モーダル */}
-      {deletingId && (
-        <ConfirmModal
-          title="商品削除確認"
-          message="この商品を削除してもよろしいですか？この操作は元に戻せません。"
-          onConfirm={handleDelete}
-          onClose={() => setDeletingId(null)}
-        />
-      )}
+      <DeleteProductModalReturn.Modal>
+        <Padding>
+          <ConfirmModal
+            title="商品削除確認"
+            message="この商品を削除してもよろしいですか？この操作は元に戻せません。"
+            onConfirm={handleDelete}
+            onClose={() => DeleteProductModalReturn.handleClose()}
+          />
+        </Padding>
+      </DeleteProductModalReturn.Modal>
     </div>
   )
 }
@@ -348,127 +366,114 @@ const ProductModal = ({
       : 0
 
   return (
-    <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{product ? '商品編集' : '新規商品登録'}</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-              <X size={24} />
-            </button>
-          </div>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">商品名 *</label>
+        <input
+          type="text"
+          name="name"
+          value={formData.name || ''}
+          onChange={handleInputChange}
+          required
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">商品名 *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name || ''}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ *</label>
+        <select
+          name="category"
+          value={formData.category || ''}
+          onChange={handleInputChange}
+          required
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">カテゴリを選択</option>
+          <option value="和食">和食</option>
+          <option value="洋食">洋食</option>
+          <option value="中華">中華</option>
+          <option value="その他">その他</option>
+        </select>
+      </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ *</label>
-              <select
-                name="category"
-                value={formData.category || ''}
-                onChange={handleInputChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">カテゴリを選択</option>
-                <option value="和食">和食</option>
-                <option value="洋食">洋食</option>
-                <option value="中華">中華</option>
-                <option value="その他">その他</option>
-              </select>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">販売価格（円） *</label>
-                <input
-                  type="number"
-                  name="currentPrice"
-                  value={formData.currentPrice || ''}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">原価（円） *</label>
-                <input
-                  type="number"
-                  name="currentCost"
-                  value={formData.currentCost || ''}
-                  onChange={handleInputChange}
-                  required
-                  min="0"
-                  step="1"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-
-            {formData.currentPrice && formData.currentCost && (
-              <div className="bg-gray-50 p-3 rounded-md">
-                <span className="text-sm text-gray-600">利益率: </span>
-                <span
-                  className={`font-semibold ${profitRate >= 30 ? 'text-green-600' : profitRate >= 20 ? 'text-yellow-600' : 'text-red-600'}`}
-                >
-                  {profitRate.toFixed(1)}%
-                </span>
-                <span className="text-sm text-gray-600 ml-2">
-                  (利益: ¥{(formData.currentPrice - formData.currentCost).toLocaleString()})
-                </span>
-              </div>
-            )}
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">商品説明</label>
-              <textarea
-                name="description"
-                value={formData.description || ''}
-                onChange={handleInputChange}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                name="isActive"
-                checked={formData.isActive ?? true}
-                onChange={handleInputChange}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label className="ml-2 block text-sm text-gray-700">有効（販売可能）</label>
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                キャンセル
-              </button>
-              <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-                保存
-              </button>
-            </div>
-          </form>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">販売価格（円） *</label>
+          <input
+            type="number"
+            name="currentPrice"
+            value={formData.currentPrice || ''}
+            onChange={handleInputChange}
+            required
+            min="0"
+            step="1"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">原価（円） *</label>
+          <input
+            type="number"
+            name="currentCost"
+            value={formData.currentCost || ''}
+            onChange={handleInputChange}
+            required
+            min="0"
+            step="1"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
         </div>
       </div>
-    </div>
+
+      {formData.currentPrice && formData.currentCost && (
+        <div className="bg-gray-50 p-3 rounded-md">
+          <span className="text-sm text-gray-600">利益率: </span>
+          <span
+            className={`font-semibold ${profitRate >= 30 ? 'text-green-600' : profitRate >= 20 ? 'text-yellow-600' : 'text-red-600'}`}
+          >
+            {profitRate.toFixed(1)}%
+          </span>
+          <span className="text-sm text-gray-600 ml-2">
+            (利益: ¥{(formData.currentPrice - formData.currentCost).toLocaleString()})
+          </span>
+        </div>
+      )}
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">商品説明</label>
+        <textarea
+          name="description"
+          value={formData.description || ''}
+          onChange={handleInputChange}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          name="isActive"
+          checked={formData.isActive ?? true}
+          onChange={handleInputChange}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label className="ml-2 block text-sm text-gray-700">有効（販売可能）</label>
+      </div>
+
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="button"
+          onClick={onClose}
+          className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+        >
+          キャンセル
+        </button>
+        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          保存
+        </button>
+      </div>
+    </form>
   )
 }
 
@@ -477,64 +482,58 @@ const PriceHistoryModal = ({product, onClose}: {product: Product | null; onClose
   if (!product) return null
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" onClick={onClose}></div>
+    <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-gray-900">価格履歴 - {product.name}</h2>
+        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <X size={24} />
+        </button>
+      </div>
 
-        <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">価格履歴 - {product.name}</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-              <X size={24} />
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">適用日</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">販売価格</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">原価</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">利益率</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {product.priceHistory && product.priceHistory.length > 0 ? (
-                  product.priceHistory.map((history, index) => {
-                    const profitRate = ((history.price! - history.cost!) / history.price!) * 100
-                    return (
-                      <tr key={history.id || index}>
-                        <td className="px-4 py-3 text-sm text-gray-900">{formatDate(history.effectiveDate!)}</td>
-                        <td className="px-4 py-3 text-sm font-semibold text-gray-900">¥{history.price?.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">¥{history.cost?.toLocaleString()}</td>
-                        <td className="px-4 py-3 text-sm">
-                          <span
-                            className={`font-semibold ${profitRate >= 30 ? 'text-green-600' : profitRate >= 20 ? 'text-yellow-600' : 'text-red-600'}`}
-                          >
-                            {profitRate.toFixed(1)}%
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  })
-                ) : (
-                  <tr>
-                    <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                      価格履歴がありません
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">適用日</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">販売価格</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">原価</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">利益率</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {product.priceHistory && product.priceHistory.length > 0 ? (
+              product.priceHistory.map((history, index) => {
+                const profitRate = ((history.price! - history.cost!) / history.price!) * 100
+                return (
+                  <tr key={history.id || index}>
+                    <td className="px-4 py-3 text-sm text-gray-900">{formatDate(history.effectiveDate!)}</td>
+                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">¥{history.price?.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">¥{history.cost?.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm">
+                      <span
+                        className={`font-semibold ${profitRate >= 30 ? 'text-green-600' : profitRate >= 20 ? 'text-yellow-600' : 'text-red-600'}`}
+                      >
+                        {profitRate.toFixed(1)}%
+                      </span>
                     </td>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                )
+              })
+            ) : (
+              <tr>
+                <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
+                  価格履歴がありません
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
 
-          <div className="mt-6 flex justify-end">
-            <button onClick={onClose} className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-              閉じる
-            </button>
-          </div>
-        </div>
+      <div className="mt-6 flex justify-end">
+        <button onClick={onClose} className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
+          閉じる
+        </button>
       </div>
     </div>
   )
@@ -552,23 +551,16 @@ const ConfirmModal = ({
   onConfirm: () => void
   onClose: () => void
 }) => (
-  <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-      <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-        <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
-        <p className="text-gray-600 mb-6">{message}</p>
-        <div className="flex justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-          >
-            キャンセル
-          </button>
-          <button onClick={onConfirm} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-            削除
-          </button>
-        </div>
-      </div>
+  <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+    <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
+    <p className="text-gray-600 mb-6">{message}</p>
+    <div className="flex justify-end space-x-3">
+      <button onClick={onClose} className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
+        キャンセル
+      </button>
+      <button onClick={onConfirm} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
+        削除
+      </button>
     </div>
   </div>
 )
