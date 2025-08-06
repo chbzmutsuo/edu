@@ -104,7 +104,7 @@ export default function CustomersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-7xl mx-auto">
+      <div className=" mx-auto">
         {/* ヘッダー */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
           <div className="flex items-center space-x-3 mb-4 sm:mb-0">

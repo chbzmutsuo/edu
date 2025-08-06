@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Printer, FileText, Download, Search, CheckSquare, Square} from 'lucide-react'
+import {Printer, FileText, Search, CheckSquare, Square} from 'lucide-react'
 import {getReservations} from '../../(builders)/serverActions'
 import {Reservation} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -92,6 +92,18 @@ export default function InvoicesPage() {
   }
 
   const generateInvoices = (reservationsData: Reservation[]) => {
+    // 印刷設定の確認メッセージ
+    const confirmPrint = window.confirm(
+      '印刷設定の確認：\n\n' +
+        '• 用紙サイズ: A4\n' +
+        '• ヘッダーとフッター: 無効\n' +
+        '• 余白: 標準またはカスタム\n\n' +
+        '印刷ダイアログでこれらの設定を確認してから印刷してください。\n\n' +
+        '印刷を続けますか？'
+    )
+
+    if (!confirmPrint) return
+
     // 印刷用HTMLを生成
     const invoiceHTML = generateInvoiceHTML(reservationsData)
 
@@ -101,7 +113,11 @@ export default function InvoicesPage() {
       printWindow.document.write(invoiceHTML)
       printWindow.document.close()
       printWindow.focus()
-      printWindow.print()
+
+      // 少し待ってから印刷ダイアログを開く（コンテンツが完全に読み込まれるまで）
+      setTimeout(() => {
+        printWindow.print()
+      }, 500)
     }
   }
 
@@ -109,8 +125,8 @@ export default function InvoicesPage() {
     const invoicesHTML = reservationsData
       .map(
         reservation => `
-      <div class="invoice-page" style="page-break-after: always; padding: 20px; font-family: 'Noto Sans JP', sans-serif;">
-        <div style="border: 2px solid #333; padding: 20px; height: 90vh;">
+      <div class="invoice-page" style="page-break-after: always; font-family: 'Noto Sans JP', sans-serif;">
+        <div class="invoice-border">
           <!-- 伝票ヘッダー -->
           <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 20px;">
             <div>
@@ -261,7 +277,18 @@ export default function InvoicesPage() {
           @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
           @page {
             size: A4;
-            margin: 10mm;
+            margin: 15mm 20mm 15mm 20mm; /* 上下15mm、左右20mmのマージンを設定 */
+          }
+          @media print {
+            /* ブラウザのデフォルトヘッダー/フッターを非表示にする */
+            @page {
+              margin: 15mm 20mm 15mm 20mm;
+            }
+            /* 印刷時の余分な要素を非表示 */
+            body {
+              -webkit-print-color-adjust: exact !important;
+              color-adjust: exact !important;
+            }
           }
           body {
             margin: 0;
@@ -270,8 +297,20 @@ export default function InvoicesPage() {
             font-size: 12px;
             line-height: 1.4;
           }
+          .invoice-page {
+            /* 四隅の余白を確保するため、さらに内側にパディングを追加 */
+            padding: 15px !important;
+            box-sizing: border-box;
+          }
           .invoice-page:last-child {
             page-break-after: avoid !important;
+          }
+          /* 印刷時の境界線調整 */
+          .invoice-border {
+            border: 2px solid #333;
+            padding: 15px;
+            height: calc(100vh - 60px); /* 上下のパディング分を引く */
+            box-sizing: border-box;
           }
         </style>
       </head>
@@ -349,14 +388,14 @@ export default function InvoicesPage() {
               <FileText size={20} />
               <span>全件印刷</span>
             </button>
-            <button
+            {/* <button
               onClick={exportToCSV}
               disabled={filteredReservations.length === 0}
               className="flex items-center space-x-2 bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Download size={20} />
               <span>CSV出力</span>
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -469,9 +508,11 @@ export default function InvoicesPage() {
               <h4 className="font-semibold mb-2">印刷設定推奨値</h4>
               <ul className="space-y-1 list-disc list-inside">
                 <li>用紙サイズ: A4</li>
-                <li>余白: 標準</li>
+                <li>余白: 標準（またはカスタム）</li>
                 <li>カラー: モノクロ推奨</li>
                 <li>両面印刷: 無効</li>
+                <li className="text-red-600 font-medium">⚠️ ヘッダーとフッター: 無効にしてください</li>
+                <li className="text-sm text-gray-600 ml-4">（ページ数や日時が印刷されないようにします）</li>
               </ul>
             </div>
             <div>

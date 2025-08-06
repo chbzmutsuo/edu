@@ -114,30 +114,53 @@ export type ReservationChangeHistory = Partial<{
   changedAt: Date
 }>
 
-export type DeliveryTeam = Partial<{
+// 配達グループ（日付ベース、ユーザー1人に紐付け）
+export type DeliveryGroup = Partial<{
   id: number
   name: string
-  driverName: string
-  vehicleInfo?: string
-  capacity: number
-  isActive: boolean
+  deliveryDate: Date
+  userId: number
+  userName: string
+  status: 'planning' | 'route_generated' | 'in_progress' | 'completed'
+  totalReservations: number
+  completedReservations: number
+  estimatedDuration?: number
+  actualDuration?: number
+  optimizedRoute?: DeliveryRouteStop[]
+  routeUrl?: string
+  notes?: string
   createdAt: Date
   updatedAt: Date
 }>
 
-export type DeliveryAssignment = Partial<{
+// 配達ルートの停止地点
+export type DeliveryRouteStop = Partial<{
+  id: string
+  deliveryGroupId: number
+  reservationId: number
+  customerName: string
+  address: string
+  lat?: number
+  lng?: number
+  estimatedArrival?: Date
+  actualArrival?: Date
+  deliveryOrder: number
+  deliveryCompleted: boolean
+  recoveryCompleted: boolean
+  estimatedDuration: number
+  notes?: string
+}>
+
+// 配達グループと予約の紐付け
+export type DeliveryGroupReservation = Partial<{
   id: number
-  sbmDeliveryTeamId: number
-  sbmReservationId: number
-  assignedBy: string
-  userId?: number
-  deliveryDate: Date
-  estimatedDuration?: number
-  actualDuration?: number
-  route?: Record<string, any>
-  status: string
+  deliveryGroupId: number
+  reservationId: number
+  deliveryOrder?: number
+  isCompleted: boolean
+  completedAt?: Date
+  notes?: string
   createdAt: Date
-  updatedAt: Date
 }>
 
 export type RFMAnalysis = Partial<{
@@ -172,6 +195,10 @@ export type ReservationFilter = {
   companyName?: string
   pickupLocation?: PickupLocation
   orderChannel?: OrderChannel
+  purpose?: Purpose
+  paymentMethod?: PaymentMethod
+  deliveryCompleted?: boolean
+  recoveryCompleted?: boolean
 }
 
 // RFM分析用型

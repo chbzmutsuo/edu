@@ -114,8 +114,8 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
-    "**/tmp/**": true
+    "**/tmp/**": true,
+    "**/tbm/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,

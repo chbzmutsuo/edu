@@ -262,6 +262,32 @@ export async function getReservations(filter: ReservationFilter = {}) {
     }
   }
 
+  // カテゴリー別フィルター
+  if (filter.pickupLocation) {
+    where.pickupLocation = filter.pickupLocation
+  }
+
+  if (filter.purpose) {
+    where.purpose = filter.purpose
+  }
+
+  if (filter.paymentMethod) {
+    where.paymentMethod = filter.paymentMethod
+  }
+
+  if (filter.orderChannel) {
+    where.orderChannel = filter.orderChannel
+  }
+
+  // 完了状況フィルター
+  if (filter.deliveryCompleted !== undefined) {
+    where.deliveryCompleted = filter.deliveryCompleted
+  }
+
+  if (filter.recoveryCompleted !== undefined) {
+    where.recoveryCompleted = filter.recoveryCompleted
+  }
+
   const reservations = await prisma.sbmReservation.findMany({
     where,
     include: {
@@ -495,7 +521,7 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
 export async function deleteProduct(id: number) {
   try {
     // 予約アイテムで使用されている場合は削除を防ぐ
-    console.log({id}) //logs
+
     const itemCount = await prisma.sbmReservationItem.count({
       where: {sbmProductId: id},
     })
