@@ -155,7 +155,7 @@ import {CssString} from 'src/cm/components/styles/cssString'
 import {Z_INDEX} from '@cm/lib/constants/constants'
 import {colorVariants} from '@cm/lib/methods/colors'
 import {iconBtnColorVariants} from '@cm/components/styles/common-components/IconBtn'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 export const ParseJSON = ({json}) => {
   const jsonStyle = {

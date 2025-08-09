@@ -9,10 +9,11 @@ import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions
 
 import {adjustBasicFormProps} from '@cm/hooks/useBasicForm/lib/createBasicFormProps'
 import ControlGroup from '@cm/hooks/useBasicForm/molecules/ControlGroup'
-import {Card} from '@cm/shadcn/components/ui/card'
-import {DynamicGridContainer} from '@cm/components/utils'
+import {Card} from '@cm/shadcn/ui/card'
+
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
+import DynamicGridContainer from '@cm/components/utils/DynamicGridContainer'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any

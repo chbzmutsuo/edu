@@ -9,7 +9,7 @@ import {cl} from '@cm/lib/methods/common'
 import {twMerge} from 'tailwind-merge'
 import {htmlProps} from '@cm/components/styles/common-components/type'
 import {Downloader} from './components/CsvDownloader'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 export type CsvTableVirtualizedProps = CsvTableProps & {
   virtualized?: VirtualizedOptions

@@ -2,7 +2,7 @@ import {COLORS} from 'src/cm/lib/constants/constants'
 
 import {CSS} from '@dnd-kit/utilities'
 import {useSortable} from '@dnd-kit/sortable'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 export const createRowColor = ({myTable, recIdx, record, rows}) => {
   const allColumns = rows.flat()

@@ -1,4 +1,4 @@
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import EmptyPlaceholder from '@cm/components/utils/loader/EmptyPlaceHolder'
 import {ReactNode} from 'react'

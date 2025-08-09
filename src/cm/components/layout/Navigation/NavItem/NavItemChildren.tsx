@@ -4,8 +4,8 @@ import NavItemWrapper, {getItemProps, navItemProps} from 'src/cm/components/layo
 
 import {anyObject} from '@cm/types/utility-types'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
-import {Card} from '@cm/shadcn/components/ui/card'
-import {cn} from '@cm/shadcn/lib/utils'
+import {Card} from '@cm/shadcn/ui/card'
+import {cn} from '@shadcn/lib/utils'
 
 const NavItemChildren = React.memo((props: navItemProps) => {
   const {HK_NAV, item, nestLevel = 1, navWrapperIdx, horizontalMenu} = props

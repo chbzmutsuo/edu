@@ -18,7 +18,7 @@ import React from 'react'
 import {NumHandler} from '@cm/class/NumHandler'
 import {TableInfo, TableInfoWrapper} from '@cm/class/builders/ColBuilderVariables'
 import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 export const defaultSelect = {id: true, name: true}
 export const masterDataSelect = {...defaultSelect, color: true}

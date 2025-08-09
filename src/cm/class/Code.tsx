@@ -1,4 +1,4 @@
-import {badgeVariantStr} from '@cm/shadcn/lib/variant-types'
+import {badgeVariantStr} from '@shadcn/lib/variant-types'
 
 export type codeItemCore = {
   label: string

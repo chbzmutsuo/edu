@@ -2,7 +2,7 @@
 import {R_Stack} from 'src/cm/components/styles/common-components/common-components'
 
 import React, {useMemo} from 'react'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 export const DisplayedState = React.memo((props: {col; record; value}) => {
   const {col, record, value} = props

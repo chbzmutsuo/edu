@@ -20,7 +20,6 @@ export type MyFormType = {
   className?: string
   showHeader?: (formData: anyObject) => JSX.Element
   customActions?: JSXReturnFunc
-  caption?: JSX.Element | string
   basicFormClassName?: string
   basicFormControlOptions?: ControlOptionType
   onFormItemBlur?: onFormItemBlurType

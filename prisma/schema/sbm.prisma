@@ -56,12 +56,78 @@ model SbmProductPriceHistory {
  sbmProductId Int
 }
 
+// 配達グループ
+model SbmDeliveryGroup {
+ id                    Int                           @id @default(autoincrement())
+ name                  String
+ deliveryDate          DateTime
+ userId                Int
+ userName              String
+ status                String                        @default("planning") // planning, route_generated, in_progress, completed
+ totalReservations     Int                           @default(0)
+ completedReservations Int                           @default(0)
+ estimatedDuration     Int?
+ actualDuration        Int?
+ routeUrl              String?
+ notes                 String?
+ createdAt             DateTime                      @default(now())
+ updatedAt             DateTime                      @updatedAt
+ optimizedRoute        SbmDeliveryRouteStop[]
+ groupReservations     SbmDeliveryGroupReservation[]
+
+ @@map("sbm_delivery_groups")
+}
+
+// 配達ルートの停止地点
+model SbmDeliveryRouteStop {
+ id                 String           @id @default(uuid())
+ sbmDeliveryGroupId Int
+ sbmReservationId   Int
+ customerName       String
+ address            String
+ lat                Float?
+ lng                Float?
+ estimatedArrival   DateTime?
+ actualArrival      DateTime?
+ deliveryOrder      Int
+ deliveryCompleted  Boolean          @default(false)
+ recoveryCompleted  Boolean          @default(false)
+ estimatedDuration  Int
+ notes              String?
+ createdAt          DateTime         @default(now())
+ updatedAt          DateTime         @updatedAt
+ SbmDeliveryGroup   SbmDeliveryGroup @relation(fields: [sbmDeliveryGroupId], references: [id], onDelete: Cascade)
+ SbmReservation     SbmReservation   @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+
+ @@map("sbm_delivery_route_stops")
+}
+
+// 配達グループと予約の紐付け
+model SbmDeliveryGroupReservation {
+ id                 Int              @id @default(autoincrement())
+ sbmDeliveryGroupId Int
+ sbmReservationId   Int
+ deliveryOrder      Int?
+ isCompleted        Boolean          @default(false)
+ completedAt        DateTime?
+ notes              String?
+ createdAt          DateTime         @default(now())
+ SbmDeliveryGroup   SbmDeliveryGroup @relation(fields: [sbmDeliveryGroupId], references: [id], onDelete: Cascade)
+ SbmReservation     SbmReservation   @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
+
+ @@unique([sbmDeliveryGroupId, sbmReservationId])
+ @@map("sbm_delivery_group_reservations")
+}
+
 model SbmReservation {
- id            Int     @id @default(autoincrement())
- sbmCustomerId Int
- customerName  String  @db.VarChar(200)
- contactName   String? @db.VarChar(100)
- phoneNumber   String  @db.VarChar(20)
+ // 配達関連
+ deliveryRouteStops          SbmDeliveryRouteStop[]
+ SbmDeliveryGroupReservation SbmDeliveryGroupReservation[]
+ id                          Int                           @id @default(autoincrement())
+ sbmCustomerId               Int
+ customerName                String                        @db.VarChar(200)
+ contactName                 String?                       @db.VarChar(100)
+ phoneNumber                 String                        @db.VarChar(20)
 
  // 配達先住所（5区分）
  postalCode String? @db.VarChar(10)

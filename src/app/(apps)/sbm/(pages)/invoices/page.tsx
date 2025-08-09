@@ -54,12 +54,12 @@ export default function InvoicesPage() {
     )
   })
 
-  const toggleReservationSelection = (reservationId: number) => {
+  const toggleReservationSelection = (sbmReservationId: number) => {
     const newSelected = new Set(selectedReservations)
-    if (newSelected.has(reservationId)) {
-      newSelected.delete(reservationId)
+    if (newSelected.has(sbmReservationId)) {
+      newSelected.delete(sbmReservationId)
     } else {
-      newSelected.add(reservationId)
+      newSelected.add(sbmReservationId)
     }
     setSelectedReservations(newSelected)
   }

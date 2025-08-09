@@ -13,7 +13,7 @@ const partClasses = {
 }
 
 import {ChevronsLeft, ChevronsRight} from 'lucide-react'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 export type PaginationPropType = {
   useGlobalProps: useGlobalPropType

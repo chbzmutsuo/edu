@@ -12,7 +12,7 @@ import {defaultFormat} from 'src/cm/class/Fields/lib/defaultFormat'
 import {CssString} from 'src/cm/components/styles/cssString'
 import {twMerge} from 'tailwind-merge'
 import {getColMinWidth} from '@cm/class/Fields/lib/transposeColumns'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 const {table, border} = CssString
 const defaultStyle = {
   width: '100%',

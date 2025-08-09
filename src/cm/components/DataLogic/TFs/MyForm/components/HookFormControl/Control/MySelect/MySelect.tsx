@@ -8,7 +8,7 @@ import useInitMySelect from '@cm/components/DataLogic/TFs/MyForm/components/Hook
 import MyRadio from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/MyRadio'
 
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
-import ShadPopover from '@cm/shadcn/components/ShadPopover'
+import ShadPopover from '@cm/shadcn/ui/Organisms/ShadPopover'
 
 const MySelect = React.memo((props: ControlProps) => {
   const {contexts} = useInitMySelect(props)

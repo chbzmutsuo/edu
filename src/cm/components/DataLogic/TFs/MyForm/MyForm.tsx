@@ -83,17 +83,19 @@ const MyForm = React.memo<DetailPagePropType>(props => {
       </section>
 
       <section className="mx-auto w-fit ">
-        <BasicForm
-          latestFormData={latestFormData}
-          onSubmit={wrappedHandleOnSubmit}
-          ControlOptions={myForm?.basicFormControlOptions}
-        >
-          <div className="sticky bottom-0 w-full pt-2 text-center">
-            <Button color="blue" disabled={uploading} className="w-[200px] max-w-[80vw] p-1" type="submit">
-              {buttonText}
-            </Button>
-          </div>
-        </BasicForm>
+        <div className={`pb-8`}>
+          <BasicForm
+            latestFormData={latestFormData}
+            onSubmit={wrappedHandleOnSubmit}
+            ControlOptions={myForm?.basicFormControlOptions}
+          >
+            <div className="fixed bottom-4 right-4  w-fit pt-2 text-center">
+              <Button color="blue" disabled={uploading} size="lg" className=" max-w-[80vw] " type="submit">
+                {buttonText}
+              </Button>
+            </div>
+          </BasicForm>
+        </div>
       </section>
     </div>
   )

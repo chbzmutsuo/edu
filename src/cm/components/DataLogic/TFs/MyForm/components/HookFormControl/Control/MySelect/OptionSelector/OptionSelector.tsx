@@ -11,7 +11,7 @@ import {useSearchForm} from '@cm/components/DataLogic/TFs/MyForm/components/Hook
 import CreateForm from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Create/CreateForm'
 import OptionSearcher from '@cm/components/DataLogic/TFs/MyForm/components/HookFormControl/Control/MySelect/Search/OptionSearcher/OptionSearcher'
 import {useEffect, useState, useRef} from 'react'
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn/components/ui/accordion'
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn/ui/accordion'
 
 import {Search} from 'lucide-react'
 export const optionTakeCount = 100

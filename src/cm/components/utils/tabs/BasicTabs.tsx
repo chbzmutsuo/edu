@@ -9,8 +9,8 @@ import {CSSProperties, useEffect} from 'react'
 import {anyObject} from '@cm/types/utility-types'
 
 import {useJotaiByKey, atomTypes} from '@cm/hooks/useJotai'
-import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn/components/ui/tabs'
-import {cn} from '@cm/shadcn/lib/utils'
+import {Tabs, TabsList, TabsTrigger, TabsContent} from '@cm/shadcn/ui/tabs'
+import {cn} from '@shadcn/lib/utils'
 
 export type tabComponent = {
   style?: CSSProperties
@@ -34,7 +34,7 @@ export default function BasicTabs({
   showAll,
   TabComponentArray,
   className,
-  style,
+  style = {maxWidth: '90vw'},
 
   ...props
 }: BasicTabsType) {
@@ -67,7 +67,7 @@ export default function BasicTabs({
   }
 
   return (
-    <div style={{maxWidth: '95vw', ...style}} className={cn('mx-auto', className)} {...props}>
+    <div style={{maxWidth: '90vw', ...style}} className={cn('mx-auto', className)} {...props}>
       {headingText && (
         <div className="mb-4">
           {typeof headingText === 'string' ? <h2 className="text-xl font-semibold text-gray-800">{headingText}</h2> : headingText}

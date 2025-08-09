@@ -11,10 +11,11 @@ export const tbm_PAGES = (props: PageGetterType) => {
   const {session, rootPath, pathname, query} = props
 
   const scopes = getScopes(session, {query, roles})
+  const {admin} = scopes
 
   const {isSystemAdmin} = scopes.getTbmScopes()
 
-  const onlyAdmin = scopes.admin || isSystemAdmin
+  const onlyAdmin = admin || isSystemAdmin
 
   const publicPaths = []
   const loginPath = [
@@ -73,6 +74,11 @@ export const tbm_PAGES = (props: PageGetterType) => {
           tabId: 'user',
           label: <IconLetter {...{Icon: User}}>ユーザー</IconLetter>,
           exclusiveTo: onlyAdmin,
+        },
+        {
+          tabId: 'tbmVehicle',
+          label: <IconLetter {...{Icon: Truck}}>車両</IconLetter>,
+          exclusiveTo: admin,
         },
         {
           tabId: 'tbmCustomer',

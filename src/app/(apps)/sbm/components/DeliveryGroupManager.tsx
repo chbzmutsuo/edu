@@ -2,8 +2,15 @@
 
 import React, {useState, useEffect} from 'react'
 import {Plus, Edit3, Trash2, Users, Calendar, Clock, MapPin, CheckCircle, AlertCircle, Route, ExternalLink} from 'lucide-react'
-import {DeliveryGroup, DeliveryRouteStop, Reservation} from '../types'
+import {DeliveryGroup} from '../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {
+  getDeliveryGroups,
+  createDeliveryGroup,
+  updateDeliveryGroup,
+  deleteDeliveryGroup,
+} from '@app/(apps)/sbm/(builders)/deliveryActions'
+import useModal, {useModalReturn} from '@cm/components/utils/modal/useModal'
 
 interface DeliveryGroupManagerProps {
   selectedDate: Date
@@ -20,8 +27,6 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
 }) => {
   const [groups, setGroups] = useState<DeliveryGroup[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [editingGroup, setEditingGroup] = useState<DeliveryGroup | null>(null)
 
   // 選択日の配達グループを取得
   useEffect(() => {
@@ -31,37 +36,8 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
   const loadGroups = async () => {
     setIsLoading(true)
     try {
-      // TODO: API実装後に差し替え
-      const mockGroups: DeliveryGroup[] = [
-        {
-          id: 1,
-          name: '配達グループA',
-          deliveryDate: selectedDate,
-          userId: 1,
-          userName: '田中太郎',
-          status: 'planning',
-          totalReservations: 5,
-          completedReservations: 0,
-          estimatedDuration: 120,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 2,
-          name: '配達グループB',
-          deliveryDate: selectedDate,
-          userId: 2,
-          userName: '佐藤花子',
-          status: 'route_generated',
-          totalReservations: 3,
-          completedReservations: 1,
-          estimatedDuration: 90,
-          routeUrl: 'https://maps.google.com/route123',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]
-      setGroups(mockGroups)
+      const groups = await getDeliveryGroups(selectedDate)
+      setGroups(groups as unknown as DeliveryGroup[])
     } catch (error) {
       console.error('配達グループの取得に失敗:', error)
     } finally {
@@ -69,27 +45,34 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
     }
   }
 
+  const GrpupCreateModalReturn = useModal()
   const handleCreateGroup = () => {
-    setEditingGroup(null)
-    setShowCreateModal(true)
+    GrpupCreateModalReturn.handleOpen({
+      group: {
+        deliveryDate: selectedDate,
+        status: 'planning',
+        totalReservations: 0,
+        completedReservations: 0,
+      },
+    })
   }
 
   const handleEditGroup = (group: DeliveryGroup) => {
-    setEditingGroup(group)
-    setShowCreateModal(true)
+    GrpupCreateModalReturn.handleOpen({group})
   }
 
   const handleDeleteGroup = async (groupId: number) => {
     if (!confirm('この配達グループを削除しますか？')) return
 
     try {
-      // TODO: API実装
-      setGroups(groups.filter(g => g.id !== groupId))
+      await deleteDeliveryGroup(groupId)
       if (selectedGroup?.id === groupId) {
         onGroupSelect(null)
       }
+      loadGroups()
     } catch (error) {
       console.error('配達グループの削除に失敗:', error)
+      alert('配達グループの削除に失敗しました')
     }
   }
 
@@ -273,36 +256,48 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
       </div>
 
       {/* グループ作成・編集モーダル */}
-      {showCreateModal && (
+      <p>
         <DeliveryGroupModal
-          group={editingGroup}
+          GrpupCreateModalReturn={GrpupCreateModalReturn}
           deliveryDate={selectedDate}
-          onSave={group => {
-            // TODO: API実装
-            if (editingGroup) {
-              setGroups(groups.map(g => (g.id === group.id ? group : g)))
-            } else {
-              setGroups([...groups, {...group, id: Date.now()}])
+          onSave={async group => {
+            try {
+              if (GrpupCreateModalReturn.open?.group?.id) {
+                await updateDeliveryGroup(group)
+              } else {
+                await createDeliveryGroup(group)
+              }
+              GrpupCreateModalReturn.handleClose()
+              loadGroups()
+            } catch (error) {
+              console.error('グループの保存に失敗:', error)
+              alert('グループの保存に失敗しました')
             }
-            setShowCreateModal(false)
-            loadGroups()
           }}
-          onClose={() => setShowCreateModal(false)}
+          onClose={() => GrpupCreateModalReturn.handleClose()}
         />
-      )}
+      </p>
     </div>
   )
 }
 
 // グループ作成・編集モーダル
 interface DeliveryGroupModalProps {
-  group: DeliveryGroup | null
+  GrpupCreateModalReturn: useModalReturn
+
   deliveryDate: Date
   onSave: (group: DeliveryGroup) => void
   onClose: () => void
 }
 
-const DeliveryGroupModal: React.FC<DeliveryGroupModalProps> = ({group, deliveryDate, onSave, onClose}) => {
+const DeliveryGroupModal: React.FC<DeliveryGroupModalProps> = ({
+  GrpupCreateModalReturn,
+
+  deliveryDate,
+  onSave,
+  onClose,
+}) => {
+  const group = GrpupCreateModalReturn.open?.group
   const [formData, setFormData] = useState({
     name: group?.name || '',
     userId: group?.userId || 1,
@@ -320,7 +315,8 @@ const DeliveryGroupModal: React.FC<DeliveryGroupModalProps> = ({group, deliveryD
     e.preventDefault()
 
     const selectedUser = users.find(u => u.id === formData.userId)
-    if (!selectedUser) return
+
+    if (!selectedUser) return alert('担当者を選択してください')
 
     const groupData: DeliveryGroup = {
       ...group,
@@ -340,84 +336,82 @@ const DeliveryGroupModal: React.FC<DeliveryGroupModalProps> = ({group, deliveryD
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <form onSubmit={handleSubmit}>
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">{group ? '配達グループ編集' : '配達グループ作成'}</h3>
+    <GrpupCreateModalReturn.Modal>
+      <form onSubmit={handleSubmit}>
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900">{group ? '配達グループ編集' : '配達グループ作成'}</h3>
+        </div>
+
+        <div className="px-6 py-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">グループ名 *</label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={e => setFormData({...formData, name: e.target.value})}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="例: 配達グループA"
+              required
+            />
           </div>
 
-          <div className="px-6 py-4 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">グループ名 *</label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={e => setFormData({...formData, name: e.target.value})}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="例: 配達グループA"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">担当者 *</label>
-              <select
-                value={formData.userId}
-                onChange={e => {
-                  const userId = parseInt(e.target.value)
-                  const user = users.find(u => u.id === userId)
-                  setFormData({...formData, userId, userName: user?.name || ''})
-                }}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">担当者を選択</option>
-                {users.map(user => (
-                  <option key={user.id} value={user.id}>
-                    {user.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">配達日</label>
-              <input
-                type="date"
-                value={formatDate(deliveryDate, 'YYYY-MM-DD')}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50"
-                disabled
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">備考</label>
-              <textarea
-                value={formData.notes}
-                onChange={e => setFormData({...formData, notes: e.target.value})}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                rows={3}
-                placeholder="配達に関する特記事項があれば入力してください"
-              />
-            </div>
-          </div>
-
-          <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">担当者 *</label>
+            <select
+              value={formData.userId}
+              onChange={e => {
+                const userId = parseInt(e.target.value)
+                const user = users.find(u => u.id === userId)
+                setFormData({...formData, userId, userName: user?.name || ''})
+              }}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
             >
-              キャンセル
-            </button>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
-              {group ? '更新' : '作成'}
-            </button>
+              <option value="">担当者を選択</option>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
           </div>
-        </form>
-      </div>
-    </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">配達日</label>
+            <input
+              type="date"
+              value={formatDate(deliveryDate, 'YYYY-MM-DD')}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50"
+              disabled
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">備考</label>
+            <textarea
+              value={formData.notes}
+              onChange={e => setFormData({...formData, notes: e.target.value})}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={3}
+              placeholder="配達に関する特記事項があれば入力してください"
+            />
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+          >
+            キャンセル
+          </button>
+          <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+            {group ? '更新' : '作成'}
+          </button>
+        </div>
+      </form>
+    </GrpupCreateModalReturn.Modal>
   )
 }
 

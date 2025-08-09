@@ -136,8 +136,8 @@ export type DeliveryGroup = Partial<{
 // 配達ルートの停止地点
 export type DeliveryRouteStop = Partial<{
   id: string
-  deliveryGroupId: number
-  reservationId: number
+  sbmDeliveryGroupId: number
+  sbmReservationId: number
   customerName: string
   address: string
   lat?: number
@@ -154,8 +154,8 @@ export type DeliveryRouteStop = Partial<{
 // 配達グループと予約の紐付け
 export type DeliveryGroupReservation = Partial<{
   id: number
-  deliveryGroupId: number
-  reservationId: number
+  sbmDeliveryGroupId: number
+  sbmReservationId: number
   deliveryOrder?: number
   isCompleted: boolean
   completedAt?: Date

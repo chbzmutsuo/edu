@@ -4,6 +4,7 @@ import React, {useState, useEffect} from 'react'
 import {AlertTriangle, Clock, MapPin, Package, Plus, Search} from 'lucide-react'
 import {Reservation, DeliveryGroup} from '../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {getUnassignedDeliveries} from '@app/(apps)/sbm/(builders)/deliveryActions'
 
 interface UnassignedDeliveriesProps {
   selectedDate: Date
@@ -24,64 +25,8 @@ export const UnassignedDeliveries: React.FC<UnassignedDeliveriesProps> = ({selec
   const loadUnassignedReservations = async () => {
     setIsLoading(true)
     try {
-      // TODO: API実装後に差し替え
-      const mockReservations: Reservation[] = [
-        {
-          id: 1,
-          customerName: 'ABC株式会社',
-          contactName: '山田太郎',
-          phoneNumber: '03-1234-5678',
-          prefecture: '東京都',
-          city: '千代田区',
-          street: '丸の内1-1-1',
-          building: 'ビル5F',
-          deliveryDate: new Date(selectedDate.getTime() + 10 * 60 * 60 * 1000), // 10:00
-          pickupLocation: '配達',
-          purpose: '会議',
-          finalAmount: 8500,
-          deliveryCompleted: false,
-          recoveryCompleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 2,
-          customerName: 'XYZ商事',
-          contactName: '佐藤花子',
-          phoneNumber: '03-2345-6789',
-          prefecture: '東京都',
-          city: '新宿区',
-          street: '西新宿2-2-2',
-          building: '',
-          deliveryDate: new Date(selectedDate.getTime() + 12 * 60 * 60 * 1000), // 12:00
-          pickupLocation: '配達',
-          purpose: '研修',
-          finalAmount: 12000,
-          deliveryCompleted: false,
-          recoveryCompleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 3,
-          customerName: '株式会社テスト',
-          contactName: '田中一郎',
-          phoneNumber: '03-3456-7890',
-          prefecture: '東京都',
-          city: '渋谷区',
-          street: '渋谷1-1-1',
-          building: '渋谷ビル3F',
-          deliveryDate: new Date(selectedDate.getTime() + 14 * 60 * 60 * 1000), // 14:00
-          pickupLocation: '配達',
-          purpose: 'イベント',
-          finalAmount: 15000,
-          deliveryCompleted: false,
-          recoveryCompleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]
-      setUnassignedReservations(mockReservations)
+      const unassigned = await getUnassignedDeliveries(selectedDate)
+      setUnassignedReservations(unassigned as unknown as Reservation[])
     } catch (error) {
       console.error('未割り当て配達の取得に失敗:', error)
     } finally {
@@ -99,12 +44,12 @@ export const UnassignedDeliveries: React.FC<UnassignedDeliveriesProps> = ({selec
     )
   })
 
-  const toggleReservationSelection = (reservationId: number) => {
+  const toggleReservationSelection = (sbmReservationId: number) => {
     const newSelected = new Set(selectedReservations)
-    if (newSelected.has(reservationId)) {
-      newSelected.delete(reservationId)
+    if (newSelected.has(sbmReservationId)) {
+      newSelected.delete(sbmReservationId)
     } else {
-      newSelected.add(reservationId)
+      newSelected.add(sbmReservationId)
     }
     setSelectedReservations(newSelected)
   }

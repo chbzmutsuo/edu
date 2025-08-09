@@ -2,8 +2,8 @@
 
 import * as React from 'react'
 import {useState, useEffect} from 'react'
-import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn/components/ui/accordion'
-import {cn} from '@cm/shadcn/lib/utils'
+import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@cm/shadcn/ui/accordion'
+import {cn} from '@shadcn/lib/utils'
 
 export type AccordiongPropType = {
   // styling?: styling

@@ -1,22 +1,22 @@
 import * as React from 'react'
 
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 import {cva} from 'class-variance-authority'
 
 function Card({
   className,
   variant = 'default',
   ...props
-}: {variant?: 'default' | 'outline' | 'gradient'} & React.ComponentProps<'div'>) {
+}: {variant?: 'default' | 'outline' | 'gradient' | 'small'} & React.ComponentProps<'div'>) {
   const cardVariantClass = cva(
     'bg-card text-card-foreground flex flex-col gap-6 rounded-xl border border-gray-200 py-3 px-2  shadow-md',
     {
       variants: {
         variant: {
           default: 'bg-white text-card-foreground flex flex-col gap-6 rounded-xl border border-gray-200 py-3 px-2 shadow-md',
-
           gradient: 'gradient-base',
           outline: 'bg-white   shadow-lg  border-2 border-gray-200  rounded-xl  py-3 px-2 ',
+          small: ' p-2 pt-1 pb-0.5 rounded-md',
         },
       },
     }

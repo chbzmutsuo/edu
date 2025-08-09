@@ -14,7 +14,7 @@ import {pathToNoImage} from '@cm/components/DataLogic/TFs/MyForm/components/Hook
 import {DownloadIcon} from 'lucide-react'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import {useMemo, memo} from 'react'
-import ShadModal from '@cm/shadcn/components/ShadModal'
+import ShadModal from '@cm/shadcn/ui/Organisms/ShadModal'
 
 const ReactPlayer = dynamic(() => import('react-player'), {
   ssr: false,

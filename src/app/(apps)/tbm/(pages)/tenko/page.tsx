@@ -12,7 +12,7 @@ import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {TbmDriveSchedule, TbmRouteGroup, TbmVehicle, User} from '@prisma/client'
 import React, {useRef} from 'react'
 import {useReactToPrint} from 'react-to-print'
-import {Card} from '@cm/shadcn/components/ui/card'
+import {Card} from '@cm/shadcn/ui/card'
 
 export default function TenkoPage(props) {
   const {query} = useGlobal()

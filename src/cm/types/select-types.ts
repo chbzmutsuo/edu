@@ -1,8 +1,9 @@
+import {colType} from '@cm/types/types'
 // --- セレクト・オプション関連型 ---
 import type {CSSProperties} from 'react'
 import type {PrismaModelNames} from '@cm/types/prisma-types'
 import type {ControlContextType} from '@cm/types/form-control-type'
-import type {colType, colTypeStr} from './col-types'
+import type {colTypeStr} from '@cm/types/col-types'
 import type {optionType, optionsOrOptionFetcherType} from 'src/cm/class/Fields/col-operator-types'
 import type {codeObjectArgs} from '@cm/class/Code'
 import type {anyObject} from './utility-types'

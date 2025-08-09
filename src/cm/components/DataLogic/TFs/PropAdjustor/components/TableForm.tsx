@@ -51,8 +51,7 @@ const TableForm = (props: ClientPropsType2) => {
           setopen: setformData,
         }}
       >
-        <div id="editFormOnMyDataViwe" className={` bg-gray-50   p-2`}>
-          {myForm?.caption}
+        <div id="editFormOnMyDataViwe" className={` bg-gray-50  overflow-auto   p-2`}>
           {formComponent}
         </div>
       </BasicModal>

@@ -1,22 +1,23 @@
 'use client'
 
+import {Popover, PopoverContent, PopoverTrigger} from '@shadcn/ui/popover'
+
 import {
   Drawer,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
-  DrawerPortal,
   DrawerTitle,
+  DrawerDescription,
   DrawerTrigger,
-} from '@cm/shadcn/components/ui/drawer'
-import {Popover, PopoverContent, PopoverTrigger} from '@cm/shadcn/components/ui/popover'
+  DrawerFooter,
+  DrawerPortal,
+} from '@shadcn/ui/drawer'
 
-import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 import {PopoverPortal} from '@radix-ui/react-popover'
 
 import React from 'react'
 import {JSX} from 'react'
+import {useIsMobile} from '@shadcn/hooks/use-mobile'
 
 type ShadPopoverProps = {
   PopoverTrigger?: JSX.Element | string

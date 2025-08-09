@@ -5,7 +5,7 @@ import {upsertUserWorkStatus} from '@app/(apps)/tbm/(server-actions)/userWorkSta
 import {toast} from 'react-toastify'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {Code} from '@cm/class/Code'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 
 type InlineEditFieldProps = {
   value: string | number | null

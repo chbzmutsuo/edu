@@ -133,7 +133,7 @@ export default function TbmVehicleDetail(props: DetailPagePropType) {
       {...{
         id: `tbmVechicleDetailPage`,
         showAll: false,
-        style: {width: childTableWidth, height: `80vh`},
+        style: {width: childTableWidth},
         TabComponentArray,
       }}
     />

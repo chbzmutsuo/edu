@@ -229,7 +229,6 @@ export type MyTableType =
       }
       fixedCols?: number
       customActions?: (props: {ClientProps2: ClientPropsType2}) => JSX.Element
-      caption?: JSX.Element | string
       showHeader?: boolean
       showRecordIndex?: boolean
       hideEasySearch?: boolean
@@ -250,7 +249,6 @@ export type MyFormType = {
   className?: string
   showHeader?: (formData: anyObject) => JSX.Element
   customActions?: JSXReturnFunc
-  caption?: JSX.Element | string
   basicFormClassName?: string
   basicFormControlOptions?: ControlOptionType
   onFormItemBlur?: onFormItemBlurType

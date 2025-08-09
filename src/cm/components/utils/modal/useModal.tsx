@@ -1,6 +1,13 @@
 import {useCallback, useState} from 'react'
 import {basicModalPropType, ModalCore} from '@cm/components/utils/modal/ModalCore'
 
+export type useModalReturn = {
+  Modal: React.FC<basicModalPropType>
+  handleOpen: (openValue?: any) => void
+  handleClose: (closeValue?: any) => void
+  open: any
+  setopen: (openValue?: any) => void
+}
 const useModal = (props?: {defaultOpen?: boolean; defaultState?: any; alertOnClose?: boolean}) => {
   const [open, setopen] = useState<any>(props?.defaultState || props?.defaultOpen ? true : false)
   const handleOpen = (openValue?: any) => setopen(openValue || true)

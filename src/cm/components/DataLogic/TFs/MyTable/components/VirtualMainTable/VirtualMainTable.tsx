@@ -3,7 +3,7 @@ import {useSortable, SortableContext, verticalListSortingStrategy} from '@dnd-ki
 import {DndContext, closestCenter} from '@dnd-kit/core'
 
 import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import {cn} from '@cm/shadcn/lib/utils'
+import {cn} from '@shadcn/lib/utils'
 import {colType, MyTableType} from '@cm/types/types'
 import {TableConfigPropsType} from '@cm/components/DataLogic/TFs/MyTable/components/TableConfig'
 import {createRowColor, createTrClassName} from '@cm/components/DataLogic/TFs/MyTable/components/Tbody/Tbody-methods'

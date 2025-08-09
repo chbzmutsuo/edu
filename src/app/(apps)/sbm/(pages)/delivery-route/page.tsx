@@ -6,7 +6,10 @@ import {DeliveryGroup, Reservation} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import DeliveryGroupManager from '../../components/DeliveryGroupManager'
 import UnassignedDeliveries from '../../components/UnassignedDeliveries'
-import DeliveryRouteGenerator from '../../components/DeliveryRouteGenerator'
+
+import DeliveryStats from '../../components/DeliveryStats'
+import {getGroupReservations, updateDeliveryGroup, assignReservationsToGroup} from '../../(builders)/deliveryActions'
+import {DeliveryRouteGenerator} from '@app/(apps)/sbm/components/DeliveryRouteGenerator'
 
 export default function DeliveryRoutePage() {
   const [selectedDate, setSelectedDate] = useState(new Date())
@@ -24,46 +27,8 @@ export default function DeliveryRoutePage() {
 
   const loadGroupReservations = async (groupId: number) => {
     try {
-      // TODO: API実装後に差し替え
-      const mockReservations: Reservation[] = [
-        {
-          id: 4,
-          customerName: 'グループ配達先A',
-          contactName: '担当者A',
-          phoneNumber: '03-1111-1111',
-          prefecture: '東京都',
-          city: '千代田区',
-          street: '丸の内1-2-3',
-          building: 'ビルA',
-          deliveryDate: new Date(selectedDate.getTime() + 10 * 60 * 60 * 1000),
-          pickupLocation: '配達',
-          purpose: '会議',
-          finalAmount: 10000,
-          deliveryCompleted: false,
-          recoveryCompleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-        {
-          id: 5,
-          customerName: 'グループ配達先B',
-          contactName: '担当者B',
-          phoneNumber: '03-2222-2222',
-          prefecture: '東京都',
-          city: '新宿区',
-          street: '西新宿3-4-5',
-          building: 'ビルB',
-          deliveryDate: new Date(selectedDate.getTime() + 13 * 60 * 60 * 1000),
-          pickupLocation: '配達',
-          purpose: '研修',
-          finalAmount: 15000,
-          deliveryCompleted: false,
-          recoveryCompleted: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      ]
-      setGroupReservations(mockReservations)
+      const reservations = await getGroupReservations(groupId)
+      setGroupReservations(reservations as unknown as Reservation[])
     } catch (error) {
       console.error('グループ予約の取得に失敗:', error)
     }
@@ -75,17 +40,23 @@ export default function DeliveryRoutePage() {
 
   const handleAssignToGroup = async (reservations: Reservation[], groupId: number) => {
     try {
-      // TODO: API実装
-      console.log('予約をグループに割り当て:', {reservations, groupId})
+      await assignReservationsToGroup(reservations, groupId)
       alert(`${reservations.length}件の予約をグループに割り当てました`)
+      loadGroupReservations(groupId)
     } catch (error) {
       console.error('グループ割り当てに失敗:', error)
+      alert('予約の割り当てに失敗しました')
     }
   }
 
-  const handleRouteUpdate = (updatedGroup: DeliveryGroup) => {
-    setSelectedGroup(updatedGroup)
-    // TODO: API呼び出してグループ情報を更新
+  const handleRouteUpdate = async (updatedGroup: DeliveryGroup) => {
+    try {
+      const updated = await updateDeliveryGroup(updatedGroup)
+      setSelectedGroup(updated as unknown as DeliveryGroup)
+    } catch (error) {
+      console.error('グループ情報の更新に失敗:', error)
+      alert('グループ情報の更新に失敗しました')
+    }
   }
 
   return (
@@ -166,24 +137,7 @@ export default function DeliveryRoutePage() {
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">{formatDate(selectedDate, 'YYYY年MM月DD日')} の配達状況</h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">0</div>
-              <div className="text-sm text-gray-600">配達グループ数</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">0</div>
-              <div className="text-sm text-gray-600">未割り当て配達</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">0</div>
-              <div className="text-sm text-gray-600">完了済み配達</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-purple-600">0</div>
-              <div className="text-sm text-gray-600">総配達距離 (km)</div>
-            </div>
-          </div>
+          <DeliveryStats selectedDate={selectedDate} />
         </div>
       </div>
     </div>
