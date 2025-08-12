@@ -16,11 +16,11 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
     subject: '',
     location: '',
     counterpartyName: '',
-    counterpartyIndustry: '',
+    // counterpartyIndustry removed
     conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
     keywords: [],
     conversationSummary: '',
-    learningDepth: 3,
+    // learningDepth removed
     ...initialData,
   })
 

@@ -98,21 +98,35 @@ export const getExpenseById = async (id: string) => {
 export const updateExpense = async (
   id: string,
   data: {
+    // 基本情報
     date?: Date
     amount?: number
     subject?: string
     location?: string
     counterpartyName?: string
-    counterpartyIndustry?: string
-    conversationPurpose?: string[] // string[]に修正
+    conversationPurpose?: string[]
     keywords?: string[]
+
+    // 会話記録
     conversationSummary?: string
-    learningDepth?: number
-    // インサイト関連
-    autoTags?: string[]
+    summary?: string
+
     // 税務調査対応項目
+    counterpartyContact?: string
+    followUpPlan?: string
+    businessOpportunity?: string
+    competitorInfo?: string
+
+    // AI生成情報
+    insight?: string
+    autoTags?: string[]
+    status?: string | null
+
+    // MoneyForward用情報
     mfSubject?: string
+    mfSubAccount?: string
     mfTaxCategory?: string
+    mfDepartment?: string
     mfMemo?: string
   }
 ) => {

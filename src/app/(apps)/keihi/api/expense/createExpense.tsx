@@ -27,11 +27,10 @@ export const createExpenseWithDraft = async (
         subject: formData.subject,
         location: formData.location,
         counterpartyName: formData.counterpartyName,
-        counterpartyIndustry: formData.counterpartyIndustry,
         conversationPurpose: formData.conversationPurpose,
         keywords: formData.keywords || [],
         conversationSummary: formData.conversationSummary,
-        learningDepth: formData.learningDepth,
+        status: (formData as any).status || '',
 
         // 新仕様のフィールド
         insight: draft.insight,
@@ -120,11 +119,10 @@ export const createExpense = async (
         subject: formData.subject,
         location: formData.location,
         counterpartyName: formData.counterpartyName,
-        counterpartyIndustry: formData.counterpartyIndustry,
         conversationPurpose: formData.conversationPurpose,
         keywords: formData.keywords || [],
         conversationSummary: formData.conversationSummary,
-        learningDepth: formData.learningDepth,
+        status: (formData as any).status || '',
 
         // 新仕様のフィールド
         insight: insights.insight,

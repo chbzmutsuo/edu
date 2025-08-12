@@ -138,10 +138,6 @@ export const getAqProduct = (props: columnGetterType) => {
             <span className={`w-[60px] font-bold text-green-600 `}>{totalSaleQuantity}</span>
             <span className={`w-[10px]`}>=</span>
             <span className={`w-[60px] font-bold `}>{Number(totalPurchaseQuantity - totalSaleQuantity)}</span>
-
-            {/* <KeyValue label={`仕入れ合計`}>{totalPurchaseQuantity || '-'}</KeyValue>
-            <KeyValue label={`販売`}>{totalSaleQuantity || '-'}</KeyValue>
-            <KeyValue label={`在庫`}>{Number(totalPurchaseQuantity - totalSaleQuantity) || '-'}</KeyValue> */}
           </R_Stack>
         )
       },

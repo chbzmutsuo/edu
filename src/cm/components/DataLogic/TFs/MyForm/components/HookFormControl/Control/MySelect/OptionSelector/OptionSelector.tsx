@@ -137,36 +137,6 @@ const OptionSelector = (props: {contexts: contextsType}) => {
           </AccordionItem>
         )}
       </Accordion>
-      {/* <div style={{maxHeight: maxHieghts.wrapper}}>
-        <section
-          className={` relative  min-w-[180px]  `}
-          style={{
-            overflow: `auto`,
-            maxHeight: maxHieghts.options,
-          }}
-        >
-
-          <Flex
-            {...{
-              wrapperWidth: 900,
-              gapPixel: `10px 4px`,
-              direction: alignment?.direction ?? 'row',
-              itemWidth: optionWidth,
-              items: [
-                ...filteredOptions?.map((option: optionType, i) => {
-                  const optionStyle = col?.forSelect?.option?.style ?? {width: optionWidth}
-
-                  return (
-                    <div key={i}>
-                      <SelectOption {...{option, contexts, optionStyle}} />
-                    </div>
-                  )
-                }),
-              ],
-            }}
-          />
-        </section>
-      </div> */}
     </div>
   )
 }

@@ -44,7 +44,6 @@ const DetailedPageCC = ({modelData, ClientProps2}: DetailedPageCCProps) => {
     <div className={cl('mx-auto w-fit p-1.5')}>
       {/* //paperはつけない */}
       <div className="p-0.5" id={formId}>
-        {myForm?.caption}
         {formComponent}
       </div>
     </div>

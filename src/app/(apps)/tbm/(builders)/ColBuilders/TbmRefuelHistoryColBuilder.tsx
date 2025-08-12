@@ -42,7 +42,7 @@ export const TbmRefuelHistoryColBuilder = (props: columnGetterType) => {
 
     {
       id: 'userId',
-      label: '',
+      label: 'ユーザー',
       forSelect: {},
       form: {
         defaultValue: userId,

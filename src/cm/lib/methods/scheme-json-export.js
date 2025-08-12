@@ -1,6 +1,4 @@
-
 export const prismaSchemaString = `
-
 model BigCategory {
  id             Int              @id @default(autoincrement())
  createdAt      DateTime         @default(now())
@@ -180,7 +178,7 @@ model SystemChat {
  User             User           @relation("user", fields: [userId], references: [id], onDelete: Cascade)
 }
 
- 
+
 model KaizenClient {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
@@ -275,7 +273,7 @@ model KaizenCMS {
  principlePageMsg String?
 }
 
- 
+
 // 一回の購入
 model AqSaleCart {
  id Int @id @default(autoincrement())
@@ -655,7 +653,7 @@ model AqInventoryByMonth {
  @@unique([aqProductId, yearMonth], name: "unique_aqProductId_yearMonth")
 }
 
- 
+
 // Colabo - Interactive Slide Teaching Support App Schema
 
 model Slide {
@@ -1024,7 +1022,7 @@ model Answer {
  @@unique([gameId, studentId, questionPromptId], name: "unique_gameId_studentId_questionPromptId")
 }
 
- 
+
 // 健康管理アプリ用のPrismaスキーマ
 
 // 薬マスタ
@@ -1251,7 +1249,7 @@ enum RecurringPattern {
  WEEKENDS // 週末のみ
 }
 
- 
+
 // 経費記録アプリ用スキーマ
 model KeihiExpense {
  id        String   @id @default(cuid())
@@ -1348,7 +1346,7 @@ model KeihiOptionMaster {
  @@index([category, isActive, sortOrder])
 }
 
- 
+
 // Sara App - おうちスタンプラリーアプリ
 // User統合版スキーマ
 
@@ -1439,7 +1437,7 @@ model MonthlySetting {
  @@unique([year, month, key])
 }
 
- 
+
 // SBM - 仕出し弁当管理システム Prisma Schema
 
 model SbmCustomer {
@@ -1721,7 +1719,7 @@ model SbmRfmAnalysis {
  SbmCustomer SbmCustomer @relation(fields: [sbmCustomerId], references: [id], onDelete: Cascade)
 }
 
- 
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -1926,7 +1924,7 @@ model Calendar {
   holidayType String @default("出勤")
 }
 
- 
+
 // 商品マスターテーブル
 model Product {
  id        Int       @id @default(autoincrement())
@@ -2028,7 +2026,7 @@ model Approval {
  @@unique([leaveRequestId, index, userId], name: "leaveRequestApproval")
 }
 
- 
+
 model PrefCity {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
@@ -2295,7 +2293,7 @@ model ForcedWorkDay {
  date DateTime
 }
 
- 
+
 model StockConfig {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
@@ -2486,7 +2484,7 @@ model StockHistory {
  @@index([Date])
 }
 
- 
+
 model TbmBase {
  id        Int       @id @default(autoincrement())
  createdAt DateTime  @default(now())
@@ -2963,4 +2961,4 @@ model KyuyoTableRecord {
  @@unique([userId, yearMonth], name: "unique_userId_yearMonth")
 }
 
- `;
+ `

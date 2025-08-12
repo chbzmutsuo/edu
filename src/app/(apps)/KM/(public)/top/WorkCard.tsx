@@ -73,17 +73,16 @@ export const WorkCard = ({work}) => {
             )}
           >
             <C_Stack className={` items-center`}>
-              <R_Stack className={`w-full justify-between`}>
+              <R_Stack className={`w-full justify-between flex-nowrap`}>
                 <div className={titleClass}>
                   <h2 className={` text-start text-[24px] font-bold text-white    `}>{title}</h2>
                   {subtitle && <small className={`text-sm text-gray-100`}>{subtitle}</small>}
                 </div>
 
                 {allowShowClient && KaizenClient?.iconUrl && (
-                  <div>
+                  <div className={`shadow-md p-0.5 rounded bg-white `}>
                     <ContentPlayer
                       {...{
-                        className: `shadow-md  rounded-md`,
                         styles: {thumbnail: {width: headerHeight, height: headerHeight}},
                         src: KaizenClient?.iconUrl,
                       }}

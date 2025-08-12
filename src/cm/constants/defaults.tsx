@@ -114,10 +114,11 @@ export const limitEditting = (props: {exclusiveTo?: boolean; myTable?: MyTableTy
 }
 
 export const controlDefaultStyle: CSSProperties = {
-  width: 350,
+  width: 250,
+
   maxWidth: '85vw',
   minHeight: 30,
   margin: `auto 0`,
 }
 
-export const controlDefaultClass = 'w-[240px] min-h-[30px] max-w-[85vw] m-auto'
+// export const controlDefaultClass = 'w-[240px] min-h-[30px] max-w-[85vw] m-auto'

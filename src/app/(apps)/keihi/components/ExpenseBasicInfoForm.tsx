@@ -154,6 +154,19 @@ export function ExpenseBasicInfoForm({formData, setFormData, allOptions, getFiel
         </div>
 
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">ステータス</label>
+          <select
+            value={(formData as any).status || ''}
+            onChange={e => setFormData(prev => ({...(prev as any), status: e.target.value}))}
+            className={getFieldClass((formData as any).status || '')}
+          >
+            <option value="">未設定</option>
+            <option value="一次チェック済">一次チェック済</option>
+            <option value="MF連携済み">MF連携済み</option>
+          </select>
+        </div>
+
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">場所</label>
           <input
             type="text"
@@ -201,31 +214,9 @@ export function ExpenseBasicInfoForm({formData, setFormData, allOptions, getFiel
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">相手の職種・業種</label>
-          <input
-            type="text"
-            value={formData.counterpartyIndustry}
-            onChange={e => setFormData(prev => ({...prev, counterpartyIndustry: e.target.value}))}
-            className={getFieldClass(formData.counterpartyIndustry || '')}
-            placeholder="例：飲食店経営、小学校教師、人事担当者、運送業"
-          />
-        </div>
+        {/* 相手の職種・業種 フィールドは削除 */}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">学びの深さ・重要度</label>
-          <select
-            value={formData.learningDepth}
-            onChange={e => setFormData(prev => ({...prev, learningDepth: parseInt(e.target.value)}))}
-            className={getFieldClass(formData.learningDepth || 0)}
-          >
-            <option value={1}>1 - 低い</option>
-            <option value={2}>2</option>
-            <option value={3}>3 - 普通</option>
-            <option value={4}>4</option>
-            <option value={5}>5 - 高い</option>
-          </select>
-        </div>
+        {/* 学びの深さ・重要度 フィールドは削除 */}
 
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">会話内容の要約</label>

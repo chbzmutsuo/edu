@@ -224,7 +224,6 @@ export const VirtualMainTable = React.memo<MainTableProps>(props => {
       <section className="bg-error-man bg-inherit">
         <TableWrapperCard>
           <TableWrapper ref={elementRef} style={tableStyle}>
-            {myTable?.caption && <div>{myTable?.caption}</div>}
             <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEndMemo}>
               <SortableContext items={items} strategy={verticalListSortingStrategy}>
                 <div>

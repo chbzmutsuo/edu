@@ -268,7 +268,7 @@ export const addInsightToExpense = async (
       subject: expense.subject,
       location: expense.location || '',
       counterpartyName: expense.counterpartyName || '',
-      counterpartyIndustry: expense.counterpartyIndustry || '',
+      // counterpartyIndustry removed
       conversationPurpose: Array.isArray(expense.conversationPurpose) ? expense.conversationPurpose : [],
       keywords: expense.keywords || [],
       conversationSummary: expense.conversationSummary || '',

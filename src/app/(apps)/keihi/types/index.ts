@@ -10,12 +10,12 @@ export interface ExpenseRecord {
   subject: string
   location?: string | null
   counterpartyName?: string | null
-  counterpartyIndustry?: string | null
+  // counterpartyIndustry was removed
   conversationPurpose: string[] // 配列形式に変更
   keywords: string[]
   conversationSummary?: string | null
   summary?: string | null // 摘要を追加
-  learningDepth?: number | null
+  // learningDepth was removed
 
   // AIインサイト（統合版）
   insight?: string | null // 統合されたインサイト
@@ -29,6 +29,7 @@ export interface ExpenseRecord {
   mfMemo?: string | null
   // 添付ファイル
   KeihiAttachment: AttachmentRecord[]
+  status?: string | null
 }
 
 // 添付ファイルの型
@@ -43,20 +44,36 @@ export interface AttachmentRecord {
 
 // フォームデータの型（新仕様対応）
 export interface ExpenseFormData {
+  // 基本情報
   date: string
   amount: number
   subject: string
   location?: string
   counterpartyName?: string
-  counterpartyIndustry?: string
-  conversationPurpose: string[] // 配列形式に変更
-  purpose?: string
-  memo?: string
-  paymentMethod?: string
+  conversationPurpose: string[]
   keywords: string[]
+
+  // 会話記録
   conversationSummary?: string
-  summary?: string // 摘要を追加
-  learningDepth?: number
+  summary?: string
+
+  // 税務調査対応項目
+  counterpartyContact?: string
+  followUpPlan?: string
+  businessOpportunity?: string
+  competitorInfo?: string
+
+  // AI生成情報
+  insight?: string
+  autoTags?: string[]
+  status?: string
+
+  // MoneyForward用情報
+  mfSubject?: string
+  mfSubAccount?: string
+  mfTaxCategory?: string
+  mfDepartment?: string
+  mfMemo?: string
 }
 
 // AI下書きの型（新仕様対応）

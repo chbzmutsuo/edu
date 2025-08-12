@@ -28,6 +28,8 @@
   --color-control-bg: oklch(0.94 0 0);
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 800;
 }
 
 .dark {

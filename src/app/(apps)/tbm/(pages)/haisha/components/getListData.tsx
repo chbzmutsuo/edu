@@ -38,7 +38,15 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
       userId: true,
       tbmRouteGroupId: true,
       tbmBaseId: true,
-      TbmRouteGroup: {select: {id: true, code: true, name: true, seikyuKbn: true}},
+      TbmRouteGroup: {
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          routeName: true,
+          seikyuKbn: true,
+        },
+      },
       finished: true,
       confirmed: true,
       approved: true,
@@ -81,6 +89,7 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
       id: true,
       code: true,
       name: true,
+      routeName: true,
       seikyuKbn: true,
       tbmBaseId: true,
       TbmRouteGroupCalendar: {

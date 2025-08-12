@@ -9,8 +9,8 @@ export class VehicleCl {
   }
 
   get name() {
-    const {type, shape, frameNo, vehicleNumber} = this.tbmVehicle
-    return [`[${type ?? '-'}]`, frameNo, vehicleNumber, shape].filter(Boolean).join(` `)
+    const {type, shape, vehicleNumber} = this.tbmVehicle
+    return [`[${type ?? '-'}]`, vehicleNumber, shape].filter(Boolean).join(` `)
   }
 
   get shortName() {

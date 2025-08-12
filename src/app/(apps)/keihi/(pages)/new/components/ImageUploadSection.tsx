@@ -6,7 +6,7 @@ import ContentPlayer from '@cm/components/utils/ContentPlayer'
 interface ImageUploadSectionProps {
   uploadedImages: string[]
   onImageCapture: (files: File[]) => void
-  onPreviewImage: (imageUrl: string, fileName: string) => void
+
   isAnalyzing: boolean
   analysisStatus: string
 }
@@ -14,7 +14,7 @@ interface ImageUploadSectionProps {
 export const ImageUploadSection = ({
   uploadedImages,
   onImageCapture,
-  onPreviewImage,
+
   isAnalyzing,
   analysisStatus,
 }: ImageUploadSectionProps) => {
@@ -79,23 +79,10 @@ export const ImageUploadSection = ({
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
             {uploadedImages.map((imageBase64, index) => {
               const imageUrl = base64ToDataUrl(imageBase64)
-              const fileName = `領収書${index + 1}.jpg`
+
               return (
                 <div key={index} className="relative group">
                   <ContentPlayer src={imageUrl} />
-                  {/* <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden border">
-                    <img src={imageUrl} alt={fileName} className="w-full h-full object-cover" />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => onPreviewImage(imageUrl, fileName)}
-                    className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all duration-200 rounded-lg flex items-center justify-center"
-                  >
-                    <Eye className="w-6 h-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  <div className="absolute bottom-1 left-1 right-1 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded text-center">
-                    {index + 1}枚目
-                  </div> */}
                 </div>
               )
             })}

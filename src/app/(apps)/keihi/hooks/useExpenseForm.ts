@@ -16,7 +16,7 @@ export const useExpenseForm = (options: UseExpenseFormOptions = {}) => {
     subject: '',
     location: '',
     counterpartyName: '',
-    counterpartyIndustry: '',
+    // counterpartyIndustry removed
     conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
     keywords: [],
     conversationSummary: '',

@@ -2,88 +2,88 @@
 // User統合版スキーマ
 
 model Family {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
 
- name String
+  name String
 
- User     User[]     @relation("FamilyUsers")
- Activity Activity[]
+  User     User[]     @relation("FamilyUsers")
+  Activity Activity[]
 }
 
 model Activity {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
 
- title       String
- description String?
- order       Int     @default(0)
- active      Boolean @default(true)
+  title       String
+  description String?
+  order       Int     @default(0)
+  active      Boolean @default(true)
 
- Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
- familyId Int
+  Family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  familyId Int
 
- ActivityScore             ActivityScore[]
- ActivityEvaluationRequest ActivityEvaluationRequest[]
+  ActivityScore             ActivityScore[]
+  ActivityEvaluationRequest ActivityEvaluationRequest[]
 }
 
 model ActivityScore {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
 
- score             Int
- title             String
- description       String?
- iconUrl           String?
- achievementImgUrl String?
- animationLevel    String  @default("light") // light, medium, heavy
+  score             Int
+  title             String
+  description       String?
+  iconUrl           String?
+  achievementImgUrl String?
+  animationLevel    String  @default("light") // light, medium, heavy
 
- Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
- activityId Int
+  Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  activityId Int
 
- ActivityEvaluationRequest ActivityEvaluationRequest[]
+  ActivityEvaluationRequest ActivityEvaluationRequest[]
 }
 
 model ActivityEvaluationRequest {
- id        Int       @id @default(autoincrement())
- createdAt DateTime  @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- sortOrder Float     @default(0)
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
 
- date          DateTime @default(now())
- status        String   @default("pending") // pending, approved, rejected
- comment       String?
- openedByChild Boolean  @default(false)
+  date          DateTime @default(now())
+  status        String   @default("pending") // pending, approved, rejected
+  comment       String?
+  openedByChild Boolean  @default(false)
 
- RequestedBy   User @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
- requestedById Int // 申請者（子ども）
+  RequestedBy   User @relation("RequestedBy", fields: [requestedById], references: [id], onDelete: Cascade)
+  requestedById Int // 申請者（子ども）
 
- Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
- activityId Int
+  Activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  activityId Int
 
- ActivityScore   ActivityScore @relation(fields: [activityScoreId], references: [id], onDelete: Cascade)
- activityScoreId Int
+  ActivityScore   ActivityScore @relation(fields: [activityScoreId], references: [id], onDelete: Cascade)
+  activityScoreId Int
 
- ApprovedBy   User? @relation("ApprovedBy", fields: [approvedById], references: [id])
- approvedById Int? // 承認者（親）
+  ApprovedBy   User? @relation("ApprovedBy", fields: [approvedById], references: [id])
+  approvedById Int? // 承認者（親）
 
- @@unique([requestedById, activityId, date], name: "user_activity_date_unique")
+  @@unique([requestedById, activityId, date], name: "user_activity_date_unique")
 }
 
 model MonthlySetting {
- id        Int      @id @default(autoincrement())
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
- year      Int
- month     Int
- key       String // 例: "walking_goal"
- value     String // 例: "650"（将来はJSONも可）
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  year      Int
+  month     Int
+  key       String // 例: "walking_goal"
+  value     String // 例: "650"（将来はJSONも可）
 
- @@unique([year, month, key])
+  @@unique([year, month, key])
 }

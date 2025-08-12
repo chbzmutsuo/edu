@@ -106,6 +106,8 @@ export const TableRowBuilder = {
           return calendar.holidayType === '稼働'
         })
 
+        const {name, routeName} = route
+
         return {
           csvTableRow: [
             // ルート情報（固定列）
@@ -115,7 +117,11 @@ export const TableRowBuilder = {
                 <R_Stack className={`gap-0.5`}>
                   <span>{i + 1}. </span>
 
-                  <span>{route.name}</span>
+                  <span>
+                    <strong>{route.name}</strong>
+                    <br />
+                    <small>{routeName}</small>
+                  </span>
                 </R_Stack>
               ),
               style: {

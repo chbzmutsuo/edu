@@ -9,6 +9,7 @@ import {BulkProcessingStatus} from './BulkProcessingStatus'
 
 import {fetchAnalyzeReceiptImage} from '@app/(apps)/keihi/api/analyzeReceiptImage/fetchAnalyzeReceiptImage'
 import useLogOnRender from '@cm/hooks/useLogOnRender'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
 
 interface BulkProcessingContainerProps {
   onComplete?: () => void
@@ -23,6 +24,7 @@ export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerPro
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisStatus, setAnalysisStatus] = useState('')
   const [hasProcessedResults, setHasProcessedResults] = useState(false)
+  const fileNameRef = useRef<string[]>([])
 
   // 重複処理防止用のref
   const isProcessingRef = useRef(false)
@@ -74,8 +76,9 @@ export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerPro
           toast.warning(`${files.length - imageFiles.length}個の非画像ファイルをスキップしました`)
         }
 
-        // Base64変換
+        // Base64変換 + ファイル名保持
         const base64Images: string[] = []
+        const names: string[] = []
         for (const file of imageFiles) {
           const base64 = await new Promise<string>((resolve, reject) => {
             const reader = new FileReader()
@@ -88,9 +91,11 @@ export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerPro
             reader.readAsDataURL(file)
           })
           base64Images.push(base64)
+          names.push(file.name)
         }
 
         setUploadedImages(base64Images)
+        fileNameRef.current = names
         toast.success(`${imageFiles.length}枚の画像をアップロードしました`)
       } catch (error) {
         console.error('画像アップロードエラー:', error)
@@ -124,7 +129,7 @@ export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerPro
       setIsAnalyzing(true)
       setAnalysisStatus('画像を解析してレコードを作成中...')
 
-      const result = await fetchAnalyzeReceiptImage(uploadedImages)
+      const result = await fetchAnalyzeReceiptImage(uploadedImages, fileNameRef.current)
 
       if (result.success && result.data) {
         const receiptsWithImageData = result.data.map(record => ({
@@ -186,11 +191,13 @@ export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerPro
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-4">
             {uploadedImages.map((imageData, index) => (
               <div key={index} className="relative">
-                <img
+                <ContentPlayer
                   src={getImagePreview(imageData)}
-                  alt={`領収書 ${index + 1}`}
-                  className="w-full h-24 object-cover rounded border"
+                  styles={{
+                    thumbnail: {width: 80, height: 80},
+                  }}
                 />
+
                 <div className="absolute top-1 right-1 bg-blue-600 text-white text-xs px-1 rounded">{index + 1}</div>
               </div>
             ))}

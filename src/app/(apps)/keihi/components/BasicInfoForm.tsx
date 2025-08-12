@@ -11,6 +11,9 @@ interface BasicInfoFormProps {
   allOptions: {
     subjects: Array<{value: string; label: string}>
     purposes: Array<{value: string; label: string}>
+    mfSubjects?: Array<{value: string; label: string}>
+    mfTaxCategories?: Array<{value: string; label: string}>
+    mfDepartments?: Array<{value: string; label: string}>
   }
   getFieldClass: (value: string | number | string[], required?: boolean) => string
 }
@@ -199,32 +202,7 @@ export default function BasicInfoForm({formData, setFormData, allOptions, getFie
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">相手の職種・業種</label>
-          <input
-            type="text"
-            value={formData.counterpartyIndustry}
-            onChange={e => setFormData(prev => ({...prev, counterpartyIndustry: e.target.value}))}
-            className={getFieldClass(formData.counterpartyIndustry || '')}
-            placeholder="例：飲食店経営、小学校教師、人事担当者、運送業"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">学びの深さ・重要度</label>
-          <select
-            value={formData.learningDepth}
-            onChange={e => setFormData(prev => ({...prev, learningDepth: parseInt(e.target.value)}))}
-            className={getFieldClass(formData.learningDepth || 0)}
-          >
-            <option value={1}>1 - 低い</option>
-            <option value={2}>2</option>
-            <option value={3}>3 - 普通</option>
-            <option value={4}>4</option>
-            <option value={5}>5 - 高い</option>
-          </select>
-        </div>
-
+        {/* 会話記録セクション */}
         <div className="sm:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-2">会話内容の要約</label>
           <textarea
@@ -234,6 +212,136 @@ export default function BasicInfoForm({formData, setFormData, allOptions, getFie
             rows={3}
             placeholder="話した内容や気づいた点を記録してください"
           />
+        </div>
+
+        {/* 税務調査対応項目セクション */}
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">相手の連絡先</label>
+          <input
+            type="text"
+            value={formData.counterpartyContact || ''}
+            onChange={e => setFormData(prev => ({...prev, counterpartyContact: e.target.value}))}
+            className={getFieldClass(formData.counterpartyContact || '')}
+            placeholder="メールアドレスや電話番号など"
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">フォローアップ予定</label>
+          <textarea
+            value={formData.followUpPlan || ''}
+            onChange={e => setFormData(prev => ({...prev, followUpPlan: e.target.value}))}
+            className={getFieldClass(formData.followUpPlan || '')}
+            rows={2}
+            placeholder="次回のアクションや予定を記録"
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">ビジネス機会の評価</label>
+          <textarea
+            value={formData.businessOpportunity || ''}
+            onChange={e => setFormData(prev => ({...prev, businessOpportunity: e.target.value}))}
+            className={getFieldClass(formData.businessOpportunity || '')}
+            rows={2}
+            placeholder="見込まれるビジネス機会や可能性について"
+          />
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">競合情報</label>
+          <textarea
+            value={formData.competitorInfo || ''}
+            onChange={e => setFormData(prev => ({...prev, competitorInfo: e.target.value}))}
+            className={getFieldClass(formData.competitorInfo || '')}
+            rows={2}
+            placeholder="競合他社の動向や情報"
+          />
+        </div>
+
+        {/* MoneyForward用情報セクション */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">MF科目</label>
+          <select
+            value={formData.mfSubject || ''}
+            onChange={e => setFormData(prev => ({...prev, mfSubject: e.target.value}))}
+            className={getFieldClass(formData.mfSubject || '')}
+          >
+            <option value="">選択してください</option>
+            {allOptions.mfSubjects?.map(subject => (
+              <option key={subject.value} value={subject.value}>
+                {subject.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">MF補助科目</label>
+          <input
+            type="text"
+            value={formData.mfSubAccount || ''}
+            onChange={e => setFormData(prev => ({...prev, mfSubAccount: e.target.value}))}
+            className={getFieldClass(formData.mfSubAccount || '')}
+            placeholder="補助科目"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">MF税区分</label>
+          <select
+            value={formData.mfTaxCategory || ''}
+            onChange={e => setFormData(prev => ({...prev, mfTaxCategory: e.target.value}))}
+            className={getFieldClass(formData.mfTaxCategory || '')}
+          >
+            <option value="">選択してください</option>
+            {allOptions.mfTaxCategories?.map(category => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">MF部門</label>
+          <select
+            value={formData.mfDepartment || ''}
+            onChange={e => setFormData(prev => ({...prev, mfDepartment: e.target.value}))}
+            className={getFieldClass(formData.mfDepartment || '')}
+          >
+            <option value="">選択してください</option>
+            {allOptions.mfDepartments?.map(department => (
+              <option key={department.value} value={department.value}>
+                {department.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="sm:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-2">MFメモ</label>
+          <textarea
+            value={formData.mfMemo || ''}
+            onChange={e => setFormData(prev => ({...prev, mfMemo: e.target.value}))}
+            className={getFieldClass(formData.mfMemo || '')}
+            rows={2}
+            placeholder="MoneyForward用のメモ"
+          />
+        </div>
+
+        {/* ステータス */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">ステータス</label>
+          <select
+            value={formData.status || ''}
+            onChange={e => setFormData(prev => ({...prev, status: e.target.value}))}
+            className={getFieldClass(formData.status || '')}
+          >
+            <option value="">未設定</option>
+            <option value="一次チェック済">一次チェック済</option>
+            <option value="MF連携済み">MF連携済み</option>
+          </select>
         </div>
       </div>
 

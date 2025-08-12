@@ -48,7 +48,7 @@ const NewExpensePage = () => {
 
   const {uploadedImages, capturedImageFiles, isProcessing: isImageProcessing, processFiles, clearImages} = useImageUpload()
 
-  const {modalState, openModal, closeModal} = usePreviewModal()
+  // const {modalState, openModal, closeModal} = usePreviewModal()
 
   // 状態管理
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -193,7 +193,7 @@ const NewExpensePage = () => {
                 uploadedImages,
                 analysisStatus,
                 onImageCapture: handleImageCapture,
-                onPreviewImage: openModal,
+
                 isAnalyzing: isAnalyzing || isImageProcessing,
               }}
             />
@@ -277,14 +277,6 @@ const NewExpensePage = () => {
           </div>
         </div>
       </div>
-
-      {/* プレビューモーダル */}
-      <PreviewModal
-        isOpen={modalState.isOpen}
-        onClose={closeModal}
-        imageUrl={modalState.imageUrl}
-        fileName={modalState.fileName}
-      />
     </div>
   )
 }

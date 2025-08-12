@@ -11,9 +11,9 @@ export const tbm_PAGES = (props: PageGetterType) => {
   const {session, rootPath, pathname, query} = props
 
   const scopes = getScopes(session, {query, roles})
-  const {admin} = scopes
-
-  const {isSystemAdmin} = scopes.getTbmScopes()
+  const {login} = scopes
+  const admin = scopes.admin
+  const isSystemAdmin = scopes.getTbmScopes().isSystemAdmin
 
   const onlyAdmin = admin || isSystemAdmin
 
@@ -32,13 +32,13 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {
           tabId: 'haisha',
           label: <IconLetter {...{Icon: Truck}}>配車設定</IconLetter>,
-          exclusiveTo: onlyAdmin,
+          exclusiveTo: login,
         },
 
         {
           tabId: 'driveInput',
           label: <IconLetter {...{Icon: Truck}}>ドライバ入力</IconLetter>,
-          exclusiveTo: onlyAdmin,
+          exclusiveTo: login,
         },
       ],
     },
@@ -57,7 +57,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'kyuyo', label: <IconLetter {...{Icon: JapaneseYenIcon}}>給与</IconLetter>},
         {tabId: 'attendance', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
       ],
-      exclusiveTo: onlyAdmin,
+      exclusiveTo: admin,
     },
 
     {

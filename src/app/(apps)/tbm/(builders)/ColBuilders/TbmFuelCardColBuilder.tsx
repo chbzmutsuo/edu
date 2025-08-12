@@ -17,9 +17,7 @@ export const TbmFuelCardColBuilder = (props: columnGetterType) => {
         defaultValue: tbmVehicleId,
         disabled: tbmVehicleId ? true : false,
       },
-      forSelect: {
-        config: getVehicleForSelectConfig({}),
-      },
+      forSelect: {config: getVehicleForSelectConfig({})},
     },
     {id: 'name', label: '件名', form: {...defaultRegister}},
     {

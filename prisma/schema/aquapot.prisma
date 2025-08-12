@@ -156,6 +156,7 @@ model AqCustomer {
  AqCustomerSubscription         AqCustomerSubscription[]
 
  AqProduct AqProduct[]
+ AqInquiry AqInquiry[]
 }
 
 model AqCustomerSubscription {
@@ -165,6 +166,10 @@ model AqCustomerSubscription {
  sortOrder Float     @default(0)
 
  active Boolean @default(true)
+
+ // 定期契約の期間管理（active は維持しつつ、開始日/終了日を追加）
+ startDate DateTime?
+ endDate   DateTime?
 
  maintananceYear  Int
  maintananceMonth Int
@@ -375,4 +380,28 @@ model AqInventoryByMonth {
  aqProductId Int
 
  @@unique([aqProductId, yearMonth], name: "unique_aqProductId_yearMonth")
+}
+
+// お問い合わせ管理
+model AqInquiry {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @default(now()) @updatedAt()
+ sortOrder Float     @default(0)
+
+ date        DateTime
+ companyName String?
+ person      String?
+ tel         String?
+ email       String?
+ type        String?
+ content     String?
+ mailBody    String?
+ importance  String?
+
+ followRequired   Boolean @default(false)
+ purchaseIntended Boolean @default(false)
+
+ AqCustomer   AqCustomer? @relation(fields: [aqCustomerId], references: [id])
+ aqCustomerId Int?
 }

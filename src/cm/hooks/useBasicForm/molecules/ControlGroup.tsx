@@ -12,6 +12,7 @@ import {cn} from '@shadcn/lib/utils'
 import {Alert} from '@cm/components/styles/common-components/Alert'
 import LeftControlRight from './LeftControlRight'
 import Description from './Description'
+import useWindowSize from '@cm/hooks/useWindowSize'
 
 export type ControlGroupPropType = BasicFormType & {
   col
@@ -20,9 +21,10 @@ export type ControlGroupPropType = BasicFormType & {
 }
 export const ControlGroup = React.memo((props: ControlGroupPropType) => {
   const {ReactHookForm, formData, useResetValue, latestFormData, formId, ControlOptions, col, columns} = props
-
   const messages = ReactHookForm?.formState?.errors
   const {Register} = col
+
+  const {PC} = useWindowSize()
 
   if (!col?.id && col?.label) {
     return (
@@ -38,7 +40,7 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
         render={({field}) => {
           const errorMessage = messages?.[col.id]?.message?.toString()
 
-          const {id: wrapperId, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col})
+          const {id: wrapperId, ControlStyle, isBooleanType} = getStyleProps({ControlOptions, col, PC})
 
           const currentValue = props.ReactHookForm?.getValues(col.id)
 
@@ -100,19 +102,13 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
             [ReactHookForm, reverseLabelTitle, ControlOptions, required, col]
           )
 
-          const offset = 0
-          const style = !horizontal
-            ? {
-                // width: getOffsetWidth(ControlStyle.width, offset),
-                // minWidth: getOffsetWidth(ControlStyle.minWidth, offset),
-                // maxWidth: getOffsetWidth(ControlStyle.maxWidth, offset),
-              }
-            : undefined
+          // const offset = 0
+          // const style = !horizontal ? {} : undefined
 
           return (
             <div
+              // style={style}
               id={wrapperId}
-              style={style}
               className={cn(` ${DH__switchColType({type: col.type}) === `boolean` ? ' cursor-pointer' : ''}  relative `)}
             >
               <div

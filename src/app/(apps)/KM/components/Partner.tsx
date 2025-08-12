@@ -1,28 +1,24 @@
 'use client'
 
 import {cl} from '@cm/lib/methods/common'
-import {C_Stack, Flex, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {ImageLabel} from '@cm/components/styles/common-components/ImageLabel'
 import Link from 'next/link'
 import {Fragment} from 'react'
+import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export const Partners = ({kaizenClient}) => {
   return (
     <C_Stack>
-      <Flex
-        {...{
-          wrapperWidth: 1100,
-          itemWidth: 300,
-
-          items: kaizenClient.map((p, index) => {
-            return (
-              <Fragment key={index}>
-                <Partner {...{p, index}} />
-              </Fragment>
-            )
-          }),
-        }}
-      />
+      <AutoGridContainer className={`gap-4`}>
+        {kaizenClient.map((p, index) => {
+          return (
+            <Fragment key={index}>
+              <Partner {...{p, index}} />
+            </Fragment>
+          )
+        })}
+      </AutoGridContainer>
       {/* <R_Stack className={` items-stretch justify-around gap-6`}>
         {kaizenClient.map((p, index) => {
           const {name, organization, website, KaizenWork} = p

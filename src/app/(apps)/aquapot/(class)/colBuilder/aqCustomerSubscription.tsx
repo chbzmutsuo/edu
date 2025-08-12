@@ -7,13 +7,13 @@ import {NumHandler} from '@cm/class/NumHandler'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
 import {TextRed} from '@cm/components/styles/common-components/Alert'
-import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
 export const aqCustomerSubscription = (props: columnGetterType) => {
   const {aqCustomerId} = props.ColBuilderExtraProps ?? {}
 
-  const {data} = useDoStandardPrisma(`aqProduct`, `findMany`, {where: {name: `サーバー使用料`}})
-  const serverProduct = data?.[0]
+  // 対象商品は名称に「使用料」を含むものに限定
+  // const {data} = useDoStandardPrisma(`aqProduct`, `findMany`, {where: {name: {contains: `サーバー`}}})
+  // const serverProduct = data?.[0]
   return new Fields([
     ...new Fields([
       {
@@ -34,10 +34,16 @@ export const aqCustomerSubscription = (props: columnGetterType) => {
         label: `商品`,
         form: {
           ...defaultRegister,
-          defaultValue: serverProduct?.id,
-          disabled: serverProduct?.id,
+          // defaultValue: serverProduct?.id,
+          // disabled: serverProduct?.id,
         },
-        forSelect: {},
+        forSelect: {
+          config: {
+            where: {
+              name: {contains: `使用料`},
+            },
+          },
+        },
       },
       {id: `aqDeviceMasterId`, label: `デバイス`, form: {...defaultRegister}, forSelect: {}, search: {}},
       {id: `remarks`, label: `摘要記載文言`, form: {}, type: `textarea`},
@@ -47,7 +53,9 @@ export const aqCustomerSubscription = (props: columnGetterType) => {
       // {id: `updateDate`, label: `更新日`, form: {...defaultRegister, }, type: `date`},
       {id: `maintananceYear`, label: `メンテ年`, form: {...defaultRegister}, type: `number`},
       {id: `maintananceMonth`, label: `メンテ月`, form: {...defaultRegister}, type: `number`},
-      {id: `active`, label: `有効`, form: {defaultValue: true}, type: `boolean`},
+      {id: `active`, label: `有効`, form: {defaultValue: true, hidden: true}, type: `boolean`},
+      {id: `startDate`, label: `開始日`, form: {...defaultRegister}, type: `date`},
+      {id: `endDate`, label: `終了日`, form: {...defaultRegister}, type: `date`},
     ]).buildFormGroup({groupName: `メンテ情報`}).plain,
 
     {

@@ -89,7 +89,7 @@ export const useFormValues = () => {
   }
 }
 
-export const getStyleProps = ({ControlOptions, col}) => {
+export const getStyleProps = ({ControlOptions, col, PC}) => {
   const isBooleanType = judgeBooleanType({col})
 
   const {controlWrapperClassBuilder} = ControlOptions ?? {}
@@ -112,9 +112,9 @@ export const getStyleProps = ({ControlOptions, col}) => {
   const offset = 20
   ControlStyle = {
     ...ControlStyle,
-    width: getOffsetWidth(withBase, offset),
-    minWidth: getOffsetWidth(minWidthBase, offset),
-    maxWidth: getOffsetWidth(maxWidthBase, offset),
+    width: getOffsetWidth(withBase, offset, PC, col),
+    minWidth: getOffsetWidth(minWidthBase, offset, PC, col),
+    maxWidth: getOffsetWidth(maxWidthBase, offset, PC, col),
   }
 
   return {id, flexDirection, wrapperClass, ControlStyle, isBooleanType}
@@ -178,7 +178,29 @@ export const showResetBtn = ({col, isBooleanType, Register, currentValue, Contro
   )
 }
 
-export const getOffsetWidth = (width: string | number, offsetWidth = 0) => {
+export const getOffsetWidth = (width: string | number, offsetWidth = 0, PC?: boolean, col?: colType) => {
+  let result: string = ''
+  const use2ColSpan = col ? getUse2ColSpan(col) : false
+  const multiple = use2ColSpan ? 2 : 1
+
   const affix = typeof width === 'string' ? '' : 'px'
-  return `calc(${width}${affix} - ${offsetWidth}px)`
+
+  const strWidth = `${width}${affix}`
+
+  // ブレークポイントごとに幅を変えるinline styleの例
+  if (typeof window !== 'undefined') {
+    if (use2ColSpan) {
+      // xl以上ならtextareaを2倍に
+      result = `calc(${strWidth} * ${multiple} + ${offsetWidth}px) `
+    } else {
+      // SP（スマホ）用
+      result = `calc(${strWidth} - ${offsetWidth}px)`
+    }
+  }
+
+  return result
+}
+
+export const getUse2ColSpan = (col: colType) => {
+  return col?.type === 'textarea' || col?.multipleSelect
 }

@@ -20,7 +20,7 @@ export const MyContainer = (
 ) => {
   const {className, style, children, ...rest} = props
   return (
-    <div className={cl('mx-auto max-w-2xl', className)} {...rest}>
+    <div className={cl('w-fit mx-auto', className)} {...rest}>
       {props.children}
     </div>
   )
@@ -149,7 +149,7 @@ export const Circle = (
 }
 
 import JsonFormatter from 'react-json-formatter'
-import {htmlProps, styling} from 'src/cm/components/styles/common-components/type'
+import {htmlProps} from 'src/cm/components/styles/common-components/type'
 
 import {CssString} from 'src/cm/components/styles/cssString'
 import {Z_INDEX} from '@cm/lib/constants/constants'
@@ -184,93 +184,93 @@ export const Padding = (props: htmlProps & {paddingClass?: string}) => {
   )
 }
 
-export const Flex = React.memo(
-  (props: {
-    direction?: 'row' | 'column'
-    gapPixel?: number | string
-    wrapperWidth?: number
-    wrapperHeight?: number | string
-    items: any[]
-    itemWidth?: number
-    styling?: styling
-  }) => {
-    const {
-      gapPixel = 4,
-      items,
-      direction = `row`,
-      itemWidth = 150,
-      wrapperHeight,
-      wrapperWidth: wrapperWidthOrigin,
-      ...rest
-    } = props
-    const windowWidth = useWindowSize().width
-    const vw80 = windowWidth * 0.8
-    const wrapperWidth = Math.min(wrapperWidthOrigin ?? vw80, vw80)
+// export const Flex = React.memo(
+//   (props: {
+//     direction?: 'row' | 'column'
+//     gapPixel?: number | string
+//     wrapperWidth?: number
+//     wrapperHeight?: number | string
+//     items: any[]
+//     itemWidth?: number
+//     styling?: styling
+//   }) => {
+//     const {
+//       gapPixel = 4,
+//       items,
+//       direction = `row`,
+//       itemWidth = 150,
+//       wrapperHeight,
+//       wrapperWidth: wrapperWidthOrigin,
+//       ...rest
+//     } = props
+//     const windowWidth = useWindowSize().width
+//     const vw80 = windowWidth * 0.8
+//     const wrapperWidth = Math.min(wrapperWidthOrigin ?? vw80, vw80)
 
-    const {styles, classes} = props.styling ?? {}
-    const {colCount} = getColCount({wrapperWidth})
+//     const {styles, classes} = props.styling ?? {}
+//     const {colCount} = getColCount({wrapperWidth})
 
-    const widthRatio = Math.round(100 / colCount) + '%'
+//     const widthRatio = Math.round(100 / colCount) + '%'
 
-    const empty = new Array(Math.max(colCount - (items.length ?? 1 % colCount ?? 1), 0)).fill('')
+//     const empty = new Array(Math.max(colCount - (items.length ?? 1 % colCount ?? 1), 0)).fill('')
 
-    const wrapperStyle: CSSProperties = {
-      display: 'flex',
-      flexWrap: `wrap`,
-      justifyItems: 'start',
-      alignItems: `start`,
-      flexDirection: direction,
-      margin: `auto`,
-      maxHeight: wrapperHeight,
-      // overflow: 'auto',
-      minWidth: Math.min(itemWidth * (colCount + 1), wrapperWidth),
+//     const wrapperStyle: CSSProperties = {
+//       display: 'flex',
+//       flexWrap: `wrap`,
+//       justifyItems: 'start',
+//       alignItems: `start`,
+//       flexDirection: direction,
+//       margin: `auto`,
+//       maxHeight: wrapperHeight,
+//       // overflow: 'auto',
+//       minWidth: Math.min(itemWidth * (colCount + 1), wrapperWidth),
 
-      maxWidth: wrapperWidth,
-      ...styles?.wrapper,
-    }
+//       maxWidth: wrapperWidth,
+//       ...styles?.wrapper,
+//     }
 
-    const showEmptyCols = items.length > empty.length
-    return (
-      <div {...{style: wrapperStyle, className: cl(classes?.wrapper), ...rest}}>
-        {items.map((item, i) => {
-          return <SingleWrapper key={i}>{item}</SingleWrapper>
-        })}
-        {showEmptyCols &&
-          empty.map((item, i) => {
-            return (
-              <SingleWrapper key={i}>
-                <div></div>
-              </SingleWrapper>
-            )
-          })}
-      </div>
-    )
+//     const showEmptyCols = items.length > empty.length
+//     return (
+//       <div {...{style: wrapperStyle, className: cl(classes?.wrapper), ...rest}}>
+//         {items.map((item, i) => {
+//           return <SingleWrapper key={i}>{item}</SingleWrapper>
+//         })}
+//         {showEmptyCols &&
+//           empty.map((item, i) => {
+//             return (
+//               <SingleWrapper key={i}>
+//                 <div></div>
+//               </SingleWrapper>
+//             )
+//           })}
+//       </div>
+//     )
 
-    function getColCount({wrapperWidth}) {
-      let colCount = 1
-      for (let i = 1; i <= 5; i++) {
-        const threshold = itemWidth * i
+//     function getColCount({wrapperWidth}) {
+//       let colCount = 1
+//       for (let i = 1; i <= 5; i++) {
+//         const threshold = itemWidth * i
 
-        const hit = threshold <= wrapperWidth
+//         const hit = threshold <= wrapperWidth
 
-        if (hit) {
-          colCount = i
-        } else {
-          break
-        }
-      }
-      return {colCount: Math.min(colCount, items.length)}
-    }
+//         if (hit) {
+//           colCount = i
+//         } else {
+//           break
+//         }
+//       }
+//       return {colCount: Math.min(colCount, items.length)}
+//     }
 
-    function SingleWrapper({children}) {
-      return (
-        <div style={{padding: gapPixel, ...(direction === 'row' ? {width: widthRatio} : {})}}>
-          <div className={`mx-auto flex h-full items-stretch justify-center`}>{children}</div>
-        </div>
-      )
-    }
-  }
-)
+//     function SingleWrapper({children}) {
+//       return (
+//         <div style={{padding: gapPixel, ...(direction === 'row' ? {width: widthRatio} : {})}}>
+//           <div className={`mx-auto flex h-full items-stretch justify-center`}>{children}</div>
+//         </div>
+//       )
+//     }
+//   }
+// )
 
 export const Vr = (props: htmlProps) => {
   const {className, style, children, ...rest} = props

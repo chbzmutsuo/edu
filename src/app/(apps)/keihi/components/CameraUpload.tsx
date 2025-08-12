@@ -3,6 +3,7 @@
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import {sleep} from '@cm/lib/methods/common'
 import {useState, useRef, useCallback, useEffect, useMemo} from 'react'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {toast} from 'react-toastify'
 
 interface CameraUploadProps {
@@ -643,16 +644,24 @@ export default function CameraUpload({onImageCapture, isAnalyzing, analysisStatu
                     modal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50'
                     modal.onclick = () => modal.remove()
 
+                    const container = document.createElement('div')
+                    container.className = 'max-w-[90vw] max-h-[90vh] w-[90vw]'
+                    container.innerHTML = ''
+
+                    // ContentPlayer は React コンポーネントのため、ここでは簡易的に img を使用
                     const img = document.createElement('img')
                     img.src = image.preview
                     img.className = 'max-w-[90vw] max-h-[90vh] object-contain'
+                    container.appendChild(img)
 
-                    modal.appendChild(img)
+                    modal.appendChild(container)
                     document.body.appendChild(modal)
                   }}
                   className="w-full h-20 relative"
                 >
-                  <img src={image.preview} alt={`撮影済み ${index + 1}`} className="w-full h-full object-cover rounded border" />
+                  <div className="w-full h-full rounded border overflow-hidden">
+                    <ContentPlayer src={image.preview} />
+                  </div>
                   <div className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 rounded">
                     {index + 1}
                   </div>

@@ -16,8 +16,8 @@ export default function useWindowSize() {
   }
 
   useEffect(() => {
-    const handleResizeDebounced = debounce(handleResize, 100)
-    // window.addEventListener('resize', handleResizeDebounced)
+    const handleResizeDebounced = debounce(handleResize, 0)
+    window.addEventListener('resize', handleResizeDebounced)
     handleResize()
     // return () => window.removeEventListener('resize', handleResizeDebounced)
   }, [])
@@ -55,9 +55,9 @@ export const getWindow: () => {width: number; height: number} = () => {
 export const GetDevice: (width: number) => 'SP' | 'TB' | 'PC' = (width: number) => {
   if (width <= 599) {
     return 'SP'
-  } else if (599 < width && width < 959) {
+  } else if (599 < width && width < 1280) {
     return 'TB'
-  } else if (width >= 959) {
+  } else if (width >= 1280) {
     return 'PC'
   } else {
     return 'SP'

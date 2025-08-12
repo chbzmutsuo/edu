@@ -3,6 +3,7 @@
 import {AnalyzedReceipt} from '../../../../types'
 import {formatAmount, formatDate, base64ToDataUrl} from '../../../../utils'
 import {Eye} from 'lucide-react'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
 
 interface AnalyzedReceiptsListProps {
   receipts: AnalyzedReceipt[]
@@ -23,11 +24,13 @@ export const AnalyzedReceiptsList = ({receipts, onPreviewImage}: AnalyzedReceipt
               {receipt.imageData && (
                 <div className="flex-shrink-0">
                   <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden border group">
-                    <img
+                    <ContentPlayer
                       src={base64ToDataUrl(receipt.imageData)}
-                      alt={`領収書${index + 1}`}
-                      className="w-full h-full object-cover"
+                      styles={{
+                        thumbnail: {width: 80, height: 80},
+                      }}
                     />
+
                     <button
                       type="button"
                       onClick={() => onPreviewImage(base64ToDataUrl(receipt.imageData!), `領収書${index + 1}.jpg`)}

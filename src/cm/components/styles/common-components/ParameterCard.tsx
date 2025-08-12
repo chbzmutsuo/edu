@@ -11,15 +11,15 @@ const getStyles = styling => {
 }
 const getClasses = styling => {
   const {
-    wrapper = `p-1 leading-4 col-stack gap-0.5`,
+    wrapper = `px-1 leading-4 col-stack gap-0.5`,
     label = cn(
       //
-      `text-xs  text-gray-500 px-1 py-0.5 gap-0`,
-      `bg-gradient-to-r from-gray-100 to-gray-50`,
-      `rounded-lg shadow-sm`,
-      `transition-all duration-200 hover:shadow-md`
+      `text-gray-400  text-xs  gap-0 `
+      // `bg-gray-50 border-[0.5px] border-gray-200`,
+      // `rounded shadow`,
+      // `transition-all duration-200 hover:shadow-md`
     ),
-    value = ``,
+    value = `text-gray-900`,
   } = styling?.classes ?? {}
   return {wrapper, label, value}
 }
@@ -44,7 +44,6 @@ export const LabelValue = (props: htmlProps & {label?: any; value?: any; styling
         <dt>
           <R_Stack {...spread(styling, `label`)}>
             <div>{label}</div>
-            <span className={!label ? 'opacity-0' : ''}>:</span>
           </R_Stack>
         </dt>
       )}
@@ -57,6 +56,20 @@ export const LabelValue = (props: htmlProps & {label?: any; value?: any; styling
     </div>
   )
 }
+
+export const KeyValue = (props: {label: string; children?: ReactNode}) => {
+  return (
+    <R_Stack className={`gap-[2px]  `}>
+      {props.label && <small>{props.label}:</small>}
+      {props.children ? (
+        <span className={`text-sm`}>{props.children}</span>
+      ) : (
+        <EmptyPlaceholder className={`text-orange-500`}>-</EmptyPlaceholder>
+      )}
+    </R_Stack>
+  )
+}
+
 export const ParameterCard = (props: {label: any; value: any; styling?: styling; children?: any}) => {
   const {label, value, children, styling} = props
 
@@ -67,23 +80,11 @@ export const ParameterCard = (props: {label: any; value: any; styling?: styling;
         <div style={getStyles(styling).label} className={getClasses(styling).label}>
           {label}
         </div>
+
         <div style={getStyles(styling).value} className={getClasses(styling).value}>
           {value || children}
         </div>
       </div>
     </div>
-  )
-}
-
-export const KeyValue = (props: {label: string; children?: ReactNode}) => {
-  return (
-    <R_Stack className={`gap-[2px] `}>
-      {props.label && <small>{props.label}:</small>}
-      {props.children ? (
-        <span className={`text-sm`}>{props.children}</span>
-      ) : (
-        <EmptyPlaceholder className={`text-orange-500`}>-</EmptyPlaceholder>
-      )}
-    </R_Stack>
   )
 }

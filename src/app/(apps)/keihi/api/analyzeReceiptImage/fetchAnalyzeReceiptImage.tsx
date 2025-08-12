@@ -1,13 +1,18 @@
 import {basePath} from '@cm/lib/methods/common'
 
 // 一括登録用の基本レコード作成
-export const fetchAnalyzeReceiptImage = async (imageDataList: string[]): Promise<createBulkExpensesBasicReturn> => {
+// fileNameList はアップロード元のオリジナルファイル名を保持して送る
+export const fetchAnalyzeReceiptImage = async (
+  imageDataList: string[],
+  fileNameList?: string[]
+): Promise<createBulkExpensesBasicReturn> => {
   const apiPath = `${basePath}/keihi/api/analyzeReceiptImage`
+  const payload = {imageDataList, fileNameList}
   const result = await fetch(apiPath, {
     method: 'POST',
-    body: JSON.stringify({imageDataList}),
+    body: JSON.stringify(payload),
     headers: {
-      'Content-Type': 'multipart/form-data',
+      'Content-Type': 'application/json',
     },
   }).then(res => res.json())
 

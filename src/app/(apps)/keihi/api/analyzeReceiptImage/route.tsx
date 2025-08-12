@@ -9,6 +9,7 @@ export const POST = async (req: NextRequest) => {
   const body = await req.json()
 
   const imageDataList = body.imageDataList as string[]
+  const fileNameList = (body.fileNameList as string[] | undefined) || []
 
   try {
     if (imageDataList.length === 0) {
@@ -80,11 +81,14 @@ export const POST = async (req: NextRequest) => {
             const imageBuffer = Buffer.from(receiptData.imageData, 'base64')
             const timestamp = Date.now()
             const randomString = Math.random().toString(36).substring(2, 8)
-            const fileName = `receipt_${expense.id}_${timestamp}_${randomString}.jpg`
+            const generatedName = `receipt_${expense.id}_${timestamp}_${randomString}.jpg`
+
+            // 元ファイル名（あれば使用）
+            const originalName = fileNameList[receiptData.imageIndex] || generatedName
 
             // BufferからBlobを作成し、Fileオブジェクトにラップ
             const blob = new Blob([imageBuffer], {type: 'image/jpeg'})
-            const file = new File([blob], fileName, {type: 'image/jpeg'})
+            const file = new File([blob], originalName, {type: 'image/jpeg'})
 
             // S3アップロード用のフォームデータ
             const s3FormData: S3FormData = {
@@ -102,8 +106,8 @@ export const POST = async (req: NextRequest) => {
               // 添付ファイルレコードを作成
               const attachment = await prisma.keihiAttachment.create({
                 data: {
-                  filename: fileName,
-                  originalName: fileName,
+                  filename: generatedName,
+                  originalName,
                   mimeType: 'image/jpeg',
                   size: imageBuffer.length,
                   url: uploadResult.result.url,

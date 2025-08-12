@@ -9,10 +9,18 @@ interface AutoGridContainerProps {
     md?: number
     lg?: number
     xl?: number
+    '2xl'?: number
   }
 }
 
-export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({children, className, maxCols = {sm: 2, lg: 3, xl: 4}}) => {
+export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
+  children,
+  className,
+  maxCols = {
+    sm: 2,
+    xl: 3,
+  },
+}) => {
   const childrenArray = React.Children.toArray(children)
   const childCount = childrenArray.length
 
@@ -52,10 +60,27 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({children, c
       classes.push(`xl:grid-cols-${adjustedCols}`)
     }
 
+    // 2xlブレークポイント
+    if (maxCols['2xl'] && childCount > (maxCols.xl || maxCols.lg || maxCols.md || maxCols.sm || 1)) {
+      const adjustedCols = getAdjustedCols(maxCols['2xl'])
+      classes.push(`2xl:grid-cols-${adjustedCols}`)
+    }
+
     return classes.join(' ')
   }
 
-  return <div className={cn(generateGridClasses(), className)}>{children}</div>
+  return (
+    <div
+      className={cn(
+        //
+
+        childCount > 2 ? generateGridClasses() : '',
+        className
+      )}
+    >
+      {children}
+    </div>
+  )
 }
 
 export default AutoGridContainer

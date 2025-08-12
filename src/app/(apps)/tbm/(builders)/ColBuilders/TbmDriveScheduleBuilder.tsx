@@ -65,13 +65,24 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
     },
     {
       id: 'tbmRouteGroupId',
-      label: 'ルート',
+      label: '便',
       forSelect: {
         config: {
+          select: {id: true, name: true, routeName: true},
           where: {tbmBaseId: tbmBase?.id},
           orderBy: [{id: 'asc'}],
           nameChanger(op) {
-            return {...op, name: op ? [`[${op.id}]`, op.name].join(` `) : ''}
+            return {
+              ...op,
+              name: op
+                ? [
+                    //
+                    `[${op.id}]`,
+                    op.name,
+                    op.routeName && ` (${op.routeName})`,
+                  ].join(` `)
+                : '',
+            }
           },
         },
       },

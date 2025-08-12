@@ -10,10 +10,13 @@ import {Pagination} from '../components/Pagination'
 import {LoadingSpinner} from '../components/ui/LoadingSpinner'
 import {ProcessingStatus} from '../components/ui/ProcessingStatus'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {useAllOptions} from '../hooks/useOptions'
 import {StickyBottom, StickyTop} from '@cm/components/styles/common-components/Sticky'
+import {cn} from '@cm/shadcn/lib/utils'
 
 const ExpenseListPage = () => {
   const {query, shallowAddQuery} = useGlobal()
+  const {allOptions} = useAllOptions()
 
   // URLパラメータからページネーション情報を取得
   const currentPage = parseInt(query.page as string) || 1
@@ -26,6 +29,7 @@ const ExpenseListPage = () => {
     totalCount: 0,
     totalPages: 0,
   })
+  const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
 
   const [isExporting, setIsExporting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -59,6 +63,14 @@ const ExpenseListPage = () => {
   useEffect(() => {
     fetchExpenses(currentPage, limit)
   }, [currentPage, limit, fetchExpenses])
+
+  // 科目カラーのマップをオプションから構築
+  useEffect(() => {
+    if (allOptions.subjects?.length) {
+      const map = Object.fromEntries(allOptions.subjects.map(opt => [opt.label, opt.color || '']))
+      setSubjectColorMap(map)
+    }
+  }, [allOptions.subjects])
 
   // ページ変更
   const handlePageChange = useCallback(
@@ -289,14 +301,56 @@ const ExpenseListPage = () => {
                 <p className="text-gray-600 mb-6">新しい経費記録を作成してください。</p>
               </div>
             ) : (
-              state.expenses.map(expense => (
-                <ExpenseListItem
-                  key={expense.id}
-                  expense={expense}
-                  isSelected={state.selectedIds.includes(expense.id)}
-                  onToggleSelect={toggleSelect}
-                />
-              ))
+              <div className="px-6 py-4 overflow-auto">
+                <table
+                  className={cn(
+                    //
+                    'min-w-full divide-y divide-gray-200',
+                    '[&_th]:p-2',
+                    '[&_td]:p-2',
+                    '[&_td]:px-3.5',
+                    ' [&_td]:align-middle',
+                    ' [&_td]:text-sm',
+                    ' [&_td]:text-gray-700',
+                    // ' [&_td]:truncate',
+                    ' [&_td]:min-w-[60px]',
+                    ' [&_td]:max-w-[160px]',
+                    ' [&_td]:truncate',
+                    ' [&_td]:text-xs',
+                    ''
+                  )}
+                >
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="text-xs font-medium text-gray-500">選択</th>
+                      <th className="text-xs font-medium text-gray-500">ステータス</th>
+                      <th className="text-xs font-medium text-gray-500">日付/金額</th>
+
+                      <th className="text-xs font-medium text-gray-500">科目 / 場所</th>
+                      <th className="text-xs font-medium text-gray-500">相手 / 会話の目的</th>
+
+                      <th className="text-xs font-medium text-gray-500">要約 / 洞察 / キーワード</th>
+
+                      <th className="text-xs font-medium text-gray-500">画像</th>
+
+                      <th className="text-xs font-medium text-gray-500">MF科目</th>
+                      <th className="text-xs font-medium text-gray-500">MF税区分</th>
+                      <th className="text-xs font-medium text-gray-500">MFメモ</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {state.expenses.map(expense => (
+                      <ExpenseListItem
+                        key={expense.id}
+                        expense={expense}
+                        isSelected={state.selectedIds.includes(expense.id)}
+                        onToggleSelect={toggleSelect}
+                        subjectColorMap={subjectColorMap}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </div>
 

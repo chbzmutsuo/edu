@@ -50,7 +50,7 @@ const Main = (props: ControlProps & {options}) => {
   }
 
   return (
-    <div className={` grid grid-cols-2 gap-3  w-full `}>
+    <div className={` grid grid-cols-1 xl:grid-cols-2 gap-3 gap-x-10  w-full `}>
       {options?.map((op, i) => {
         const isActive = !!selectedValues[op.id]
 

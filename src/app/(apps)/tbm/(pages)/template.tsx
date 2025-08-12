@@ -32,7 +32,7 @@ export default function Template({children}) {
   }
 
   if (!session?.scopes.getTbmScopes()?.tbmBaseId) {
-    return <div>営業所が設定されていません。</div>
+    // return <div>営業所が設定されていません。</div>
   }
 
   return (

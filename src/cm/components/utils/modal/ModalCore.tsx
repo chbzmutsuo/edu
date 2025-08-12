@@ -1,5 +1,5 @@
 'use client'
-import React, {JSX} from 'react'
+import React, {JSX, useMemo} from 'react'
 
 import ShadModal from '@cm/shadcn/ui/Organisms/ShadModal'
 
@@ -57,18 +57,22 @@ export const ModalCore = React.memo((props: ModalCorePropType) => {
     ...style,
   }
 
-  return (
-    <ShadModal
-      {...{
-        open,
-        setopen,
-        style: modalStyle,
-        Trigger,
-        title,
-        description,
-        children,
-        withPaper,
-      }}
-    />
-  )
+  const ModalMemo = useMemo(() => {
+    return (
+      <ShadModal
+        {...{
+          open,
+          onOpenChange: setopen,
+          style: modalStyle,
+          Trigger,
+          title,
+          description,
+          children,
+          withPaper,
+        }}
+      />
+    )
+  }, [open, setopen, modalStyle, Trigger, title, description, children, withPaper])
+
+  return ModalMemo
 })

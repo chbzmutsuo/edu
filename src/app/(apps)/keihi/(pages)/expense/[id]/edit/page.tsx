@@ -7,6 +7,7 @@ import {getExpenseById, updateExpense, uploadAttachment, linkAttachmentsToExpens
 import CameraUpload from '../../../../components/CameraUpload'
 import {useAllOptions} from '../../../../hooks/useOptions'
 import {Eye, X} from 'lucide-react'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {analyzeMultipleReceipts} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 import {ExpenseBasicInfoForm} from '@app/(apps)/keihi/components/ExpenseBasicInfoForm'
@@ -73,7 +74,7 @@ const PreviewModal = ({isOpen, onClose, imageUrl, fileName}: PreviewModalProps) 
           </button>
         </div>
         <div className="p-4 max-h-[calc(90vh-80px)] overflow-auto">
-          <img src={imageUrl} alt={fileName} className="max-w-full max-h-full object-contain mx-auto" />
+          <ContentPlayer src={imageUrl} showOnlyMain styles={{main: {maxWidth: '90vw', maxHeight: '80vh'}}} />
         </div>
       </div>
     </div>
@@ -88,7 +89,7 @@ export default function ExpenseEditPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisStatus, setAnalysisStatus] = useState('')
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
-  const [insightStatus, setInsightStatus] = useState('')
+
   const [expense, setExpense] = useState<ExpenseDetail | null>(null)
   const [aiDraft, setAiDraft] = useState<any>(null)
 
@@ -120,19 +121,35 @@ export default function ExpenseEditPage() {
 
   // フォーム状態
   const [formData, setFormData] = useState({
+    // 基本情報
     date: '',
     amount: '',
     subject: '',
     location: '',
     counterpartyName: '',
-    counterpartyIndustry: '',
-    conversationPurpose: [] as string[], // string[]に修正
+    conversationPurpose: [] as string[],
     keywords: [] as string[],
+
+    // 会話記録
     conversationSummary: '',
-    learningDepth: '',
+    summary: '',
+
+    // 税務調査対応項目
+    counterpartyContact: '',
+    followUpPlan: '',
+    businessOpportunity: '',
+    competitorInfo: '',
+
+    // AI生成情報
+    insight: '',
     autoTags: [] as string[],
+    status: '',
+
+    // MoneyForward用情報
     mfSubject: '',
+    mfSubAccount: '',
     mfTaxCategory: '',
+    mfDepartment: '',
     mfMemo: '',
   })
 
@@ -173,19 +190,35 @@ export default function ExpenseEditPage() {
 
           // フォームデータを設定
           setFormData({
+            // 基本情報
             date: new Date(data.date).toISOString().split('T')[0],
             amount: data.amount.toString(),
             subject: data.subject,
             location: data.location || '',
             counterpartyName: data.counterpartyName || '',
-            counterpartyIndustry: data.counterpartyIndustry || '',
             conversationPurpose: data.conversationPurpose || [],
             keywords: data.keywords,
+
+            // 会話記録
             conversationSummary: data.conversationSummary || '',
-            learningDepth: data.learningDepth?.toString() || '',
-            autoTags: data.autoTags,
+            summary: data.summary || '',
+
+            // 税務調査対応項目
+            counterpartyContact: data.counterpartyContact || '',
+            followUpPlan: data.followUpPlan || '',
+            businessOpportunity: data.businessOpportunity || '',
+            competitorInfo: data.competitorInfo || '',
+
+            // AI生成情報
+            insight: data.insight || '',
+            autoTags: data.autoTags || [],
+            status: data.status || '',
+
+            // MoneyForward用情報
             mfSubject: data.mfSubject || '',
+            mfSubAccount: data.mfSubAccount || '',
             mfTaxCategory: data.mfTaxCategory || '',
+            mfDepartment: data.mfDepartment || '',
             mfMemo: data.mfMemo || '',
           })
 
@@ -255,11 +288,9 @@ export default function ExpenseEditPage() {
         subject: formData.subject,
         location: formData.location,
         counterpartyName: formData.counterpartyName,
-        counterpartyIndustry: formData.counterpartyIndustry,
         conversationPurpose: formData.conversationPurpose,
         keywords: formData.keywords,
         conversationSummary: formData.conversationSummary,
-        learningDepth: formData.learningDepth ? parseInt(formData.learningDepth) : undefined,
       }
 
       const result = await generateInsightsDraft(expenseFormData, additionalInstruction || undefined)
@@ -376,23 +407,37 @@ export default function ExpenseEditPage() {
     try {
       // AIドラフトの内容をフォームデータに反映
       const updateData = {
+        // 基本情報
         date: new Date(formData.date),
         amount: parseFloat(formData.amount),
         subject: formData.subject,
         location: formData.location || undefined,
         counterpartyName: formData.counterpartyName || undefined,
-        counterpartyIndustry: formData.counterpartyIndustry || undefined,
         conversationPurpose: formData.conversationPurpose || undefined,
         keywords: aiDraft?.generatedKeywords
           ? [...new Set([...formData.keywords, ...aiDraft.generatedKeywords])]
           : formData.keywords,
+
+        // 会話記録
         conversationSummary: formData.conversationSummary || undefined,
-        learningDepth: formData.learningDepth ? parseInt(formData.learningDepth) : undefined,
-        // AIドラフトの内容を優先的に保存
-        insight: aiDraft?.insight || undefined,
+        summary: formData.summary || undefined,
+
+        // 税務調査対応項目
+        counterpartyContact: formData.counterpartyContact || undefined,
+        followUpPlan: formData.followUpPlan || undefined,
+        businessOpportunity: formData.businessOpportunity || undefined,
+        competitorInfo: formData.competitorInfo || undefined,
+
+        // AI生成情報
+        insight: aiDraft?.insight || formData.insight || undefined,
         autoTags: aiDraft?.autoTags || formData.autoTags,
+        status: formData.status || undefined,
+
+        // MoneyForward用情報
         mfSubject: formData.mfSubject || undefined,
+        mfSubAccount: formData.mfSubAccount || undefined,
         mfTaxCategory: formData.mfTaxCategory || undefined,
+        mfDepartment: formData.mfDepartment || undefined,
         mfMemo: formData.mfMemo || undefined,
       }
 
@@ -500,6 +545,7 @@ export default function ExpenseEditPage() {
                 keywords: formData.keywords,
                 conversationSummary: formData.conversationSummary,
                 learningDepth: formData.learningDepth ? parseInt(formData.learningDepth) : 3,
+                status: expense.status || '',
               }}
               setFormData={newData => {
                 if (typeof newData === 'function') {
@@ -641,14 +687,12 @@ export default function ExpenseEditPage() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => openPreviewModal(attachment.url, attachment.originalName)}
-                            className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
-                          >
-                            <Eye className="w-4 h-4" />
-                            プレビュー
-                          </button>
+                          <ContentPlayer
+                            src={attachment.url}
+                            styles={{
+                              thumbnail: {width: 300, height: 300},
+                            }}
+                          />
                         </div>
                       </div>
                     ))}
@@ -675,14 +719,12 @@ export default function ExpenseEditPage() {
                             </p>
                           </div>
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => openPreviewModal(attachment.url, attachment.originalName)}
-                          className="flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium px-3 py-1 rounded-md hover:bg-blue-50 transition-colors"
-                        >
-                          <Eye className="w-4 h-4" />
-                          プレビュー
-                        </button>
+                        <ContentPlayer
+                          src={attachment.url}
+                          styles={{
+                            thumbnail: {width: 300, height: 300},
+                          }}
+                        />
                       </div>
                     ))}
                   </div>
@@ -712,14 +754,6 @@ export default function ExpenseEditPage() {
           </form>
         </div>
       </div>
-
-      {/* プレビューモーダル */}
-      <PreviewModal
-        isOpen={previewModal.isOpen}
-        onClose={closePreviewModal}
-        imageUrl={previewModal.imageUrl}
-        fileName={previewModal.fileName}
-      />
     </div>
   )
 }

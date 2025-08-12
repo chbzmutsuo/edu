@@ -29,11 +29,18 @@ export const aqCustomer = (props: columnGetterType) => {
         // {id: 'id', label: `ID`},
         {id: 'customerNumber', label: '顧客番号', type: 'string', form: {}, search: {}},
         {id: 'name', label: '氏名', type: 'string', form: {}, search: {}},
-        {id: 'companyName', label: '会社名', type: 'string', form: {}, search: {}},
+        {
+          id: 'companyName',
+          label: '会社名',
+          type: 'string',
+          form: {},
+          search: {},
+          format: (value, row) => <small>{row['companyName']}</small>,
+        },
         {id: 'jobTitle', label: '役職', type: 'string', form: {}},
       ])
-        .customAttributes(alignTdWidth)
-        .showSummaryInTd(defaultSummaryInTdArgs).plain,
+        // .customAttributes(alignTdWidth)
+        .showSummaryInTd({...defaultSummaryInTdArgs, labelWidthPx: 60, wrapperWidthPx: 240}).plain,
 
       ...new Fields([
         {id: 'email', label: 'メール', type: 'string', form: {}},
@@ -42,7 +49,7 @@ export const aqCustomer = (props: columnGetterType) => {
         {id: 'tel2', label: '電話番号2', type: 'string', form: {}, search: {}},
         {id: 'invoiceNumber', label: '適格事業者番号', type: 'string', form: {}, search: {}},
       ])
-        .customAttributes(alignTdWidth)
+        // .customAttributes(alignTdWidth)
         .showSummaryInTd(defaultSummaryInTdArgs).plain,
     ]).buildFormGroup({groupName: `基本情報①`}).plain,
     ...new Fields([
@@ -67,7 +74,7 @@ export const aqCustomer = (props: columnGetterType) => {
         {id: `firstVisitDate`, label: `サービス開始`, type: `date`, form: {}},
         {id: `lastVisitDate`, label: `サービス終了`, type: `date`, form: {}},
       ])
-        .customAttributes(alignTdWidth)
+        // .customAttributes(alignTdWidth)
         .showSummaryInTd(defaultSummaryInTdArgs).plain,
       ...new Fields([
         {
@@ -95,7 +102,7 @@ export const aqCustomer = (props: columnGetterType) => {
           },
         },
       ])
-        .customAttributes(alignTdWidth)
+        // .customAttributes(alignTdWidth)
         .showSummaryInTd(defaultSummaryInTdArgs).plain,
     ]).buildFormGroup({groupName: `基本情報②`}).plain,
 
@@ -107,9 +114,7 @@ export const aqCustomer = (props: columnGetterType) => {
         {id: 'city', label: '市区町村', type: 'string', form: {}},
         {id: 'street', label: '町名', type: 'string', form: {}},
         {id: 'building', label: '建物名', type: 'string', form: {}},
-      ])
-        .customAttributes(alignTdWidth)
-        .showSummaryInTd(defaultSummaryInTdArgs).plain,
+      ]).showSummaryInTd({...defaultSummaryInTdArgs, labelWidthPx: 60, wrapperWidthPx: 240}).plain,
     ]).buildFormGroup({groupName: `住所`}).plain,
 
     ...new Fields([
@@ -128,6 +133,9 @@ export const aqCustomer = (props: columnGetterType) => {
           format: defaultMultipleSelectFormat,
           form: {},
         },
+      ]).buildFormGroup({groupName: `ご利用サービス`}).plain,
+
+      ...new Fields([
         {
           id: `aqCustomerDealerMidTable`,
           label: `担当販売店`,
@@ -142,6 +150,8 @@ export const aqCustomer = (props: columnGetterType) => {
           format: defaultMultipleSelectFormat,
           form: {},
         },
+      ]).buildFormGroup({groupName: `担当販売店`}).plain,
+      ...new Fields([
         {
           id: `aqCustomerDeviceMidTable`,
           label: `ご利用機種`,
@@ -156,45 +166,42 @@ export const aqCustomer = (props: columnGetterType) => {
           format: defaultMultipleSelectFormat,
           form: {},
         },
-      ])
-        .customAttributes(({col}) => ({
-          ...col,
-          td: {...col.td, style: {width: 120}},
-          form: {...col.form, style: {width: 500}},
-        }))
-        .showSummaryInTd(defaultSummaryInTdArgs).plain,
+      ]).buildFormGroup({groupName: `ご利用機種`}).plain,
       ...new Fields([
         {
           id: 'remarks',
           label: '備考',
           type: 'textarea',
-          form: {
-            style: {minWidth: 480, margin: 'auto'},
-          },
-          td: {style: {minWidth: 250}},
+          form: {},
           search: {},
-        },
-        {
-          id: `AqCustomerPriceOption`,
-          label: `設定価格一覧`,
-          form: {hidden: true},
           format: (value, row) => {
-            return CsvTable({
-              records: row.AqCustomerPriceOption.map(d => {
-                const {AqProduct, AqPriceOption} = d ?? {}
-                const truncate = `truncate w-[60px] text-xs`
-                return {
-                  csvTableRow: [AqProduct?.name, AqPriceOption?.name, AqPriceOption?.price].map(d => ({
-                    label: '',
-                    cellValue: <div {...{className: truncate}}>{d}</div>,
-                  })),
-                }
-              }),
-            }).WithWrapper({...{className: `max-h-[200px]`}})
+            return <small className={`max-w-[200px] truncate  inline-block  `}>{row['remarks']}</small>
           },
         },
-      ]).showSummaryInTd({...defaultSummaryInTdArgs, labelWidthPx: 80, wrapperWidthPx: 300}).plain,
-    ]).buildFormGroup({groupName: `その他`}).plain,
+      ]).buildFormGroup({groupName: `備考`}).plain,
+    ]).showSummaryInTd({...defaultSummaryInTdArgs, labelWidthPx: 80, wrapperWidthPx: 300}).plain,
+
+    ...new Fields([
+      {
+        id: `AqCustomerPriceOption`,
+        label: `設定価格一覧`,
+        form: {hidden: true},
+        format: (value, row) => {
+          return CsvTable({
+            records: row.AqCustomerPriceOption.map(d => {
+              const {AqProduct, AqPriceOption} = d ?? {}
+              const truncate = `truncate w-[60px] text-xs`
+              return {
+                csvTableRow: [AqProduct?.name, AqPriceOption?.name, AqPriceOption?.price].map(d => ({
+                  label: '',
+                  cellValue: <div {...{className: truncate}}>{d}</div>,
+                })),
+              }
+            }),
+          }).WithWrapper({...{className: `max-h-[200px]`}})
+        },
+      },
+    ]).showSummaryInTd({...defaultSummaryInTdArgs, labelWidthPx: 80, wrapperWidthPx: 300}).plain,
   ]).transposeColumns()
 }
 

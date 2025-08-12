@@ -2,7 +2,7 @@
 
 import React, {Fragment} from 'react'
 import {colType, onFormItemBlurType} from '@cm/types/types'
-import {C_Stack} from 'src/cm/components/styles/common-components/common-components'
+import {C_Stack, R_Stack} from 'src/cm/components/styles/common-components/common-components'
 import {FormProvider, UseFormReturn} from 'react-hook-form'
 import {AdditionalBasicFormPropType} from 'src/cm/hooks/useBasicForm/useBasicFormProps'
 import {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
@@ -13,7 +13,9 @@ import {Card} from '@cm/shadcn/ui/card'
 
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {cn} from '@shadcn/lib/utils'
-import DynamicGridContainer from '@cm/components/utils/DynamicGridContainer'
+
+import {getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
+import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -48,7 +50,7 @@ const FormSection = React.memo(
       <>
         {isNaN(colFormIndexGroupName) && colFormIndexGroupName ? (
           <>
-            <Card>
+            <Card className={` px-4`}>
               <div className={`  text-primary-main text-center text-lg font-bold `}>{colFormIndexGroupName}</div>
               {children}
             </Card>
@@ -82,38 +84,109 @@ const BasicForm = (props: BasicFormType) => {
 
   const {transposedRowsForForm} = makeFormsByColumnObj(columns)
 
-  return (
-    <div className={`w-fit `}>
+  const maxCols = transposedRowsForForm.length <= 1 ? {xl: 1} : {xl: 2}
+
+  if (alignMode === `row`) {
+    return (
       <FormProvider {...ReactHookForm}>
         <form {...{ref: formRef, id: formId, onSubmit}}>
-          <C_Stack className={`items-center`}>
-            <DynamicGridContainer style={style}>
+          <R_Stack>
+            {transposedRowsForForm.map((columns, i) => {
+              return (
+                <Fragment key={i}>
+                  <div className={cn('row-stack gap-x-6')}>
+                    {columns.map((col: colType, formItemIndex) => {
+                      const uniqueKey = `${i}-${formItemIndex}`
+                      return (
+                        <div key={uniqueKey}>
+                          <ControlGroup {...{...props, col, formItemIndex}} />
+                        </div>
+                      )
+                    })}
+                    {/* ボタン */}
+                  </div>
+                  <ChildComponent />
+                </Fragment>
+              )
+            })}
+
+            {alignMode !== `row` && <ChildComponent />}
+          </R_Stack>
+        </form>
+      </FormProvider>
+    )
+  } else if (alignMode === 'col') {
+    return (
+      <div>
+        <FormProvider {...ReactHookForm}>
+          <form {...{ref: formRef, id: formId, onSubmit}}>
+            <C_Stack className={`items-center gap-8 `}>
               {transposedRowsForForm.map((columns, i) => {
                 return (
                   <Fragment key={i}>
                     <FormSection {...{columns, ControlOptions}}>
-                      <div className={cn(alignMode === `row` ? `row-stack` : `col-stack`, `gap-10 gap-x-6`)}>
-                        {/* グループ */}
+                      <C_Stack className={cn(`gap-8`)}>
                         {columns.map((col: colType, formItemIndex) => {
+                          const use2ColSpan = getUse2ColSpan(col)
                           const uniqueKey = `${i}-${formItemIndex}`
-                          return <ControlGroup key={uniqueKey} {...{...props, col, formItemIndex}} />
-                        })}
+                          const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
 
+                          return (
+                            <div key={uniqueKey} className={cn(colSpan)}>
+                              <ControlGroup {...{...props, col, formItemIndex}} />
+                            </div>
+                          )
+                        })}
                         {/* ボタン */}
-                        {alignMode === `row` && <ChildComponent />}
-                      </div>
+                      </C_Stack>
                     </FormSection>
                   </Fragment>
                 )
               })}
-            </DynamicGridContainer>
 
-            {alignMode !== `row` && <ChildComponent />}
-          </C_Stack>
-        </form>
-      </FormProvider>
-    </div>
-  )
+              <ChildComponent />
+            </C_Stack>
+          </form>
+        </FormProvider>
+      </div>
+    )
+  } else {
+    return (
+      <div>
+        <FormProvider {...ReactHookForm}>
+          <form {...{ref: formRef, id: formId, onSubmit}}>
+            <AutoGridContainer className={`items-stretch gap-6 `} maxCols={{xl: 2}}>
+              {transposedRowsForForm.map((columns, i) => {
+                return (
+                  <Fragment key={i}>
+                    <FormSection {...{columns, ControlOptions}}>
+                      <div className={cn(`grid grid-cols-1 md:grid-cols-2 gap-[60px]   `)}>
+                        {columns.map((col: colType, formItemIndex) => {
+                          const use2ColSpan = getUse2ColSpan(col)
+                          const uniqueKey = `${i}-${formItemIndex}`
+                          const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+
+                          return (
+                            <div key={uniqueKey} className={cn(colSpan)}>
+                              <ControlGroup {...{...props, col, formItemIndex}} />
+                            </div>
+                          )
+                        })}
+                        {/* ボタン */}
+                      </div>
+                      <ChildComponent />
+                    </FormSection>
+                  </Fragment>
+                )
+              })}
+
+              {alignMode !== `row` && <ChildComponent />}
+            </AutoGridContainer>
+          </form>
+        </FormProvider>
+      </div>
+    )
+  }
 }
 
 export default BasicForm

@@ -28,7 +28,7 @@ import React from 'react'
 import {JSX} from 'react'
 
 type ShadModalProps = {
-  DialogTrigger?: JSX.Element | string
+  Trigger?: JSX.Element | string
   open?: boolean
   onOpenChange?: any
   onOpenAutoFocus?: any
@@ -44,7 +44,7 @@ const ShadModal = React.memo((props: ShadModalProps) => {
   const {
     open,
     onOpenChange,
-    DialogTrigger: Trigger,
+    Trigger: Trigger,
     children,
     onOpenAutoFocus = e => e.preventDefault(),
     title,

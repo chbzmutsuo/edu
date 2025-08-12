@@ -1,178 +1,178 @@
 model BigCategory {
- id             Int              @id @default(autoincrement())
- createdAt      DateTime         @default(now())
- updatedAt      DateTime?        @default(now()) @updatedAt()
- active         Boolean          @default(true)
- sortOrder      Float
- name           String           @unique
- color          String?
- MiddleCategory MiddleCategory[]
+  id             Int              @id @default(autoincrement())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime?        @default(now()) @updatedAt()
+  active         Boolean          @default(true)
+  sortOrder      Float
+  name           String           @unique
+  color          String?
+  MiddleCategory MiddleCategory[]
 }
 
 model MiddleCategory {
- id            Int         @id @default(autoincrement())
- createdAt     DateTime    @default(now())
- updatedAt     DateTime?   @default(now()) @updatedAt()
- active        Boolean     @default(true)
- sortOrder     Float       @default(0)
- name          String
- bigCategoryId Int
- Lesson        Lesson[]
- BigCategory   BigCategory @relation(fields: [bigCategoryId], references: [id], onDelete: Cascade)
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime?   @default(now()) @updatedAt()
+  active        Boolean     @default(true)
+  sortOrder     Float       @default(0)
+  name          String
+  bigCategoryId Int
+  Lesson        Lesson[]
+  BigCategory   BigCategory @relation(fields: [bigCategoryId], references: [id], onDelete: Cascade)
 
- // @@unique([bigCategoryId, name], name: "unique_bigCategoryId_name")
+  // @@unique([bigCategoryId, name], name: "unique_bigCategoryId_name")
 }
 
 model Lesson {
- id               Int            @id @default(autoincrement())
- createdAt        DateTime       @default(now())
- updatedAt        DateTime?      @default(now()) @updatedAt()
- active           Boolean        @default(true)
- sortOrder        Float          @default(0)
- name             String
- description      String?
- middleCategoryId Int
- MiddleCategory   MiddleCategory @relation(fields: [middleCategoryId], references: [id], onDelete: Cascade)
- LessonImage      LessonImage[]
- LessonLog        LessonLog[]
+  id               Int            @id @default(autoincrement())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime?      @default(now()) @updatedAt()
+  active           Boolean        @default(true)
+  sortOrder        Float          @default(0)
+  name             String
+  description      String?
+  middleCategoryId Int
+  MiddleCategory   MiddleCategory @relation(fields: [middleCategoryId], references: [id], onDelete: Cascade)
+  LessonImage      LessonImage[]
+  LessonLog        LessonLog[]
 
- // @@unique([middleCategoryId, name], name: "unique_middleCategoryId_name")
+  // @@unique([middleCategoryId, name], name: "unique_middleCategoryId_name")
 }
 
 model Ticket {
- id        Int       @id @default(autoincrement())
- active    Boolean   @default(true)
- sortOrder Float     @default(0)
- createdAt DateTime? @default(now())
- updatedAt DateTime? @default(now()) @updatedAt()
- payedAt   DateTime?
- usedAt    DateTime?
- type      String?
+  id        Int       @id @default(autoincrement())
+  active    Boolean   @default(true)
+  sortOrder Float     @default(0)
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  payedAt   DateTime?
+  usedAt    DateTime?
+  type      String?
 
- lessonLogId Int?
- userId      Int?
- LessonLog   LessonLog? @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
- User        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonLogId Int?
+  userId      Int?
+  LessonLog   LessonLog? @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
+  User        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Payment {
- id          Int       @id @default(autoincrement())
- createdAt   DateTime  @default(now())
- updatedAt   DateTime? @default(now()) @updatedAt()
- active      Boolean   @default(true)
- sortOrder   Float     @default(0)
- lessonLogId Int
- userId      Int
- LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
- User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt()
+  active      Boolean   @default(true)
+  sortOrder   Float     @default(0)
+  lessonLogId Int
+  userId      Int
+  LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LessonLogAuthorizedUser {
- id          Int       @id @default(autoincrement())
- createdAt   DateTime  @default(now())
- updatedAt   DateTime? @default(now()) @updatedAt()
- active      Boolean   @default(true)
- sortOrder   Float     @default(0)
- userId      Int
- lessonLogId Int
- LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt()
+  active      Boolean   @default(true)
+  sortOrder   Float     @default(0)
+  userId      Int
+  lessonLogId Int
+  LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
 
- comment String?
+  comment String?
 
- User User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
- @@unique([userId, lessonLogId], name: "unique_userId_lessonLogId")
+  @@unique([userId, lessonLogId], name: "unique_userId_lessonLogId")
 }
 
 model LessonLog {
- id           Int       @id @default(autoincrement())
- createdAt    DateTime  @default(now())
- updatedAt    DateTime? @default(now()) @updatedAt()
- active       Boolean   @default(true)
- sortOrder    Float     @default(0)
- isPassed     Boolean   @default(false)
- authorizerId Int?
- isPaid       Boolean   @default(false)
- userId       Int
- lessonId     Int
- isSuspended  Boolean   @default(false)
- Comment      Comment[]
- Lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
- User         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           Int       @id @default(autoincrement())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime? @default(now()) @updatedAt()
+  active       Boolean   @default(true)
+  sortOrder    Float     @default(0)
+  isPassed     Boolean   @default(false)
+  authorizerId Int?
+  isPaid       Boolean   @default(false)
+  userId       Int
+  lessonId     Int
+  isSuspended  Boolean   @default(false)
+  Comment      Comment[]
+  Lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  User         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
- LessonLogAuthorizedUser LessonLogAuthorizedUser[]
- Payment                 Payment[]
- Ticket                  Ticket[]
- VideoFromUser           VideoFromUser[]
+  LessonLogAuthorizedUser LessonLogAuthorizedUser[]
+  Payment                 Payment[]
+  Ticket                  Ticket[]
+  VideoFromUser           VideoFromUser[]
 
- @@unique([userId, lessonId], name: "unique_userId_lessonId")
+  @@unique([userId, lessonId], name: "unique_userId_lessonId")
 }
 
 model VideoFromUser {
- id          Int       @id @default(autoincrement())
- createdAt   DateTime  @default(now())
- updatedAt   DateTime? @default(now()) @updatedAt()
- active      Boolean   @default(true)
- sortOrder   Float     @default(0)
- lessonLogId Int
- userId      Int
- LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
- User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt()
+  active      Boolean   @default(true)
+  sortOrder   Float     @default(0)
+  lessonLogId Int
+  userId      Int
+  LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model LessonImage {
- id          Int       @id @default(autoincrement())
- createdAt   DateTime  @default(now())
- updatedAt   DateTime? @default(now()) @updatedAt()
- active      Boolean   @default(true)
- sortOrder   Float     @default(0)
- name        String
- description String?
- type        String?
- url         String?
- lessonId    Int
- Lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt()
+  active      Boolean   @default(true)
+  sortOrder   Float     @default(0)
+  name        String
+  description String?
+  type        String?
+  url         String?
+  lessonId    Int
+  Lesson      Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
- @@unique([lessonId, name], name: "unique_lessonId_name")
+  @@unique([lessonId, name], name: "unique_lessonId_name")
 }
 
 model Comment {
- id          Int       @id @default(autoincrement())
- createdAt   DateTime  @default(now())
- updatedAt   DateTime? @default(now()) @updatedAt()
- active      Boolean   @default(true)
- sortOrder   Float     @default(0)
- message     String?
- read        Boolean   @default(false)
- userId      Int
- lessonLogId Int
- url         String?
- LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
- User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @default(now()) @updatedAt()
+  active      Boolean   @default(true)
+  sortOrder   Float     @default(0)
+  message     String?
+  read        Boolean   @default(false)
+  userId      Int
+  lessonLogId Int
+  url         String?
+  LessonLog   LessonLog @relation(fields: [lessonLogId], references: [id], onDelete: Cascade)
+  User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SystemChatRoom {
- id         Int          @id @default(autoincrement())
- createdAt  DateTime     @default(now())
- updatedAt  DateTime?    @default(now()) @updatedAt()
- active     Boolean      @default(true)
- sortOrder  Float        @default(0)
- userId     Int          @unique
- SystemChat SystemChat[]
- User       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         Int          @id @default(autoincrement())
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime?    @default(now()) @updatedAt()
+  active     Boolean      @default(true)
+  sortOrder  Float        @default(0)
+  userId     Int          @unique
+  SystemChat SystemChat[]
+  User       User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model SystemChat {
- id               Int            @id @default(autoincrement())
- createdAt        DateTime       @default(now())
- updatedAt        DateTime?      @default(now()) @updatedAt()
- active           Boolean        @default(true)
- sortOrder        Float          @default(0)
- message          String?
- url              String?
- read             Boolean        @default(false)
- systemChatRoomId Int
- userId           Int
- SystemChatRoom   SystemChatRoom @relation(fields: [systemChatRoomId], references: [id], onDelete: Cascade)
- User             User           @relation("user", fields: [userId], references: [id], onDelete: Cascade)
+  id               Int            @id @default(autoincrement())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime?      @default(now()) @updatedAt()
+  active           Boolean        @default(true)
+  sortOrder        Float          @default(0)
+  message          String?
+  url              String?
+  read             Boolean        @default(false)
+  systemChatRoomId Int
+  userId           Int
+  SystemChatRoom   SystemChatRoom @relation(fields: [systemChatRoomId], references: [id], onDelete: Cascade)
+  User             User           @relation("user", fields: [userId], references: [id], onDelete: Cascade)
 }
