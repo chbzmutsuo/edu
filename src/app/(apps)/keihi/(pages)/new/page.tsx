@@ -3,20 +3,18 @@
 import {useState, useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
-import {fetchCreateExpenseApi} from '@app/(apps)/keihi/api/expense/createExpense'
 import {useExpenseFormManager} from '@app/(apps)/keihi/hooks/useExpenseFormManager'
 import {useImageUpload} from '@app/(apps)/keihi/hooks/useImageUpload'
-import {usePreviewModal} from '@app/(apps)/keihi/hooks/usePreviewModal'
 import {ImageUploadSection} from '@app/(apps)/keihi/(pages)/new/components/ImageUploadSection'
 import {ExpenseBasicInfoForm} from '@app/(apps)/keihi/components/ExpenseBasicInfoForm'
 import {ExpenseAIDraftSection} from '@app/(apps)/keihi/components/ExpenseAIDraftSection'
 import FormActions from '@app/(apps)/keihi/components/FormActions'
-import {PreviewModal} from '@app/(apps)/keihi/components/ui/PreviewModal'
 import {ProcessingStatus} from '@app/(apps)/keihi/components/ui/ProcessingStatus'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'
+import {createExpenseAction} from '@app/(apps)/keihi/actions/expense-create-actions'
 
 // 共通のフィールドクラス生成関数
 const getFieldClass = (value: string | number | string[], required = false) => {
@@ -143,15 +141,38 @@ const NewExpensePage = () => {
       return
     }
 
-    if (!aiDraft) {
-      toast.error('AIインサイトを生成してください')
-      return
-    }
-
     setIsSubmitting(true)
 
     try {
-      const result = await fetchCreateExpenseApi(formData, capturedImageFiles, true, aiDraft)
+      // 画像ファイルがある場合は、APIを使用して処理
+      // Server Actionは直接Fileオブジェクトを処理できないため、API経由で処理
+      // let result
+
+      // if (capturedImageFiles.length > 0) {
+      //   // 画像ファイル付きの場合はAPI経由で処理
+      //   const formDataObj = new FormData()
+
+      //   // フォームデータをJSON文字列として追加
+      //   formDataObj.append('formData', JSON.stringify(formData))
+      //   formDataObj.append('withAI', 'true')
+      //   formDataObj.append('aiDraft', JSON.stringify(aiDraft))
+
+      //   // 画像ファイルを追加
+      //   capturedImageFiles.forEach((file, index) => {
+      //     formDataObj.append(`file${index}`, file)
+      //   })
+
+      //   // API呼び出し
+      //   const response = await fetch('/api/keihi/expense/create', {
+      //     method: 'POST',
+      //     body: formDataObj,
+      //   })
+
+      //   result = await response.json()
+      // } else {
+      //   // 画像ファイルがない場合はServer Actionを直接呼び出し
+      // }
+      const result = await createExpenseAction(formData, capturedImageFiles, true, aiDraft)
 
       if (result.success) {
         toast.success('経費記録を作成しました')
@@ -249,9 +270,10 @@ const NewExpensePage = () => {
                 setAdditionalInstruction,
                 onGenerateDraft: handleGenerateInsights,
                 onRegenerateDraft: handleGenerateInsights,
-                setFormData: newData => {
+                setFormData: (newData: any) => {
                   if (typeof newData === 'function') {
                     const updated = newData(formData)
+
                     Object.keys(updated).forEach(key => {
                       updateFormData(key as keyof ExpenseFormData, updated[key as keyof ExpenseFormData])
                     })

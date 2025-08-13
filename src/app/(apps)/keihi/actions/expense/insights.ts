@@ -109,7 +109,7 @@ const generateInsightsCore = async (
     const response = await openai.chat.completions.create({
       model: 'gpt-4o',
       messages: [{role: 'user', content: prompt}],
-      max_tokens: 1500,
+      // max_tokens: 1500,
       temperature: 1,
     })
 
@@ -268,11 +268,9 @@ export const addInsightToExpense = async (
       subject: expense.subject,
       location: expense.location || '',
       counterpartyName: expense.counterpartyName || '',
-      // counterpartyIndustry removed
       conversationPurpose: Array.isArray(expense.conversationPurpose) ? expense.conversationPurpose : [],
       keywords: expense.keywords || [],
       conversationSummary: expense.conversationSummary || '',
-      learningDepth: expense.learningDepth || undefined,
     }
 
     // インサイト生成

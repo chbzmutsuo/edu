@@ -29,7 +29,7 @@ export default function FormActions({isLoading, isAnalyzing, aiDraft, showDraft,
         className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 order-1 sm:order-2"
       >
         {(isLoading || isAnalyzing) && <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>}
-        {isLoading ? '作成中...' : isAnalyzing ? '解析中...' : aiDraft && showDraft ? '下書きで作成' : '作成'}
+        {isLoading ? '作成中...' : isAnalyzing ? '解析中...' : '作成'}
       </button>
     </div>
   )

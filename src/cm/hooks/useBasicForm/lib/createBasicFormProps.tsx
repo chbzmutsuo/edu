@@ -1,7 +1,7 @@
 import {useRegisterOrigin} from '@cm/hooks/useBasicForm/lib/useRegisterOrigin'
 
 export const adjustBasicFormProps = props => {
-  const {alignMode = `col`, ControlOptions = {}, ...restProps} = props
+  const {alignMode = 'grid', ControlOptions = {}, ...restProps} = props
 
   if (alignMode === 'row') {
     ControlOptions.ControlStyle = {...ControlOptions?.ControlStyle, minHeight: undefined}

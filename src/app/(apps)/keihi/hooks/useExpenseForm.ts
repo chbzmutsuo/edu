@@ -1,98 +1,127 @@
-import {useState, useCallback} from 'react'
-import {ExpenseFormData, AIDraft} from '../types'
-import {DEFAULT_CONVERSATION_PURPOSES} from '../(constants)/conversation-purposes'
-import {getTodayString} from '../utils'
+'use client'
 
-interface UseExpenseFormOptions {
-  initialData?: Partial<ExpenseFormData>
+import {useForm, UseFormReturn} from 'react-hook-form'
+import {useCallback} from 'react'
+import {ExpenseFormData} from '../types'
+import {generateKeywordsFromContext} from '../actions/expense/analyzeReceipt'
+import {DEFAULT_CONVERSATION_PURPOSES} from '../(constants)/conversation-purposes'
+
+// フォームの初期値
+const defaultValues: ExpenseFormData = {
+  date: '',
+  amount: 0,
+  subject: '',
+  location: '',
+  counterpartyName: '',
+  conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES] as string[],
+  keywords: [],
+  conversationSummary: '',
+  summary: '',
+  insight: '',
+  autoTags: [],
+  status: '',
+  mfSubject: '',
+  mfSubAccount: '',
+  mfTaxCategory: '',
+  mfDepartment: '',
+  mfMemo: '',
 }
 
-export const useExpenseForm = (options: UseExpenseFormOptions = {}) => {
-  const {initialData} = options
-
-  const [formData, setFormData] = useState<ExpenseFormData>({
-    date: getTodayString(),
-    amount: 0,
-    subject: '',
-    location: '',
-    counterpartyName: '',
-    // counterpartyIndustry removed
-    conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
-    keywords: [],
-    conversationSummary: '',
-    learningDepth: 3,
-    ...initialData,
+export const useExpenseForm = (initialData?: Partial<ExpenseFormData>) => {
+  // React Hook Formの初期化
+  const methods = useForm<ExpenseFormData>({
+    defaultValues: {
+      ...defaultValues,
+      ...initialData,
+    },
   })
 
-  const [aiDraft, setAiDraft] = useState<AIDraft | null>(null)
-  const [showDraft, setShowDraft] = useState(false)
+  const {setValue, getValues, watch} = methods
 
-  const updateFormData = useCallback((field: keyof ExpenseFormData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }))
-  }, [])
-
-  const updateMultipleFields = useCallback((updates: Partial<ExpenseFormData>) => {
-    setFormData(prev => ({
-      ...prev,
-      ...updates,
-    }))
-  }, [])
-
+  // キーワード追加
   const addKeyword = useCallback(
     (keyword: string) => {
-      if (keyword.trim() && !formData.keywords.includes(keyword.trim())) {
-        setFormData(prev => ({
-          ...prev,
-          keywords: [...prev.keywords, keyword.trim()],
-        }))
+      const currentKeywords = getValues('keywords') || []
+      if (keyword.trim() && !currentKeywords.includes(keyword.trim())) {
+        setValue('keywords', [...currentKeywords, keyword.trim()], {shouldDirty: true})
       }
     },
-    [formData.keywords]
+    [getValues, setValue]
   )
 
-  const removeKeyword = useCallback((index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      keywords: prev.keywords.filter((_, i) => i !== index),
-    }))
-  }, [])
+  // キーワード削除
+  const removeKeyword = useCallback(
+    (index: number) => {
+      const currentKeywords = getValues('keywords') || []
+      setValue(
+        'keywords',
+        currentKeywords.filter((_, i) => i !== index),
+        {shouldDirty: true}
+      )
+    },
+    [getValues, setValue]
+  )
 
-  const resetForm = useCallback(() => {
-    setFormData({
-      date: getTodayString(),
-      amount: 0,
-      subject: '',
-      location: '',
-      counterpartyName: '',
-      counterpartyIndustry: '',
-      conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
-      keywords: [],
-      conversationSummary: '',
-      learningDepth: 3,
-    })
-    setAiDraft(null)
-    setShowDraft(false)
-  }, [])
+  // キーワード自動生成
+  const generateKeywords = useCallback(async () => {
+    const currentData = getValues()
+    const generatedKeywords = await generateKeywordsFromContext(
+      currentData.counterpartyName,
+      currentData.conversationPurpose,
+      currentData.location,
+      currentData.subject
+    )
 
-  const isFormValid = useCallback(() => {
-    return !!(formData.date && formData.amount && formData.subject)
-  }, [formData.date, formData.amount, formData.subject])
+    const currentKeywords = currentData.keywords || []
+    const newKeywords = generatedKeywords.filter(keyword => !currentKeywords.includes(keyword))
+
+    if (newKeywords.length > 0) {
+      setValue('keywords', [...currentKeywords, ...newKeywords], {shouldDirty: true})
+    }
+  }, [getValues, setValue])
+
+  // 相手名追加
+  const addCounterparty = useCallback(
+    (name: string) => {
+      if (name.trim()) {
+        const currentValue = getValues('counterpartyName') || ''
+        const newValue = currentValue ? `${currentValue}, ${name.trim()}` : name.trim()
+        setValue('counterpartyName', newValue, {shouldDirty: true})
+      }
+    },
+    [getValues, setValue]
+  )
+
+  // 「その他複数名」を追加
+  const addMultipleOthers = useCallback(() => {
+    const currentValue = getValues('counterpartyName') || ''
+    const newValue = currentValue ? `${currentValue}, その他複数名` : 'その他複数名'
+    setValue('counterpartyName', newValue, {shouldDirty: true})
+  }, [getValues, setValue])
+
+  // 会話の目的変更
+  const updatePurpose = useCallback(
+    (purpose: string, checked: boolean) => {
+      const currentPurposes = getValues('conversationPurpose') || []
+      const newPurposes = checked ? [...currentPurposes, purpose] : currentPurposes.filter(p => p !== purpose)
+      setValue('conversationPurpose', newPurposes, {shouldDirty: true})
+    },
+    [getValues, setValue]
+  )
+
+  // 監視対象の値
+  const formValues = watch()
 
   return {
-    formData,
-    setFormData,
-    updateFormData,
-    updateMultipleFields,
+    methods,
     addKeyword,
     removeKeyword,
-    resetForm,
-    isFormValid,
-    aiDraft,
-    setAiDraft,
-    showDraft,
-    setShowDraft,
+    generateKeywords,
+    addCounterparty,
+    addMultipleOthers,
+    updatePurpose,
+    formValues,
   }
 }
+
+export type ExpenseFormMethods = UseFormReturn<ExpenseFormData>

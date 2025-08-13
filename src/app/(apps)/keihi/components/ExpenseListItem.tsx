@@ -6,19 +6,29 @@ import {formatAmount, formatDate} from '../utils'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import React from 'react'
 import {toast} from 'react-toastify'
-import {basePath} from '@cm/lib/methods/common'
+// import {updateExpenseStatusAction} from '../actions/expense-server-actions'
+import {StatusSelect} from './StatusSelect'
+import {updateExpense} from '@app/(apps)/keihi/actions/expense-actions'
 
 interface ExpenseListItemProps {
   expense: ExpenseRecord
   isSelected: boolean
   onToggleSelect: (id: string) => void
   subjectColorMap?: Record<string, string>
+  onStatusChange?: (id: string, status: string) => void
 }
 
-export const ExpenseListItem = ({expense, isSelected, onToggleSelect, subjectColorMap = {}}: ExpenseListItemProps) => {
+export const ExpenseListItem = ({
+  expense,
+  isSelected,
+  onToggleSelect,
+  subjectColorMap = {},
+  onStatusChange,
+}: ExpenseListItemProps) => {
   const subjectColor = subjectColorMap[expense.subject] || subjectColorMap[expense.mfSubject || '']
 
-  const summaryText = expense.summary || ''
+  const insightSummaryText = expense.summary || ''
+  const conversationSummaryText = expense.conversationSummary || ''
   const keywordsText = expense.keywords?.slice(0, 5).join(', ')
   const insightText = expense.insight || ''
   const autoTagsText = expense.autoTags?.join(', ') || ''
@@ -54,38 +64,24 @@ export const ExpenseListItem = ({expense, isSelected, onToggleSelect, subjectCol
         />
       </td>
       <td className="p-2 align-middle">
-        <select
+        <StatusSelect
           value={localStatus}
-          onChange={async e => {
-            const newStatus = e.target.value
-            setLocalStatus(newStatus)
+          onChange={async newStatus => {
             try {
-              const response = await fetch(`${basePath}/keihi/api/expense/updateExpenseRoute`, {
-                method: 'POST',
-                body: JSON.stringify({id: expense.id, data: {status: newStatus}}),
-                headers: {'Content-Type': 'application/json'},
-              })
-
-              const result = await response.json()
-
+              const result = await updateExpense(expense.id, {status: newStatus})
               if (result.success) {
-                toast.success(`ステータスを「${newStatus || '未設定'}」に更新しました`)
+                setLocalStatus(newStatus)
+                onStatusChange?.(expense.id, newStatus)
               } else {
-                toast.error('ステータスの更新に失敗しました')
-                setLocalStatus(expense.status || '') // エラー時は元の値に戻す
+                throw new Error(result.error)
               }
             } catch (err) {
               console.error('status update failed', err)
               toast.error('ステータスの更新に失敗しました')
-              setLocalStatus(expense.status || '') // エラー時は元の値に戻す
+              throw err // StatusSelectコンポーネントでエラーハンドリング
             }
           }}
-          className="px-2 py-1 text-sm border rounded w-[100px]"
-        >
-          <option value="">未設定</option>
-          <option value="一次チェック済">一次チェック済</option>
-          <option value="MF連携済み">MF連携済み</option>
-        </select>
+        />
       </td>
 
       <td className="p-2 align-middle font-semibold text-gray-900 whitespace-nowrap">
@@ -114,10 +110,13 @@ export const ExpenseListItem = ({expense, isSelected, onToggleSelect, subjectCol
         {expense.counterpartyName || '-'}
         <br />
         {expense.conversationPurpose?.join(', ') || '-'}
+        <br />
+        {shortText(conversationSummaryText)}
       </td>
 
       <td>
-        {shortText(summaryText)}
+        {shortText(insightSummaryText)}
+
         <br />
         {shortText(insightText)}
         <br />

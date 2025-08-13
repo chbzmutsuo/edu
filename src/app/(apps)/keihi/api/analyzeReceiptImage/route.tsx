@@ -57,7 +57,7 @@ export const POST = async (req: NextRequest) => {
               keywords: receiptData.generatedKeywords,
               conversationSummary: `${receiptData.location}での${receiptData.suggestedPurposes.join('・')}`,
               conversationPurpose: receiptData.suggestedPurposes,
-              learningDepth: 3, // デフォルト値
+
               // インサイトは後で生成するため空文字で初期化
 
               autoTags: [],

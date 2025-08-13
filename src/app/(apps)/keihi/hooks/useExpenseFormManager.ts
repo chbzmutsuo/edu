@@ -16,11 +16,9 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
     subject: '',
     location: '',
     counterpartyName: '',
-    // counterpartyIndustry removed
     conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
     keywords: [],
     conversationSummary: '',
-    // learningDepth removed
     ...initialData,
   })
 
@@ -67,11 +65,9 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
       subject: '',
       location: '',
       counterpartyName: '',
-      counterpartyIndustry: '',
       conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
       keywords: [],
       conversationSummary: '',
-      learningDepth: 3,
     })
     setAiDraft(null)
     setShowDraft(false)

@@ -4,6 +4,7 @@ import {toast} from 'react-toastify'
 
 import {AnalyzedReceipt, BulkProcessingSummary} from '@app/(apps)/keihi/types'
 import {revalidateKeihiPages} from '@app/(apps)/keihi/actions/expense-actions'
+import ContentPlayer from '@cm/components/utils/ContentPlayer'
 
 interface BulkProcessingResultsProps {
   uploadedImages: string[]
@@ -196,10 +197,11 @@ export const BulkProcessingResults = ({
                     )}
                   </div>
                   {receipt.imageData && (
-                    <img
+                    <ContentPlayer
                       src={getImagePreview(receipt.imageData)}
-                      alt={`領収書 ${index + 1}`}
-                      className="w-16 h-16 object-cover rounded border"
+                      styles={{
+                        thumbnail: {width: 80, height: 80},
+                      }}
                     />
                   )}
                 </div>

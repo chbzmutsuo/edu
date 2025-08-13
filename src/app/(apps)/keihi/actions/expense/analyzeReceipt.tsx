@@ -19,6 +19,7 @@ export const analyzeMultipleReceipts = async (
       mfMemo: string
       keywords: string[]
       imageIndex: number
+      conversationPurpose: string[]
     }>
     totalAmount: number
     suggestedMerge: boolean
@@ -48,6 +49,7 @@ export const analyzeMultipleReceipts = async (
                 mfMemo: `${result.data.location}での${result.data.suggestedPurposes.join('・')}`,
                 keywords: result.data.generatedKeywords,
                 imageIndex: 0,
+                conversationPurpose: result.data.suggestedPurposes || [],
               },
             ],
             totalAmount: result.data.amount,
@@ -73,6 +75,7 @@ export const analyzeMultipleReceipts = async (
             mfMemo: `${result.data.location}での${result.data.suggestedPurposes.join('・')}`,
             keywords: result.data.generatedKeywords,
             imageIndex: index,
+            conversationPurpose: result.data.suggestedPurposes || [],
           }
         }
         return null
@@ -177,8 +180,7 @@ ${conversationPurposeOptions}
         },
       ],
       response_format: {type: 'json_object'},
-      max_tokens: 1000,
-      temperature: 1.2, // 創造性を高めて多様な推測を促す
+      temperature: 1, // 創造性を高めて多様な推測を促す
     })
 
     const content = response.choices[0]?.message?.content

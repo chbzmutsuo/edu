@@ -2,67 +2,35 @@
 
 import {useState, useEffect, useCallback} from 'react'
 import {toast} from 'react-toastify'
-import {getExpenses, deleteExpenses, exportExpensesToCsv} from '../actions/expense-actions'
-import {ExpenseRecord} from '../types'
+import {deleteExpenses, exportExpensesToCsv} from '../actions/expense-actions'
 import {ExpenseListHeader} from '../components/ExpenseListHeader'
 import {ExpenseListItem} from '../components/ExpenseListItem'
+import {ExpenseFilter} from '../components/ExpenseFilter'
 import {Pagination} from '../components/Pagination'
 import {LoadingSpinner} from '../components/ui/LoadingSpinner'
 import {ProcessingStatus} from '../components/ui/ProcessingStatus'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {useAllOptions} from '../hooks/useOptions'
+import {useExpenseList} from '../hooks/useExpenseList'
+import {useExpenseQueryState} from '../hooks/useExpenseQueryState'
+import {SortableHeader} from '../components/SortableHeader'
 import {StickyBottom, StickyTop} from '@cm/components/styles/common-components/Sticky'
 import {cn} from '@cm/shadcn/lib/utils'
+import {Padding} from '@cm/components/styles/common-components/common-components'
 
 const ExpenseListPage = () => {
-  const {query, shallowAddQuery} = useGlobal()
   const {allOptions} = useAllOptions()
+  const {queryState, updateQuery, resetQuery, toggleSort} = useExpenseQueryState()
 
-  // URLパラメータからページネーション情報を取得
-  const currentPage = parseInt(query.page as string) || 1
-  const limit = parseInt(query.limit as string) || 20
+  const {state, setState, fetchExpenses, toggleSelect, toggleSelectAll, updateExpenseStatus, filteredExpenses} = useExpenseList()
 
-  const [state, setState] = useState({
-    expenses: [] as ExpenseRecord[],
-    loading: true,
-    selectedIds: [] as string[],
-    totalCount: 0,
-    totalPages: 0,
-  })
   const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
-
   const [isExporting, setIsExporting] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
-  // データ取得
-  const fetchExpenses = useCallback(async (page: number, pageLimit: number) => {
-    try {
-      setState(prev => ({...prev, loading: true}))
-      const result = await getExpenses(page, pageLimit)
-
-      if (result.success && result.data && result.pagination) {
-        setState(prev => ({
-          ...prev,
-          expenses: result.data as ExpenseRecord[],
-          loading: false,
-          totalCount: result.pagination.total,
-          totalPages: result.pagination.totalPages,
-        }))
-      } else {
-        toast.error(result.error || '経費記録の取得に失敗しました')
-        setState(prev => ({...prev, loading: false}))
-      }
-    } catch (error) {
-      console.error('経費記録取得エラー:', error)
-      toast.error('経費記録の取得に失敗しました')
-      setState(prev => ({...prev, loading: false}))
-    }
-  }, [])
-
-  // 初期データ取得
+  // クエリパラメータが変更されたら再取得
   useEffect(() => {
-    fetchExpenses(currentPage, limit)
-  }, [currentPage, limit, fetchExpenses])
+    fetchExpenses()
+  }, [queryState])
 
   // 科目カラーのマップをオプションから構築
   useEffect(() => {
@@ -76,44 +44,29 @@ const ExpenseListPage = () => {
   const handlePageChange = useCallback(
     (page: number) => {
       if (page < 1 || page > state.totalPages) return
-
-      shallowAddQuery({
-        ...query,
-        page: page.toString(),
-      })
+      updateQuery({page})
     },
-    [query, shallowAddQuery, state.totalPages]
+    [updateQuery, state.totalPages]
   )
 
   // 表示件数変更
   const handleLimitChange = useCallback(
-    (newLimit: number) => {
-      shallowAddQuery({
-        ...query,
-        page: '1', // ページを1に戻す
-        limit: newLimit.toString(),
-      })
+    (limit: number) => {
+      updateQuery({limit, page: 1}) // ページを1に戻す
     },
-    [query, shallowAddQuery]
+    [updateQuery]
   )
 
-  // 選択状態の切り替え
-  const toggleSelect = useCallback((id: string) => {
-    setState(prev => ({
-      ...prev,
-      selectedIds: prev.selectedIds.includes(id)
-        ? prev.selectedIds.filter(selectedId => selectedId !== id)
-        : [...prev.selectedIds, id],
-    }))
-  }, [])
-
-  // 全選択/全解除
-  const toggleSelectAll = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      selectedIds: prev.selectedIds.length === prev.expenses.length ? [] : prev.expenses.map(expense => expense.id),
-    }))
-  }, [])
+  // フィルター変更
+  const handleFilterChange = useCallback(
+    (updates: Partial<typeof queryState.filter>) => {
+      updateQuery({
+        filter: {...queryState.filter, ...updates},
+        page: 1, // フィルター変更時はページを1に戻す
+      })
+    },
+    [queryState.filter, updateQuery]
+  )
 
   // CSV出力（全件）
   const handleExportAll = useCallback(async () => {
@@ -202,7 +155,7 @@ const ExpenseListPage = () => {
           selectedIds: [],
         }))
         // 現在のページでデータを再取得
-        await fetchExpenses(currentPage, limit)
+        await fetchExpenses()
       } else {
         toast.error(result.error || '削除に失敗しました')
       }
@@ -212,12 +165,13 @@ const ExpenseListPage = () => {
     } finally {
       setIsDeleting(false)
     }
-  }, [state.selectedIds, fetchExpenses, currentPage, limit])
+  }, [state.selectedIds, fetchExpenses, queryState.page, queryState.limit])
 
   // ページネーション用の計算
-  const currentFrom = (currentPage - 1) * limit + 1
-  const currentTo = Math.min(currentPage * limit, state.totalCount)
+  const currentFrom = (queryState.page - 1) * queryState.limit + 1
+  const currentTo = Math.min(queryState.page * queryState.limit, state.totalCount)
 
+  // ローディング状態の表示
   if (state.loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -230,11 +184,11 @@ const ExpenseListPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gray-50 px-4">
+      <div className="max-w-[90vw] mx-auto">
         <div className="bg-white shadow-sm">
           {/* ヘッダー */}
-          <StickyTop className={` bg-white`}>
+          <StickyTop className="bg-white">
             <ExpenseListHeader
               totalCount={state.totalCount}
               selectedCount={state.selectedIds.length}
@@ -246,16 +200,18 @@ const ExpenseListPage = () => {
             <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  {state.expenses.length > 0 && (
+                  {filteredExpenses.length > 0 && (
                     <>
                       <input
                         type="checkbox"
-                        checked={state.selectedIds.length === state.expenses.length}
+                        checked={state.selectedIds.length === filteredExpenses.length && filteredExpenses.length > 0}
                         onChange={toggleSelectAll}
                         className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                       />
                       <span className="text-sm text-gray-600">
-                        {state.selectedIds.length === state.expenses.length ? '全解除' : '全選択'}
+                        {state.selectedIds.length === filteredExpenses.length && filteredExpenses.length > 0
+                          ? '全解除'
+                          : '全選択'}
                       </span>
                     </>
                   )}
@@ -263,30 +219,35 @@ const ExpenseListPage = () => {
                 <div className="flex items-center gap-2">
                   <label className="text-sm text-gray-600">表示件数:</label>
                   <select
-                    value={limit}
+                    value={queryState.limit}
                     onChange={e => handleLimitChange(parseInt(e.target.value))}
                     className="px-2 py-1 border border-gray-300 rounded text-sm focus:ring-blue-500 focus:border-blue-500"
                   >
-                    <option value={10}>10件</option>
-                    <option value={20}>20件</option>
                     <option value={50}>50件</option>
                     <option value={100}>100件</option>
+                    <option value={200}>200件</option>
+                    <option value={500}>500件</option>
                   </select>
                 </div>
               </div>
             </div>
           </StickyTop>
 
+          {/* フィルター */}
+          <Padding>
+            <ExpenseFilter filter={queryState.filter} onFilterChange={handleFilterChange} onReset={resetQuery} />
+          </Padding>
+
           {/* 処理状況 */}
-          <div className="px-6">
+          <div>
             <ProcessingStatus isVisible={isExporting} message="CSV出力中..." variant="info" />
             <ProcessingStatus isVisible={isDeleting} message="削除処理中..." variant="info" />
           </div>
 
           {/* 経費記録一覧 */}
           <div className="divide-y divide-gray-200">
-            {state.expenses.length === 0 ? (
-              <div className="px-6 py-12 text-center">
+            {filteredExpenses.length === 0 ? (
+              <Padding className="text-center py-12">
                 <div className="text-gray-400 mb-4">
                   <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -298,66 +259,77 @@ const ExpenseListPage = () => {
                   </svg>
                 </div>
                 <h3 className="text-lg font-medium text-gray-900 mb-2">経費記録がありません</h3>
-                <p className="text-gray-600 mb-6">新しい経費記録を作成してください。</p>
-              </div>
+                <p className="text-gray-600 mb-6">
+                  {state.expenses.length === 0
+                    ? '新しい経費記録を作成してください。'
+                    : 'フィルター条件に一致する記録がありません。'}
+                </p>
+              </Padding>
             ) : (
-              <div className="px-6 py-4 overflow-auto">
+              <Padding className="overflow-auto">
                 <table
                   className={cn(
-                    //
                     'min-w-full divide-y divide-gray-200',
                     '[&_th]:p-2',
-                    '[&_td]:p-2',
+                    '[&_td]:p-1',
                     '[&_td]:px-3.5',
-                    ' [&_td]:align-middle',
-                    ' [&_td]:text-sm',
-                    ' [&_td]:text-gray-700',
-                    // ' [&_td]:truncate',
-                    ' [&_td]:min-w-[60px]',
-                    ' [&_td]:max-w-[160px]',
-                    ' [&_td]:truncate',
-                    ' [&_td]:text-xs',
-                    ''
+                    '[&_td]:align-middle',
+                    '[&_td]:text-sm',
+                    '[&_td]:text-gray-700',
+                    '[&_td]:min-w-[60px]',
+                    '[&_td]:max-w-[160px]',
+                    '[&_td]:truncate',
+                    '[&_td]:text-xs',
+                    '[&_td]:leading-5'
                   )}
                 >
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="text-xs font-medium text-gray-500">選択</th>
                       <th className="text-xs font-medium text-gray-500">ステータス</th>
-                      <th className="text-xs font-medium text-gray-500">日付/金額</th>
-
-                      <th className="text-xs font-medium text-gray-500">科目 / 場所</th>
-                      <th className="text-xs font-medium text-gray-500">相手 / 会話の目的</th>
-
-                      <th className="text-xs font-medium text-gray-500">要約 / 洞察 / キーワード</th>
-
-                      <th className="text-xs font-medium text-gray-500">画像</th>
-
+                      <SortableHeader
+                        label="日付/金額"
+                        field="date"
+                        currentField={queryState.sort.field}
+                        currentOrder={queryState.sort.order}
+                        onSort={toggleSort}
+                      />
+                      <th className="text-xs font-medium text-gray-500">科目/場所</th>
+                      <th className="text-xs font-medium text-gray-500">相手/会話の目的/会話内容の要約</th>
+                      <th className="text-xs font-medium text-gray-500">インサイトようやく/洞察/ キーワード</th>
+                      <SortableHeader
+                        label="画像"
+                        field="imageTitle"
+                        currentField={queryState.sort.field}
+                        currentOrder={queryState.sort.order}
+                        onSort={toggleSort}
+                      />
                       <th className="text-xs font-medium text-gray-500">MF科目</th>
                       <th className="text-xs font-medium text-gray-500">MF税区分</th>
                       <th className="text-xs font-medium text-gray-500">MFメモ</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {state.expenses.map(expense => (
+                    {filteredExpenses.map(expense => (
                       <ExpenseListItem
                         key={expense.id}
                         expense={expense}
                         isSelected={state.selectedIds.includes(expense.id)}
                         onToggleSelect={toggleSelect}
                         subjectColorMap={subjectColorMap}
+                        onStatusChange={updateExpenseStatus}
                       />
                     ))}
                   </tbody>
                 </table>
-              </div>
+              </Padding>
             )}
           </div>
 
           {/* ページネーション */}
-          <StickyBottom className={` bg-gray-100`}>
+          <StickyBottom className="bg-gray-100">
             <Pagination
-              currentPage={currentPage}
+              currentPage={queryState.page}
               totalPages={state.totalPages}
               onPageChange={handlePageChange}
               totalCount={state.totalCount}

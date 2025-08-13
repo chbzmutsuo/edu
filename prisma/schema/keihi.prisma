@@ -14,14 +14,8 @@ model KeihiExpense {
   keywords            String[] // キーワード（配列）
 
   // 会話記録
-  conversationSummary String? // 会話内容の要約
   summary             String? // 摘要
-
-  // 税務調査対応項目
-  counterpartyContact String? // 相手の連絡先
-  followUpPlan        String? // フォローアップ予定
-  businessOpportunity String? // ビジネス機会の評価
-  competitorInfo      String? // 競合情報
+  conversationSummary String? // 会話内容の要約
 
   // AI生成情報（統合版）
   insight  String? // 統合されたインサイト

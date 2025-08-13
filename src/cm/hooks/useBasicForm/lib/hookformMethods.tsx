@@ -89,6 +89,7 @@ export const useFormValues = () => {
   }
 }
 
+export const controlOffset = 10
 export const getStyleProps = ({ControlOptions, col, PC}) => {
   const isBooleanType = judgeBooleanType({col})
 
@@ -109,12 +110,11 @@ export const getStyleProps = ({ControlOptions, col, PC}) => {
   const minWidthBase = [col?.form?.style?.minWidth, ControlStyle?.minWidth, controlDefaultStyle.minWidth].find(Boolean)
   const maxWidthBase = [col?.form?.style?.maxWidth, ControlStyle?.maxWidth, controlDefaultStyle.maxWidth].find(Boolean)
 
-  const offset = 20
   ControlStyle = {
     ...ControlStyle,
-    width: getOffsetWidth(withBase, offset, PC, col),
-    minWidth: getOffsetWidth(minWidthBase, offset, PC, col),
-    maxWidth: getOffsetWidth(maxWidthBase, offset, PC, col),
+    width: getOffsetWidth(withBase, controlOffset, PC, col),
+    minWidth: getOffsetWidth(minWidthBase, controlOffset, PC, col),
+    maxWidth: getOffsetWidth(maxWidthBase, controlOffset, PC, col),
   }
 
   return {id, flexDirection, wrapperClass, ControlStyle, isBooleanType}

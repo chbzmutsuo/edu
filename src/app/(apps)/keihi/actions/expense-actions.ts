@@ -1,12 +1,11 @@
 'use server'
 
 import {revalidatePath} from 'next/cache'
-import OpenAI from 'openai'
+
 import {FileHandler} from 'src/cm/class/FileHandler'
 import {S3FormData} from '@cm/class/FileHandler'
 import prisma from 'src/lib/prisma'
-
-const openai = new OpenAI({apiKey: process.env.OPENAI_API_KEY})
+import {ExpenseFilterType} from '../hooks/useExpenseFilter'
 
 export interface AIAnalysisResult {
   techInsightDetail: string
@@ -36,29 +35,41 @@ interface InsightGenerationResult {
 }
 
 // 経費記録一覧取得
-export const getExpenses = async (page = 1, limit = 20) => {
+export const getExpenses = async (props: {
+  sort: {field: string; order: string}
+  filter: ExpenseFilterType
+  page: number
+  limit: number
+}) => {
   try {
     const expenses = await prisma.keihiExpense.findMany({
       include: {
         KeihiAttachment: true,
       },
-      orderBy: {
-        date: 'desc',
+      where: {
+        ...props.filter,
       },
-      skip: (page - 1) * limit,
-      take: limit,
+      orderBy: {
+        [props.sort.field]: props.sort.order,
+      },
+      skip: (props.page - 1) * props.limit,
+      take: props.limit,
     })
 
-    const total = await prisma.keihiExpense.count()
+    const total = await prisma.keihiExpense.count({
+      where: {
+        ...props.filter,
+      },
+    })
 
     return {
       success: true,
       data: expenses,
       pagination: {
-        page,
-        limit,
+        page: props.page,
+        limit: props.limit,
         total,
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / props.limit),
       },
     }
   } catch (error) {

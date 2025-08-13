@@ -14,7 +14,7 @@ import {Card} from '@cm/shadcn/ui/card'
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {cn} from '@shadcn/lib/utils'
 
-import {getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
+import {controlOffset, getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
@@ -150,17 +150,23 @@ const BasicForm = (props: BasicFormType) => {
         </FormProvider>
       </div>
     )
-  } else {
+  } else if (alignMode === 'grid') {
     return (
       <div>
         <FormProvider {...ReactHookForm}>
           <form {...{ref: formRef, id: formId, onSubmit}}>
-            <AutoGridContainer className={`items-stretch gap-6 `} maxCols={{xl: 2}}>
+            <AutoGridContainer className={`items-stretch gap-4 `} maxCols={{xl: 2}}>
               {transposedRowsForForm.map((columns, i) => {
                 return (
                   <Fragment key={i}>
                     <FormSection {...{columns, ControlOptions}}>
-                      <div className={cn(`grid grid-cols-1 md:grid-cols-2 gap-[60px]   `)}>
+                      <div
+                        className={cn(`grid grid-cols-1 md:grid-cols-2  `)}
+                        style={{
+                          rowGap: 30,
+                          columnGap: controlOffset,
+                        }}
+                      >
                         {columns.map((col: colType, formItemIndex) => {
                           const use2ColSpan = getUse2ColSpan(col)
                           const uniqueKey = `${i}-${formItemIndex}`
@@ -185,6 +191,56 @@ const BasicForm = (props: BasicFormType) => {
           </form>
         </FormProvider>
       </div>
+    )
+  } else if (alignMode === 'console') {
+    return (
+      <form {...{ref: formRef, id: formId, onSubmit}}>
+        <AutoGridContainer className={`     `} maxCols={{xl: 2}}>
+          {transposedRowsForForm.map((columns, i) => {
+            return (
+              <Fragment key={i}>
+                <div className={` px-4 flex flex-col  `}>
+                  {columns.map((col: colType, formItemIndex) => {
+                    const use2ColSpan = getUse2ColSpan(col)
+                    const uniqueKey = `${i}-${formItemIndex}`
+                    const colSpan = use2ColSpan ? `md:col-span-2 ` : ` md:col-span-1`
+
+                    return (
+                      <div key={uniqueKey} className={cn(colSpan, 'mb-4')}>
+                        <ControlGroup
+                          {...{
+                            ...props,
+                            col,
+                            formItemIndex,
+                            alignMode: 'row',
+                            ControlOptions: {
+                              LabelStyle: {
+                                padding: '4px 8px',
+                                marginRight: '10px',
+                                backgroundColor: 'rgb(240, 240, 240)',
+                                width: 200,
+
+                                fontSize: '16px',
+                                // color: 'black',
+                              },
+                              ControlStyle: {
+                                borderRadius: '0px',
+                                // border: '0px solid rgb(240, 240, 240)',
+                                // borderBottom: '1px solid rgb(200, 200, 200)',
+                              },
+                            },
+                          }}
+                        />
+                      </div>
+                    )
+                  })}
+                </div>
+              </Fragment>
+            )
+          })}
+        </AutoGridContainer>
+        <ChildComponent />
+      </form>
     )
   }
 }

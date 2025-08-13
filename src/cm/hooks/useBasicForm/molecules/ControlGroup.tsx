@@ -84,17 +84,15 @@ export const ControlGroup = React.memo((props: ControlGroupPropType) => {
             (props: {position: 'left' | 'right'}) => {
               const {position} = props
 
-              if (position === 'left') {
+              if (position === 'left' && !reverseLabelTitle) {
                 return (
-                  !reverseLabelTitle && (
-                    <section className={cn(horizontal ? 'mr-1' : `mb-2`, 'min-w-fit')}>
-                      <Label {...{ReactHookForm, col, ControlOptions, required}} />
-                    </section>
-                  )
+                  <section className={cn(horizontal ? 'mr-1' : `mb-2`, 'min-w-fit')}>
+                    <Label {...{ReactHookForm, col, ControlOptions, required}} />
+                  </section>
                 )
               }
-              if (position === 'right') {
-                return <div>{reverseLabelTitle && <Label {...{ReactHookForm, col, ControlOptions, required}} />}</div>
+              if (position === 'right' && reverseLabelTitle) {
+                return <div>{<Label {...{ReactHookForm, col, ControlOptions, required}} />}</div>
               }
 
               return <></>

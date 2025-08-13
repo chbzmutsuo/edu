@@ -104,7 +104,6 @@
     "**/CoLab/**": true,
     "**/Grouping/**": true,
     "**/KM/**": true,
-    "**/aquapot/**": true,
     "**/edu/**": true,
     "**/health/**": true,
     "**/kickswrap/**": true,
@@ -116,7 +115,8 @@
     "**/sohken/**": true,
     "**/stock/**": true,
     "**/tbm/**": true,
-    "**/tmp/**": true
+    "**/tmp/**": true,
+    "**/aquapot/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,

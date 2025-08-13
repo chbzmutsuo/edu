@@ -5,7 +5,7 @@ import {toast} from 'react-toastify'
 
 interface ExpenseAIDraftSectionProps {
   formData: ExpenseFormData
-  setFormData: React.Dispatch<React.SetStateAction<ExpenseFormData>>
+  setFormData: (field: string, value: any) => void
   aiDraft: AIDraft | null
   setAiDraft: React.Dispatch<React.SetStateAction<AIDraft | null>>
   showDraft: boolean
@@ -131,7 +131,7 @@ export function ExpenseAIDraftSection({
                       // 生成されたキーワードをフォームのキーワードに追加
                       const currentKeywords = formData.keywords || []
                       const newKeywords = [...new Set([...currentKeywords, ...aiDraft.generatedKeywords])]
-                      setFormData(prev => ({...prev, keywords: newKeywords}))
+                      setFormData('keywords', newKeywords)
                       toast.success('生成されたキーワードをフォームに追加しました')
                     }}
                     className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"

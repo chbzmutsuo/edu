@@ -116,7 +116,7 @@ const myAtomFamily = atomFamily(
   (a, b) => a.atomKey === b.atomKey
 )
 
-export const useJotaiByKey = <S,>(atomKey: atomKey, defaultState: any) => {
+export const useJotaiByKey = <S,>(atomKey: atomKey | string, defaultState: any) => {
   const param = useMemo<myAtomFamilyParams>(
     () => ({
       atomKey,
