@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect, useMemo} from 'react'
 import {Map, MapPin, Navigation, X, Maximize2, Minimize2, Route} from 'lucide-react'
-import {GoogleMapComponent} from '@cm/components/GoogleMap/GoogleMapComponent'
+// import {GoogleMapComponent} from '@cm/components/GoogleMap/GoogleMapComponent'
 import {MapLocation} from '@cm/hooks/useGoogleMaps'
 import {geocodingService} from '@cm/lib/googleMaps/geocodingService'
 import {routeOptimizationService, DeliveryStop} from '@cm/lib/googleMaps/routeOptimizationService'
@@ -257,24 +257,25 @@ export const ReservationMapModal: React.FC<ReservationMapModalProps> = ({
                 </div>
               </div>
             ) : (
-              <GoogleMapComponent
-                locations={displayData.locations}
-                routes={displayData.routes}
-                height="100%"
-                showMarkers={mapMode !== 'route'}
-                showRoutes={mapMode === 'route'}
-                enableUserLocation={true}
-                defaultCenter={{lat: 35.6762, lng: 139.6503}}
-                defaultZoom={12}
-                loadingComponent={
-                  <div className="h-full flex items-center justify-center bg-gray-50 border border-gray-200 rounded-lg">
-                    <div className="text-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                      <p className="text-gray-600">地図を読み込んでいます...</p>
-                    </div>
-                  </div>
-                }
-              />
+              <div>Google Map Componentを描画します</div>
+              // <GoogleMapComponent
+              //   locations={displayData.locations}
+              //   routes={displayData.routes}
+              //   height="100%"
+              //   showMarkers={mapMode !== 'route'}
+              //   showRoutes={mapMode === 'route'}
+              //   enableUserLocation={true}
+              //   defaultCenter={{lat: 35.6762, lng: 139.6503}}
+              //   defaultZoom={12}
+              //   loadingComponent={
+              //     <div className="h-full flex items-center justify-center bg-gray-50 border border-gray-200 rounded-lg">
+              //       <div className="text-center">
+              //         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              //         <p className="text-gray-600">地図を読み込んでいます...</p>
+              //       </div>
+              //     </div>
+              //   }
+              // />
             )}
           </div>
 

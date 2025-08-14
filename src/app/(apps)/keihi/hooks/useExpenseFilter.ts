@@ -6,8 +6,8 @@ import {ExpenseRecord} from '../types'
 
 export interface ExpenseFilterType {
   dateRange: {
-    start: string | null
-    end: string | null
+    start?: string | null
+    end?: string | null
   }
   subject: string | null
   status: string | null

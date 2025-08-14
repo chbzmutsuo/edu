@@ -4,8 +4,9 @@ import {useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {ExpenseFilterType} from './useExpenseFilter'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
-export type SortField = 'date' | 'imageTitle' | null
+export type SortField = 'date' | 'createdAt' | 'imageTitle' | null
 export type SortOrder = 'asc' | 'desc'
 
 export interface QueryState {
@@ -21,13 +22,15 @@ export interface QueryState {
 // デフォルトの日付範囲を計算する関数（年初から年末）
 const getDefaultDateRange = () => {
   const today = new Date()
-  const startOfYear = new Date(today.getFullYear(), 0, 1) // 1月1日
+  const startOfYear = new Date(today.getFullYear(), 0, -700) // 1月1日
   const endOfYear = new Date(today.getFullYear(), 11, 31) // 12月31日
 
-  return {
-    start: startOfYear.toISOString().split('T')[0], // YYYY-MM-DD形式
-    end: endOfYear.toISOString().split('T')[0], // YYYY-MM-DD形式
+  const data = {
+    // start: formatDate(startOfYear),
+    // end: formatDate(endOfYear),
   }
+
+  return data
 }
 
 // デフォルトの状態

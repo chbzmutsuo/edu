@@ -1,3 +1,5 @@
+import {SbmCustomer} from '@prisma/client'
+
 // 基本エンティティ型定義（Prismaスキーマに準拠）
 export type Customer = Partial<{
   id: number
@@ -176,6 +178,7 @@ export type RFMAnalysis = Partial<{
   totalScore: number
   rank: string
   createdAt: Date
+  SbmCustomer: SbmCustomer
 }>
 
 // 列挙型

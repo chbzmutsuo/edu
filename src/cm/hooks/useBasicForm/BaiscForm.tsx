@@ -109,8 +109,6 @@ const BasicForm = (props: BasicFormType) => {
                 </Fragment>
               )
             })}
-
-            {alignMode !== `row` && <ChildComponent />}
           </R_Stack>
         </form>
       </FormProvider>
@@ -180,13 +178,12 @@ const BasicForm = (props: BasicFormType) => {
                         })}
                         {/* ボタン */}
                       </div>
-                      <ChildComponent />
                     </FormSection>
                   </Fragment>
                 )
               })}
 
-              {alignMode !== `row` && <ChildComponent />}
+              <ChildComponent />
             </AutoGridContainer>
           </form>
         </FormProvider>
@@ -239,6 +236,7 @@ const BasicForm = (props: BasicFormType) => {
             )
           })}
         </AutoGridContainer>
+
         <ChildComponent />
       </form>
     )

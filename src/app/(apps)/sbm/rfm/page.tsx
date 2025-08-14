@@ -40,19 +40,19 @@ export default function RFMPage() {
     setSelectedSegment(e.target.value)
   }
 
-  const filteredRFMData = selectedSegment ? rfmData.filter(item => item.segment === selectedSegment) : rfmData
+  const filteredRFMData = selectedSegment ? rfmData.filter(item => item.rank === selectedSegment) : rfmData
 
   // セグメント別統計
   const segmentStats = rfmData.reduce(
     (acc, item) => {
-      const segment = item.segment || 'その他'
+      const segment = item.rank || 'その他'
       if (!acc[segment]) {
         acc[segment] = {count: 0, totalValue: 0, avgRecency: 0, avgFrequency: 0}
       }
       acc[segment].count++
-      acc[segment].totalValue += item.monetaryValue || 0
-      acc[segment].avgRecency += item.recencyScore || 0
-      acc[segment].avgFrequency += item.frequencyScore || 0
+      acc[segment].totalValue += item.monetary || 0
+      acc[segment].avgRecency += item.recency || 0
+      acc[segment].avgFrequency += item.frequency || 0
       return acc
     },
     {} as Record<string, any>
@@ -228,7 +228,7 @@ export default function RFMPage() {
                 <p className="text-2xl font-semibold text-gray-900">
                   ¥
                   {Math.round(
-                    rfmData.reduce((sum, item) => sum + (item.monetaryValue || 0), 0) / rfmData.length || 0
+                    rfmData.reduce((sum, item) => sum + (item.monetary || 0), 0) / rfmData.length || 0
                   ).toLocaleString()}
                 </p>
               </div>
@@ -303,51 +303,42 @@ export default function RFMPage() {
                 {filteredRFMData.map(item => (
                   <tr key={item.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{item.customer?.companyName}</div>
-                      <div className="text-sm text-gray-500">{item.customer?.contactName}</div>
+                      <div className="font-medium text-gray-900">{item.SbmCustomer?.companyName}</div>
+                      <div className="text-sm text-gray-500">{item.SbmCustomer?.contactName}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getSegmentColor(item.segment!)}`}>
-                        {item.segment}
+                      <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getSegmentColor(item.rank!)}`}>
+                        {item.rank}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="text-sm font-semibold text-gray-900">{item.recencyScore}/5</div>
+                        <div className="text-sm font-semibold text-gray-900">{item.recency}/5</div>
                         <div className="ml-2 w-8 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-blue-600 h-2 rounded-full"
-                            style={{width: `${(item.recencyScore! / 5) * 100}%`}}
-                          ></div>
+                          <div className="bg-blue-600 h-2 rounded-full" style={{width: `${(item.recency! / 5) * 100}%`}}></div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="text-sm font-semibold text-gray-900">{item.frequencyScore}/5</div>
+                        <div className="text-sm font-semibold text-gray-900">{item.frequency}/5</div>
                         <div className="ml-2 w-8 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-green-600 h-2 rounded-full"
-                            style={{width: `${(item.frequencyScore! / 5) * 100}%`}}
-                          ></div>
+                          <div className="bg-green-600 h-2 rounded-full" style={{width: `${(item.frequency! / 5) * 100}%`}}></div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="text-sm font-semibold text-gray-900">{item.monetaryScore}/5</div>
+                        <div className="text-sm font-semibold text-gray-900">{item.monetary}/5</div>
                         <div className="ml-2 w-8 bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-yellow-600 h-2 rounded-full"
-                            style={{width: `${(item.monetaryScore! / 5) * 100}%`}}
-                          ></div>
+                          <div className="bg-yellow-600 h-2 rounded-full" style={{width: `${(item.monetary! / 5) * 100}%`}}></div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.lastPurchaseDate ? formatDate(item.lastPurchaseDate) : '-'}
+                      {item.analysisDate ? formatDate(item.analysisDate) : '-'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.totalOrders}回</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{item.totalScore}回</td>
                   </tr>
                 ))}
               </tbody>

@@ -2,7 +2,7 @@
 import React from 'react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {R_Stack, C_Stack} from '@cm/components/styles/common-components/common-components'
-import {PlusCircleIcon, SquarePen, TruckIcon} from 'lucide-react'
+import {CarIcon, MapIcon, MapPinIcon, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
 import Link from 'next/link'
 import {HREF} from '@cm/lib/methods/urls'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
@@ -12,6 +12,8 @@ import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 import {Code} from '@cm/class/Code'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
+import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
 
@@ -83,16 +85,6 @@ export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: {tbmDriv
         <IconBtn
           key={i}
           active={active}
-          // className={twMerge(
-          //   'px-2 py-0.5 text-[10px] rounded-sm border transition-opacity',
-          //   !active && 'opacity-30',
-          //   key === 'approved' && 'cursor-pointer hover:opacity-100',
-          //   active ? 'bg-gray-100' : 'bg-white'
-          // )}
-          // style={{
-          //   borderColor: color,
-          //   color: active ? color : '#999',
-          // }}
           rounded={false}
           className={`text-[12px] !px-1.5   cursor-pointer`}
           color={color}
@@ -163,20 +155,25 @@ export const ScheduleCard = React.memo(
   }) => {
     const {TbmRouteGroup, TbmVehicle, User} = tbmDriveSchedule
 
+    // const foo = new vhi
+
     return (
       <div className="border border-gray-300 rounded-sm p-1 bg-white hover:shadow-sm transition-shadow">
         <C_Stack className="gap-1">
-          <section>
-            <small className="text-gray-600">便:</small>
-            {TbmRouteGroup.name}
+          <section className={`row-stack gap-0 leading-4 -ml-1.5`}>
+            <MapPinIcon className={`h-3 text-blue-800 stroke-2 `} />
+            <MarkDownDisplay>{new RouteGroupCl(TbmRouteGroup).name}</MarkDownDisplay>
           </section>
 
-          <section>
-            <small className="text-gray-600">車両No:</small> {new VehicleCl(TbmVehicle).shortName}
+          <section className={`row-stack gap-0 leading-4 -ml-1.5`}>
+            <CarIcon className={`h-3 text-blue-800 stroke-2 `} />
+
+            {new VehicleCl(TbmVehicle).shortName}
           </section>
 
-          <section>
-            <small className="text-gray-600">ドライバ:</small>
+          <section className={`row-stack gap-0 leading-4 -ml-1.5`}>
+            <UserIcon className={`h-3 text-blue-800 stroke-2 `} />
+
             {user?.name}
           </section>
 

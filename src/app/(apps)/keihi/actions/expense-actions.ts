@@ -1,7 +1,6 @@
 'use server'
 
 import {revalidatePath} from 'next/cache'
-
 import {FileHandler} from 'src/cm/class/FileHandler'
 import {S3FormData} from '@cm/class/FileHandler'
 import prisma from 'src/lib/prisma'
@@ -34,42 +33,98 @@ interface InsightGenerationResult {
   mfMemo?: string
 }
 
-// 経費記録一覧取得
-export const getExpenses = async (props: {
-  sort: {field: string; order: string}
-  filter: ExpenseFilterType
+// 経費記録一覧取得パラメータ
+interface GetExpensesParams {
   page: number
   limit: number
-}) => {
+  filter: ExpenseFilterType
+  sort: {
+    field: string | null
+    order: string
+  }
+}
+
+// Prismaのwhere条件を構築する関数
+const buildWhereCondition = (filter: ExpenseFilterType) => {
+  const where: any = {}
+
+  // 日付範囲フィルター
+  if (filter.dateRange.start || filter.dateRange.end) {
+    where.date = {}
+    if (filter.dateRange.start) {
+      where.date.gte = new Date(filter.dateRange.start)
+    }
+    if (filter.dateRange.end) {
+      where.date.lte = new Date(filter.dateRange.end)
+    }
+  }
+
+  // 科目フィルター
+  if (filter.subject) {
+    where.subject = filter.subject
+  }
+
+  // ステータスフィルター
+  if (filter.status) {
+    where.status = filter.status
+  }
+
+  // キーワード検索
+  if (filter.keyword) {
+    where.OR = [
+      {counterpartyName: {contains: filter.keyword}},
+      {location: {contains: filter.keyword}},
+      {conversationSummary: {contains: filter.keyword}},
+      {summary: {contains: filter.keyword}},
+      {insight: {contains: filter.keyword}},
+    ]
+  }
+
+  return where
+}
+
+// 経費記録一覧取得
+export const getExpenses = async (params: GetExpensesParams) => {
   try {
+    const whereCondition = buildWhereCondition(params.filter)
+
+    // ソート条件の構築
+    let orderBy: any = {date: 'desc'} // デフォルトは日付降順
+    if (params.sort.field && params.sort.field !== 'imageTitle') {
+      orderBy = {[params.sort.field]: params.sort.order}
+    } else if (params.sort.field === 'imageTitle') {
+      // 画像タイトルでソートする場合は添付ファイルの originalName でソート
+      orderBy = {}
+    }
+
     const expenses = await prisma.keihiExpense.findMany({
       include: {
         KeihiAttachment: true,
       },
-      where: {
-        ...props.filter,
-      },
-      orderBy: {
-        [props.sort.field]: props.sort.order,
-      },
-      skip: (props.page - 1) * props.limit,
-      take: props.limit,
+      where: whereCondition,
+      orderBy,
+      skip: (params.page - 1) * params.limit,
+      take: params.limit,
     })
 
-    const total = await prisma.keihiExpense.count({
-      where: {
-        ...props.filter,
-      },
+    if (params.sort.field === 'imageTitle') {
+      expenses.sort((a, b) => {
+        const aAttachments = a.KeihiAttachment[0]?.originalName || ''
+        const bAttachments = b.KeihiAttachment[0]?.originalName || ''
+        return params.sort.order === 'asc' ? aAttachments.localeCompare(bAttachments) : bAttachments.localeCompare(aAttachments)
+      })
+    }
+
+    const totalCount = await prisma.keihiExpense.count({
+      where: whereCondition,
     })
 
     return {
       success: true,
-      data: expenses,
-      pagination: {
-        page: props.page,
-        limit: props.limit,
-        total,
-        totalPages: Math.ceil(total / props.limit),
+      data: {
+        expenses,
+        totalCount,
+        totalPages: Math.ceil(totalCount / params.limit),
       },
     }
   } catch (error) {
@@ -343,112 +398,6 @@ export const linkAttachmentsToExpense = async (
   }
 }
 
-// // 未関連付けの添付ファイルを削除（クリーンアップ用）
-// export const cleanupUnlinkedAttachments = async (): Promise<{
-//   success: boolean
-//   deletedCount?: number
-//   error?: string
-// }> => {
-//   try {
-//     // 1時間以上前に作成された未関連付けファイルを削除
-//     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000)
-
-//     const unlinkedAttachments = await prisma.keihiAttachment.findMany({
-//       where: {
-//         keihiExpenseId: null,
-//         createdAt: {lt: oneHourAgo},
-//       },
-//     })
-
-//     // S3からファイルを削除
-//     for (const attachment of unlinkedAttachments) {
-//       try {
-//         // S3のURLからファイルキーを抽出
-//         const s3FormData: S3_API_FormData = {
-//           backetKey: 'keihi',
-//           deleteImageUrl: attachment.url,
-//         }
-
-//         // FileHandlerを使用してS3から削除
-//         await FileHandler.sendFileToS3({
-//           file: null, // 削除の場合はnull
-//           formDataObj: s3FormData,
-//           validateFile: false,
-//         })
-//       } catch (error) {
-//         console.warn('S3ファイル削除エラー:', attachment.filename, error)
-//       }
-//     }
-
-//     // データベースから削除
-//     const result = await prisma.keihiAttachment.deleteMany({
-//       where: {
-//         keihiExpenseId: null,
-//         createdAt: {lt: oneHourAgo},
-//       },
-//     })
-
-//     return {
-//       success: true,
-//       deletedCount: result.count,
-//     }
-//   } catch (error) {
-//     console.error('未関連付けファイル削除エラー:', error)
-//     return {
-//       success: false,
-//       error: error instanceof Error ? error.message : 'クリーンアップに失敗しました',
-//     }
-//   }
-// }
-
-// // 添付ファイル削除
-// export const deleteAttachment = async (
-//   attachmentId: string
-// ): Promise<{
-//   success: boolean
-//   error?: string
-// }> => {
-//   try {
-//     const attachment = await prisma.keihiAttachment.findUnique({
-//       where: {id: attachmentId},
-//     })
-
-//     if (!attachment) {
-//       return {success: false, error: '添付ファイルが見つかりません'}
-//     }
-
-//     // S3からファイルを削除
-//     try {
-//       const s3FormData: S3_API_FormData = {
-//         backetKey: 'keihi',
-//         deleteImageUrl: attachment.url,
-//       }
-
-//       // FileHandlerを使用してS3から削除
-//       await FileHandler.sendFileToS3({
-//         file: null, // 削除の場合はnull
-//         formDataObj: s3FormData,
-//         validateFile: false,
-//       })
-//     } catch (error) {
-//       console.warn('S3ファイル削除エラー:', attachment.filename, error)
-//     }
-
-//     // データベースから削除
-//     await prisma.keihiAttachment.delete({
-//       where: {id: attachmentId},
-//     })
-
-//     return {success: true}
-//   } catch (error) {
-//     console.error('添付ファイル削除エラー:', error)
-//     return {
-//       success: false,
-//       error: error instanceof Error ? error.message : '添付ファイルの削除に失敗しました',
-//     }
-//   }
-// }
-
 // 手動でrevalidateを実行するためのServer Action
 export const revalidateKeihiPages = async (): Promise<{
   success: boolean
@@ -534,8 +483,7 @@ export const exportExpensesToCsv = async (
       '場所',
       '目的',
       'キーワード',
-      '営業インサイト',
-      '技術インサイト',
+      'インサイト',
       'AIタグ',
       '添付ファイル数',
     ]
@@ -558,6 +506,7 @@ export const exportExpensesToCsv = async (
       expense.location || '', // 場所
       expense.conversationPurpose.join(', '), // 目的
       expense.keywords.join(', '), // キーワード
+      expense.insight || '', // インサイト
       expense.autoTags.join(', '), // AIタグ
       expense.KeihiAttachment.length, // 添付ファイル数
     ])

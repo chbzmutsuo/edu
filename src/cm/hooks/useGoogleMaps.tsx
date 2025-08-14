@@ -2,6 +2,7 @@
 
 import {useCallback, useEffect, useRef, useState} from 'react'
 import '@cm/lib/googleMaps'
+import {google} from 'googleapis/build/src/index'
 
 // Google Maps 関連の型定義
 export type GoogleMapInstance = google.maps.Map

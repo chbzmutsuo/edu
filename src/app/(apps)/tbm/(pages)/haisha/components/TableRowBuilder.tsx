@@ -78,8 +78,8 @@ export const TableRowBuilder = {
             },
           },
           // 日付別セル
-          ...days.map(date =>
-            TableRowBuilder.buildDateCell({
+          ...days.map((date, i) => {
+            return TableRowBuilder.buildDateCell({
               date,
               scheduleListOnDate: scheduleByDateAndUser[formatDate(date)]?.[String(user.id)] ?? [],
               user,
@@ -90,7 +90,7 @@ export const TableRowBuilder = {
               setModalOpen,
               query,
             })
-          ),
+          }),
         ],
       }))
   },
@@ -108,6 +108,10 @@ export const TableRowBuilder = {
 
         const {name, routeName} = route
 
+        const scheduledCount = Object.keys(scheduleByDateAndRoute).reduce((acc, date) => {
+          return acc + (scheduleByDateAndRoute[date]?.[String(route.id)]?.length ?? 0)
+        }, 0)
+
         return {
           csvTableRow: [
             // ルート情報（固定列）
@@ -119,6 +123,7 @@ export const TableRowBuilder = {
 
                   <span>
                     <strong>{route.name}</strong>
+                    <span className="text-xs text-gray-500">({scheduledCount})</span>
                     <br />
                     <small>{routeName}</small>
                   </span>

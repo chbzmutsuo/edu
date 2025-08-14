@@ -17,14 +17,8 @@ interface ExpenseBasicInfoFormProps {
 
 export function ExpenseBasicInfoForm({formData, setFormData, allOptions, getFieldClass}: ExpenseBasicInfoFormProps) {
   const [keywordInput, setKeywordInput] = useState('')
-  const [counterpartyInput, setCounterpartyInput] = useState('')
 
-  // 初期値設定（会話の目的のデフォルト値）
-  useEffect(() => {
-    if (formData?.conversationPurpose.length === 0) {
-      setFormData('conversationPurpose', [...DEFAULT_CONVERSATION_PURPOSES])
-    }
-  }, [formData?.conversationPurpose.length, setFormData])
+  const [conversationPurposeList, setConversationPurposeList] = useState<string[]>(formData.conversationPurpose || [])
 
   // キーワード追加
   const addKeyword = useCallback(() => {
@@ -40,34 +34,6 @@ export function ExpenseBasicInfoForm({formData, setFormData, allOptions, getFiel
       setFormData(
         'keywords',
         formData.keywords.filter((_, i) => i !== index)
-      )
-    },
-    [setFormData]
-  )
-
-  // 相手名追加
-  const addCounterparty = () => {
-    setFormData('counterpartyName', counterpartyInput)
-    const counterpartyInputElement = document.getElementById('counterpartyInput') as HTMLInputElement
-    if (counterpartyInputElement) {
-      counterpartyInputElement.value = ''
-    }
-    setCounterpartyInput('')
-  }
-
-  // 「その他複数名」を追加
-  const addMultipleOthers = useCallback(() => {
-    setFormData('counterpartyName', 'その他複数名')
-  }, [setFormData])
-
-  // 会話の目的のチェックボックス変更
-  const handlePurposeChange = useCallback(
-    (purpose: string, checked: boolean) => {
-      setFormData(
-        'conversationPurpose',
-        checked
-          ? [...(formData.conversationPurpose || []), purpose]
-          : (formData.conversationPurpose || []).filter(p => p !== purpose)
       )
     },
     [setFormData]
@@ -140,16 +106,24 @@ export function ExpenseBasicInfoForm({formData, setFormData, allOptions, getFiel
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">ステータス</label>
-          <select
-            value={formData.status || ''}
-            onChange={e => setFormData('status', e.target.value)}
-            className={getFieldClass(formData.status || '')}
-          >
-            <option value="">未設定</option>
-            <option value="一次チェック済">一次チェック済</option>
-            <option value="MF連携済み">MF連携済み</option>
-          </select>
+          <div className="flex space-x-2">
+            {[
+              {value: '', label: '未設定'},
+              {value: '一次チェック済', label: '一次チェック済'},
+              {value: 'MF連携済み', label: 'MF連携済み'},
+            ].map(status => (
+              <button
+                type="button"
+                key={status.value}
+                onClick={() => setFormData('status', status.value)}
+                className={`px-3 py-2 rounded-md text-sm ${
+                  formData.status === status.value ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                {status.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div>
@@ -197,9 +171,19 @@ export function ExpenseBasicInfoForm({formData, setFormData, allOptions, getFiel
             <label key={purpose.value} className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
-                defaultChecked={formData.conversationPurpose?.includes(purpose.value) || false}
+                checked={conversationPurposeList.includes(purpose.value)}
                 onChange={e => {
-                  setFormData('conversationPurpose', [...(formData.conversationPurpose || []), purpose.value])
+                  setConversationPurposeList((prev: string[]) => {
+                    if (prev.includes(purpose.value)) {
+                      return prev.filter(p => p !== purpose.value)
+                    }
+                    const result = [...prev, purpose.value]
+
+                    return result
+                  })
+                }}
+                onBlur={() => {
+                  setFormData('conversationPurpose', conversationPurposeList)
                 }}
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />

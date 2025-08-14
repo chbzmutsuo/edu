@@ -85,7 +85,7 @@ const getScheduleByDateAndUser = ({TbmDriveSchedule}) => {
     return acc
   }, {})
 
-  return {scheduleByDateAndUser} as {scheduleByDateAndUser: Record<string, Record<string, any[]>>}
+  return {scheduleByDateAndUser}
 }
 const getScheduleByDateAndRoute = ({TbmDriveSchedule}) => {
   const scheduleByDateAndRoute = TbmDriveSchedule.reduce((acc, schedule) => {

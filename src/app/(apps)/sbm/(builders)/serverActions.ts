@@ -2,9 +2,10 @@
 
 import {revalidatePath} from 'next/cache'
 
-import {Customer, Product, User, Reservation, ReservationFilter, DashboardStats, DeliveryTeam} from '../types'
+import {Customer, Product, User, Reservation, ReservationFilter, DashboardStats} from '../types'
 import {RFM_SCORE_CRITERIA} from '../(constants)'
 import prisma from 'src/lib/prisma'
+import {SbmDeliveryTeam} from '@prisma/client'
 
 // データ取得アクション
 export async function getAllCustomers(): Promise<Customer[]> {
@@ -202,7 +203,7 @@ export async function getAllUsers(): Promise<User[]> {
   ]
 }
 
-export async function getAllTeams(): Promise<DeliveryTeam[]> {
+export async function getAllTeams(): Promise<SbmDeliveryTeam[]> {
   const teams = await prisma.sbmDeliveryTeam.findMany({
     where: {isActive: true},
     orderBy: {name: 'asc'},

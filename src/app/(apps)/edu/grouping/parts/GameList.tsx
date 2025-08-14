@@ -10,7 +10,7 @@ import BasicModal from '@cm/components/utils/modal/BasicModal'
 import GameCreateForm from '@app/(apps)/edu/Grouping/parts/GameCreateForm'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {Center, C_Stack, Flex, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Center, C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {shorten} from '@cm/lib/methods/common'
 
@@ -18,6 +18,7 @@ import {Paper} from '@cm/components/styles/common-components/paper'
 import MyPopover from '@cm/components/utils/popover/MyPopover'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {getColorStyles} from '@cm/lib/methods/colors'
+import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 const GameList = ({myGame}) => {
   const {query, session, router, toggleLoad} = useGlobal()
@@ -40,97 +41,88 @@ const GameList = ({myGame}) => {
       </section>
       <hr />
       <section>
-        <Flex
-          {...{
-            wrapperWidth: wrapperWidth,
-            gapPixel: 20,
-            itemWidth: 320,
-            items: [
-              ...myGame.map((game, index) => {
-                const {
-                  name,
-                  date,
-                  secretKey,
-                  absentStudentIds,
-                  schoolId,
-                  teacherId,
-                  roomId,
-                  subjectNameMasterId,
-                  status,
-                  activeGroupId,
-                  activeQuestionPromptId,
-                  nthTime,
-                  randomTargetStudentIds,
-                  task,
-                  SubjectNameMaster,
-                  Teacher,
-                  Group,
-                  QuestionPrompt,
-                  GameStudent,
-                } = game
+        <AutoGridContainer>
+          {...myGame.map((game, index) => {
+            const {
+              name,
+              date,
+              secretKey,
+              absentStudentIds,
+              schoolId,
+              teacherId,
+              roomId,
+              subjectNameMasterId,
+              status,
+              activeGroupId,
+              activeQuestionPromptId,
+              nthTime,
+              randomTargetStudentIds,
+              task,
+              SubjectNameMaster,
+              Teacher,
+              Group,
+              QuestionPrompt,
+              GameStudent,
+            } = game
 
-                const gamePath = HREF(`/Grouping/game/main/${secretKey}`, {as: 'teacher'}, query)
-                const editPath = HREF(`/Grouping/game/${game.id}`, {}, query)
+            const gamePath = HREF(`/Grouping/game/main/${secretKey}`, {as: 'teacher'}, query)
+            const editPath = HREF(`/Grouping/game/${game.id}`, {}, query)
 
-                const copy = () => setnewGameFormData({id: 0, ...game, GameStudent})
-                const edit = () => router.push(editPath)
-                const start = () => router.push(gamePath)
+            const copy = () => setnewGameFormData({id: 0, ...game, GameStudent})
+            const edit = () => router.push(editPath)
+            const start = () => router.push(gamePath)
 
-                const deleteGame = () => {
-                  if (confirm(`本当に削除しますか？`)) {
-                    toggleLoad(async () => {
-                      await doStandardPrisma(`game`, `delete`, {where: {id: game.id}})
-                    })
-                  }
-                }
+            const deleteGame = () => {
+              if (confirm(`本当に削除しますか？`)) {
+                toggleLoad(async () => {
+                  await doStandardPrisma(`game`, `delete`, {where: {id: game.id}})
+                })
+              }
+            }
 
-                return (
-                  <Paper className={`rounded-md`} key={index} style={{width: 320, padding: 10}}>
-                    <C_Stack>
-                      <div className={`h-[100px] bg-gray-500`}>
-                        <Center style={{...getColorStyles(SubjectNameMaster.color), height: `100%`}}>
-                          {SubjectNameMaster.name}
-                        </Center>
+            return (
+              <Paper className={`rounded-md`} key={index} style={{width: 320, padding: 10}}>
+                <C_Stack>
+                  <div className={`h-[100px] bg-gray-500`}>
+                    <Center style={{...getColorStyles(SubjectNameMaster.color), height: `100%`}}>{SubjectNameMaster.name}</Center>
+                  </div>
+                  <strong>{name}</strong>
+
+                  <R_Stack className={`  justify-between`}>
+                    <R_Stack>
+                      <div className={`w-fit`}>
+                        <IconBtn color={SubjectNameMaster?.color ?? ''}>{SubjectNameMaster?.name}</IconBtn>
                       </div>
-                      <strong>{name}</strong>
+                      <div>第{nthTime}時</div>
+                      <div>{GameStudent.length}名</div>
+                    </R_Stack>
+                    <small>{formatDate(date, 'YYYY年MM月DD日(ddd)')}</small>
+                  </R_Stack>
+                  <MyPopover {...{button: <p>{shorten(task, 50)}</p>}}>
+                    <Paper className={`max-w-[400px]`}>{task}</Paper>
+                  </MyPopover>
 
-                      <R_Stack className={`  justify-between`}>
-                        <R_Stack>
-                          <div className={`w-fit`}>
-                            <IconBtn color={SubjectNameMaster?.color ?? ''}>{SubjectNameMaster?.name}</IconBtn>
-                          </div>
-                          <div>第{nthTime}時</div>
-                          <div>{GameStudent.length}名</div>
-                        </R_Stack>
-                        <small>{formatDate(date, 'YYYY年MM月DD日(ddd)')}</small>
-                      </R_Stack>
-                      <MyPopover {...{button: <p>{shorten(task, 50)}</p>}}>
-                        <Paper className={`max-w-[400px]`}>{task}</Paper>
-                      </MyPopover>
+                  <R_Stack className={` justify-end text-sm `}>
+                    <Button color={`green`} onClick={start}>
+                      開始
+                    </Button>
 
-                      <R_Stack className={` justify-end text-sm `}>
-                        <Button color={`green`} onClick={start}>
-                          開始
-                        </Button>
+                    <Button color={`blue`} onClick={edit}>
+                      編集
+                    </Button>
 
-                        <Button color={`blue`} onClick={edit}>
-                          編集
-                        </Button>
-
-                        <Button color={`sub`} onClick={copy}>
-                          コピー
-                        </Button>
-                        <Button color={`red`} onClick={deleteGame}>
-                          削除
-                        </Button>
-                      </R_Stack>
-                    </C_Stack>
-                  </Paper>
-                )
-              }),
-            ],
-          }}
-        ></Flex>
+                    <Button color={`sub`} onClick={copy}>
+                      コピー
+                    </Button>
+                    <Button color={`red`} onClick={deleteGame}>
+                      削除
+                    </Button>
+                  </R_Stack>
+                </C_Stack>
+              </Paper>
+            )
+          })}
+        </AutoGridContainer>
       </section>
     </C_Stack>
   )

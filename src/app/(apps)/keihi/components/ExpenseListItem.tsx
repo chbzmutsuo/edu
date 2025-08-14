@@ -9,6 +9,8 @@ import {toast} from 'react-toastify'
 // import {updateExpenseStatusAction} from '../actions/expense-server-actions'
 import {StatusSelect} from './StatusSelect'
 import {updateExpense} from '@app/(apps)/keihi/actions/expense-actions'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import useModal from '@cm/components/utils/modal/useModal'
 
 interface ExpenseListItemProps {
   expense: ExpenseRecord
@@ -16,6 +18,7 @@ interface ExpenseListItemProps {
   onToggleSelect: (id: string) => void
   subjectColorMap?: Record<string, string>
   onStatusChange?: (id: string, status: string) => void
+  KeihiDetailMD: ReturnType<typeof useModal>
 }
 
 export const ExpenseListItem = ({
@@ -24,6 +27,7 @@ export const ExpenseListItem = ({
   onToggleSelect,
   subjectColorMap = {},
   onStatusChange,
+  KeihiDetailMD,
 }: ExpenseListItemProps) => {
   const subjectColor = subjectColorMap[expense.subject] || subjectColorMap[expense.mfSubject || '']
 
@@ -55,13 +59,14 @@ export const ExpenseListItem = ({
 
   return (
     <tr className={`border-b border-gray-200 hover:bg-gray-50 transition-colors ${getStatusColor(localStatus)}`}>
-      <td className="p-2 whitespace-nowrap text-center align-middle">
+      <td className="whitespace-nowrap text-center align-middle">
         <input
           type="checkbox"
           checked={isSelected}
           onChange={() => onToggleSelect(expense.id)}
           className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
         />
+        <div className="text-xs text-gray-500 ">{expense.createdAt && formatDate(expense.createdAt)}</div>
       </td>
       <td className="p-2 align-middle">
         <StatusSelect
@@ -84,10 +89,11 @@ export const ExpenseListItem = ({
         />
       </td>
 
-      <td className="p-2 align-middle font-semibold text-gray-900 whitespace-nowrap">
+      <td className="align-middle font-semibold text-gray-900 whitespace-nowrap">
         <div className="text-xs text-gray-500">{expense.date && formatDate(expense.date)}</div>
-        <div className="text-sm">
-          <T_LINK href={`/keihi/expense/${expense.id}/edit`}>¥{formatAmount(expense.amount)}</T_LINK>
+        <div className="text-sm" onClick={() => KeihiDetailMD.handleOpen({keihiId: expense.id})}>
+          {/* <T_LINK href={`/keihi/expense/${expense.id}/edit`}></T_LINK> */}
+          <span className={`text-blue-500 cursor-pointer underline`}>¥{formatAmount(expense.amount)}</span>
         </div>
       </td>
 

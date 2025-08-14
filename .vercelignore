@@ -45,6 +45,7 @@ latest.dump
 
 
 #ignoreを選択
+src/app/**/tbm
 src/app/**/kingOfTime
 src/app/**/achievement
 src/app/**/tmp
@@ -55,10 +56,9 @@ src/app/**/shinsei
 src/app/**/aquapot
 src/app/**/sohken
 src/app/**/sbm
-src/app/**/tbm
-#src/app/**/keihi
+src/app/**/health
 #src/app/**/stock
-#src/app/**/kickswrap
 #src/app/**/KM
+#src/app/**/kickswrap
 #src/app/**/stock
-#src/app/**/health
+#src/app/**/keihi

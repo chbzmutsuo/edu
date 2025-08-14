@@ -57,16 +57,20 @@ export const HaishaCard = React.memo(
               const User = scheduleListOnDate.find(item => item.userId === tbmDriveSchedule.userId)?.User
 
               return (
-                <ScheduleCard
+                <div
+                  // className={`${checkDoubbled() ? 'bg-red-200' : ''}`}
                   key={tbmDriveSchedule.id}
-                  tbmDriveSchedule={tbmDriveSchedule}
-                  user={User}
-                  date={date}
-                  setModalOpen={setModalOpen}
-                  fetchData={fetchData}
-                  query={query}
-                  tbmBase={tbmBase}
-                />
+                >
+                  <ScheduleCard
+                    tbmDriveSchedule={tbmDriveSchedule}
+                    user={User}
+                    date={date}
+                    setModalOpen={setModalOpen}
+                    fetchData={fetchData}
+                    query={query}
+                    tbmBase={tbmBase}
+                  />
+                </div>
               )
             })}
           </C_Stack>

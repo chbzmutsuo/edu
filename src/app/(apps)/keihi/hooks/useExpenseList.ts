@@ -32,15 +32,18 @@ export const useExpenseList = () => {
         page: queryState.page,
         limit: queryState.limit,
         filter: queryState.filter,
-        sort: queryState.sort,
+        sort: {
+          field: queryState.sort.field,
+          order: queryState.sort.order,
+        },
       })
 
-      if (result.success) {
+      if (result.success && result.data) {
         setState(prev => ({
           ...prev,
           expenses: result.data.expenses,
           totalCount: result.data.totalCount,
-          totalPages: Math.ceil(result.data.totalCount / queryState.limit),
+          totalPages: result.data.totalPages,
         }))
       }
     } catch (error) {
@@ -64,7 +67,7 @@ export const useExpenseList = () => {
   const toggleSelectAll = useCallback(() => {
     setState(prev => ({
       ...prev,
-      selectedIds: prev.selectedIds.length === filteredExpenses.length ? [] : filteredExpenses.map(expense => expense.id),
+      selectedIds: prev.selectedIds.length === prev.expenses.length ? [] : prev.expenses.map(expense => expense.id),
     }))
   }, [])
 
@@ -76,9 +79,6 @@ export const useExpenseList = () => {
     }))
   }, [])
 
-  // フィルター適用済みの経費記録
-  const filteredExpenses = state.expenses
-
   return {
     state,
     setState,
@@ -86,6 +86,6 @@ export const useExpenseList = () => {
     toggleSelect,
     toggleSelectAll,
     updateExpenseStatus,
-    filteredExpenses,
+    filteredExpenses: state.expenses, // フィルターはサーバーサイドで適用済み
   }
 }

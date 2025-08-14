@@ -61,18 +61,6 @@ export const generatePersonalDevKeywords = (formData: ExpenseFormData): string[]
     'ゲーミフィケーション',
   ]
 
-  // 業種や目的に基づいてキーワードを選択
-  const industryKeywords: {[key: string]: string[]} = {
-    'IT・ソフトウェア': ['API開発', 'マイクロサービス', 'CI/CD', 'テスト駆動開発'],
-    コンサルティング: ['BI', 'データ分析', 'CRM', 'マーケティング自動化'],
-    製造業: ['IoT', '監視', 'ERP', 'データベース設計'],
-    '小売・EC': ['PWA', 'モバイルアプリ', 'ユーザビリティ', 'SEO対策'],
-    金融: ['セキュリティ', 'ブロックチェーン', '認証システム', 'GDPR対応'],
-    教育: ['ゲーミフィケーション', 'UI/UX', 'アクセシビリティ', 'PWA'],
-    '医療・ヘルスケア': ['セキュリティ', 'GDPR対応', 'データベース設計', 'モバイルアプリ'],
-    'メディア・広告': ['SEO対策', 'マーケティング自動化', 'レスポンシブデザイン', 'パフォーマンス最適化'],
-  }
-
   const purposeKeywords: {[key: string]: string[]} = {
     新規開拓: ['CRM', 'マーケティング自動化', 'BI', 'データ分析'],
     既存顧客フォロー: ['チャットボット', 'CRM', 'ユーザビリティ', 'フォーム処理'],
@@ -82,11 +70,6 @@ export const generatePersonalDevKeywords = (formData: ExpenseFormData): string[]
   }
 
   let relevantKeywords = [...baseKeywords]
-
-  // 業種に基づくキーワード追加
-  if (formData.counterpartyIndustry && industryKeywords[formData.counterpartyIndustry]) {
-    relevantKeywords = [...relevantKeywords, ...industryKeywords[formData.counterpartyIndustry]]
-  }
 
   // 目的に基づくキーワード追加
   if (formData.conversationPurpose && formData.conversationPurpose.length > 0) {

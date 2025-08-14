@@ -16,12 +16,15 @@ import {SortableHeader} from '../components/SortableHeader'
 import {StickyBottom, StickyTop} from '@cm/components/styles/common-components/Sticky'
 import {cn} from '@cm/shadcn/lib/utils'
 import {Padding} from '@cm/components/styles/common-components/common-components'
+import useModal from '@cm/components/utils/modal/useModal'
+import ExpenseEditor from '@app/(apps)/keihi/(pages)/expense/[id]/edit/ExpenseEditor'
 
 const ExpenseListPage = () => {
   const {allOptions} = useAllOptions()
   const {queryState, updateQuery, resetQuery, toggleSort} = useExpenseQueryState()
-
   const {state, setState, fetchExpenses, toggleSelect, toggleSelectAll, updateExpenseStatus, filteredExpenses} = useExpenseList()
+
+  const KeihiDetailMD = useModal({alertOnClose: true})
 
   const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
   const [isExporting, setIsExporting] = useState(false)
@@ -30,7 +33,7 @@ const ExpenseListPage = () => {
   // クエリパラメータが変更されたら再取得
   useEffect(() => {
     fetchExpenses()
-  }, [queryState])
+  }, [])
 
   // 科目カラーのマップをオプションから構築
   useEffect(() => {
@@ -154,7 +157,7 @@ const ExpenseListPage = () => {
           ...prev,
           selectedIds: [],
         }))
-        // 現在のページでデータを再取得
+        // データを再取得
         await fetchExpenses()
       } else {
         toast.error(result.error || '削除に失敗しました')
@@ -165,7 +168,7 @@ const ExpenseListPage = () => {
     } finally {
       setIsDeleting(false)
     }
-  }, [state.selectedIds, fetchExpenses, queryState.page, queryState.limit])
+  }, [state.selectedIds, fetchExpenses, setState])
 
   // ページネーション用の計算
   const currentFrom = (queryState.page - 1) * queryState.limit + 1
@@ -185,6 +188,11 @@ const ExpenseListPage = () => {
 
   return (
     <div className="bg-gray-50 px-4">
+      <KeihiDetailMD.Modal>
+        <div className={`w-full`}>
+          <ExpenseEditor expenseId={KeihiDetailMD?.open?.keihiId} />
+        </div>
+      </KeihiDetailMD.Modal>
       <div className="max-w-[90vw] mx-auto">
         <div className="bg-white shadow-sm">
           {/* ヘッダー */}
@@ -285,8 +293,15 @@ const ExpenseListPage = () => {
                 >
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="text-xs font-medium text-gray-500">選択</th>
+                      <SortableHeader
+                        label="取込日/選択"
+                        field="createdAt"
+                        currentField={queryState.sort.field}
+                        currentOrder={queryState.sort.order}
+                        onSort={toggleSort}
+                      />
                       <th className="text-xs font-medium text-gray-500">ステータス</th>
+
                       <SortableHeader
                         label="日付/金額"
                         field="date"
@@ -296,7 +311,7 @@ const ExpenseListPage = () => {
                       />
                       <th className="text-xs font-medium text-gray-500">科目/場所</th>
                       <th className="text-xs font-medium text-gray-500">相手/会話の目的/会話内容の要約</th>
-                      <th className="text-xs font-medium text-gray-500">インサイトようやく/洞察/ キーワード</th>
+                      <th className="text-xs font-medium text-gray-500">要約/洞察/キーワード</th>
                       <SortableHeader
                         label="画像"
                         field="imageTitle"
@@ -318,6 +333,7 @@ const ExpenseListPage = () => {
                         onToggleSelect={toggleSelect}
                         subjectColorMap={subjectColorMap}
                         onStatusChange={updateExpenseStatus}
+                        KeihiDetailMD={KeihiDetailMD}
                       />
                     ))}
                   </tbody>

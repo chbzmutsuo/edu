@@ -101,9 +101,9 @@
     "**/Sara/**": true,
     "**/achievement/**": true,
     "**/Advantage/**": true,
-    "**/CoLab/**": true,
     "**/Grouping/**": true,
     "**/KM/**": true,
+    "**/aquapot/**": true,
     "**/edu/**": true,
     "**/health/**": true,
     "**/kickswrap/**": true,
@@ -114,9 +114,8 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
     "**/tmp/**": true,
-    "**/aquapot/**": true
+    "**/keihi/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -126,12 +125,12 @@
   "typescript.workspaceSymbols.scope": "currentProject",
   "typescript.preferences.autoImportFileExcludePatterns": [
     "Advantage",
-    "CoLab",
     "Grouping",
     "KM",
     "aquapot",
     "edu",
     "health",
+    "keihi",
     "kickswrap",
     "migrations",
     "page",
@@ -140,7 +139,6 @@
     "shinsei",
     "sohken",
     "stock",
-    "tbm",
     "tmp"
   ],
   "editor.stickyScroll.enabled": false

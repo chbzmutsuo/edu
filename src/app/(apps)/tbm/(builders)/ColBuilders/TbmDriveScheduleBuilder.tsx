@@ -1,5 +1,7 @@
 'use client'
 import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
+import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
+import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
@@ -60,31 +62,14 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
       },
       forSelect: {
         dependenceColIds: ['tbmBaseId'],
-        config: getVehicleForSelectConfig({tbmBaseId: tbmBase?.id}),
+        config: VehicleCl.getVehicleForSelectConfig({tbmBaseId: tbmBase?.id}),
       },
     },
     {
       id: 'tbmRouteGroupId',
       label: '便',
       forSelect: {
-        config: {
-          select: {id: true, name: true, routeName: true},
-          where: {tbmBaseId: tbmBase?.id},
-          orderBy: [{id: 'asc'}],
-          nameChanger(op) {
-            return {
-              ...op,
-              name: op
-                ? [
-                    //
-                    `[${op.id}]`,
-                    op.name,
-                    op.routeName && ` (${op.routeName})`,
-                  ].join(` `)
-                : '',
-            }
-          },
-        },
+        config: RouteGroupCl.getRouteGroupForSelectConfig({tbmBaseId: tbmBase?.id}),
       },
       form: {
         ...defaultRegister,
