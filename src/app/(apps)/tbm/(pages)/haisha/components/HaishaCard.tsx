@@ -6,6 +6,7 @@ import {TbmRouteGroup, TbmBase} from '@prisma/client'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {haishaListData} from './getListData'
 import {WorkStatusSelector, AddScheduleButton, ScheduleCard} from './CellComponents'
+
 export const HaishaCard = React.memo(
   (props: {
     //
@@ -57,10 +58,7 @@ export const HaishaCard = React.memo(
               const User = scheduleListOnDate.find(item => item.userId === tbmDriveSchedule.userId)?.User
 
               return (
-                <div
-                  // className={`${checkDoubbled() ? 'bg-red-200' : ''}`}
-                  key={tbmDriveSchedule.id}
-                >
+                <div key={tbmDriveSchedule.id}>
                   <ScheduleCard
                     tbmDriveSchedule={tbmDriveSchedule}
                     user={User}

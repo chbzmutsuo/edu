@@ -14,6 +14,7 @@ import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
+import {cn} from '@cm/shadcn/lib/utils'
 
 const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
 
@@ -158,20 +159,25 @@ export const ScheduleCard = React.memo(
     // const foo = new vhi
 
     return (
-      <div className="border border-gray-300 rounded-sm p-1 bg-white hover:shadow-sm transition-shadow">
+      <div
+        className={cn(
+          `border border-gray-300 rounded-sm p-1  hover:shadow-sm transition-shadow`,
+          tbmDriveSchedule.duplicated ? 'bg-red-300' : 'white'
+        )}
+      >
         <C_Stack className="gap-1">
-          <section className={`row-stack gap-0 leading-4 -ml-1.5`}>
+          <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <MapPinIcon className={`h-3 text-blue-800 stroke-2 `} />
             <MarkDownDisplay>{new RouteGroupCl(TbmRouteGroup).name}</MarkDownDisplay>
           </section>
 
-          <section className={`row-stack gap-0 leading-4 -ml-1.5`}>
+          <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <CarIcon className={`h-3 text-blue-800 stroke-2 `} />
 
             {new VehicleCl(TbmVehicle).shortName}
           </section>
 
-          <section className={`row-stack gap-0 leading-4 -ml-1.5`}>
+          <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <UserIcon className={`h-3 text-blue-800 stroke-2 `} />
 
             {user?.name}

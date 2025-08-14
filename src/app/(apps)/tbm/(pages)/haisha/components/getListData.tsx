@@ -31,13 +31,14 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
   const commonWhere = {tbmBaseId}
   const tbmBase = await prisma.tbmBase.findUnique({select: {id: true, name: true}, where: {id: tbmBaseId}})
 
-  const TbmDriveSchedule = await prisma.tbmDriveSchedule.findMany({
+  const rawTbmDriveSchedule = await prisma.tbmDriveSchedule.findMany({
     select: {
       id: true,
       date: true,
       userId: true,
       tbmRouteGroupId: true,
       tbmBaseId: true,
+      tbmVehicleId: true,
       TbmRouteGroup: {
         select: {
           id: true,
@@ -66,6 +67,23 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
       date: {gte: whereQuery.gte, lte: whereQuery.lt},
     },
     orderBy: [{date: 'asc'}, {TbmRouteGroup: {code: 'asc'}}],
+  })
+
+  // 重複検知：同じ日付で、同じ「便、車両、ドライバー」の組み合わせをチェック
+  const TbmDriveSchedule = rawTbmDriveSchedule.map(schedule => {
+    const duplicated = rawTbmDriveSchedule.some(
+      otherSchedule =>
+        otherSchedule.id !== schedule.id &&
+        otherSchedule.date.getTime() === schedule.date.getTime() &&
+        otherSchedule.tbmRouteGroupId === schedule.tbmRouteGroupId &&
+        otherSchedule.tbmVehicleId === schedule.tbmVehicleId &&
+        otherSchedule.userId === schedule.userId
+    )
+
+    return {
+      ...schedule,
+      duplicated,
+    }
   })
 
   const userList = await prisma.user.findMany({
@@ -129,6 +147,7 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
       TbmRouteGroup: TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]}
       TbmVehicle: TbmVehicle & {OdometerInput: OdometerInput[]}
       User: {id: number; name: string}
+      duplicated: boolean
     })[]
     userList: (User & {UserWorkStatus: UserWorkStatus[]})[]
     tbmRouteGroup: (TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]})[]
