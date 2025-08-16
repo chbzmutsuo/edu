@@ -1,5 +1,4 @@
 'use client'
-import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
 import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
 import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'

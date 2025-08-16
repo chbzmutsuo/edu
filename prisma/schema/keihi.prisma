@@ -7,7 +7,6 @@ model KeihiExpense {
   // 基本情報
   date                DateTime
   amount              Int
-  subject             String // 科目
   location            String? // 場所
   counterpartyName    String? // 相手名
   conversationPurpose String[] // 会話の目的（複数選択対応）
@@ -21,14 +20,13 @@ model KeihiExpense {
   insight  String? // 統合されたインサイト
   autoTags String[] // 自動生成タグ
   // レコード状態
-  status   String? // 例: "一次チェック済", "MF連携済み"
+  status   String?  @default("未設定") // 例: "一次チェック済", "MF連携済み"
 
-  // MoneyForward用情報
-  mfSubject     String? // MF用科目
+  // MoneyForward用情報（統合された科目管理）
+  mfSubject     String? // 統合された科目フィールド（必須）
   mfSubAccount  String? // MF用補助科目
   mfTaxCategory String? // MF用税区分
   mfDepartment  String? // MF用部門
-  mfMemo        String? // MF用摘要
 
   // ファイル添付
   KeihiAttachment KeihiAttachment[]

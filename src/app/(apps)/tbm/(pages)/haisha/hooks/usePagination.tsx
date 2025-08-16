@@ -1,12 +1,8 @@
 'use client'
 import {useState, useCallback} from 'react'
+import {UsePaginationParams, UsePaginationReturn} from '../types/haisha-page-types'
 
-interface UsePaginationProps {
-  initialPage?: number
-  initialItemsPerPage?: number
-}
-
-export function usePagination({initialPage = 1, initialItemsPerPage = 900}: UsePaginationProps = {}) {
+export function usePagination({initialPage = 1, initialItemsPerPage = 900}: UsePaginationParams = {}): UsePaginationReturn {
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage)
 
@@ -19,15 +15,15 @@ export function usePagination({initialPage = 1, initialItemsPerPage = 900}: UseP
     setCurrentPage(1) // ページサイズが変更されたら最初のページに戻る
   }, [])
 
-  const resetPagination = useCallback(() => {
-    setCurrentPage(1)
-  }, [])
+  // const resetPagination = useCallback(() => {
+  //   setCurrentPage(1)
+  // }, [])
 
   return {
     currentPage,
     itemsPerPage,
     handlePageChange,
     handleItemsPerPageChange,
-    resetPagination,
+    // resetPagination,
   }
 }

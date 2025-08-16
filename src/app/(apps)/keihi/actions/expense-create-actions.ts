@@ -19,7 +19,7 @@ export async function createExpenseAction(
         // 基本情報
         date: new Date(formData.date),
         amount: formData.amount,
-        subject: formData.subject,
+        mfSubject: formData.mfSubject || '', // mfSubjectを使用
         location: formData.location,
         counterpartyName: formData.counterpartyName,
         conversationPurpose: formData.conversationPurpose,
@@ -38,11 +38,9 @@ export async function createExpenseAction(
         status: formData.status,
 
         // MoneyForward用情報
-        mfSubject: formData.mfSubject,
         mfSubAccount: formData.mfSubAccount,
         mfTaxCategory: formData.mfTaxCategory,
         mfDepartment: formData.mfDepartment,
-        mfMemo: formData.mfMemo,
       },
     })
 

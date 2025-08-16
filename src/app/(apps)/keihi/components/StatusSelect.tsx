@@ -41,6 +41,7 @@ export const StatusSelect = ({value, onChange, className}: StatusSelectProps) =>
         )}
       >
         <option value="">未設定</option>
+        <option value="私的利用">私的利用</option>
         <option value="一次チェック済">一次チェック済</option>
         <option value="MF連携済み">MF連携済み</option>
       </select>

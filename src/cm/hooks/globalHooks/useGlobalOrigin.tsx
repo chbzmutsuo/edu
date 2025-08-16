@@ -10,14 +10,12 @@ export default function useGlobalOrigin(place?: any) {
   type useMyNavigationHookType = ReturnType<typeof useMyNavigation>
   type useMySessionHookType = ReturnType<typeof useMySession>
   type loadingHookType = ReturnType<typeof useLoader>
-  // type useWindowSizeHookType = ReturnType<typeof useWindowSize>
+
   const useMyNavigationHook: useMyNavigationHookType = useMyNavigation() ?? {}
   const useMySessionHook: useMySessionHookType = useMySession() ?? {}
   const loading: loadingHookType = useLoader()
-  // const useWindowSizeHook: useWindowSizeHookType = useWindowSize() ?? {}
 
   const result = {
-    // ...useWindowSizeHook,
     ...useMyNavigationHook,
     ...useMySessionHook,
     ...loading,

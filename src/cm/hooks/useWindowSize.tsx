@@ -16,8 +16,8 @@ export default function useWindowSize() {
   }
 
   useEffect(() => {
-    const handleResizeDebounced = debounce(handleResize, 0)
-    window.addEventListener('resize', handleResizeDebounced)
+    // const handleResizeDebounced = debounce(handleResize, 0)
+    // window.addEventListener('resize', handleResizeDebounced)
     handleResize()
     // return () => window.removeEventListener('resize', handleResizeDebounced)
   }, [])

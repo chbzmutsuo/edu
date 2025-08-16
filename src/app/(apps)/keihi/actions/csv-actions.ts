@@ -90,7 +90,7 @@ export async function generateMFCSV(expenseIds?: string[]): Promise<{
       return [
         transactionNo,
         date,
-        expense.mfSubject || expense.subject, // 借方勘定科目
+        expense.mfSubject || '', // 借方勘定科目
         expense.mfSubAccount || '', // 借方補助科目
         expense.mfDepartment || '', // 借方部門
         expense.counterpartyName || '', // 借方取引先
@@ -106,7 +106,7 @@ export async function generateMFCSV(expenseIds?: string[]): Promise<{
         '', // 貸方インボイス
         expense.amount, // 貸方金額
         0, // 貸方税額
-        expense.mfMemo || expense.conversationSummary || `${expense.subject} ${expense.amount}円`, // 摘要
+        expense.conversationSummary || '',
         expense.insight || '', // 仕訳メモ
         tags, // タグ
         '', // MF仕訳タイプ
@@ -155,4 +155,96 @@ export async function exportAllExpensesToCSV() {
 // 選択した記録のCSV出力
 export async function exportSelectedExpensesToCSV(expenseIds: string[]) {
   return await generateMFCSV(expenseIds)
+}
+
+// 取引先一覧のCSV出力
+export async function generateLocationListCSV(expenseIds?: string[]): Promise<{
+  success: boolean
+  csvData?: string
+  error?: string
+}> {
+  try {
+    const whereClause = expenseIds ? {id: {in: expenseIds}} : {}
+
+    // 経費データから取引先情報を取得
+    const expenses = await prisma.keihiExpense.findMany({
+      where: whereClause,
+      select: {
+        location: true,
+      },
+      distinct: ['location'],
+      orderBy: {
+        location: 'asc',
+      },
+    })
+
+    if (expenses.length === 0) {
+      return {success: false, error: '出力対象の取引先がありません'}
+    }
+
+    // 空の取引先名を除外し、重複を削除
+    const uniqueLocations = [...new Set(expenses.map(e => e.location).filter(Boolean))]
+
+    // CSVヘッダー
+    const headers = [
+      'コード',
+      '取引先名',
+      '検索キー',
+      '表示設定',
+      '登録番号',
+      '法人番号',
+    ]
+
+    // CSVデータ生成
+    const csvRows = uniqueLocations.map(location => {
+      return [
+        '', // コードは空白
+        location, // 取引先名
+        '', // 検索キー（不要）
+        '1', // 表示設定は1
+        '', // 登録番号（不要）
+        '', // 法人番号（不要）
+      ]
+    })
+
+    // CSV文字列生成
+    const csvContent = [
+      headers.join(','),
+      ...csvRows.map(row =>
+        row
+          .map(cell => {
+            // 文字列の場合はダブルクォートで囲む
+            if (typeof cell === 'string' && (cell.includes(',') || cell.includes('"') || cell.includes('\n'))) {
+              return `"${cell.replace(/"/g, '""')}"`
+            }
+            return cell
+          })
+          .join(',')
+      ),
+    ].join('\n')
+
+    // BOMを追加してExcelで正しく表示されるようにする
+    const csvWithBom = '\uFEFF' + csvContent
+
+    return {
+      success: true,
+      csvData: csvWithBom,
+    }
+  } catch (error) {
+    console.error('取引先一覧CSV生成エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '取引先一覧CSV生成に失敗しました',
+    }
+  }
+}
+
+// 全件の取引先一覧CSV出力
+export async function exportAllLocationsToCSV() {
+  return await generateLocationListCSV()
+}
+
+// 選択した記録の取引先一覧CSV出力
+export async function exportSelectedLocationsToCSV(expenseIds: string[]) {
+  return await generateLocationListCSV(expenseIds)
 }

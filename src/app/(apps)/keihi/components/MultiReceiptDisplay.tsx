@@ -5,9 +5,8 @@ interface MultiReceiptDisplayProps {
     receipts: Array<{
       date: string
       amount: number
-      subject: string
+      mfSubject: string // 統合された科目フィールド
       counterpartyName: string
-      mfMemo: string
       keywords: string[]
       imageIndex: number
     }>

@@ -55,7 +55,7 @@ export const AnalyzedReceiptsList = ({receipts, onPreviewImage}: AnalyzedReceipt
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">科目</label>
-                    <p className="text-gray-900">{receipt.subject}</p>
+                    <p className="text-gray-900">{receipt.mfSubject}</p>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">相手名</label>
@@ -74,14 +74,6 @@ export const AnalyzedReceiptsList = ({receipts, onPreviewImage}: AnalyzedReceipt
                         </span>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* 摘要 */}
-                {receipt.mfMemo && (
-                  <div className="mt-3">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">摘要</label>
-                    <p className="text-gray-900 text-sm">{receipt.mfMemo}</p>
                   </div>
                 )}
               </div>

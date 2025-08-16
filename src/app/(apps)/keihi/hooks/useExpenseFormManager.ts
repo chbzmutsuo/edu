@@ -13,12 +13,14 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
   const [formData, setFormData] = useState<ExpenseFormData>({
     date: getTodayString(),
     amount: 0,
-    subject: '',
+    mfSubject: '', // subjectをmfSubjectに統合
     location: '',
     counterpartyName: '',
     conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
     keywords: [],
     conversationSummary: '',
+    mfTaxCategory: '課仕 10%', // デフォルト税区分
+    mfDepartment: '本社', // デフォルト部門
     ...initialData,
   })
 
@@ -62,20 +64,22 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
     setFormData({
       date: getTodayString(),
       amount: 0,
-      subject: '',
+      mfSubject: '', // subjectをmfSubjectに統合
       location: '',
       counterpartyName: '',
       conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
       keywords: [],
       conversationSummary: '',
+      mfTaxCategory: '課仕 10%', // デフォルト税区分
+      mfDepartment: '本社', // デフォルト部門
     })
     setAiDraft(null)
     setShowDraft(false)
   }, [])
 
   const isFormValid = useCallback(() => {
-    return !!(formData.date && formData.amount && formData.subject)
-  }, [formData.date, formData.amount, formData.subject])
+    return !!(formData.date && formData.amount && formData.mfSubject && formData.mfTaxCategory && formData.mfDepartment)
+  }, [formData.date, formData.amount, formData.mfSubject, formData.mfTaxCategory, formData.mfDepartment])
 
   return {
     formData,

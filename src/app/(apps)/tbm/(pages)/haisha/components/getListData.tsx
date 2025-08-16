@@ -1,20 +1,9 @@
 'use server'
 
 import prisma from 'src/lib/prisma'
-import {
-  TbmDriveSchedule,
-  TbmVehicle,
-  TbmRouteGroup,
-  OdometerInput,
-  User,
-  UserWorkStatus,
-  TbmRouteGroupCalendar,
-  TbmBase,
-} from '@prisma/client'
-import {haishaTableMode} from '@app/(apps)/tbm/(pages)/haisha/components/HaishaTable'
+import {GetListDataParams, HaishaListData} from '../types/haisha-page-types'
 
-export type haishaListData = Awaited<ReturnType<typeof getListData>>
-export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mode: haishaTableMode; takeSkip: any}) => {
+export const getListData = async (props: GetListDataParams): Promise<HaishaListData> => {
   const {tbmBaseId, whereQuery, mode, takeSkip} = props
   const getMaxRecord = async () => {
     if (mode === 'ROUTE') {
@@ -141,20 +130,7 @@ export const getListData = async (props: {tbmBaseId: number; whereQuery: any; mo
     carList,
     maxCount: await getMaxRecord(),
     userWorkStatusCount,
-  } as {
-    tbmBase: TbmBase & {id: number; name: string}
-    TbmDriveSchedule: (TbmDriveSchedule & {
-      TbmRouteGroup: TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]}
-      TbmVehicle: TbmVehicle & {OdometerInput: OdometerInput[]}
-      User: {id: number; name: string}
-      duplicated: boolean
-    })[]
-    userList: (User & {UserWorkStatus: UserWorkStatus[]})[]
-    tbmRouteGroup: (TbmRouteGroup & {TbmRouteGroupCalendar: TbmRouteGroupCalendar[]})[]
-    carList: TbmVehicle[]
-    maxCount: number
-    userWorkStatusCount: {userId: number; workStatus: string; _count: {_all: number}}[]
-  }
+  } as HaishaListData
 
   return result
 }

@@ -4,7 +4,6 @@ import {useCallback} from 'react'
 import {useRouter} from 'next/navigation'
 import {ExpenseFilterType} from './useExpenseFilter'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export type SortField = 'date' | 'createdAt' | 'imageTitle' | null
 export type SortOrder = 'asc' | 'desc'
@@ -39,12 +38,12 @@ const getDefaultState = (): QueryState => {
   return {
     filter: {
       dateRange: defaultDateRange,
-      subject: null,
+      mfSubject: null,
       status: null,
       keyword: null,
     },
     sort: {
-      field: 'date',
+      field: 'createdAt',
       order: 'desc',
     },
     page: 1,
@@ -65,7 +64,7 @@ export const useExpenseQueryState = () => {
           start: query['startDate'] || defaultState.filter.dateRange.start,
           end: query['endDate'] || defaultState.filter.dateRange.end,
         },
-        subject: query['subject'] || defaultState.filter.subject,
+        mfSubject: query['mfSubject'] || defaultState.filter.mfSubject,
         status: query['status'] || defaultState.filter.status,
         keyword: query['keyword'] || defaultState.filter.keyword,
       },
@@ -90,7 +89,7 @@ export const useExpenseQueryState = () => {
       // フィルター
       if (newState.filter.dateRange.start) newQuery.startDate = newState.filter.dateRange.start
       if (newState.filter.dateRange.end) newQuery.endDate = newState.filter.dateRange.end
-      if (newState.filter.subject) newQuery.subject = newState.filter.subject
+      if (newState.filter.mfSubject) newQuery.mfSubject = newState.filter.mfSubject
       if (newState.filter.status) newQuery.status = newState.filter.status
       if (newState.filter.keyword) newQuery.keyword = newState.filter.keyword
 

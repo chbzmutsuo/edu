@@ -19,7 +19,6 @@ const BulkCreatePage = React.memo(() => {
             <div className="text-sm text-gray-600 space-y-1">
               <p>• 複数枚の領収書画像を一括でアップロード・解析できます</p>
               <p>• 基本情報（日付、金額、科目、キーワード）のみでレコードを作成します</p>
-              <p>• AIインサイトはバックグラウンドで生成されます</p>
             </div>
           </div>
 

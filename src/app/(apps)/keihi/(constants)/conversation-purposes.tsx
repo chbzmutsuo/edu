@@ -1,4 +1,3 @@
-// 会話の目的の選択肢定数
 export const CONVERSATION_PURPOSES = [
   {value: '営業活動', label: '営業活動'},
   {value: 'リクルーティング', label: 'リクルーティング'},

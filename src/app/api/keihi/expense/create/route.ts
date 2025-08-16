@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         // 基本情報
         date: new Date(expenseData.date),
         amount: expenseData.amount,
-        subject: expenseData.subject,
+        mfSubject: expenseData.mfSubject,
         location: expenseData.location,
         counterpartyName: expenseData.counterpartyName,
         conversationPurpose: expenseData.conversationPurpose,
@@ -46,11 +46,9 @@ export async function POST(request: NextRequest) {
         status: expenseData.status,
 
         // MoneyForward用情報
-        mfSubject: expenseData.mfSubject,
         mfSubAccount: expenseData.mfSubAccount,
         mfTaxCategory: expenseData.mfTaxCategory,
         mfDepartment: expenseData.mfDepartment,
-        mfMemo: expenseData.mfMemo,
       },
     })
 
@@ -93,4 +91,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-

@@ -6,26 +6,15 @@ import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import HaishaTableSwitcher from './HaishaTableSwitcher'
 import TableContent from './HaishaTableContent'
-import {TbmBase} from '@prisma/client'
 import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {useHaishaData} from '../hooks/useHaishaData'
 import {usePagination} from '../hooks/usePagination'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
+import {HaishaTableProps, HaishaTableMode} from '../types/haisha-page-types'
 
-export type haishaTableMode = 'ROUTE' | 'DRIVER'
+export type haishaTableMode = HaishaTableMode
 
-export default function HaishaTable({
-  days,
-  tbmBase,
-  whereQuery,
-}: {
-  tbmBase: TbmBase | null
-  days: Date[]
-  whereQuery: {
-    gte?: Date
-    lt?: Date
-  }
-}) {
+export default function HaishaTable({days, tbmBase, whereQuery}: HaishaTableProps) {
   const {query, session} = useGlobal()
   const {admin} = session.scopes
   const tbmBaseId = tbmBase?.id ?? 0
@@ -35,7 +24,7 @@ export default function HaishaTable({
   const {currentPage, itemsPerPage, handlePageChange, handleItemsPerPageChange} = usePagination()
 
   // データ取得管理
-  const {listDataState, maxRecord, LocalLoader, fetchData, updateScheduleInState, removeScheduleFromState} = useHaishaData({
+  const {listDataState, maxRecord, LocalLoader, fetchData} = useHaishaData({
     tbmBaseId,
     whereQuery,
     mode,
@@ -52,7 +41,7 @@ export default function HaishaTable({
     },
   })
 
-  const setModalOpen = HK_HaishaTableEditorGMF.setGMF_OPEN
+  const setModalOpen = HK_HaishaTableEditorGMF.setGMF_OPEN as (props: any) => void
 
   const {data: holidays = []} = useDoStandardPrisma(`calendar`, `findMany`, {
     where: {holidayType: `祝日`},
@@ -65,7 +54,7 @@ export default function HaishaTable({
 
       return (
         <TableContent
-          {...{
+          {...({
             mode,
             tbmBase,
             days,
@@ -78,7 +67,7 @@ export default function HaishaTable({
             tbmRouteGroup,
             userList,
             userWorkStatusCount,
-          }}
+          } as any)}
         />
       )
     }

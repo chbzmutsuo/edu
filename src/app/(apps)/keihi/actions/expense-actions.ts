@@ -5,6 +5,8 @@ import {FileHandler} from 'src/cm/class/FileHandler'
 import {S3FormData} from '@cm/class/FileHandler'
 import prisma from 'src/lib/prisma'
 import {ExpenseFilterType} from '../hooks/useExpenseFilter'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {exportAllExpensesToCSV, exportSelectedExpensesToCSV, exportAllLocationsToCSV, exportSelectedLocationsToCSV} from './csv-actions'
 
 export interface AIAnalysisResult {
   techInsightDetail: string
@@ -12,7 +14,6 @@ export interface AIAnalysisResult {
   autoTags: string[]
   mfSubject: string
   mfTaxCategory: string
-  mfMemo: string
 }
 
 // インサイト生成の設定オプション
@@ -30,7 +31,6 @@ interface InsightGenerationResult {
   generatedKeywords?: string[] // 下書きモードの場合のみ
   mfSubject?: string // MoneyForward用データ
   mfTaxCategory?: string
-  mfMemo?: string
 }
 
 // 経費記録一覧取得パラメータ
@@ -60,8 +60,8 @@ const buildWhereCondition = (filter: ExpenseFilterType) => {
   }
 
   // 科目フィルター
-  if (filter.subject) {
-    where.subject = filter.subject
+  if (filter.mfSubject) {
+    where.mfSubject = filter.mfSubject
   }
 
   // ステータスフィルター
@@ -193,7 +193,6 @@ export const updateExpense = async (
     mfSubAccount?: string
     mfTaxCategory?: string
     mfDepartment?: string
-    mfMemo?: string
   }
 ) => {
   try {
@@ -427,7 +426,7 @@ export const deleteExpenses = async (
   return deleteMultipleExpenses(ids)
 }
 
-// CSV出力
+// 経費データCSV出力
 export const exportExpensesToCsv = async (
   selectedIds?: string[]
 ): Promise<{
@@ -436,101 +435,59 @@ export const exportExpensesToCsv = async (
   error?: string
 }> => {
   try {
-    let expenses
-
-    if (selectedIds && selectedIds.length > 0) {
-      // 選択された記録のみ
-      expenses = await prisma.keihiExpense.findMany({
-        where: {
-          id: {
-            in: selectedIds,
-          },
-        },
-        include: {
-          KeihiAttachment: true,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      })
+    const result = selectedIds && selectedIds.length > 0
+      ? await exportSelectedExpensesToCSV(selectedIds)
+      : await exportAllExpensesToCSV()
+    
+    if (result.success) {
+      return {
+        success: true,
+        data: result.csvData,
+      }
     } else {
-      // 全件
-      expenses = await prisma.keihiExpense.findMany({
-        include: {
-          KeihiAttachment: true,
-        },
-        orderBy: {
-          date: 'desc',
-        },
-      })
-    }
-
-    // CSVヘッダー
-    const headers = [
-      '取引日',
-      '勘定科目',
-      '税区分',
-      '金額',
-      '摘要',
-      '補助科目',
-      '部門',
-      '取引先',
-      '品目',
-      'メモタグ',
-      'MF連携用科目',
-      'MF連携用摘要',
-      '相手名',
-      '場所',
-      '目的',
-      'キーワード',
-      'インサイト',
-      'AIタグ',
-      '添付ファイル数',
-    ]
-
-    // CSVデータ
-    const csvRows = expenses.map(expense => [
-      expense.date.toISOString().split('T')[0], // 取引日
-      expense.mfSubject || expense.subject, // 勘定科目
-      expense.mfTaxCategory || '課仕 10%', // 税区分
-      expense.amount, // 金額
-      expense.mfMemo || expense.subject, // 摘要
-      '', // 補助科目
-      expense.mfDepartment || '', // 部門
-      expense.counterpartyName || '', // 取引先
-      '', // 品目
-      '', // メモタグ
-      expense.mfSubject || '', // MF連携用科目
-      expense.mfMemo || '', // MF連携用摘要
-      expense.counterpartyName || '', // 相手名
-      expense.location || '', // 場所
-      expense.conversationPurpose.join(', '), // 目的
-      expense.keywords.join(', '), // キーワード
-      expense.insight || '', // インサイト
-      expense.autoTags.join(', '), // AIタグ
-      expense.KeihiAttachment.length, // 添付ファイル数
-    ])
-
-    // CSV文字列を生成
-    const csvContent = [
-      headers.join(','),
-      ...csvRows.map(row =>
-        row.map(field => (typeof field === 'string' && field.includes(',') ? `"${field.replace(/"/g, '""')}"` : field)).join(',')
-      ),
-    ].join('\n')
-
-    // BOMを追加してExcelで正しく表示されるようにする
-    const csvWithBom = '\uFEFF' + csvContent
-
-    return {
-      success: true,
-      data: csvWithBom,
+      return {
+        success: false,
+        error: result.error || '経費データのCSV出力に失敗しました',
+      }
     }
   } catch (error) {
-    console.error('CSV出力エラー:', error)
+    console.error('経費データCSV出力エラー:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'CSV出力に失敗しました',
+      error: error instanceof Error ? error.message : '経費データのCSV出力に失敗しました',
+    }
+  }
+}
+
+// 取引先一覧CSV出力
+export const exportLocationsToCsv = async (
+  selectedIds?: string[]
+): Promise<{
+  success: boolean
+  data?: string
+  error?: string
+}> => {
+  try {
+    const result = selectedIds && selectedIds.length > 0
+      ? await exportSelectedLocationsToCSV(selectedIds)
+      : await exportAllLocationsToCSV()
+    
+    if (result.success) {
+      return {
+        success: true,
+        data: result.csvData,
+      }
+    } else {
+      return {
+        success: false,
+        error: result.error || '取引先一覧のCSV出力に失敗しました',
+      }
+    }
+  } catch (error) {
+    console.error('取引先一覧CSV出力エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '取引先一覧のCSV出力に失敗しました',
     }
   }
 }

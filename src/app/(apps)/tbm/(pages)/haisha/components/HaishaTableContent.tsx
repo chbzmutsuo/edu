@@ -2,25 +2,10 @@
 import React from 'react'
 import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTable/CsvTableVirtualized'
 import {TableRowBuilder} from './TableRowBuilder'
-import {haishaListData} from './getListData'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {HaishaTableContentProps, TbmDriveScheduleWithDuplicated} from '../types/haisha-page-types'
 
-type props = {
-  userList: haishaListData['userList']
-  TbmDriveSchedule: haishaListData['TbmDriveSchedule']
-  tbmRouteGroup: haishaListData['tbmRouteGroup']
-  userWorkStatusCount: haishaListData['userWorkStatusCount']
-  mode
-  tbmBase
-  days
-  holidays
-  fetchData
-  setModalOpen
-  admin
-  query
-}
-
-export const HaishaTableContent = React.memo((props: props) => {
+export const HaishaTableContent = React.memo((props: HaishaTableContentProps) => {
   const {
     mode,
     tbmBase,
@@ -71,36 +56,43 @@ export const HaishaTableContent = React.memo((props: props) => {
   return <></>
 })
 
-const getScheduleByDateAndUser = ({TbmDriveSchedule}) => {
-  const scheduleByDateAndUser = TbmDriveSchedule.reduce((acc, schedule) => {
-    const dateKey = formatDate(schedule.date)
-    const userKey = String(schedule.userId)
-    if (!acc[dateKey]) {
-      acc[dateKey] = {}
-    }
-    if (!acc[dateKey][userKey]) {
-      acc[dateKey][userKey] = []
-    }
-    acc[dateKey][userKey].push(schedule)
-    return acc
-  }, {})
+const getScheduleByDateAndUser = ({TbmDriveSchedule}: {TbmDriveSchedule: TbmDriveScheduleWithDuplicated[]}) => {
+  const scheduleByDateAndUser = TbmDriveSchedule.reduce(
+    (acc, schedule) => {
+      const dateKey = formatDate(schedule.date)
+      const userKey = String(schedule.userId)
+      if (!acc[dateKey]) {
+        acc[dateKey] = {}
+      }
+      if (!acc[dateKey][userKey]) {
+        acc[dateKey][userKey] = []
+      }
+      acc[dateKey][userKey].push(schedule)
+      return acc
+    },
+    {} as Record<string, Record<string, TbmDriveScheduleWithDuplicated[]>>
+  )
 
   return {scheduleByDateAndUser}
 }
-const getScheduleByDateAndRoute = ({TbmDriveSchedule}) => {
-  const scheduleByDateAndRoute = TbmDriveSchedule.reduce((acc, schedule) => {
-    const dateKey = formatDate(schedule.date)
-    const routeKey = String(schedule.tbmRouteGroupId)
-    if (!acc[dateKey]) {
-      acc[dateKey] = {}
-    }
-    if (!acc[dateKey][routeKey]) {
-      acc[dateKey][routeKey] = []
-    }
-    acc[dateKey][routeKey].push(schedule)
-    return acc
-  }, {})
 
-  return {scheduleByDateAndRoute} as {scheduleByDateAndRoute: Record<string, Record<string, any[]>>}
+const getScheduleByDateAndRoute = ({TbmDriveSchedule}: {TbmDriveSchedule: TbmDriveScheduleWithDuplicated[]}) => {
+  const scheduleByDateAndRoute = TbmDriveSchedule.reduce(
+    (acc, schedule) => {
+      const dateKey = formatDate(schedule.date)
+      const routeKey = String(schedule.tbmRouteGroupId)
+      if (!acc[dateKey]) {
+        acc[dateKey] = {}
+      }
+      if (!acc[dateKey][routeKey]) {
+        acc[dateKey][routeKey] = []
+      }
+      acc[dateKey][routeKey].push(schedule)
+      return acc
+    },
+    {} as Record<string, Record<string, TbmDriveScheduleWithDuplicated[]>>
+  )
+
+  return {scheduleByDateAndRoute}
 }
 export default HaishaTableContent

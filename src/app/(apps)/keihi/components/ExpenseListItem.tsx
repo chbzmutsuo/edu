@@ -3,13 +3,11 @@
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {ExpenseRecord} from '../types'
 import {formatAmount, formatDate} from '../utils'
-import {T_LINK} from '@cm/components/styles/common-components/links'
 import React from 'react'
 import {toast} from 'react-toastify'
 // import {updateExpenseStatusAction} from '../actions/expense-server-actions'
 import {StatusSelect} from './StatusSelect'
 import {updateExpense} from '@app/(apps)/keihi/actions/expense-actions'
-import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import useModal from '@cm/components/utils/modal/useModal'
 
 interface ExpenseListItemProps {
@@ -29,7 +27,7 @@ export const ExpenseListItem = ({
   onStatusChange,
   KeihiDetailMD,
 }: ExpenseListItemProps) => {
-  const subjectColor = subjectColorMap[expense.subject] || subjectColorMap[expense.mfSubject || '']
+  const subjectColor = subjectColorMap[expense.mfSubject || '']
 
   const insightSummaryText = expense.summary || ''
   const conversationSummaryText = expense.conversationSummary || ''
@@ -52,6 +50,8 @@ export const ExpenseListItem = ({
         return 'bg-blue-50'
       case 'MF連携済み':
         return 'bg-green-50'
+      case '私的利用':
+        return 'bg-red-50'
       default:
         return ''
     }
@@ -92,7 +92,6 @@ export const ExpenseListItem = ({
       <td className="align-middle font-semibold text-gray-900 whitespace-nowrap">
         <div className="text-xs text-gray-500">{expense.date && formatDate(expense.date)}</div>
         <div className="text-sm" onClick={() => KeihiDetailMD.handleOpen({keihiId: expense.id})}>
-          {/* <T_LINK href={`/keihi/expense/${expense.id}/edit`}></T_LINK> */}
           <span className={`text-blue-500 cursor-pointer underline`}>¥{formatAmount(expense.amount)}</span>
         </div>
       </td>
@@ -106,7 +105,7 @@ export const ExpenseListItem = ({
               color: subjectColor ? subjectColor : '#0F172A',
             }}
           >
-            {expense.subject}
+            {expense.mfSubject}
           </span>
           {expense.location && <div className="text-xs text-gray-500 mt-1 truncate">📍 {expense.location}</div>}
         </div>
@@ -132,12 +131,12 @@ export const ExpenseListItem = ({
       <td className="p-2 align-middle">
         {expense.KeihiAttachment && expense.KeihiAttachment.length > 0 ? (
           <div className="flex flex-col items-center ">
-            <div className="w-14 h-10">
+            {/* <div className="w-14 h-10">
               <ContentPlayer
                 src={expense.KeihiAttachment[0].url}
                 styles={{thumbnail: {width: 56, height: 40, borderRadius: '6px'}}}
               />
-            </div>
+            </div> */}
             <div className="text-[11px] text-gray-500 max-w-[120px] truncate">{expense.KeihiAttachment[0].originalName}</div>
           </div>
         ) : (
@@ -145,11 +144,13 @@ export const ExpenseListItem = ({
         )}
       </td>
 
-      <td>{expense.mfSubject || '-'}</td>
+      <td>{expense.mfSubAccount || '-'}</td>
 
-      <td>{expense.mfTaxCategory || '-'}</td>
-
-      <td>{shortText(expense.mfMemo || '')}</td>
+      <td>
+        {expense.mfTaxCategory || '-'}
+        <br />
+        {expense.mfDepartment || '-'}
+      </td>
     </tr>
   )
 }

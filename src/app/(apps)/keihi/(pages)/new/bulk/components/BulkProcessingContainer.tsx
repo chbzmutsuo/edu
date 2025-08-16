@@ -136,7 +136,6 @@ export const BulkProcessingContainer = ({onComplete}: BulkProcessingContainerPro
           ...record,
           imageData: uploadedImages[record.imageIndex],
           location: '', // デフォルト値を設定（APIレスポンスにlocationが含まれていない）
-          mfMemo: '', // デフォルト値を設定
         }))
 
         // 状態を一括で更新して再レンダリングを最小化

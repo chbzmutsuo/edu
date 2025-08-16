@@ -9,7 +9,7 @@ export interface ExpenseFilterType {
     start?: string | null
     end?: string | null
   }
-  subject: string | null
+  mfSubject: string | null // 統合された科目フィールド
   status: string | null
   keyword: string | null
 }
@@ -19,7 +19,7 @@ const initialFilter: ExpenseFilterType = {
     start: null,
     end: null,
   },
-  subject: null,
+  mfSubject: null,
   status: null,
   keyword: null,
 }
@@ -50,7 +50,7 @@ export const useExpenseFilter = () => {
         }
 
         // 科目フィルタ
-        if (filter.subject && expense.subject !== filter.subject) {
+        if (filter.mfSubject && expense.mfSubject !== filter.mfSubject) {
           return false
         }
 

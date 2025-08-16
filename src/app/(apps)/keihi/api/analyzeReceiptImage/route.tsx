@@ -51,7 +51,7 @@ export const POST = async (req: NextRequest) => {
             data: {
               date: new Date(receiptData.date),
               amount: receiptData.amount,
-              subject: receiptData.subject,
+              mfSubject: receiptData.mfSubject,
               location: receiptData.location,
               counterpartyName: receiptData.suggestedCounterparties[0] || '',
               keywords: receiptData.generatedKeywords,
@@ -62,9 +62,7 @@ export const POST = async (req: NextRequest) => {
 
               autoTags: [],
               // MoneyForward用データ
-              mfSubject: receiptData.subject,
               mfTaxCategory: '課仕 10%', // デフォルト値
-              mfMemo: `${receiptData.location}での${receiptData.suggestedPurposes.join('・')}`,
             },
           })
           recordCreated = true
@@ -135,7 +133,7 @@ export const POST = async (req: NextRequest) => {
           id: expense?.id || `failed_${receiptData.imageIndex}`,
           date: receiptData.date,
           amount: receiptData.amount,
-          subject: receiptData.subject,
+          mfSubject: receiptData.mfSubject,
           counterpartyName: receiptData.suggestedCounterparties[0] || '',
           keywords: receiptData.generatedKeywords,
           imageIndex: receiptData.imageIndex,

@@ -2,7 +2,7 @@
 import React from 'react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {R_Stack, C_Stack} from '@cm/components/styles/common-components/common-components'
-import {CarIcon, MapIcon, MapPinIcon, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
+import {CarIcon, MapPinIcon, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
 import Link from 'next/link'
 import {HREF} from '@cm/lib/methods/urls'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
@@ -15,68 +15,59 @@ import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 import {cn} from '@cm/shadcn/lib/utils'
+import {
+  WorkStatusSelectorProps,
+  AddScheduleButtonProps,
+  ScheduleCardProps,
+  StatusButtonsProps,
+  UserWithWorkStatus,
+} from '../types/haisha-page-types'
 
 const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
 
 // 作業ステータス選択コンポーネント
-export const WorkStatusSelector = React.memo(
-  ({userWorkStatus, user, date, fetchData}: {userWorkStatus: any; user: any; date: Date; fetchData: () => void}) => (
-    <select
-      value={userWorkStatus?.workStatus ?? ''}
-      className={`w-[100px] rounded-sm border  p-0.5 ${userWorkStatus?.workStatus ? '' : 'bg-gray-200 opacity-80'}`}
-      onChange={async e => {
-        const unique_userId_date = {
-          userId: user?.id ?? 0,
-          date: date,
-        }
-        await doStandardPrisma(`userWorkStatus`, `upsert`, {
-          where: {unique_userId_date},
-          ...createUpdate({...unique_userId_date, workStatus: e.target.value}),
-        })
-        fetchData()
-      }}
-    >
-      <option value="">-</option>
-      {WorkStatusList.map((workStatus, i) => (
-        <option key={i} value={workStatus.code}>
-          {workStatus.label}
-        </option>
-      ))}
-    </select>
-  )
-)
+export const WorkStatusSelector = React.memo(({userWorkStatus, user, date, fetchData}: WorkStatusSelectorProps) => (
+  <select
+    value={userWorkStatus?.workStatus ?? ''}
+    className={`w-[100px] rounded-sm border  p-0.5 ${userWorkStatus?.workStatus ? '' : 'bg-gray-200 opacity-80'}`}
+    onChange={async e => {
+      const unique_userId_date = {
+        userId: user?.id ?? 0,
+        date: date,
+      }
+      await doStandardPrisma(`userWorkStatus`, `upsert`, {
+        where: {unique_userId_date},
+        ...createUpdate({...unique_userId_date, workStatus: e.target.value}),
+      })
+      fetchData()
+    }}
+  >
+    <option value="">-</option>
+    {WorkStatusList.map((workStatus, i) => (
+      <option key={i} value={workStatus.code}>
+        {workStatus.label}
+      </option>
+    ))}
+  </select>
+))
 
 // 配車追加ボタンコンポーネント
-export const AddScheduleButton = React.memo(
-  ({
-    date,
-    tbmBase,
-    user,
-    tbmRouteGroup,
-    setModalOpen,
-  }: {
-    date: Date
-    tbmBase: any
-    user?: any
-    tbmRouteGroup?: any
-    setModalOpen: (props: any) => void
-  }) => (
-    <PlusCircleIcon
-      className="onHover text-gray-500 h-4 w-4 hover:text-gray-700"
-      onClick={() =>
-        setModalOpen({
-          date,
-          tbmBase,
-          user,
-          tbmRouteGroup,
-        })
-      }
-    />
-  )
-)
+export const AddScheduleButton = React.memo(({date, tbmBase, user, tbmRouteGroup, setModalOpen}: AddScheduleButtonProps) => (
+  <PlusCircleIcon
+    className="onHover text-gray-500 h-4 w-4 hover:text-gray-700"
+    onClick={() =>
+      setModalOpen({
+        date,
+        tbmBase,
+        user,
+        tbmRouteGroup,
+      })
+    }
+  />
+))
 
 // ステータスボタンコンポーネント
-export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: {tbmDriveSchedule: any; fetchData: () => void}) => (
+export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: StatusButtonsProps) => (
   <R_Stack className="justify-end gap-1">
     {Object.entries(TBM_STATUS).map(([key, value], i) => {
       const {label, color} = value as {label: string; color: string}
@@ -137,23 +128,7 @@ export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: {tbmDriv
 
 // スケジュール詳細カードコンポーネント
 export const ScheduleCard = React.memo(
-  ({
-    tbmDriveSchedule,
-    user,
-    date,
-    setModalOpen,
-    fetchData,
-    query,
-    tbmBase,
-  }: {
-    tbmDriveSchedule: any
-    user?: any
-    date: Date
-    setModalOpen: (props: any) => void
-    fetchData: () => void
-    query: any
-    tbmBase: any
-  }) => {
+  ({tbmDriveSchedule, user, date, setModalOpen, fetchData, query, tbmBase}: ScheduleCardProps) => {
     const {TbmRouteGroup, TbmVehicle, User} = tbmDriveSchedule
 
     // const foo = new vhi
@@ -190,7 +165,7 @@ export const ScheduleCard = React.memo(
                 onClick={() => {
                   setModalOpen({
                     tbmDriveSchedule,
-                    user,
+                    user: user as UserWithWorkStatus,
                     date,
                     tbmBase,
                   })

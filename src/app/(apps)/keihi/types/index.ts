@@ -7,7 +7,6 @@ export interface ExpenseRecord {
   updatedAt: Date
   date: Date
   amount: number
-  subject: string
   location?: string | null
   counterpartyName?: string | null
   // counterpartyIndustry was removed
@@ -22,11 +21,10 @@ export interface ExpenseRecord {
   autoTags: string[]
 
   // MoneyForward用
-  mfSubject?: string | null
+  mfSubject?: string | null // 統合された科目フィールド（旧subjectを含む）
   mfSubAccount?: string | null
   mfTaxCategory?: string | null
   mfDepartment?: string | null
-  mfMemo?: string | null
   // 添付ファイル
   KeihiAttachment: AttachmentRecord[]
   status?: string | null
@@ -47,7 +45,6 @@ export interface ExpenseFormData {
   // 基本情報
   date: string
   amount: number
-  subject: string
   location?: string
   counterpartyName?: string
   conversationPurpose: string[]
@@ -68,18 +65,29 @@ export interface ExpenseFormData {
   autoTags?: string[]
   status?: string
 
-  // MoneyForward用情報
-  mfSubject?: string
+  // MoneyForward用情報（subjectを統合）
+  mfSubject?: string // 統合された科目（旧subjectを含む）
   mfSubAccount?: string
   mfTaxCategory?: string
   mfDepartment?: string
-  mfMemo?: string
+
+  // ハイライト表示用の変更フィールド記録
+  _changedFields?: {
+    summary?: boolean
+    insight?: boolean
+    conversationSummary?: boolean
+    mfSubject?: boolean
+    mfSubAccount?: boolean
+  }
 }
 
 // AI下書きの型（新仕様対応）
 export interface AIDraft {
   summary: string // 摘要
   insight: string // 統合されたインサイト
+  conversationSummary: string // 会話内容の要約
+  mfSubject: string // 勘定科目
+  mfSubAccount: string // 補助科目
   autoTags: string[]
   generatedKeywords: string[]
 }
@@ -89,7 +97,7 @@ export interface ImageAnalysisResult {
   date: string
   location: string
   amount: number
-  subject: string
+  mfSubject: string // 統合された科目フィールド
   suggestedCounterparties: string[]
   suggestedPurposes: ConversationPurposeValue[]
   generatedKeywords: string[]
@@ -100,11 +108,10 @@ export interface AnalyzedReceipt {
   id?: string
   date: string
   amount: number
-  subject: string
+  mfSubject: string // 統合された科目フィールド
   location: string
   counterpartyName: string
   keywords: string[]
-  mfMemo?: string
   imageIndex: number
   imageData?: string
   recordCreated?: boolean
@@ -163,7 +170,7 @@ export interface ExpenseListState {
 export interface ExpenseFilters {
   dateFrom?: string
   dateTo?: string
-  subject?: string
+  mfSubject?: string // 統合された科目フィールド
   counterpartyName?: string
   amountMin?: number
   amountMax?: number
@@ -201,5 +208,5 @@ export interface KeywordGenerationInput {
   counterpartyName?: string
   conversationPurpose: string[]
   location?: string
-  subject: string
+  mfSubject: string // 統合された科目フィールド
 }

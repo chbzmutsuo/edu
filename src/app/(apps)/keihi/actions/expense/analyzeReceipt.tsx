@@ -14,9 +14,8 @@ export const analyzeMultipleReceipts = async (
       date: string
       location: string
       amount: number
-      subject: string
+      mfSubject: string // 統合された科目フィールド
       counterpartyName: string
-      mfMemo: string
       keywords: string[]
       imageIndex: number
       conversationPurpose: string[]
@@ -44,9 +43,8 @@ export const analyzeMultipleReceipts = async (
                 date: result.data.date,
                 location: result.data.location,
                 amount: result.data.amount,
-                subject: result.data.subject,
+                mfSubject: result.data.mfSubject,
                 counterpartyName: result.data.suggestedCounterparties[0] || '',
-                mfMemo: `${result.data.location}での${result.data.suggestedPurposes.join('・')}`,
                 keywords: result.data.generatedKeywords,
                 imageIndex: 0,
                 conversationPurpose: result.data.suggestedPurposes || [],
@@ -70,9 +68,8 @@ export const analyzeMultipleReceipts = async (
             date: result.data.date,
             location: result.data.location,
             amount: result.data.amount,
-            subject: result.data.subject,
+            mfSubject: result.data.mfSubject,
             counterpartyName: result.data.suggestedCounterparties[0] || '',
-            mfMemo: `${result.data.location}での${result.data.suggestedPurposes.join('・')}`,
             keywords: result.data.generatedKeywords,
             imageIndex: index,
             conversationPurpose: result.data.suggestedPurposes || [],
@@ -140,12 +137,12 @@ ${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
 【推測する情報】
 5. 想定される相手（複数可能）：
    - 店舗の種類、立地、時間帯から推測
-   - 例：「Aさん（教師）」「Bさん（エンジニア）」「その他複数名」
+   - 例：「Aさん（教師）」「Bさん（エンジニア）」「その他複数名」「店頭スタッフ」「なし（業務利用）」
 
 6. 会話の目的（複数選択、以下から推測）：
 ${conversationPurposeOptions}
 
-7. キーワード（2〜3個）：
+7. キーワード（1~2個）：
    - 相手、会話の目的、場所、科目から想定される交流内容
    - 例：「技術相談」「新規開拓」「人材紹介」
 
@@ -156,7 +153,6 @@ ${conversationPurposeOptions}
   "amount": 数値,
   "subject": "勘定科目",
   "suggestedCounterparties": ["相手1", "相手2"],
-  "suggestedPurposes": ["目的1", "目的2"],
   "generatedKeywords": ["キーワード1", "キーワード2", "キーワード3"]
 }
 `
@@ -201,7 +197,7 @@ ${conversationPurposeOptions}
       date: parsedData.date || new Date().toISOString().split('T')[0],
       location: parsedData.location || '',
       amount: parsedData.amount || 0,
-      subject: parsedData.subject || '会議費',
+      mfSubject: parsedData.mfSubject || '会議費',
       suggestedCounterparties: Array.isArray(parsedData.suggestedCounterparties)
         ? parsedData.suggestedCounterparties
         : ['その他複数名'],
@@ -224,80 +220,4 @@ ${conversationPurposeOptions}
       error: error instanceof Error ? error.message : '画像解析に失敗しました',
     }
   }
-}
-
-// キーワード生成関数
-export const generateKeywordsFromContext = async (
-  counterpartyName?: string,
-  conversationPurpose: string[] = [],
-  location?: string,
-  subject?: string
-): Promise<string[]> => {
-  const keywords: string[] = []
-
-  // 相手からキーワードを生成
-  if (counterpartyName) {
-    if (counterpartyName.includes('教師') || counterpartyName.includes('先生')) {
-      keywords.push('教育関係')
-    }
-    if (counterpartyName.includes('エンジニア') || counterpartyName.includes('開発')) {
-      keywords.push('技術相談')
-    }
-    if (counterpartyName.includes('営業') || counterpartyName.includes('販売')) {
-      keywords.push('営業活動')
-    }
-  }
-
-  // 会話の目的からキーワードを生成
-  conversationPurpose.forEach(purpose => {
-    switch (purpose) {
-      case '営業活動':
-        keywords.push('新規開拓', 'ビジネス機会')
-        break
-      case 'リクルーティング':
-        keywords.push('人材紹介', '採用活動')
-        break
-      case '技術・アイデア相談':
-        keywords.push('技術相談', '開発支援')
-        break
-      case 'ビジネス相談':
-        keywords.push('事業相談', '戦略検討')
-        break
-      case '研修・学習':
-        keywords.push('スキル向上', '学習支援')
-        break
-      case '情報交換':
-        keywords.push('情報共有', 'ネットワーキング')
-        break
-    }
-  })
-
-  // 場所からキーワードを生成
-  if (location) {
-    if (location.includes('カフェ') || location.includes('コーヒー')) {
-      keywords.push('カジュアル面談')
-    }
-    if (location.includes('レストラン') || location.includes('料理')) {
-      keywords.push('会食')
-    }
-    if (location.includes('ホテル') || location.includes('会議室')) {
-      keywords.push('正式会議')
-    }
-  }
-
-  // 科目からキーワードを生成
-  if (subject) {
-    if (subject.includes('会議費')) {
-      keywords.push('ビジネス会議')
-    }
-    if (subject.includes('交際費')) {
-      keywords.push('接待', '関係構築')
-    }
-    if (subject.includes('研修費')) {
-      keywords.push('教育', 'スキル開発')
-    }
-  }
-
-  // 重複を除去し、最大3つに制限
-  return [...new Set(keywords)].slice(0, 3)
 }

@@ -41,7 +41,7 @@ const Header = React.memo<HeaderProps>(({adminContext}) => {
   } = adminContext
 
   const {query, rootPath} = useGlobalProps ?? {}
-  const {device, appbarHeight, PC} = useWindowSize()
+  const {appbarHeight, PC} = useWindowSize()
 
   // GlobalIdSelectorのメモ化を改善
   const GlobalIdSelector = useMemo(() => {

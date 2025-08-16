@@ -7,6 +7,8 @@ interface ExpenseListHeaderProps {
   selectedCount: number
   onExportAll: () => void
   onExportSelected: () => void
+  onExportLocationsAll: () => void
+  onExportLocationsSelected: () => void
   onDeleteSelected: () => void
 }
 
@@ -15,6 +17,8 @@ export const ExpenseListHeader = ({
   selectedCount,
   onExportAll,
   onExportSelected,
+  onExportLocationsAll,
+  onExportLocationsSelected,
   onDeleteSelected,
 }: ExpenseListHeaderProps) => {
   return (
@@ -41,22 +45,36 @@ export const ExpenseListHeader = ({
             一括登録
           </T_LINK>
 
-          {/* CSV出力ボタン */}
-          <button
-            onClick={onExportAll}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium"
-          >
-            CSV出力（全件）
-          </button>
+          {/* CSV出力ボタン（経費データ） */}
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={onExportAll}
+              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium"
+            >
+              経費CSV出力（全件）
+            </button>
+            <button
+              onClick={onExportLocationsAll}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium"
+            >
+              取引先CSV出力（全件）
+            </button>
+          </div>
 
           {/* 選択時のアクション */}
           {selectedCount > 0 && (
-            <>
+            <div className="flex flex-col gap-2">
               <button
                 onClick={onExportSelected}
                 className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 text-sm font-medium"
               >
-                CSV出力（選択）
+                経費CSV出力（選択）
+              </button>
+              <button
+                onClick={onExportLocationsSelected}
+                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 text-sm font-medium"
+              >
+                取引先CSV出力（選択）
               </button>
               <button
                 onClick={onDeleteSelected}
@@ -64,7 +82,7 @@ export const ExpenseListHeader = ({
               >
                 削除（選択）
               </button>
-            </>
+            </div>
           )}
         </div>
       </div>

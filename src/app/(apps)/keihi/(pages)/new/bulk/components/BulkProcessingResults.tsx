@@ -219,7 +219,7 @@ export const BulkProcessingResults = ({
                     </div>
                     <div>
                       <span className="font-medium text-gray-700">科目:</span>
-                      <span className="ml-2 text-gray-900">{receipt.subject || '未分類'}</span>
+                      <span className="ml-2 text-gray-900">{receipt.mfSubject || '未分類'}</span>
                     </div>
                     <div className="md:col-span-3">
                       <span className="font-medium text-gray-700">キーワード:</span>

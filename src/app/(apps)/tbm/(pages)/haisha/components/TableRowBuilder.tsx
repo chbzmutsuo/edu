@@ -1,14 +1,18 @@
 'use client'
-import React, {CSSProperties} from 'react'
+import React from 'react'
 import {Days} from '@cm/class/Days/Days'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {HaishaCard} from './HaishaCard'
 import UserTh from './UserTh'
 import DateThCell from './DateThCell'
 import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
-import {haishaListData} from './getListData'
-import {haishaTableMode} from './HaishaTable'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {
+  TableRowBuilderProps,
+  DateCellBuilderParams,
+  UserWithWorkStatus,
+  TbmRouteGroupWithCalendar,
+} from '../types/haisha-page-types'
 
 // 固定列のスタイル定数
 const STICKY_COLUMN_STYLE = {
@@ -25,23 +29,9 @@ const HEADER_STYLE = {
   fontWeight: 'bold' as const,
 }
 
-interface TableRowBuilderProps {
-  mode: haishaTableMode
-  tbmBase: any
-  days: Date[]
-  holidays: any[]
-  fetchData: () => void
-  setModalOpen: (props: any) => void
-  admin: boolean
-  query: any
-  userWorkStatusCount: haishaListData['userWorkStatusCount']
-  scheduleByDateAndUser?: Record<string, Record<string, any[]>>
-  scheduleByDateAndRoute?: Record<string, Record<string, any[]>>
-}
-
 export const TableRowBuilder = {
   // ドライバーモード用の行生成
-  buildDriverRows: (userList: haishaListData['userList'], props: TableRowBuilderProps) => {
+  buildDriverRows: (userList: UserWithWorkStatus[], props: TableRowBuilderProps) => {
     const {
       mode,
       tbmBase,
@@ -96,7 +86,7 @@ export const TableRowBuilder = {
   },
 
   // ルートモード用の行生成
-  buildRouteRows: (tbmRouteGroup: haishaListData['tbmRouteGroup'], props: TableRowBuilderProps) => {
+  buildRouteRows: (tbmRouteGroup: TbmRouteGroupWithCalendar[], props: TableRowBuilderProps) => {
     const {mode, tbmBase, days, holidays, fetchData, setModalOpen, query, scheduleByDateAndRoute = {}} = props
 
     return tbmRouteGroup
@@ -166,31 +156,9 @@ export const TableRowBuilder = {
   },
 
   // 日付セルの共通ビルダー
-  buildDateCell: ({
-    date,
-    scheduleListOnDate,
-    user,
-    tbmRouteGroup,
-    mode,
-    tbmBase,
-    holidays,
-    fetchData,
-    setModalOpen,
-    query,
-    cellStyle,
-  }: {
-    date: Date
-    scheduleListOnDate: any[]
-    user?: any
-    tbmRouteGroup?: any
-    mode: haishaTableMode
-    tbmBase: any
-    holidays: any[]
-    fetchData: () => void
-    setModalOpen: (props: any) => void
-    query: any
-    cellStyle?: CSSProperties
-  }) => {
+  buildDateCell: (params: DateCellBuilderParams) => {
+    const {date, scheduleListOnDate, user, tbmRouteGroup, mode, tbmBase, holidays, fetchData, setModalOpen, query, cellStyle} =
+      params
     const dateStr = formatDate(date, 'M/D(ddd)')
     const isHoliday = Days.day.isHoliday(date, holidays)
     const thStyle = {...HEADER_STYLE, ...isHoliday?.style}

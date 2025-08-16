@@ -5,7 +5,7 @@ import {C_Stack} from '@cm/components/styles/common-components/common-components
 import {KeyValue} from '@cm/components/styles/common-components/ParameterCard'
 import {HREF} from '@cm/lib/methods/urls'
 import {T_LINK} from '@cm/components/styles/common-components/links'
-import {haishaListData} from './getListData'
+import {HaishaListData} from '@app/(apps)/tbm/(pages)/haisha/types/haisha-page-types'
 
 export default function UserTh({
   user,
@@ -13,10 +13,10 @@ export default function UserTh({
   query,
   userWorkStatusCount,
 }: {
-  user: haishaListData['userList'][number]
+  user: HaishaListData['userList'][number]
   admin: boolean
   query: any
-  userWorkStatusCount: haishaListData['userWorkStatusCount']
+  userWorkStatusCount: HaishaListData['userWorkStatusCount']
 }) {
   if (user) {
     const countByStatus = userWorkStatusCount

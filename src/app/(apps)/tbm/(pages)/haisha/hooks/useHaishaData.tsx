@@ -3,22 +3,22 @@ import {useState, useEffect, useCallback} from 'react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {showSpendTime} from '@cm/lib/methods/toast-helper'
 import useLocalLoading from '@cm/hooks/globalHooks/useLocalLoading'
-import {getListData, haishaListData} from '../components/getListData'
-import {haishaTableMode} from '../components/HaishaTable'
+import {getListData} from '../components/getListData'
+import {
+  UseHaishaDataParams,
+  UseHaishaDataReturn,
+  HaishaListData,
+  TbmDriveScheduleWithDuplicated,
+} from '../types/haisha-page-types'
 
-interface UseHaishaDataProps {
-  tbmBaseId: number
-  whereQuery: {
-    gte?: Date
-    lt?: Date
-  }
-  mode: haishaTableMode
-  currentPage: number
-  itemsPerPage: number
-}
-
-export function useHaishaData({tbmBaseId, whereQuery, mode, currentPage, itemsPerPage}: UseHaishaDataProps) {
-  const [listDataState, setListDataState] = useState<haishaListData | null>(null)
+export function useHaishaData({
+  tbmBaseId,
+  whereQuery,
+  mode,
+  currentPage,
+  itemsPerPage,
+}: UseHaishaDataParams): UseHaishaDataReturn {
+  const [listDataState, setListDataState] = useState<HaishaListData | null>(null)
   const [maxRecord, setMaxRecord] = useState(0)
   const {LocalLoader, toggleLocalLoading} = useLocalLoading()
 
@@ -48,7 +48,7 @@ export function useHaishaData({tbmBaseId, whereQuery, mode, currentPage, itemsPe
         acc[dateKey][userKey].push(schedule)
         return acc
       },
-      {} as Record<string, Record<string, any[]>>
+      {} as Record<string, Record<string, TbmDriveScheduleWithDuplicated[]>>
     ) ?? {}
 
   const scheduleByDateAndRoute =
@@ -61,11 +61,11 @@ export function useHaishaData({tbmBaseId, whereQuery, mode, currentPage, itemsPe
         acc[dateKey][routeKey].push(schedule)
         return acc
       },
-      {} as Record<string, Record<string, any[]>>
+      {} as Record<string, Record<string, TbmDriveScheduleWithDuplicated[]>>
     ) ?? {}
 
   // ローカルstate更新用のヘルパー関数
-  const updateScheduleInState = useCallback((updatedSchedule: any) => {
+  const updateScheduleInState = useCallback((updatedSchedule: TbmDriveScheduleWithDuplicated) => {
     setListDataState(prev => {
       if (!prev) return null
 
@@ -96,8 +96,6 @@ export function useHaishaData({tbmBaseId, whereQuery, mode, currentPage, itemsPe
     maxRecord,
     LocalLoader,
     fetchData,
-    scheduleByDateAndUser,
-    scheduleByDateAndRoute,
     updateScheduleInState,
     removeScheduleFromState,
   }

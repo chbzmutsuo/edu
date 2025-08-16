@@ -2,7 +2,7 @@
 
 import {useState, useEffect, useCallback} from 'react'
 import {toast} from 'react-toastify'
-import {deleteExpenses, exportExpensesToCsv} from '../actions/expense-actions'
+import {deleteExpenses, exportExpensesToCsv, exportLocationsToCsv} from '../actions/expense-actions'
 import {ExpenseListHeader} from '../components/ExpenseListHeader'
 import {ExpenseListItem} from '../components/ExpenseListItem'
 import {ExpenseFilter} from '../components/ExpenseFilter'
@@ -18,6 +18,9 @@ import {cn} from '@cm/shadcn/lib/utils'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import useModal from '@cm/components/utils/modal/useModal'
 import ExpenseEditor from '@app/(apps)/keihi/(pages)/expense/[id]/edit/ExpenseEditor'
+import useWindowSize from '@cm/hooks/useWindowSize'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {sleep} from '@cm/lib/methods/common'
 
 const ExpenseListPage = () => {
   const {allOptions} = useAllOptions()
@@ -28,6 +31,7 @@ const ExpenseListPage = () => {
 
   const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
   const [isExporting, setIsExporting] = useState(false)
+  const [isExportingLocations, setIsExportingLocations] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   // クエリパラメータが変更されたら再取得
@@ -71,7 +75,20 @@ const ExpenseListPage = () => {
     [queryState.filter, updateQuery]
   )
 
-  // CSV出力（全件）
+  // 共通のCSVダウンロード処理
+  const downloadCsv = useCallback((data: string, filename: string) => {
+    const blob = new Blob([data], {type: 'text/csv;charset=utf-8'})
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  }, [])
+
+  // 経費データCSV出力（全件）
   const handleExportAll = useCallback(async () => {
     try {
       setIsExporting(true)
@@ -79,29 +96,20 @@ const ExpenseListPage = () => {
 
       if (result.success && result.data) {
         // CSVファイルのダウンロード
-        const blob = new Blob([result.data], {type: 'text/csv;charset=utf-8'})
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `経費記録_全件_${new Date().toISOString().split('T')[0]}.csv`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-
-        toast.success('CSV出力が完了しました')
+        downloadCsv(result.data, `経費記録_全件_${new Date().toISOString().split('T')[0]}.csv`)
+        toast.success('経費データのCSV出力が完了しました')
       } else {
-        toast.error(result.error || 'CSV出力に失敗しました')
+        toast.error(result.error || '経費データのCSV出力に失敗しました')
       }
     } catch (error) {
-      console.error('CSV出力エラー:', error)
-      toast.error('CSV出力に失敗しました')
+      console.error('経費データCSV出力エラー:', error)
+      toast.error('経費データのCSV出力に失敗しました')
     } finally {
       setIsExporting(false)
     }
-  }, [])
+  }, [downloadCsv])
 
-  // CSV出力（選択）
+  // 経費データCSV出力（選択）
   const handleExportSelected = useCallback(async () => {
     if (state.selectedIds.length === 0) {
       toast.error('出力する記録を選択してください')
@@ -114,27 +122,65 @@ const ExpenseListPage = () => {
 
       if (result.success && result.data) {
         // CSVファイルのダウンロード
-        const blob = new Blob([result.data], {type: 'text/csv;charset=utf-8'})
-        const url = URL.createObjectURL(blob)
-        const link = document.createElement('a')
-        link.href = url
-        link.download = `経費記録_選択_${new Date().toISOString().split('T')[0]}.csv`
-        document.body.appendChild(link)
-        link.click()
-        document.body.removeChild(link)
-        URL.revokeObjectURL(url)
-
-        toast.success(`${state.selectedIds.length}件のCSV出力が完了しました`)
+        downloadCsv(result.data, `経費記録_選択_${new Date().toISOString().split('T')[0]}.csv`)
+        toast.success(`${state.selectedIds.length}件の経費データCSV出力が完了しました`)
       } else {
-        toast.error(result.error || 'CSV出力に失敗しました')
+        toast.error(result.error || '経費データのCSV出力に失敗しました')
       }
     } catch (error) {
-      console.error('CSV出力エラー:', error)
-      toast.error('CSV出力に失敗しました')
+      console.error('経費データCSV出力エラー:', error)
+      toast.error('経費データのCSV出力に失敗しました')
     } finally {
       setIsExporting(false)
     }
-  }, [state.selectedIds])
+  }, [state.selectedIds, downloadCsv])
+
+  // 取引先一覧CSV出力（全件）
+  const handleExportLocationsAll = useCallback(async () => {
+    try {
+      setIsExportingLocations(true)
+      const result = await exportLocationsToCsv()
+
+      if (result.success && result.data) {
+        // CSVファイルのダウンロード
+        downloadCsv(result.data, `取引先一覧_全件_${new Date().toISOString().split('T')[0]}.csv`)
+        toast.success('取引先一覧のCSV出力が完了しました')
+      } else {
+        toast.error(result.error || '取引先一覧のCSV出力に失敗しました')
+      }
+    } catch (error) {
+      console.error('取引先一覧CSV出力エラー:', error)
+      toast.error('取引先一覧のCSV出力に失敗しました')
+    } finally {
+      setIsExportingLocations(false)
+    }
+  }, [downloadCsv])
+
+  // 取引先一覧CSV出力（選択）
+  const handleExportLocationsSelected = useCallback(async () => {
+    if (state.selectedIds.length === 0) {
+      toast.error('出力する記録を選択してください')
+      return
+    }
+
+    try {
+      setIsExportingLocations(true)
+      const result = await exportLocationsToCsv(state.selectedIds)
+
+      if (result.success && result.data) {
+        // CSVファイルのダウンロード
+        downloadCsv(result.data, `取引先一覧_選択_${new Date().toISOString().split('T')[0]}.csv`)
+        toast.success(`${state.selectedIds.length}件の取引先一覧CSV出力が完了しました`)
+      } else {
+        toast.error(result.error || '取引先一覧のCSV出力に失敗しました')
+      }
+    } catch (error) {
+      console.error('取引先一覧CSV出力エラー:', error)
+      toast.error('取引先一覧のCSV出力に失敗しました')
+    } finally {
+      setIsExportingLocations(false)
+    }
+  }, [state.selectedIds, downloadCsv])
 
   // 選択削除
   const handleDeleteSelected = useCallback(async () => {
@@ -190,7 +236,13 @@ const ExpenseListPage = () => {
     <div className="bg-gray-50 px-4">
       <KeihiDetailMD.Modal>
         <div className={`w-full`}>
-          <ExpenseEditor expenseId={KeihiDetailMD?.open?.keihiId} />
+          <ExpenseEditor
+            expenseId={KeihiDetailMD?.open?.keihiId}
+            onUpdate={async () => {
+              await fetchExpenses()
+              KeihiDetailMD.handleClose()
+            }}
+          />
         </div>
       </KeihiDetailMD.Modal>
       <div className="max-w-[90vw] mx-auto">
@@ -248,7 +300,8 @@ const ExpenseListPage = () => {
 
           {/* 処理状況 */}
           <div>
-            <ProcessingStatus isVisible={isExporting} message="CSV出力中..." variant="info" />
+            <ProcessingStatus isVisible={isExporting} message="経費データCSV出力中..." variant="info" />
+            <ProcessingStatus isVisible={isExportingLocations} message="取引先一覧CSV出力中..." variant="info" />
             <ProcessingStatus isVisible={isDeleting} message="削除処理中..." variant="info" />
           </div>
 
@@ -319,9 +372,8 @@ const ExpenseListPage = () => {
                         currentOrder={queryState.sort.order}
                         onSort={toggleSort}
                       />
-                      <th className="text-xs font-medium text-gray-500">MF科目</th>
-                      <th className="text-xs font-medium text-gray-500">MF税区分</th>
-                      <th className="text-xs font-medium text-gray-500">MFメモ</th>
+                      <th className="text-xs font-medium text-gray-500">MF科目/MF補助科目</th>
+                      <th className="text-xs font-medium text-gray-500">MF税区分/MF部門</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">

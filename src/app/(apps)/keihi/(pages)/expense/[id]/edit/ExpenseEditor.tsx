@@ -1,7 +1,7 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {useParams, useRouter} from 'next/navigation'
+import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
 import {getExpenseById, updateExpense, uploadAttachment, linkAttachmentsToExpense} from '../../../../actions/expense-actions'
 import CameraUpload from '../../../../components/CameraUpload'
@@ -9,38 +9,24 @@ import {useAllOptions} from '../../../../hooks/useOptions'
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {analyzeMultipleReceipts} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
 import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
-import {ExpenseBasicInfoForm} from '@app/(apps)/keihi/components/ExpenseBasicInfoForm'
-import {ExpenseAIDraftSection} from '@app/(apps)/keihi/components/ExpenseAIDraftSection'
+import {ExpenseIntegratedForm} from '@app/(apps)/keihi/components/ExpenseIntegratedForm'
 import {useJotaiByKey} from '@cm/hooks/useJotai'
 import {Card} from '@cm/shadcn/ui/card'
-
-// 共通のフィールドクラス生成関数
-const getFieldClass = (value: string | number | string[], required = false) => {
-  const baseClass = 'w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-  if (required) {
-    const hasValue = Array.isArray(value) ? value.length > 0 : value !== '' && value !== 0 && value !== undefined
-    return hasValue ? `${baseClass} border-green-300 bg-green-50` : `${baseClass} border-red-300 bg-red-50`
-  }
-  const hasValue = Array.isArray(value) ? value.length > 0 : value !== '' && value !== 0 && value !== undefined
-  return hasValue ? `${baseClass} border-blue-300 bg-blue-50` : `${baseClass} border-gray-300`
-}
 
 interface ExpenseDetail {
   id: string
   date: Date
   amount: number
-  subject: string
   location?: string | null
   counterpartyName?: string | null
   conversationPurpose: string[]
   keywords: string[]
   conversationSummary?: string | null
   autoTags: string[]
-  mfSubject?: string | null
+  mfSubject?: string | null // 統合された科目フィールド
   mfSubAccount?: string | null
   mfTaxCategory?: string | null
   mfDepartment?: string | null
-  mfMemo?: string | null
   summary?: string | null
   insight?: string | null
   status?: string | null
@@ -58,14 +44,12 @@ interface ExpenseDetail {
 interface FormData {
   date: string
   amount: string
-  subject: string
   location: string
   counterpartyName: string
   conversationPurpose: string[]
   keywords: string[]
   conversationSummary: string
   summary: string
-
   insight: string
   autoTags: string[]
   status: string
@@ -73,10 +57,17 @@ interface FormData {
   mfSubAccount: string
   mfTaxCategory: string
   mfDepartment: string
-  mfMemo: string
+  // ハイライト表示用の変更フィールド記録
+  _changedFields?: {
+    summary?: boolean
+    insight?: boolean
+    conversationSummary?: boolean
+    mfSubject?: boolean
+    mfSubAccount?: boolean
+  }
 }
 
-export default function ExpenseEditor({expenseId}: {expenseId: string}) {
+export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string; onUpdate: () => void}) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -85,9 +76,7 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
   const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
 
   const [expense, setExpense] = useState<ExpenseDetail | null>(null)
-  const [aiDraft, setAiDraft] = useState<any>(null)
 
-  const [showDraft, setShowDraft] = useState(false)
   const [additionalInstruction, setAdditionalInstruction] = useState('')
   const [attachments, setAttachments] = useState<
     Array<{
@@ -117,22 +106,19 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
   const [formData, setFormData] = useJotaiByKey<FormData>('keihiFormJotai', {
     date: '',
     amount: '',
-    subject: '',
     location: '',
     counterpartyName: '',
     conversationPurpose: [],
     keywords: [],
     conversationSummary: '',
     summary: '',
-
     insight: '',
     autoTags: [],
     status: '',
     mfSubject: '',
     mfSubAccount: '',
-    mfTaxCategory: '',
+    mfTaxCategory: '課仕 10%',
     mfDepartment: '',
-    mfMemo: '',
   })
 
   // const expenseId = params?.id as string
@@ -142,6 +128,7 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
       setIsLoading(true)
       try {
         const result = await getExpenseById(expenseId)
+
         if (result.success) {
           const data = result.data as ExpenseDetail
           setExpense(data)
@@ -153,34 +140,22 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
           setFormData({
             date: new Date(data.date).toISOString().split('T')[0],
             amount: data.amount.toString(),
-            subject: data.subject,
             location: data.location || '',
             counterpartyName: data.counterpartyName || '',
             conversationPurpose: data.conversationPurpose || [],
             keywords: data.keywords,
             conversationSummary: data.conversationSummary || '',
             summary: data.summary || '',
-
             insight: data.insight || '',
             autoTags: data.autoTags || [],
             status: data.status || '',
-            mfSubject: data.mfSubject || '',
+            mfSubject: data.mfSubject || '', // 統合された科目フィールド
             mfSubAccount: data.mfSubAccount || '',
             mfTaxCategory: data.mfTaxCategory || '',
             mfDepartment: data.mfDepartment || '',
-            mfMemo: data.mfMemo || '',
           })
 
-          // AIドラフトデータを設定（既存のインサイトがある場合）
-          if (data.insight) {
-            setAiDraft({
-              summary: data.summary || '',
-              insight: data.insight,
-              autoTags: data.autoTags || [],
-              generatedKeywords: [],
-            })
-            setShowDraft(true)
-          }
+          // AIドラフトデータの設定は不要（統合フォームで直接管理）
         } else {
           toast.error(result.error || '記録の取得に失敗しました')
           router.push('/keihi')
@@ -196,6 +171,8 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
 
     if (expenseId) {
       fetchExpense()
+    } else {
+      setIsLoading(false)
     }
   }, [expenseId, router])
 
@@ -207,7 +184,7 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
       const expenseFormData = {
         date: formData.date,
         amount: parseFloat(formData.amount) || 0,
-        subject: formData.subject,
+        mfSubject: formData.mfSubject, // mfSubjectを使用
         location: formData.location,
         counterpartyName: formData.counterpartyName,
         conversationPurpose: formData.conversationPurpose,
@@ -218,8 +195,26 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
       const result = await generateInsightsDraft(expenseFormData, additionalInstruction || undefined)
 
       if (result.success && result.data) {
-        setAiDraft(result.data)
-        setShowDraft(true)
+        // AIの結果を直接フォームデータに設定
+        setFormData(prev => ({
+          ...prev,
+          summary: result.data?.summary || '',
+          insight: result.data?.insight || '',
+          conversationSummary: result.data?.conversationSummary || prev.conversationSummary || '',
+          mfSubject: result.data?.mfSubject || prev.mfSubject || '',
+          mfSubAccount: result.data?.mfSubAccount || prev.mfSubAccount || '',
+          autoTags: result.data?.autoTags || [],
+          keywords: [...new Set([...prev.keywords, ...(result.data?.generatedKeywords || [])])],
+          // 変更された項目を記録（ハイライト表示用）
+          _changedFields: {
+            summary: true,
+            insight: true,
+            conversationSummary: !!result.data?.conversationSummary,
+            mfSubject: !!result.data?.mfSubject,
+            mfSubAccount: !!result.data?.mfSubAccount,
+          },
+        }))
+
         toast.success('AIインサイトを生成しました')
       } else {
         toast.error(result.error || 'AIインサイト生成に失敗しました')
@@ -297,7 +292,7 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
             ...prev,
             date: receipt.date,
             amount: receipt.amount.toString(),
-            subject: receipt.subject,
+            mfSubject: receipt.mfSubject, // 統合された科目フィールド
             location: receipt.location || '',
             counterpartyName: receipt.counterpartyName || '',
             conversationPurpose: receipt.conversationPurpose || [],
@@ -321,8 +316,8 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!formData.date || !formData.amount || !formData.subject) {
-      toast.error('必須項目を入力してください')
+    if (!formData.date || !formData.amount || !formData.mfSubject || !formData.mfTaxCategory) {
+      toast.error('必須項目（日付、金額、摘要、税区分、部門）を入力してください')
       return
     }
 
@@ -332,27 +327,23 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
         // 基本情報
         date: new Date(formData.date),
         amount: parseFloat(formData.amount),
-        subject: formData.subject,
+        mfSubject: formData.mfSubject, // mfSubjectをsubjectとして保存
         location: formData.location || undefined,
         counterpartyName: formData.counterpartyName || undefined,
         conversationPurpose: formData.conversationPurpose,
-        keywords: aiDraft?.generatedKeywords
-          ? [...new Set([...formData.keywords, ...aiDraft.generatedKeywords])]
-          : formData.keywords,
+        keywords: formData.keywords,
         conversationSummary: formData.conversationSummary || undefined,
 
-        // AIインサイト
-        summary: aiDraft?.summary || undefined,
-        insight: aiDraft?.insight || undefined,
-        autoTags: aiDraft?.autoTags || formData.autoTags,
+        // AIインサイト（手動編集可能）
+        summary: formData.summary || undefined,
+        insight: formData.insight || undefined,
+        autoTags: formData.autoTags || [],
 
         // MoneyForward用情報
         status: formData.status || undefined,
-        mfSubject: formData.mfSubject || undefined,
         mfSubAccount: formData.mfSubAccount || undefined,
         mfTaxCategory: formData.mfTaxCategory || undefined,
         mfDepartment: formData.mfDepartment || undefined,
-        mfMemo: formData.mfMemo || undefined,
       }
 
       const result = await updateExpense(expenseId, updateData)
@@ -369,7 +360,8 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
         }
 
         toast.success('記録を更新しました')
-        router.push('/keihi')
+
+        onUpdate()
       } else {
         toast.error(result.error || '更新に失敗しました')
       }
@@ -402,21 +394,21 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
     )
   }
 
-  if (!expense) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600 mb-4">記録が見つかりません</p>
-          <button onClick={() => router.push('/keihi')} className="text-blue-600 hover:text-blue-800 underline">
-            一覧に戻る
-          </button>
-        </div>
-      </div>
-    )
-  }
+  // if (!expense) {
+  //   return (
+  //     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  //       <div className="text-center">
+  //         <p className="text-gray-600 mb-4">記録が見つかりません</p>
+  //         <button onClick={() => router.push('/keihi')} className="text-blue-600 hover:text-blue-800 underline">
+  //           一覧に戻る
+  //         </button>
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
-    <div className=" w-[2000px] max-w-[90vw]">
+    <div className=" w-[2000px] max-w-[90vw] mx-auto ">
       <div className=" mx-auto">
         <div className={`grid lg:grid-cols-2 gap-4`}>
           {/* //基本情報 */}
@@ -431,23 +423,25 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
                 <p className="text-sm text-gray-600 mt-2">追加の領収書を撮影すると、フォームの内容を自動更新します</p>
               </section>
 
-              {/* 基本情報フォーム */}
-              <ExpenseBasicInfoForm
+              {/* 統合フォーム */}
+              <ExpenseIntegratedForm
                 formData={{
                   date: formData.date,
                   amount: parseInt(formData.amount) || 0,
-                  subject: formData.subject,
                   location: formData.location,
                   counterpartyName: formData.counterpartyName,
                   conversationPurpose: formData.conversationPurpose,
                   keywords: formData.keywords,
                   conversationSummary: formData.conversationSummary,
+                  summary: formData.summary,
+                  insight: formData.insight,
+                  autoTags: formData.autoTags,
                   status: formData.status,
                   mfSubject: formData.mfSubject,
                   mfSubAccount: formData.mfSubAccount,
                   mfTaxCategory: formData.mfTaxCategory,
                   mfDepartment: formData.mfDepartment,
-                  mfMemo: formData.mfMemo,
+                  _changedFields: formData._changedFields,
                 }}
                 setFormData={(field, value) => {
                   setFormData(prev => {
@@ -455,35 +449,10 @@ export default function ExpenseEditor({expenseId}: {expenseId: string}) {
                   })
                 }}
                 allOptions={allOptions}
-                getFieldClass={getFieldClass}
-              />
-
-              {/* AIインサイトセクション */}
-              <ExpenseAIDraftSection
-                formData={{
-                  date: formData.date,
-                  amount: parseInt(formData.amount) || 0,
-                  subject: formData.subject,
-                  location: formData.location,
-                  counterpartyName: formData.counterpartyName,
-                  conversationPurpose: formData.conversationPurpose,
-                  keywords: formData.keywords,
-                  conversationSummary: formData.conversationSummary,
-                }}
-                aiDraft={aiDraft}
-                setAiDraft={setAiDraft}
-                showDraft={showDraft}
-                setShowDraft={setShowDraft}
-                isAnalyzing={isGeneratingInsights}
+                isGeneratingInsights={isGeneratingInsights}
                 additionalInstruction={additionalInstruction}
                 setAdditionalInstruction={setAdditionalInstruction}
-                onGenerateDraft={handleGenerateInsights}
-                onRegenerateDraft={handleGenerateInsights}
-                setFormData={(field, value) => {
-                  setFormData(prev => {
-                    return {...prev, [field]: value}
-                  })
-                }}
+                onGenerateInsights={handleGenerateInsights}
               />
 
               {/* 送信ボタン */}

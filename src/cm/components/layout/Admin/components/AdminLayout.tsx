@@ -16,6 +16,7 @@ type AdminLayoutProps = {
 
 export const AdminLayout = React.memo(({children, adminContext, menuContext, useGlobalProps}: AdminLayoutProps) => {
   const {PC} = useWindowSize()
+
   const {horizontalMenu, pathItemObject} = adminContext
 
   const MainDisplay = React.memo(() => <div>{children}</div>)
