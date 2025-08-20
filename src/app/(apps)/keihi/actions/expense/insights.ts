@@ -1,7 +1,6 @@
 'use server'
 
 import OpenAI from 'openai'
-import prisma from 'src/lib/prisma'
 
 import {ExpenseFormData, AIDraft} from '@app/(apps)/keihi/types'
 
@@ -41,12 +40,13 @@ const generateInsightPrompt = (formData: ExpenseFormData, options: InsightGenera
 
   // 入力情報として指定された項目のみを使用
   const basePrompt = `
-あなたは個人事業主として、ビジネス交流の記録を自分自身の視点で振り返っています。
-以下の経費記録情報から、必要な情報を生成してください。
+あなたは個人事業主（ITエンジニア、アプリの受託開発、個人開発）として、ビジネス交流の記録を自分自身の視点で振り返っています。
+以下の経費記録情報から、事業に関係のある文脈を作り出し、必要な情報を生成してください。
+
 
 【入力情報】
-- 場所: ${formData.location || '不明'}
-- 相手名: ${formData.counterpartyName || '不明'}
+- 取引先: ${formData.counterparty || '不明'}
+- 相手名: ${formData.participants || '不明'}
 - 会話内容の要約: ${formData.conversationSummary || '記録なし'}
 - 会話の目的: ${formData.conversationPurpose.join('・')}
 - キーワード: ${formData.keywords.join('・')}
@@ -72,7 +72,7 @@ const generateInsightPrompt = (formData: ExpenseFormData, options: InsightGenera
 
 【多様な交流目的を考慮】
 - 営業・商談：新規顧客開拓、既存顧客との関係強化
-- 人材・リクルーティング：プロジェクトメンバーの採用、人材紹介依頼
+- アプリデモの紹介とフィードバックをもらうこと
 - 技術・開発：技術課題の解決、新技術の相談
 - 外注・パートナー：業務委託先の発掘、協業相手の探索
 - 顧客紹介：新規顧客の紹介依頼、ビジネスマッチング
@@ -96,7 +96,7 @@ ${additionalInstruction ? `\n【追加指示】\n${additionalInstruction}` : ''}
 }
 
 // 統合されたインサイト生成関数
-const generateInsightsCore = async (
+export const generateInsightsCore = async (
   formData: ExpenseFormData,
   options: InsightGenerationOptions = {}
 ): Promise<{
@@ -184,123 +184,47 @@ export const generateInsightsDraft = async (
   }
 }
 
-// 実際のインサイト生成（データベース保存用）
-export const generateInsights = async (
-  formData: ExpenseFormData,
-  additionalInstruction?: string
-): Promise<{
-  success: boolean
-  data?: AIAnalysisResult
-  error?: string
-}> => {
-  try {
-    const result = await generateInsightsCore(formData, {
-      additionalInstruction,
-      isDraft: false,
-    })
+// // 実際のインサイト生成（データベース保存用）
+// export const generateInsights = async (
+//   formData: ExpenseFormData,
+//   additionalInstruction?: string
+// ): Promise<{
+//   success: boolean
+//   data?: AIAnalysisResult
+//   error?: string
+// }> => {
+//   try {
+//     const result = await generateInsightsCore(formData, {
+//       additionalInstruction,
+//       isDraft: false,
+//     })
 
-    if (!result.success || !result.data) {
-      return {
-        success: false,
-        error: result.error || 'インサイト生成に失敗しました',
-      }
-    }
+//     if (!result.success || !result.data) {
+//       return {
+//         success: false,
+//         error: result.error || 'インサイト生成に失敗しました',
+//       }
+//     }
 
-    const analysisResult: AIAnalysisResult = {
-      summary: result.data.summary || '',
-      insight: result.data.insight || '',
-      conversationSummary: result.data.conversationSummary || formData.conversationSummary || '',
-      autoTags: result.data.autoTags || [],
-      mfSubject: result.data.mfSubject || formData.mfSubject || '',
-      mfSubAccount: result.data.mfSubAccount || formData.mfSubAccount || '',
-      mfTaxCategory: '課仕 10%',
-    }
+//     const analysisResult: AIAnalysisResult = {
+//       summary: result.data.summary || '',
+//       insight: result.data.insight || '',
+//       conversationSummary: result.data.conversationSummary || formData.conversationSummary || '',
+//       autoTags: result.data.autoTags || [],
+//       mfSubject: result.data.mfSubject || formData.mfSubject || '',
+//       mfSubAccount: result.data.mfSubAccount || formData.mfSubAccount || '',
+//       mfTaxCategory: '課仕 10%',
+//     }
 
-    return {
-      success: true,
-      data: analysisResult,
-    }
-  } catch (error) {
-    console.error('インサイト生成エラー:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'インサイト生成に失敗しました',
-    }
-  }
-}
-
-// 既存の経費記録にインサイトを追加
-export const addInsightToExpense = async (
-  expenseId: string,
-  additionalInstruction?: string
-): Promise<{
-  success: boolean
-  data?: {
-    summary: string
-    insight: string
-    autoTags: string[]
-  }
-  error?: string
-}> => {
-  try {
-    // 既存の経費記録を取得
-    const expense = await prisma.keihiExpense.findUnique({
-      where: {id: expenseId},
-    })
-
-    if (!expense) {
-      return {
-        success: false,
-        error: '経費記録が見つかりません',
-      }
-    }
-
-    // ExpenseFormData形式に変換
-    const formData: ExpenseFormData = {
-      date: expense.date.toISOString().split('T')[0],
-      amount: expense.amount,
-      mfSubject: expense.mfSubject || '', // データベースのsubjectをmfSubjectとして扱う
-      location: expense.location || '',
-      counterpartyName: expense.counterpartyName || '',
-      conversationPurpose: Array.isArray(expense.conversationPurpose) ? expense.conversationPurpose : [],
-      keywords: expense.keywords || [],
-      conversationSummary: expense.conversationSummary || '',
-    }
-
-    // インサイト生成
-    const result = await generateInsights(formData, additionalInstruction)
-
-    if (!result.success || !result.data) {
-      return {
-        success: false,
-        error: result.error || 'インサイト生成に失敗しました',
-      }
-    }
-
-    // データベースを更新
-    await prisma.keihiExpense.update({
-      where: {id: expenseId},
-      data: {
-        insight: result.data.insight,
-        autoTags: result.data.autoTags,
-        mfSubject: result.data.mfSubject,
-        mfTaxCategory: result.data.mfTaxCategory,
-      },
-    })
-
-    return {
-      success: true,
-      data: {
-        summary: result.data.summary,
-        insight: result.data.insight,
-        autoTags: result.data.autoTags,
-      },
-    }
-  } catch (error) {
-    console.error('インサイト追加エラー:', error)
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'インサイト追加に失敗しました',
-    }
-  }
-}
+//     return {
+//       success: true,
+//       data: analysisResult,
+//     }
+//   } catch (error) {
+//     console.error('インサイト生成エラー:', error)
+//     return {
+//       success: false,
+//       error: error instanceof Error ? error.message : 'インサイト生成に失敗しました',
+//     }
+//   }
+// }

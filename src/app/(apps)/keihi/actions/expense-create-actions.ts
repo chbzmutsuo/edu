@@ -20,8 +20,8 @@ export async function createExpenseAction(
         date: new Date(formData.date),
         amount: formData.amount,
         mfSubject: formData.mfSubject || '', // mfSubjectを使用
-        location: formData.location,
-        counterpartyName: formData.counterpartyName,
+        counterparty: formData.counterparty,
+        participants: formData.participants,
         conversationPurpose: formData.conversationPurpose,
         keywords:
           withAI && aiDraft?.generatedKeywords
@@ -64,7 +64,6 @@ export async function createExpenseAction(
       }
     }
 
-    revalidatePath('/keihi')
     return {success: true, data: expense}
   } catch (error) {
     console.error('経費記録作成エラー:', error)

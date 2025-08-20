@@ -115,7 +115,8 @@
     "**/sohken/**": true,
     "**/stock/**": true,
     "**/tmp/**": true,
-    "**/tbm/**": true
+    "**/tbm/**": true,
+    "**/keihi/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -130,6 +131,7 @@
     "aquapot",
     "edu",
     "health",
+    "keihi",
     "kickswrap",
     "migrations",
     "page",

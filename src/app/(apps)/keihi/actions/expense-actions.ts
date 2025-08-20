@@ -5,8 +5,18 @@ import {FileHandler} from 'src/cm/class/FileHandler'
 import {S3FormData} from '@cm/class/FileHandler'
 import prisma from 'src/lib/prisma'
 import {ExpenseFilterType} from '../hooks/useExpenseFilter'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {exportAllExpensesToCSV, exportSelectedExpensesToCSV, exportAllLocationsToCSV, exportSelectedLocationsToCSV} from './csv-actions'
+import {
+  exportAllExpensesToCSV,
+  exportSelectedExpensesToCSV,
+  exportAllLocationsToCSV,
+  exportSelectedLocationsToCSV,
+} from './csv-actions'
+import {
+  syncAllExpensesToSpreadsheet,
+  syncSelectedExpensesToSpreadsheet,
+  syncAllLocationsToSpreadsheet,
+  syncSelectedLocationsToSpreadsheet,
+} from './spreadsheet-actions'
 
 export interface AIAnalysisResult {
   techInsightDetail: string
@@ -72,8 +82,8 @@ const buildWhereCondition = (filter: ExpenseFilterType) => {
   // キーワード検索
   if (filter.keyword) {
     where.OR = [
-      {counterpartyName: {contains: filter.keyword}},
-      {location: {contains: filter.keyword}},
+      {participants: {contains: filter.keyword}},
+      {counterparty: {contains: filter.keyword}},
       {conversationSummary: {contains: filter.keyword}},
       {summary: {contains: filter.keyword}},
       {insight: {contains: filter.keyword}},
@@ -91,7 +101,7 @@ export const getExpenses = async (params: GetExpensesParams) => {
     // ソート条件の構築
     let orderBy: any = {date: 'desc'} // デフォルトは日付降順
     if (params.sort.field && params.sort.field !== 'imageTitle') {
-      orderBy = {[params.sort.field]: params.sort.order}
+      orderBy = [{[params.sort.field]: params.sort.order}, {id: 'desc'}]
     } else if (params.sort.field === 'imageTitle') {
       // 画像タイトルでソートする場合は添付ファイルの originalName でソート
       orderBy = {}
@@ -168,8 +178,8 @@ export const updateExpense = async (
     date?: Date
     amount?: number
     subject?: string
-    location?: string
-    counterpartyName?: string
+    counterparty?: string
+    participants?: string
     conversationPurpose?: string[]
     keywords?: string[]
 
@@ -207,8 +217,6 @@ export const updateExpense = async (
       },
     })
 
-    revalidatePath('/keihi')
-    revalidatePath(`/keihi/expense/${id}`)
     return {success: true, data: expense}
   } catch (error) {
     console.error('記録更新エラー:', error)
@@ -234,7 +242,6 @@ export const deleteExpense = async (
       where: {id},
     })
 
-    revalidatePath('/keihi')
     return {success: true}
   } catch (error) {
     console.error('経費記録削除エラー:', error)
@@ -264,7 +271,6 @@ export const deleteMultipleExpenses = async (
       where: {id: {in: ids}},
     })
 
-    revalidatePath('/keihi')
     return {
       success: true,
       deletedCount: result.count,
@@ -403,8 +409,6 @@ export const revalidateKeihiPages = async (): Promise<{
   error?: string
 }> => {
   try {
-    revalidatePath('/keihi')
-    revalidatePath('/keihi', 'layout')
     return {success: true}
   } catch (error) {
     console.error('revalidateエラー:', error)
@@ -435,10 +439,9 @@ export const exportExpensesToCsv = async (
   error?: string
 }> => {
   try {
-    const result = selectedIds && selectedIds.length > 0
-      ? await exportSelectedExpensesToCSV(selectedIds)
-      : await exportAllExpensesToCSV()
-    
+    const result =
+      selectedIds && selectedIds.length > 0 ? await exportSelectedExpensesToCSV(selectedIds) : await exportAllExpensesToCSV()
+
     if (result.success) {
       return {
         success: true,
@@ -468,10 +471,9 @@ export const exportLocationsToCsv = async (
   error?: string
 }> => {
   try {
-    const result = selectedIds && selectedIds.length > 0
-      ? await exportSelectedLocationsToCSV(selectedIds)
-      : await exportAllLocationsToCSV()
-    
+    const result =
+      selectedIds && selectedIds.length > 0 ? await exportSelectedLocationsToCSV(selectedIds) : await exportAllLocationsToCSV()
+
     if (result.success) {
       return {
         success: true,
@@ -488,6 +490,52 @@ export const exportLocationsToCsv = async (
     return {
       success: false,
       error: error instanceof Error ? error.message : '取引先一覧のCSV出力に失敗しました',
+    }
+  }
+}
+
+// 経費データをスプレッドシートに連携
+export const syncExpensesToSheet = async (
+  selectedIds?: string[]
+): Promise<{
+  success: boolean
+  message: string
+}> => {
+  try {
+    const result =
+      selectedIds && selectedIds.length > 0
+        ? await syncSelectedExpensesToSpreadsheet(selectedIds)
+        : await syncAllExpensesToSpreadsheet()
+
+    return result
+  } catch (error) {
+    console.error('経費データのスプレッドシート連携エラー:', error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '経費データのスプレッドシート連携に失敗しました',
+    }
+  }
+}
+
+// 取引先データをスプレッドシートに連携
+export const syncLocationsToSheet = async (
+  selectedIds?: string[]
+): Promise<{
+  success: boolean
+  message: string
+}> => {
+  try {
+    const result =
+      selectedIds && selectedIds.length > 0
+        ? await syncSelectedLocationsToSpreadsheet(selectedIds)
+        : await syncAllLocationsToSpreadsheet()
+
+    return result
+  } catch (error) {
+    console.error('取引先データのスプレッドシート連携エラー:', error)
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : '取引先データのスプレッドシート連携に失敗しました',
     }
   }
 }

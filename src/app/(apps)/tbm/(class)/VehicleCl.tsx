@@ -17,8 +17,12 @@ export class VehicleCl {
     const {type, shape, frameNo, vehicleNumber} = this.tbmVehicle
     return [`[${type ?? '-'}]`, vehicleNumber].filter(Boolean).join(` `)
   }
+  get nameWithFrame() {
+    const {type, shape, frameNo, vehicleNumber} = this.tbmVehicle
+    return [`【${frameNo}】`, `[${type ?? '-'}]`, vehicleNumber].filter(Boolean).join(` `)
+  }
 
-  static getVehicleForSelectConfig = ({tbmBaseId}: {tbmBaseId?: number}) => {
+  static getVehicleForSelectConfig = ({tbmBaseId, withFrame = true}: {tbmBaseId?: number; withFrame?: boolean}) => {
     const result: forSelectConfig = {
       where: ({latestFormData}) => {
         return {tbmBaseId: latestFormData?.tbmBaseId ?? tbmBaseId}
@@ -28,7 +32,7 @@ export class VehicleCl {
       select: {
         id: `number`,
         code: `string`,
-        frameNo: `string`,
+        frameNo: 'string',
         vehicleNumber: `string`,
         type: `string`,
         shape: `string`,
@@ -37,7 +41,8 @@ export class VehicleCl {
       nameChanger(op) {
         if (op) {
           const vehicle = op as unknown as TbmVehicle
-          return {...op, name: new VehicleCl(vehicle).name}
+
+          return {...op, name: withFrame ? new VehicleCl(vehicle).nameWithFrame : new VehicleCl(vehicle).name}
         }
 
         return op

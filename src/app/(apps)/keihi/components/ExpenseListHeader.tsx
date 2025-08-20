@@ -1,26 +1,24 @@
 'use client'
 
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 
 interface ExpenseListHeaderProps {
   totalCount: number
   selectedCount: number
-  onExportAll: () => void
-  onExportSelected: () => void
-  onExportLocationsAll: () => void
-  onExportLocationsSelected: () => void
+  onSyncExpensesSelected: () => void
+  onSyncLocationsSelected: () => void
   onDeleteSelected: () => void
 }
 
 export const ExpenseListHeader = ({
   totalCount,
   selectedCount,
-  onExportAll,
-  onExportSelected,
-  onExportLocationsAll,
-  onExportLocationsSelected,
+  onSyncExpensesSelected,
+  onSyncLocationsSelected,
   onDeleteSelected,
 }: ExpenseListHeaderProps) => {
+  const selected = selectedCount > 0
   return (
     <div className="px-6 py-4 border-b border-gray-200">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -31,60 +29,60 @@ export const ExpenseListHeader = ({
           </p>
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          {/* 新規作成ボタン */}
-          <T_LINK href="/keihi/new" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-            新規作成
-          </T_LINK>
-
-          {/* 一括登録ボタン */}
-          <T_LINK
-            href="/keihi/new/bulk"
-            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
-          >
-            一括登録
-          </T_LINK>
-
-          {/* CSV出力ボタン（経費データ） */}
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={onExportAll}
-              className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 text-sm font-medium"
+        <C_Stack className={` items-end`}>
+          <R_Stack className={`gap-4`}>
+            <T_LINK
+              href={
+                'https://docs.google.com/spreadsheets/d/1lZ5YDWz3kGHU-P7cxg4eMHWlF_0JdKTOhPvDeT3KG0o/edit?gid=861720079#gid=861720079'
+              }
+              target="_blank"
             >
-              経費CSV出力（全件）
+              Gシート
+            </T_LINK>
+            <T_LINK
+              href="/keihi/new"
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
+            >
+              新規作成
+            </T_LINK>
+
+            {/* 一括登録ボタン */}
+            <T_LINK
+              href="/keihi/new/bulk"
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
+            >
+              一括登録
+            </T_LINK>
+          </R_Stack>
+          <R_Stack className={`gap-4`}>
+            {/* 新規作成ボタン */}
+
+            {/* 選択時のアクション */}
+
+            <button
+              disabled={!selected}
+              onClick={onSyncLocationsSelected}
+              className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 text-sm font-medium"
+            >
+              Gシート連携（取引先）
             </button>
             <button
-              onClick={onExportLocationsAll}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-sm font-medium"
+              disabled={!selected}
+              onClick={onSyncExpensesSelected}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 text-sm font-medium"
             >
-              取引先CSV出力（全件）
+              Gシート連携（経費）
             </button>
-          </div>
 
-          {/* 選択時のアクション */}
-          {selectedCount > 0 && (
-            <div className="flex flex-col gap-2">
-              <button
-                onClick={onExportSelected}
-                className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 text-sm font-medium"
-              >
-                経費CSV出力（選択）
-              </button>
-              <button
-                onClick={onExportLocationsSelected}
-                className="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 text-sm font-medium"
-              >
-                取引先CSV出力（選択）
-              </button>
-              <button
-                onClick={onDeleteSelected}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium"
-              >
-                削除（選択）
-              </button>
-            </div>
-          )}
-        </div>
+            <button
+              disabled={!selected}
+              onClick={onDeleteSelected}
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 text-sm font-medium"
+            >
+              削除（選択）
+            </button>
+          </R_Stack>
+        </C_Stack>
       </div>
     </div>
   )

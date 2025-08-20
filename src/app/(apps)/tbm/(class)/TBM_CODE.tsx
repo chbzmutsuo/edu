@@ -12,8 +12,8 @@ export class TBM_CODE extends Code {
 
   static ROUTE: {KBN: codeObjectArgs} = {
     KBN: {
-      '01': {label: `規定（地域内）`, color: `green`},
-      '02': {label: `規定（地域間）`, color: `green`},
+      '01': {label: `既定（地域内）`, color: `green`},
+      '02': {label: `既定（地域間）`, color: `green`},
       '03': {label: `臨時（地域内）`, color: `red`},
       '04': {label: `臨時（地域間）`, color: `red`},
       '05': {label: `増設（地域内）`, color: `blue`},

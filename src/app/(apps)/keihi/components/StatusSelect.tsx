@@ -3,6 +3,7 @@
 import React from 'react'
 import {cn} from '@cm/shadcn/lib/utils'
 import {Check, Loader2} from 'lucide-react'
+import {KEIHI_STATUS} from '@app/(apps)/keihi/actions/expense/constants'
 
 interface StatusSelectProps {
   value: string
@@ -40,10 +41,11 @@ export const StatusSelect = ({value, onChange, className}: StatusSelectProps) =>
           className
         )}
       >
-        <option value="">未設定</option>
-        <option value="私的利用">私的利用</option>
-        <option value="一次チェック済">一次チェック済</option>
-        <option value="MF連携済み">MF連携済み</option>
+        {KEIHI_STATUS.map(status => (
+          <option key={status.value} value={status.value}>
+            {status.label}
+          </option>
+        ))}
       </select>
 
       {/* ローディングインジケーター */}

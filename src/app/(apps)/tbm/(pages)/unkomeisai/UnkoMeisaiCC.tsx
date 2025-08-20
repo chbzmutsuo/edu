@@ -25,7 +25,7 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
               let value
               if (item.type === `date`) {
                 value = formatDate(item.cellValue, 'short')
-              } else if ([`O_postalHighwayFee`, `Q_generalHighwayFee`].includes(dataKey)) {
+              } else if ([`M_postalHighwayFee`, `O_generalHighwayFee`].includes(dataKey)) {
                 value = (
                   <input
                     {...{

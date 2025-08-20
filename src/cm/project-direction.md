@@ -1,21 +1,3 @@
-# ver.2
-
-# **📦 プロジェクト設計ガイドライン**
-
-## **✅ 技術スタック**
-
-| **分類**       | **使用技術・方針**                                                                |
-| -------------- | --------------------------------------------------------------------------------- |
-| フレームワーク | Next.js                                                                           |
-| 言語           | TypeScript                                                                        |
-| スタイリング   | Tailwind CSS + CSS Variants（例：cva()）                                          |
-| 状態管理       | Jotai                                                                             |
-| API設計        | REST API（**基本はサーバーアクション**を優先、ファイル送信などはAPI routeを使用） |
-| 認証           | NextAuth.js                                                                       |
-| ORM / DB       | Prisma                                                                            |
-| Lint / Format  | ESLint / Prettier（プロジェクト既定に従う）                                       |
-|                |                                                                                   |
-
 # 📦 プロジェクト設計ガイドライン
 
 ## ✅ 技術スタック
@@ -31,63 +13,58 @@
 | ORM / DB       | Prisma                                                                            |
 | Lint / Format  | ESLint / Prettier（プロジェクト既定に従う）                                       |
 
----
-
 ## ✅ コーディング規約
 
-- **命名規則**：camelCase（JavaScript標準に準拠）
+- **命名規則**：`camelCase`（JavaScript標準に準拠）
 - **ファイル命名**：コンポーネント名とファイル名を一致させる（例：`MyComponent.tsx`）
-- **型定義**：`/types/` 以下にモデル別 or 機能別にファイル分割（例：`user-type.ts`, `imageUploader-type.ts`）
+- **型定義**：`/types/` 以下にモデル別 or 機能別にファイル分割（例：`user-type.ts`, `imageUploader-type.ts`）
 - **コメント**：関数単位で**2行以内**の簡潔なコメントを付与
-- **ユーティリティ型**：TypeScript標準のユーティリティ型（`Pick`, `Omit`, `Partial` など）を**積極活用**。**複雑な場合はコメント必須**
+- **ユーティリティ型**：TypeScript標準のユーティリティ型（`Pick`, `Omit`, `Partial` など）を**積極活用**。**複雑な場合はコメント必須**
 
----
+## ✅ Prismaのschemeルール
+
+- リレーション名は、対象となるテーブルと同一とし、大文字で始める。また、外部キーは小文字で初めて、{modelName}Idとする（例：UserとPostを1対多とするなら、User.Post[] / Post.User。外部キーはuserId / postId）
+- 日付データは atをつける
+- 以下の項目は必須
 
 ## ✅ ディレクトリ構成
 
 ### 共通構成（全アプリにまたがる共有リソース）
 
-```
-/app                 → Next.js App Routerの各ルート
+`/app                 → Next.js App Routerの各ルート
 /components          → 汎用UIコンポーネント
 /hooks               → 共通カスタムフック
 /lib                 → 共通ロジック・ユーティリティ
 /types               → 共通型定義
 /styles              → 共通スタイル
-その他、必要に応じて
+その他、必要に応じて`
 
-```
+### 個別アプリ構成（`/app/(apps)/appName/` 以下）
 
-### 個別アプリ構成（/app/(apps)/appName/ 以下）
-
-```
-/components          → アプリ専用UI部品
+`/components          → アプリ専用UI部品
 /(pages)             → 各機能単位ルート（≒ features）
 /hooks               → アプリ専用カスタムフック
 /lib                 → アプリ専用ロジック・API呼び出し等
 /types               → アプリ専用型定義
 /styles              → アプリ専用スタイル
-その他、必要に応じて
-```
-
----
+その他、必要に応じて`
 
 ## ✅ コード出力ルール（AI用）
 
 - コードは**最小限。冗長禁止**
-- 変数・関数名は **camelCase、英語**
-- 型定義は **厳密に**。ユーティリティ型を積極活用、複雑な場合はコメント記載
-- 汎用的に使う型は、typesにまとめる。
-- コメントは **関数単位に2行以内で記述**
-
----
+- スタイリングは **Tailwind CSS + CSS Variants（`cva()`）**
+- 変数・関数名は **`camelCase`、英語**
+- 型定義は **厳密に（`any`禁止）**。ユーティリティ型を積極活用、複雑な場合はコメント記載
+- 汎用的に使う型は、`types`にまとめる。
+- コメントは **関数単位に2行以内で記述**
 
 ## ✅ UI / UX設計
 
 ### ページ遷移
 
 - 基本は**モーダル表示**。
-- 詳細表示など複雑なケースは、後から `/[id]` に移行できるようコンポーネントを分離しておく。
+- 詳細表示など複雑なケースは、後から `/[id]` に移行できるようコンポーネントを分離しておく。
+- フィルタや検索状態などは、保存ができるようにstateではなく、URLパラメタ（query）を用いる
 
 ### UI部品の使い分け
 
@@ -99,33 +76,30 @@
 
 ### コンポーネント構造
 
-- **Atomic Design** に準拠
+- **Atomic Design** に準拠
 - ディレクトリ構造例：
 
-```
-/organisms
-  Header.tsx
-  Sidebar.tsx
-  /molecules
-    InputWithLabel.tsx
-    SearchBox.tsx
-    /atoms
-      Button.tsx
-      Input.tsx
-
-```
+  `/organisms
+Header.tsx
+Sidebar.tsx
+/molecules
+  InputWithLabel.tsx
+  SearchBox.tsx
+  /atoms
+    Button.tsx
+    Input.tsx`
 
 ### レスポンシブ方針
 
 - **スマホファースト設計**
-- ブレークポイントは `useWindowSize` フックで制御
-- PC/スマホUIが明確に分かれる場合は **コンポーネントを分離しても良い**（副作用がなければ）
+- ブレークポイントは `useWindowSize` フックで制御
+- PC/スマホUIが明確に分かれる場合は **コンポーネントを分離しても良い**（副作用がなければ）
 
 ### ローディング・エラー表示
 
-- `useGlobal().toggleLoad()` を使えば自動で `Loader` を表示
-- エラーは **共通エラーUI** を表示（詳細設計は別途）
-- Suspense / ErrorBoundary は任意使用
+- `useGlobal().toggleLoad()` を使えば自動で `Loader` を表示
+- エラーは **共通エラーUI** を表示（詳細設計は別途）
+- `Suspense` / `ErrorBoundary` は任意使用
 
 ### UI原則
 
@@ -134,120 +108,18 @@
 
 ### フォーム設計
 
-- バリデーションはパッケージを利用せず、**独自ロジック**で実装
-- エラーメッセージは **該当フィールドの直下**に表示
+- バリデーションは**独自ロジック**で実装
+- エラーメッセージは **該当フィールドの直下**に表示
 
----
+### モーダル設計設計
 
-## ✅ 事前確認事項
-
-- **useGlobalに関するファイルやhooksは、アプリ全体で頻繁に利用される変数やメソッドを含む**。実装時はその役割を理解した上で活用すること。
-
----
+- useModalを用いる
 
 ## ✅ 共通コンポーネントの配置
 
-- `Button`, `Modal`, `Accordion` などの**再利用可能なUI部品は `/components` 配下**に定義してある。
-- atomic design の `atoms` または `molecules` に分類し、粒度に応じて配置する。
+- `Button`, `Modal`, `Accordion` などの**再利用可能なUI部品は /src/cm/components/utils 配下、または、src/cm/shadcn配下**に定義してある。
+- Atomic Design の `atoms` または `molecules` に分類し、粒度に応じて配置する。
 
----
+## ✅ 事前確認事項
 
-## **✅ コーディング規約**
-
-- **命名規則**：camelCase（JavaScript標準に準拠）
-- **ファイル命名**：コンポーネント名とファイル名を一致させる（例：MyComponent.tsx）
-- **型定義**：/types/ 以下にモデル別 or 機能別にファイル分割（例：user-type.ts, imageUploader-type.ts）
-- **コメント**：関数単位で**2行以内**の簡潔なコメントを付与
-- **ユーティリティ型**：TypeScript標準のユーティリティ型（Pick, Omit, Partial など）を**積極活用**。**複雑な場合はコメント必須**
-
----
-
-## **✅ ディレクトリ構成**
-
-### **共通構成（全アプリにまたがる共有リソース）**
-
-```
-/app                 → Next.js App Routerの各ルート
-/components          → 汎用UIコンポーネント
-/hooks               → 共通カスタムフック
-/lib                 → 共通ロジック・ユーティリティ
-/types               → 共通型定義
-/styles              → 共通スタイル
-```
-
-### **個別アプリ構成（/app/(apps)/appName/ 以下）**
-
-```
-/components          → アプリ専用UI部品
-/(pages)             → 各機能単位ルート（≒ features）
-/hooks               → アプリ専用カスタムフック
-/lib                 → アプリ専用ロジック・API呼び出し等
-/types               → アプリ専用型定義
-/styles              → アプリ専用スタイル
-```
-
----
-
-## **✅ コード出力ルール（AI用）**
-
-- コードは**最小限。冗長禁止**
-- スタイリングは **Tailwind CSS + CSS Variants（cva()）**
-- 変数・関数名は **camelCase、英語**
-- 型定義は **厳密に（any禁止）**。ユーティリティ型を積極活用、複雑な場合はコメント記載
-- コメントは **関数単位に2行以内で記述**
-
----
-
-## **✅ UI / UX設計**
-
-### **ページ遷移**
-
-- 基本は**モーダル表示**。
-- 詳細表示など複雑なケースは、後から /[id] に移行できるようコンポーネントを分離しておく。
-
-### **UI部品の使い分け**
-
-| **種別**   | **用途** |
-| ---------- | -------- |
-| モーダル   | 編集     |
-| ダイアログ | 確認系   |
-| トースト   | 通知     |
-
-### **コンポーネント構造**
-
-- **Atomic Design** に準拠
-- ディレクトリ構造例：
-
-```
-/organisms
-  Header.tsx
-  Sidebar.tsx
-  /molecules
-    InputWithLabel.tsx
-    SearchBox.tsx
-    /atoms
-      Button.tsx
-      Input.tsx
-```
-
-### **レスポンシブ方針**
-
-- **スマホファースト設計**
-- ブレークポイントは useWindowSize フックで制御
-- PC/スマホUIが明確に分かれる場合は **コンポーネントを分離しても良い**（副作用がなければ）
-
-### **ローディング・エラー表示**
-
-- useGlobal().toggleLoad() を使えば自動で Loader を表示
-- エラーは **共通エラーUI** を表示（詳細設計は別途）
-- Suspense / ErrorBoundary は任意使用
-
-### **UI原則**
-
-- 操作性・処理速度を最優先
-- 最小限の機能に絞り、**シンプルで迷わないUI**を設計
-
-### **フォーム設計**
-
-- バリデーションは**独自ロジック**で実装
-- エラーメッセージは **該当フィールドの直下**に表示
+- `useGlobal`に関するファイルやhooksは、アプリ全体で頻繁に利用される変数やメソッドを含む。実装時はその役割を理解した上で活用すること。

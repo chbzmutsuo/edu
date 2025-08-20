@@ -88,27 +88,27 @@ export async function generateMFCSV(expenseIds?: string[]): Promise<{
       const tags = expense.autoTags.join('|')
 
       return [
-        transactionNo,
+        '',
         date,
         expense.mfSubject || '', // 借方勘定科目
-        expense.mfSubAccount || '', // 借方補助科目
+        '', // 借方補助科目
         expense.mfDepartment || '', // 借方部門
-        expense.counterpartyName || '', // 借方取引先
+        expense.counterparty || '', // 借方取引先
         expense.mfTaxCategory || '課仕 10%', // 借方税区分
         '', // 借方インボイス
         expense.amount, // 借方金額
-        0, // 借方税額
-        '現金', // 貸方勘定科目（固定）
+        '', // 借方税額
+        '事業主借', // 貸方勘定科目（固定）
         '', // 貸方補助科目
         '', // 貸方部門
         '', // 貸方取引先
-        '対象外', // 貸方税区分（固定）
+        '', // 貸方税区分（固定）
         '', // 貸方インボイス
         expense.amount, // 貸方金額
-        0, // 貸方税額
-        expense.conversationSummary || '',
-        expense.insight || '', // 仕訳メモ
-        tags, // タグ
+        '', // 貸方税額
+        [expense.summary, `【ID:${expense.id}】`].filter(Boolean).join(' | ') || '',
+        expense.id, // 仕分けメモ（keihiId）
+        '', // タグ
         '', // MF仕訳タイプ
         '', // 決算整理仕訳
         '', // 作成日時
@@ -170,11 +170,11 @@ export async function generateLocationListCSV(expenseIds?: string[]): Promise<{
     const expenses = await prisma.keihiExpense.findMany({
       where: whereClause,
       select: {
-        location: true,
+        counterparty: true,
       },
-      distinct: ['location'],
+      distinct: ['counterparty'],
       orderBy: {
-        location: 'asc',
+        counterparty: 'asc',
       },
     })
 
@@ -183,10 +183,11 @@ export async function generateLocationListCSV(expenseIds?: string[]): Promise<{
     }
 
     // 空の取引先名を除外し、重複を削除
-    const uniqueLocations = [...new Set(expenses.map(e => e.location).filter(Boolean))]
+    const uniqueLocations = [...new Set(expenses.map(e => e.counterparty).filter(Boolean))]
 
     // CSVヘッダー
     const headers = [
+      //
       'コード',
       '取引先名',
       '検索キー',
@@ -196,10 +197,10 @@ export async function generateLocationListCSV(expenseIds?: string[]): Promise<{
     ]
 
     // CSVデータ生成
-    const csvRows = uniqueLocations.map(location => {
+    const csvRows = uniqueLocations.map(counterparty => {
       return [
         '', // コードは空白
-        location, // 取引先名
+        counterparty, // 取引先名
         '', // 検索キー（不要）
         '1', // 表示設定は1
         '', // 登録番号（不要）

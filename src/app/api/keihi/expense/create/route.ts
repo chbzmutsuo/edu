@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
         date: new Date(expenseData.date),
         amount: expenseData.amount,
         mfSubject: expenseData.mfSubject,
-        location: expenseData.location,
-        counterpartyName: expenseData.counterpartyName,
+        counterparty: expenseData.counterparty,
+        participants: expenseData.participants,
         conversationPurpose: expenseData.conversationPurpose,
         keywords:
           withAI && aiDraft?.generatedKeywords
@@ -73,8 +73,6 @@ export async function POST(request: NextRequest) {
     if (attachmentIds.length > 0) {
       await linkAttachmentsToExpense(expense.id, attachmentIds)
     }
-
-    revalidatePath('/keihi')
 
     return NextResponse.json({
       success: true,

@@ -5,14 +5,8 @@ import {useRouter} from 'next/navigation'
 import {toast} from 'react-toastify'
 import {useExpenseFormManager} from '@app/(apps)/keihi/hooks/useExpenseFormManager'
 import {useImageUpload} from '@app/(apps)/keihi/hooks/useImageUpload'
-import {ImageUploadSection} from '@app/(apps)/keihi/(pages)/new/components/ImageUploadSection'
-import {ExpenseIntegratedForm} from '@app/(apps)/keihi/components/ExpenseIntegratedForm'
-import FormActions from '@app/(apps)/keihi/components/FormActions'
-import {ProcessingStatus} from '@app/(apps)/keihi/components/ui/ProcessingStatus'
-import {T_LINK} from '@cm/components/styles/common-components/links'
 import {generateInsightsDraft} from '@app/(apps)/keihi/actions/expense/insights'
 import {analyzeReceiptImage} from '@app/(apps)/keihi/actions/expense/analyzeReceipt'
-import {ExpenseFormData} from '@app/(apps)/keihi/types'
 import {createExpenseAction} from '@app/(apps)/keihi/actions/expense-create-actions'
 import ExpenseEditor from '@app/(apps)/keihi/(pages)/expense/[id]/edit/ExpenseEditor'
 
@@ -86,8 +80,8 @@ const NewExpensePage = () => {
             date: result.data.date,
             amount: result.data.amount,
             mfSubject: result.data.mfSubject, // subjectをmfSubjectに変更
-            location: result.data.location,
-            counterpartyName: result.data.suggestedCounterparties.join(','),
+            counterparty: result.data.counterparty,
+            participants: result.data.suggestedCounterparties.join(','),
             keywords: result.data.generatedKeywords,
           })
 

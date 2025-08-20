@@ -72,21 +72,20 @@ const RadioSelect = ({options, setter, customProps, label, name, getSelectedOpti
     const {option, children} = props
     const {value, label} = props.option
     return (
-      <div
+      <label
         className={cn(
           //
-          `rounded-lg bg-gray-50 p-0.5 shadow px-1 border  text-sm`,
-          customProps.value === value && 'bg-blue-300/20 border-blue-500  border-2'
+          `rounded-lg bg-gray-50  shadow p-1 border   `,
+          customProps.value === value && 'bg-blue-300/20 border-blue-500  border ring-1 ring-blue-500',
+          'flex justify-center cursor-pointer'
         )}
       >
         {children}
-      </div>
+      </label>
     )
   }
 
   const ButtonListWrapper = ({children}) => {
-    // const flexModeClass = flexMode === 'row' ? 'flex flex-row gap-2' : 'flex flex-col gap-2'
-
     return <div className={cn(customProps.className, 'bg-transparent')}>{children}</div>
   }
 
@@ -100,18 +99,16 @@ const RadioSelect = ({options, setter, customProps, label, name, getSelectedOpti
           return (
             <div key={idx}>
               <ButtonFormatter option={option}>
-                <label className={cn('flex items-center gap-2 cursor-pointer', disabled && ' pointer-events-none')}>
-                  <input
-                    disabled={disabled}
-                    type="radio"
-                    name={name}
-                    value={value}
-                    checked={customProps.value === value}
-                    onChange={e => handleRadioChange(e)}
-                    className="w-4 h-4"
-                  />
-                  {label}
-                </label>
+                <input
+                  disabled={disabled}
+                  type="radio"
+                  name={name}
+                  value={value}
+                  checked={customProps.value === value}
+                  onChange={e => handleRadioChange(e)}
+                  className="w-4 h-4 hidden"
+                />
+                {label}
               </ButtonFormatter>
             </div>
           )

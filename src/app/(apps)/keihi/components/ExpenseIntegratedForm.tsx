@@ -13,12 +13,12 @@ const getFieldClass = (value: string | number | string[], required = false) => {
 
 import {useState, useCallback} from 'react'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'
-import {CONVERSATION_PURPOSES} from '@app/(apps)/keihi/(constants)/conversation-purposes'
 import {KEIHI_STATUS, TAX_CATEGORIES} from '@app/(apps)/keihi/actions/expense/constants'
 
 import {cn} from '@cm/shadcn/lib/utils'
 import Input from '@cm/shadcn/ui/Organisms/form/Input'
 import Select from '@cm/shadcn/ui/Organisms/form/Select'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
 // ハイライト表示用のスタイル
 const highlightStyle = 'border-yellow-400 bg-yellow-50 shadow-md transition-all duration-500'
@@ -98,6 +98,18 @@ export function ExpenseIntegratedForm({
         <h2 className="text-lg font-semibold text-gray-900 mb-4">基本情報</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="sm:col-span-2">
+            <Select
+              label="ステータス"
+              required
+              selectType="radio"
+              value={formData.status || ''}
+              onChange={e => setFormData('status', e.target.value)}
+              options={KEIHI_STATUS.map(status => ({value: status.value, label: status.label}))}
+              className={`grid  lg:grid-cols-4  gap-4 text-xs  `}
+            />
+          </div>
+
           <Input
             label="日付"
             required
@@ -116,85 +128,22 @@ export function ExpenseIntegratedForm({
           />
 
           <Input
-            label="場所"
+            label="取引先"
             required
             type="text"
-            value={formData.location || ''}
-            onChange={e => setFormData('location', e.target.value)}
-            className={getFieldClass(formData.location || '', true)}
+            value={formData.counterparty || ''}
+            onChange={e => setFormData('counterparty', e.target.value)}
+            className={getFieldClass(formData.counterparty || '', true)}
           />
           <Input
             label="相手名"
-            required
             type="text"
-            value={formData.counterpartyName || ''}
-            onChange={e => setFormData('counterpartyName', e.target.value)}
-            className={getFieldClass(formData.counterpartyName || '', true)}
+            value={formData.participants || ''}
+            onChange={e => setFormData('participants', e.target.value)}
+            className={getFieldClass(formData.participants || '', true)}
           />
 
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              日付 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="date"
-              value={formData.date || ''}
-              onChange={e => setFormData('date', e.target.value)}
-              className={getFieldClass(formData.date, true)}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              金額 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={formData.amount || ''}
-              onChange={e => {
-                setFormData('amount', parseInt(e.target.value) || 0)
-              }}
-              className={getFieldClass(formData.amount, true)}
-              placeholder="0"
-              required
-            />
-          </div> */}
-          {/*
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">場所</label>
-            <input
-              type="text"
-              value={formData.location || ''}
-              onChange={e => setFormData('location', e.target.value)}
-              className={getFieldClass(formData.location || '')}
-              placeholder="会場や店舗名など"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">相手名</label>
-            <input
-              type="text"
-              value={formData.counterpartyName || ''}
-              onChange={e => setFormData('counterpartyName', e.target.value)}
-              className={getFieldClass(formData.counterpartyName || '')}
-              placeholder="相手名（複数の場合はカンマ区切り）"
-            />
-          </div> */}
-
           <div className="sm:col-span-2">
-            {/* <label className="block text-sm font-medium text-gray-700 mb-2">会話内容の要約</label>
-            <textarea
-              value={formData.conversationSummary || ''}
-              onChange={e => setFormData('conversationSummary', e.target.value)}
-              className={cn(
-                getFieldClass(formData.conversationSummary || ''),
-                formData._changedFields?.conversationSummary ? highlightStyle : ''
-              )}
-              rows={3}
-              placeholder="話した内容や気づいた点を記録してください"
-            /> */}
             <Input
               label="会話内容の要約"
               required
@@ -202,189 +151,51 @@ export function ExpenseIntegratedForm({
               value={formData.conversationSummary || ''}
               onChange={e => setFormData('conversationSummary', e.target.value)}
               className={getFieldClass(formData.conversationSummary || '', true)}
+              rows={4}
             />
           </div>
         </div>
       </section>
-
       {/* MoneyForward用情報セクション */}
       <section>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">MoneyForward連携情報</h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          <Select
-            label="勘定科目"
-            required
-            selectType="normal"
-            value={formData.mfSubject || ''}
-            onChange={e => setFormData('mfSubject', e.target.value)}
-            className={getFieldClass(formData.mfSubject || '', true)}
-            options={allOptions.subjects}
-          />
-
-          <Select
-            label="税区分"
-            required
-            selectType="normal"
-            value={formData.mfTaxCategory || ''}
-            onChange={e => setFormData('mfTaxCategory', e.target.value)}
-            className={getFieldClass(formData.mfTaxCategory || '', true)}
-            options={TAX_CATEGORIES.map(category => ({value: category.value, label: category.label}))}
-          />
-
-          {/* <Select
-            label="部門"
-            required
-            selectType="normal"
-            value={formData.mfDepartment || ''}
-            onChange={e => setFormData('mfDepartment', e.target.value)}
-            className={getFieldClass(formData.mfDepartment || '', true)}
-            options={allOptions.industries}
-          /> */}
-
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              勘定科目 <span className="text-red-500">*</span>
-            </label>
-            <select
+        <C_Stack className={`gap-8`}>
+          <div>
+            <Select
+              label="勘定科目"
+              required
+              selectType="radio"
               value={formData.mfSubject || ''}
               onChange={e => setFormData('mfSubject', e.target.value)}
-              className={cn(
-                //
-                getFieldClass(formData.mfSubject || '', true),
-                formData._changedFields?.mfSubject ? highlightStyle : ''
-              )}
-              required
-            >
-              <option value="">選択してください</option>
-              {allOptions.subjects.map(subject => (
-                <option key={subject.value} value={subject.value}>
-                  {subject.label}
-                </option>
-              ))}
-            </select>
+              className={cn('grid  lg:grid-cols-4  gap-4 text-xs  ', getFieldClass(formData.mfSubject || '', true))}
+              options={allOptions.subjects}
+            />
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">補助科目</label>
-            <input
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <Input
+              label="補助科目"
               type="text"
               value={formData.mfSubAccount || ''}
               onChange={e => setFormData('mfSubAccount', e.target.value)}
-              className={cn(
-                //
-                getFieldClass(formData.mfSubAccount || ''),
-                formData._changedFields?.mfSubAccount ? highlightStyle : ''
-              )}
-              placeholder="補助科目を入力"
+              className={cn(getFieldClass(formData.mfSubAccount || '', true))}
             />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              税区分 <span className="text-red-500">*</span>
-            </label>
-            <select
+            <Select
+              label="税区分"
+              required
+              selectType="normal"
               value={formData.mfTaxCategory || ''}
               onChange={e => setFormData('mfTaxCategory', e.target.value)}
               className={getFieldClass(formData.mfTaxCategory || '', true)}
-              required
-            >
-              {TAX_CATEGORIES.map(category => (
-                <option key={category.value} value={category.value}>
-                  {category.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">部門</label>
-            <input
-              type="text"
-              value={formData.mfDepartment || ''}
-              onChange={e => setFormData('mfDepartment', e.target.value)}
-              className={getFieldClass(formData.mfDepartment || '', true)}
-              placeholder="部門を入力"
-            />
-          </div> */}
-
-          <div className="sm:col-span-2">
-            {/* <label className="block text-sm font-medium text-gray-700 mb-2">ステータス</label>
-            <div className="flex space-x-2">
-              {[
-                {value: '', label: '未設定'},
-                {value: '私的利用', label: '私的利用'},
-                {value: '一次チェック済', label: '一次チェック済'},
-                {value: 'MF連携済み', label: 'MF連携済み'},
-              ].map(status => (
-                <button
-                  type="button"
-                  key={status.value}
-                  onClick={() => setFormData('status', status.value)}
-                  className={`px-3 py-2 rounded-md text-sm ${
-                    formData.status === status.value ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {status.label}
-                </button>
-              ))}
-            </div> */}
-
-            <Select
-              label="ステータス"
-              required
-              selectType="radio"
-              value={formData.status || ''}
-              onChange={e => setFormData('status', e.target.value)}
-              options={KEIHI_STATUS.map(status => ({value: status.value, label: status.label}))}
-              className={`grid grid-cols-2 gap-3`}
+              options={TAX_CATEGORIES.map(category => ({value: category.value, label: category.label}))}
             />
           </div>
-        </div>
-      </section>
-
-      {/* 会話の目的セクション */}
-      <section>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">会話の目的（複数選択可）</h3>
-        {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3"> */}
-        <Select
-          label="ステータス"
-          required
-          selectType="radio"
-          value={formData.status || ''}
-          onChange={e => setFormData('status', e.target.value)}
-          className={`grid grid-cols-4 gap-3`}
-          options={allOptions.purposes.map(status => ({value: status.value, label: status.label}))}
-        />
-        {/* {CONVERSATION_PURPOSES.map(purpose => (
-            <label key={purpose.value} className="flex items-center space-x-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={conversationPurposeList.includes(purpose.value)}
-                onChange={e => {
-                  setConversationPurposeList((prev: string[]) => {
-                    if (prev.includes(purpose.value)) {
-                      return prev.filter(p => p !== purpose.value)
-                    }
-                    const result = [...prev, purpose.value]
-                    return result
-                  })
-                }}
-                onBlur={() => {
-                  setFormData('conversationPurpose', conversationPurposeList)
-                }}
-                className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-              />
-              <span className="text-sm text-gray-700">{purpose.label}</span>
-            </label>
-          ))} */}
-        {/* </div> */}
+        </C_Stack>
       </section>
 
       {/* キーワード設定セクション */}
       <section>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">キーワード設定</h3>
         <div className="space-y-3">
           <div className="flex gap-2">
             <input
@@ -430,7 +241,6 @@ export function ExpenseIntegratedForm({
           )}
         </div>
       </section>
-
       {/* インサイト・AI情報セクション */}
       <section className="border-t border-gray-200 pt-6">
         <div className="flex justify-between items-center mb-4">
@@ -453,7 +263,7 @@ export function ExpenseIntegratedForm({
             type="textarea"
             value={additionalInstruction}
             onChange={e => setAdditionalInstruction(e.target.value)}
-            // className={}
+            className={getFieldClass(additionalInstruction || '', false)}
           />
           {/* <label className="block text-sm font-medium text-gray-700 mb-2">AIへの追加指示（任意）</label>
           <textarea
@@ -497,6 +307,7 @@ export function ExpenseIntegratedForm({
               value={formData.insight || ''}
               onChange={e => setFormData('insight', e.target.value)}
               className={getFieldClass(formData.insight || '', true)}
+              rows={8}
             />
             {/* <label className="block text-sm font-medium text-gray-700 mb-2">
               インサイト

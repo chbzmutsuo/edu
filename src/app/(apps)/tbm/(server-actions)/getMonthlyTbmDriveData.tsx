@@ -1,33 +1,8 @@
 'use server'
-export type meisaiKey =
-  | `date`
-  | `routeCode`
-  | `routeName`
-  | `vehicleType`
-  | `productName`
-  | `customerCode`
-  | `customerName`
-  | `vehicleTypeCode`
-  | `plateNumber`
-  | `driverCode`
-  | `driverName`
-  | `N_postalFee`
-  | `O_postalHighwayFee`
-  | `P_generalFee`
-  | `Q_generalHighwayFee`
-  | `U_jomuinFutan`
-  | `S_driverFee`
-  | `T_JomuinUnchin`
-  | `U_jomuinFutan`
-  | `V_thirteenPercentOfPostalHighway`
-  | `W_general`
-  | `X_highwayExcess`
-  | `Y_remarks`
-  | `Z_orderNumber`
 
 export type tbmTableKeyValue = {
   type?: any
-  label: string
+  label: string | React.ReactNode
   cellValue?: number | string | Date | null
   style?: {
     width?: number
@@ -42,7 +17,8 @@ export type getMonthlyTbmDriveDataReturn = Awaited<ReturnType<typeof getMonthlyT
 export type MonthlyTbmDriveData = getMonthlyTbmDriveDataReturn['monthlyTbmDriveList'][number]
 
 import prisma from 'src/lib/prisma'
-import {TbmDriveSchedule, TbmVehicle, User} from '@prisma/client'
+import {TbmVehicle, User} from '@prisma/client'
+import {DriveScheduleCl, DriveScheduleData, unkoMeisaiKeyValue} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 
 export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
   const ConfigForMonth = await prisma.tbmMonthlyConfigForRouteGroup.findFirst({
@@ -51,196 +27,15 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
       TbmRouteGroup: {tbmBaseId: tbmBaseId},
     },
   })
-  const tbmDriveSchedule = await prisma.tbmDriveSchedule.findMany({
-    where: {
-      approved: true,
-      date: whereQuery,
-      tbmBaseId,
-    },
-    orderBy: [{date: 'asc'}, {createdAt: 'asc'}, {userId: 'asc'}],
-    include: {
-      // TbmEtcMeisai:{},
-      TbmRouteGroup: {
-        include: {
-          TbmMonthlyConfigForRouteGroup: {
-            where: {yearMonth: whereQuery.gte},
-          },
-          Mid_TbmRouteGroup_TbmCustomer: {include: {TbmCustomer: {}}},
-        },
-      },
-      TbmVehicle: {},
-      User: {
-        include: {
-          TbmVehicle: {},
-        },
-      },
-    },
-  })
 
+  const tbmDriveSchedule = await DriveScheduleCl.getDriveScheduleList({whereQuery, tbmBaseId})
   const monthlyTbmDriveList = tbmDriveSchedule.map(schedule => {
-    const jitsudoKaisu = 1
-    const ConfigForRoute = schedule.TbmRouteGroup.TbmMonthlyConfigForRouteGroup.find(
-      config => config.tbmRouteGroupId === schedule.TbmRouteGroup.id
-    )
-
-    const S_driverFee = 99999
-
-    const N_postalFee = (ConfigForRoute?.tsukoryoSeikyuGaku ?? 0) / jitsudoKaisu
-    const O_postalHighwayFee = schedule.O_postalHighwayFee ?? 0
-
-    const P_generalFee = ConfigForRoute?.generalFee ?? 0
-    const Q_generalHighwayFee = schedule.Q_generalHighwayFee ?? 0
-
-    const V_thirteenPercentOfPostalHighway = O_postalHighwayFee * 0.3
-    const U_jomuinFutan = O_postalHighwayFee - (N_postalFee + V_thirteenPercentOfPostalHighway)
-    const W_general = Q_generalHighwayFee - P_generalFee
-    const T_JomuinUnchin = S_driverFee - (V_thirteenPercentOfPostalHighway + W_general)
-
-    const Customer = schedule.TbmRouteGroup?.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer
-
+    const unkoMeisaiKeyValue = new DriveScheduleCl(schedule).unkoMeisaiCols
     return {
-      schedule: schedule as TbmDriveSchedule & {User: userType; TbmVehicle: TbmVehicle},
-
-      keyValue: {
-        date: {
-          type: 'date',
-          label: '運行日',
-          cellValue: schedule.date,
-        },
-        routeCode: {
-          label: '便CD',
-          cellValue: schedule.TbmRouteGroup.code,
-        },
-        routeName: {
-          label: '便名',
-          cellValue: schedule.TbmRouteGroup.name,
-          style: {minWidth: 160},
-        },
-        vehicleType: {
-          label: '車種',
-          cellValue: schedule.TbmVehicle?.type,
-        },
-
-        productName: {
-          label: '品名',
-          cellValue: schedule.TbmRouteGroup.productName,
-          style: {minWidth: 120},
-        },
-        customerCode: {
-          label: '取引先CD',
-          cellValue: Customer?.code,
-        },
-        customerName: {
-          label: '取引先',
-          cellValue: Customer?.name,
-          style: {minWidth: 240},
-        },
-        vehicleTypeCode: {
-          label: '車種CD',
-          cellValue: 'コード',
-        },
-        plateNumber: {
-          label: '車番',
-          cellValue: schedule.TbmVehicle?.vehicleNumber,
-        },
-        driverCode: {
-          label: '運転手CD',
-          cellValue: 'コード',
-        },
-        driverName: {
-          label: '運転手',
-          cellValue: schedule.User?.name,
-        },
-        N_postalFee: {
-          label: (
-            <div>
-              <div>通行料</div> <div>(郵便)</div>
-            </div>
-          ),
-          cellValue: N_postalFee,
-          style: {backgroundColor: '#fcdede'},
-        },
-        O_postalHighwayFee: {
-          label: (
-            <div>
-              <div>高速代</div> <div>(郵便)</div>
-            </div>
-          ),
-          cellValue: O_postalHighwayFee,
-          style: {backgroundColor: '#fcdede'},
-        },
-        P_generalFee: {
-          label: (
-            <div>
-              <div>通行料</div> <div>(一般)</div>
-            </div>
-          ),
-          cellValue: P_generalFee,
-          style: {backgroundColor: '#deebfc'},
-        },
-        Q_generalHighwayFee: {
-          label: (
-            <div>
-              <div>高速代</div> <div>(一般)</div>
-            </div>
-          ),
-          cellValue: Q_generalHighwayFee,
-          style: {backgroundColor: '#deebfc'},
-        },
-        R_KosokuShiyu: {
-          label: '高速使用代',
-          cellValue: U_jomuinFutan,
-        },
-        S_driverFee: {
-          label: '運賃',
-          cellValue: S_driverFee,
-        },
-        T_JomuinUnchin: {
-          label: '給与算定運賃',
-          cellValue: T_JomuinUnchin,
-          style: {
-            minWidth: 100,
-            backgroundColor: '#defceb',
-          },
-        },
-        U_jomuinFutan: {
-          label: (
-            <div>
-              <div>乗務員負担</div> <div>高速代-(通行料+30％)</div>
-            </div>
-          ),
-          cellValue: U_jomuinFutan,
-          style: {backgroundColor: '#defceb'},
-        },
-        V_thirteenPercentOfPostalHighway: {
-          label: (
-            <div>
-              <div>運賃から負担</div> <div>高速代の30％</div>
-            </div>
-          ),
-          cellValue: V_thirteenPercentOfPostalHighway,
-          style: {backgroundColor: '#defceb'},
-        },
-        W_general: {
-          label: '高速代-通行料',
-          cellValue: W_general,
-          style: {backgroundColor: '#9ec1ff'},
-        },
-        X_highwayExcess: {
-          label: '高速超過分',
-          cellValue: 0,
-        },
-        Y_remarks: {
-          label: '備考',
-          cellValue: '要検討',
-        },
-        Z_orderNumber: {
-          label: '発注書NO',
-          cellValue: '要検討',
-        },
-      },
+      schedule,
+      keyValue: unkoMeisaiKeyValue,
     }
-  })
+  }) as {schedule: DriveScheduleData; keyValue: unkoMeisaiKeyValue}[]
 
   const userList: userType[] = monthlyTbmDriveList
     .reduce((acc, row) => {

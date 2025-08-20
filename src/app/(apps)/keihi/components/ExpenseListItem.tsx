@@ -1,6 +1,5 @@
 'use client'
 
-import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {ExpenseRecord} from '../types'
 import {formatAmount, formatDate} from '../utils'
 import React from 'react'
@@ -107,12 +106,12 @@ export const ExpenseListItem = ({
           >
             {expense.mfSubject}
           </span>
-          {expense.location && <div className="text-xs text-gray-500 mt-1 truncate">📍 {expense.location}</div>}
+          {expense.counterparty && <div className="text-xs text-gray-500 mt-1 truncate">📍 {expense.counterparty}</div>}
         </div>
       </td>
 
       <td>
-        {expense.counterpartyName || '-'}
+        {expense.participants || '-'}
         <br />
         {expense.conversationPurpose?.join(', ') || '-'}
         <br />

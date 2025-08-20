@@ -2853,8 +2853,8 @@ model TbmDriveSchedule {
  sortOrder Float     @default(0)
 
  date                DateTime
- O_postalHighwayFee  Int? //高速(郵便)
- Q_generalHighwayFee Int? //高速（一般）
+ M_postalHighwayFee  Int? //高速(郵便)
+ O_generalHighwayFee Int? //高速（一般）
 
  User   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
  userId Int?

@@ -7,4 +7,9 @@
   box-shadow: var(--shadow-md);
   padding: 1rem;
  }
+ small {
+  color: var(--color-gray-500);
+  // display: inline-block;
+  // line-height: 16px;
+ }
 }

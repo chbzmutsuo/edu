@@ -1,13 +1,16 @@
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {NumHandler} from '@cm/class/NumHandler'
+import {Button} from '@cm/components/styles/common-components/Button'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
+import useModal from '@cm/components/utils/modal/useModal'
 import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
+import {cn} from '@cm/shadcn/lib/utils'
 import {TbmDriveSchedule, TbmRouteGroup, TbmVehicle, User} from '@prisma/client'
 import React from 'react'
-import {twMerge} from 'tailwind-merge'
+
 type TbmDriveScheduleData = TbmDriveSchedule & {
   User: User
   TbmVehicle: TbmVehicle
@@ -20,6 +23,7 @@ export default function EtcConnectHistoryTable({
   tbmVehicleId: number
   selectedDriveSchedule?: TbmDriveSchedule
 }) {
+  const HimiodukeMD = useModal()
   const {data: tbmVehicle = {}} = useDoStandardPrisma(`tbmVehicle`, `findUnique`, {
     where: {id: tbmVehicleId},
     include: {
@@ -56,16 +60,18 @@ export default function EtcConnectHistoryTable({
             label: '月',
             className: `w-[100px]`,
             cellValue: (
-              <C_Stack className={` items-center font-bold text-xl`}>
-                <div>{formatDate(month, 'YYYY/MM')}</div>
-                <div>{NumHandler.WithUnit(sum, `円`)}</div>
+              <C_Stack className={` items-center  `}>
+                <div className={`font-bold`}>{formatDate(month, 'YYYY/MM')}</div>
+                <small>{NumHandler.WithUnit(sum, `円`)}</small>
               </C_Stack>
             ),
           },
 
           {
             label: '明細',
+            style: {minWidth: 600},
             cellValue: CsvTable({
+              virtualized: {enabled: false},
               records: data.map(item => {
                 const {TbmDriveSchedule, info: meisaiList} = item
 
@@ -93,13 +99,16 @@ export default function EtcConnectHistoryTable({
                     {
                       label: '紐付先の運行',
                       cellValue: (
-                        <BasicModal Trigger={<Route />}>
-                          {TbmDriveSchedule ? (
-                            <HimodukeKaijo {...{TbmDriveSchedule}} />
-                          ) : (
-                            <DriveScheduleSelector {...{TbmDriveSchedule}} />
-                          )}
-                        </BasicModal>
+                        <>
+                          <div
+                            className={` cursor-pointer`}
+                            onClick={() => {
+                              HimiodukeMD.setopen(true)
+                            }}
+                          >
+                            <Route />
+                          </div>
+                        </>
                       ),
                     },
                   ],
@@ -107,13 +116,14 @@ export default function EtcConnectHistoryTable({
               }),
             }).WithWrapper({
               size: `sm`,
-              className: twMerge(
+              className: cn(
                 //
                 `rounded-none`,
-                `t-paper`,
-                `[&_th]:font-bold`,
+                // `[&_th]:font-bold`,
                 // `[&_td]:!px-`,
-                `text-xs`
+                `text-xs`,
+                'max-h-[400px]',
+                '[&_td]:border'
               ),
             }),
           },
@@ -122,11 +132,16 @@ export default function EtcConnectHistoryTable({
     }),
   })
   return (
-    <div>
-      {TB.WithWrapper({
-        className: twMerge(`t-paper`),
-      })}
-    </div>
+    <C_Stack>
+      <HimiodukeMD.Modal>
+        {HimiodukeMD.open && HimiodukeMD?.open?.TbmDriveSchedule ? (
+          <HimodukeKaijo {...{TbmDriveSchedule: HimiodukeMD?.open?.TbmDriveSchedule}} />
+        ) : (
+          <DriveScheduleSelector {...{TbmDriveSchedule: HimiodukeMD?.open?.TbmDriveSchedule}} />
+        )}
+      </HimiodukeMD.Modal>
+      {TB.WithWrapper({className: `w-[1000px]`})}
+    </C_Stack>
   )
 }
 
@@ -157,24 +172,26 @@ const DriveScheduleSelector = ({TbmDriveSchedule}: {TbmDriveSchedule: TbmDriveSc
   })
 
   return (
-    <div>
+    <div className={`p-4`}>
       <div>紐付け先の運行を選択してください。</div>
 
-      <small>紐付けのない運行データ一覧</small>
+      <small>ETC明細紐付け未設定の運行データのみが表示されます。</small>
       {CsvTable({
         records: tbmDriveScheduleList.map(schedule => {
           const {TbmRouteGroup, User, TbmVehicle} = schedule ?? {}
           return {
             csvTableRow: [
               //
-              {cellValue: formatDate(schedule.date, 'YYYY/MM/DD(ddd)')},
-              {cellValue: TbmRouteGroup?.name},
-              {cellValue: User?.name},
-              {cellValue: TbmVehicle?.vehicleNumber},
+              {label: '日付', cellValue: formatDate(schedule.date, 'YYYY/MM/DD(ddd)')},
+              {label: '便名', cellValue: TbmRouteGroup?.name},
+              {label: '路線名', cellValue: TbmRouteGroup?.routeName},
+              {label: '運行者', cellValue: User?.name},
+              {label: '車両', cellValue: TbmVehicle?.vehicleNumber},
+              {label: '設定する', cellValue: '設定する'},
             ],
           }
         }),
-      }).WithWrapper({})}
+      }).WithWrapper({className: `w-[90vw] `})}
       <div></div>
     </div>
   )

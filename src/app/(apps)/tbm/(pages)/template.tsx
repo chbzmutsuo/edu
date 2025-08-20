@@ -256,7 +256,7 @@ const seedProduct = async () => {
     {code: 3},
     {code: 4},
     {code: 5, name: '郵便　【既定中型】'},
-    {code: 6, name: '郵便　【規定大型】'},
+    {code: 6, name: '郵便　【既定大型】'},
     {code: 7, name: '郵便　【臨時中型】'},
     {code: 8, name: '郵便　【臨時大型】'},
     {code: 9, name: 'JP楽天【既定大型】'},

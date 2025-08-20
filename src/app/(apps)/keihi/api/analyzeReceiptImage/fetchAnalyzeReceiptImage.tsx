@@ -26,7 +26,7 @@ export type createBulkExpensesBasicReturn = {
     date: string
     amount: number
     mfSubject: string // 統合された科目フィールド
-    counterpartyName: string
+    participants: string
     keywords: string[]
     imageIndex: number
     recordCreated: boolean

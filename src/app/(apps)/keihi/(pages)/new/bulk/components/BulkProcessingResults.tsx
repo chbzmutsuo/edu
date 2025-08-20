@@ -3,8 +3,10 @@ import {useState, useCallback} from 'react'
 import {toast} from 'react-toastify'
 
 import {AnalyzedReceipt, BulkProcessingSummary} from '@app/(apps)/keihi/types'
-import {revalidateKeihiPages} from '@app/(apps)/keihi/actions/expense-actions'
+import {getExpenseById, revalidateKeihiPages, updateExpense} from '@app/(apps)/keihi/actions/expense-actions'
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
+import {generateInsightsCore} from '@app/(apps)/keihi/actions/expense/insights'
+import {ExpenseFormData} from '@app/(apps)/keihi/types'
 
 interface BulkProcessingResultsProps {
   uploadedImages: string[]
@@ -45,27 +47,36 @@ export const BulkProcessingResults = ({
       for (const expenseId of expenseIds) {
         setInsightProgress({current: processedCount, total: analyzedReceipts.length})
 
-        // 個別のインサイト生成は時間がかかるため、実際の処理は省略し、
-        // バックグラウンドで実行されることをユーザーに通知
-        await new Promise(resolve => setTimeout(resolve, 500)) // デモ用の待機
+        const createInsights = async () => {
+          const expenseRes = await getExpenseById(expenseId)
+          const formData = expenseRes.data as any as ExpenseFormData
+
+          const insightRes = await generateInsightsCore(formData, {
+            additionalInstruction: '',
+          })
+
+          if (insightRes.success) {
+            const updated = await updateExpense(expenseId, {
+              summary: insightRes.data?.summary,
+              insight: insightRes.data?.insight,
+              conversationSummary: insightRes.data?.conversationSummary,
+              mfSubject: insightRes.data?.mfSubject,
+              mfSubAccount: insightRes.data?.mfSubAccount,
+              autoTags: insightRes.data?.autoTags,
+            })
+          }
+        }
+
+        createInsights()
+        await new Promise(resolve => setTimeout(resolve, 500))
+
         processedCount++
       }
 
-      // 実際のバックグラウンド処理を開始
-      // generateInsightsForMultipleExpenses(expenseIds).then(result => {
-      //   if (result.success) {
-      //     console.log(`${result.processedCount}件のインサイト生成が完了しました`)
-      //   }
-      // })
-
       setInsightProgress({current: analyzedReceipts.length, total: analyzedReceipts.length})
-      toast.success('インサイト生成をバックグラウンドで開始しました')
+      toast.success('インサイト生成が完了しました。')
 
-      // revalidateを実行してから一覧ページに遷移
-      setTimeout(async () => {
-        await revalidateKeihiPages()
-        router.push('/keihi')
-      }, 2000)
+      router.push('/keihi')
     } catch (error) {
       console.error('インサイト生成エラー:', error)
       toast.error('インサイト生成の開始に失敗しました')
@@ -91,7 +102,6 @@ export const BulkProcessingResults = ({
             </div>
             <button
               onClick={async () => {
-                await revalidateKeihiPages()
                 onReset()
               }}
               className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -252,7 +262,6 @@ export const BulkProcessingResults = ({
             </button>
             <button
               onClick={async () => {
-                await revalidateKeihiPages()
                 router.push('/keihi')
               }}
               className="px-6 py-3 bg-gray-600 text-white rounded-md hover:bg-gray-700"

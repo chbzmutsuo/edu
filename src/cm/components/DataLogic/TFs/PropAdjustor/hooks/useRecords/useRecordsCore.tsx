@@ -1,4 +1,4 @@
-import {useState, useCallback, useEffect} from 'react'
+import {useState, useCallback, useEffect, useId} from 'react'
 import {easySearchDataSwrType} from '@cm/class/builders/QueryBuilderVariables'
 import {getInitModelRecordsProps, serverFetchProps} from '@cm/components/DataLogic/TFs/Server/fetchers/getInitModelRecordsProps'
 import {tableRecord} from './useRecords'
@@ -85,7 +85,8 @@ export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn
     resetToFirstPage,
   } = props
 
-  const globalStateKey = ['table-records', serverFetchProps.dataModelName].join('_') as atomKey
+  const tableId = useId()
+  const globalStateKey = ['table-records', serverFetchProps.dataModelName, tableId].join('_') as atomKey
 
   const {toggleLoad} = useGlobal()
   const [refresedAt, setrefresedAt] = useJotaiByKey<Date | null>('useRecords-refreshedAt' as atomKey, null)

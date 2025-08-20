@@ -59,7 +59,7 @@ export const AnalyzedReceiptsList = ({receipts, onPreviewImage}: AnalyzedReceipt
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">相手名</label>
-                    <p className="text-gray-900">{receipt.counterpartyName || '-'}</p>
+                    <p className="text-gray-900">{receipt.participants || '-'}</p>
                   </div>
                 </div>
 

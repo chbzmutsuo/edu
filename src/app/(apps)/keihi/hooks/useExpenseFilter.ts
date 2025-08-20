@@ -63,8 +63,8 @@ export const useExpenseFilter = () => {
         if (filter.keyword) {
           const keyword = filter.keyword.toLowerCase()
           const searchTarget = [
-            expense.counterpartyName,
-            expense.location,
+            expense.participants,
+            expense.counterparty,
             expense.summary,
             expense.insight,
             ...(expense.keywords || []),

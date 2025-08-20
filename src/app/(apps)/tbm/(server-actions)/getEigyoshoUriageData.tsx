@@ -22,11 +22,12 @@ export type eigyoshoRecordKey =
 
 import {MEIAI_SUM_ORIGIN, RUISEKI_SUM_ORIGIN} from '@app/(apps)/tbm/(lib)/calculation'
 import {getTbmBase_MonthConfig} from '@app/(apps)/tbm/(server-actions)/getBasics'
-import {getMonthlyTbmDriveData, meisaiKey, tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
+import {getMonthlyTbmDriveData, tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
 import {carHistoryKey, getUserListWithCarHistory} from '@app/(apps)/tbm/(server-actions)/getUserListWithCarHistory'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import prisma from 'src/lib/prisma'
 import {User} from '@prisma/client'
+import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 
 export type EigyoshoUriageRecord = {
   user: User
@@ -63,7 +64,7 @@ export const getEigyoshoUriageData = async ({whereQuery, tbmBaseId}) => {
 
     const carWashSum = carWashHistory.find(d => d.userId === item.id)?._sum?.price ?? 0
 
-    const MEIAI_SUM = (dataKey: meisaiKey) => MEIAI_SUM_ORIGIN(userSchedule, dataKey)
+    const MEIAI_SUM = (dataKey: unkoMeisaiKey) => MEIAI_SUM_ORIGIN(userSchedule, dataKey)
 
     const userWithCarHistory = userListWithCarHistory.filter(user => user.user.id === item.id)
 
@@ -71,8 +72,8 @@ export const getEigyoshoUriageData = async ({whereQuery, tbmBaseId}) => {
 
     const user = item
 
-    const H_GOUKEI_TSUKORYO = MEIAI_SUM(`N_postalFee`) + MEIAI_SUM(`P_generalFee`)
-    const O_TOGETSU_URIAGEDAKA = H_GOUKEI_TSUKORYO + MEIAI_SUM(`S_driverFee`)
+    const H_GOUKEI_TSUKORYO = MEIAI_SUM(`L_postalFee`) + MEIAI_SUM(`N_generalFee`)
+    const O_TOGETSU_URIAGEDAKA = H_GOUKEI_TSUKORYO + MEIAI_SUM(`Q_driverFee`)
 
     const width40 = 40
     const width80 = 80
@@ -98,32 +99,32 @@ export const getEigyoshoUriageData = async ({whereQuery, tbmBaseId}) => {
         },
         C_postalHighway: {
           label: `高速代（郵便）`,
-          cellValue: MEIAI_SUM(`O_postalHighwayFee`),
+          cellValue: MEIAI_SUM(`M_postalHighwayFee`),
           className: 'text-error-main',
           style: {fontSize: 12, minWidth: widthBase},
         },
         D_generalHighway: {
           label: `高速代(一般）`,
-          cellValue: MEIAI_SUM(`Q_generalHighwayFee`),
+          cellValue: MEIAI_SUM(`O_generalHighwayFee`),
           style: {fontSize: 12, minWidth: widthBase},
           className: 'text-blue-main',
         },
         E_totalHighway: {
           label: `合計(高速代)`,
-          cellValue: MEIAI_SUM(`O_postalHighwayFee`) + MEIAI_SUM(`Q_generalHighwayFee`),
+          cellValue: MEIAI_SUM(`M_postalHighwayFee`) + MEIAI_SUM(`O_generalHighwayFee`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         F_postalFee: {
           label: `通行料(郵便)`,
           style: {fontSize: 12, minWidth: widthBase},
           className: 'text-error-main',
-          cellValue: MEIAI_SUM(`N_postalFee`),
+          cellValue: MEIAI_SUM(`L_postalFee`),
         },
         G_generalFee: {
           label: `通行料(一般)`,
           style: {fontSize: 12, minWidth: widthBase},
           className: 'text-blue-main',
-          cellValue: MEIAI_SUM(`P_generalFee`),
+          cellValue: MEIAI_SUM(`N_generalFee`),
         },
         H_totalFee: {
           label: `合計(通行料)`,
@@ -132,32 +133,32 @@ export const getEigyoshoUriageData = async ({whereQuery, tbmBaseId}) => {
         },
         I_thirtyPercent: {
           label: `高速台30％`,
-          cellValue: MEIAI_SUM(`V_thirteenPercentOfPostalHighway`),
+          cellValue: MEIAI_SUM(`T_thirteenPercentOfPostalHighway`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         J_highwayMinusFee: {
           label: `高速代-通行料`,
-          cellValue: MEIAI_SUM(`W_general`),
+          cellValue: MEIAI_SUM(`U_general`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         K: {
           label: `高速超過額`,
-          cellValue: MEIAI_SUM(`W_general`),
+          cellValue: MEIAI_SUM(`U_general`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         L_highwayExcess: {
           label: `高速超過額`,
-          cellValue: MEIAI_SUM(`X_highwayExcess`),
+          cellValue: MEIAI_SUM(`V_highwayExcess`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         M_salaryFare: {
           label: `給与算定運賃高`,
-          cellValue: MEIAI_SUM(`T_JomuinUnchin`),
+          cellValue: MEIAI_SUM(`R_JomuinUnchin`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         N_monthlyFare: {
           label: `当月運賃高（円）`,
-          cellValue: MEIAI_SUM(`S_driverFee`),
+          cellValue: MEIAI_SUM(`Q_driverFee`),
           style: {fontSize: 12, minWidth: widthBase},
         },
         O_monthlySales: {

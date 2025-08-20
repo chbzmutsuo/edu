@@ -4,6 +4,7 @@ import {useCallback} from 'react'
 import {ExpenseFilterType} from '../hooks/useExpenseFilter'
 import {useAllOptions} from '../hooks/useOptions'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {KEIHI_STATUS} from '@app/(apps)/keihi/actions/expense/constants'
 
 interface ExpenseFilterProps {
   filter: ExpenseFilterType
@@ -82,10 +83,11 @@ export const ExpenseFilter = ({filter, onFilterChange, onReset}: ExpenseFilterPr
             className="block w-[160px] px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">すべて</option>
-            <option value="未設定">未設定</option>
-            <option value="私的利用">私的利用</option>
-            <option value="一次チェック済">一次チェック済</option>
-            <option value="MF連携済み">MF連携済み</option>
+            {KEIHI_STATUS.map(status => (
+              <option key={status.value} value={status.value}>
+                {status.label}
+              </option>
+            ))}
           </select>
         </div>
       </R_Stack>

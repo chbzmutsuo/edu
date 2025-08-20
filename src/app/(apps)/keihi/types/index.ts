@@ -7,8 +7,8 @@ export interface ExpenseRecord {
   updatedAt: Date
   date: Date
   amount: number
-  location?: string | null
-  counterpartyName?: string | null
+  counterparty?: string | null
+  participants?: string | null
   // counterpartyIndustry was removed
   conversationPurpose: string[] // 配列形式に変更
   keywords: string[]
@@ -45,8 +45,8 @@ export interface ExpenseFormData {
   // 基本情報
   date: string
   amount: number
-  location?: string
-  counterpartyName?: string
+  counterparty?: string
+  participants?: string
   conversationPurpose: string[]
   keywords: string[]
 
@@ -95,12 +95,13 @@ export interface AIDraft {
 // 画像解析結果の型（新仕様対応）
 export interface ImageAnalysisResult {
   date: string
-  location: string
+  counterparty: string
   amount: number
   mfSubject: string // 統合された科目フィールド
   suggestedCounterparties: string[]
   suggestedPurposes: ConversationPurposeValue[]
   generatedKeywords: string[]
+  conversationSummary: string
 }
 
 // 解析済み領収書の型
@@ -109,8 +110,8 @@ export interface AnalyzedReceipt {
   date: string
   amount: number
   mfSubject: string // 統合された科目フィールド
-  location: string
-  counterpartyName: string
+  counterparty: string
+  participants: string
   keywords: string[]
   imageIndex: number
   imageData?: string
@@ -171,7 +172,7 @@ export interface ExpenseFilters {
   dateFrom?: string
   dateTo?: string
   mfSubject?: string // 統合された科目フィールド
-  counterpartyName?: string
+  participants?: string
   amountMin?: number
   amountMax?: number
   keywords?: string[]
@@ -205,8 +206,8 @@ export interface CounterpartyInput {
 
 // キーワード生成用の入力データ
 export interface KeywordGenerationInput {
-  counterpartyName?: string
+  participants?: string
   conversationPurpose: string[]
-  location?: string
+  counterparty?: string
   mfSubject: string // 統合された科目フィールド
 }

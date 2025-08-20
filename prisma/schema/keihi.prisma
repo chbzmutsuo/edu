@@ -7,8 +7,8 @@ model KeihiExpense {
   // 基本情報
   date                DateTime
   amount              Int
-  location            String? // 場所
-  counterpartyName    String? // 相手名
+  counterparty        String? // 場所
+  participants        String? // 相手名
   conversationPurpose String[] // 会話の目的（複数選択対応）
   keywords            String[] // キーワード（配列）
 

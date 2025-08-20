@@ -52,10 +52,10 @@ export const POST = async (req: NextRequest) => {
               date: new Date(receiptData.date),
               amount: receiptData.amount,
               mfSubject: receiptData.mfSubject,
-              location: receiptData.location,
-              counterpartyName: receiptData.suggestedCounterparties[0] || '',
+              counterparty: receiptData.counterparty,
+              participants: receiptData.suggestedCounterparties[0] || '',
               keywords: receiptData.generatedKeywords,
-              conversationSummary: `${receiptData.location}での${receiptData.suggestedPurposes.join('・')}`,
+              conversationSummary: receiptData.conversationSummary,
               conversationPurpose: receiptData.suggestedPurposes,
 
               // インサイトは後で生成するため空文字で初期化
@@ -134,7 +134,7 @@ export const POST = async (req: NextRequest) => {
           date: receiptData.date,
           amount: receiptData.amount,
           mfSubject: receiptData.mfSubject,
-          counterpartyName: receiptData.suggestedCounterparties[0] || '',
+          participants: receiptData.suggestedCounterparties[0] || '',
           keywords: receiptData.generatedKeywords,
           imageIndex: receiptData.imageIndex,
           recordCreated,

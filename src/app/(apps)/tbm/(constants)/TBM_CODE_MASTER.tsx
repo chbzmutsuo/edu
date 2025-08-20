@@ -6,7 +6,7 @@ export const TBM_CODE_MASTER = {
     {label: 'プレート変更', value: 'プレート変更mｍ'},
   ],
   ROUTE_KBN: [
-    {label: '規定', value: '規定'},
+    {label: '既定', value: '既定'},
     {label: '臨時', value: '臨時'},
     {label: '増設', value: '増設'},
   ],

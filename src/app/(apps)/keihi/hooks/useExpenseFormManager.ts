@@ -14,8 +14,8 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
     date: getTodayString(),
     amount: 0,
     mfSubject: '', // subjectをmfSubjectに統合
-    location: '',
-    counterpartyName: '',
+    counterparty: '',
+    participants: '',
     conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
     keywords: [],
     conversationSummary: '',
@@ -65,8 +65,8 @@ export const useExpenseFormManager = (options: UseExpenseFormManagerOptions = {}
       date: getTodayString(),
       amount: 0,
       mfSubject: '', // subjectをmfSubjectに統合
-      location: '',
-      counterpartyName: '',
+      counterparty: '',
+      participants: '',
       conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES], // 配列形式に変更
       keywords: [],
       conversationSummary: '',

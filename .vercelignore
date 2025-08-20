@@ -57,7 +57,7 @@ src/app/**/aquapot
 src/app/**/sohken
 src/app/**/sbm
 src/app/**/health
-#src/app/**/KM
-#src/app/**/kickswrap
-#src/app/**/stock
 #src/app/**/keihi
+#src/app/**/stock
+#src/app/**/kickswrap
+#src/app/**/KM

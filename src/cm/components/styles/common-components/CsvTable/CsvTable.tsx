@@ -109,7 +109,12 @@ export const separateHeaderAndBody = (records: bodyRecordsType) => {
  * @note 仮想化が必要な場合は、CsvTableVirtualizedを直接使用してください
  */
 export const CsvTable = (props: CsvTableProps) => {
-  return CsvTableVirtualized(props)
+  if (props.virtualized?.enabled === true) {
+    return CsvTableVirtualized(props)
+  } else {
+    return createCsvTableCore(props)
+  }
+
   // // 🔥 Server Componentではチャンク処理・仮想化をサポートしない
   // if (props.chunked?.enabled) {
   //   console.error('CsvTable: チャンク処理はServer Componentでは利用できません。CsvTableChunkedを使用してください。')
@@ -131,7 +136,7 @@ export const createCsvTableCore = (props: CsvTableProps) => {
 
   const WithWrapper = (wrapperProps: htmlProps & {size?: `sm` | `base` | `lg` | `xl`}) => {
     return (
-      <TableWrapper {...wrapperProps} {...{className: twMerge('max-h-[80vh] max-w-[90vw] mx-auto', wrapperProps.className)}}>
+      <TableWrapper {...wrapperProps} {...{className: twMerge('max-h-[80vh] max-w-[90vw]  mx-auto', wrapperProps.className)}}>
         <TableBordered {...{size: wrapperProps?.size}}>
           <CsvTableHead headerRecords={headerRecords} stylesInColumns={props.stylesInColumns} />
           <CsvTableBody bodyRecords={bodyRecords} stylesInColumns={props.stylesInColumns} />

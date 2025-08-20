@@ -6,7 +6,7 @@ interface MultiReceiptDisplayProps {
       date: string
       amount: number
       mfSubject: string // 統合された科目フィールド
-      counterpartyName: string
+      participants: string
       keywords: string[]
       imageIndex: number
     }>
@@ -27,7 +27,7 @@ export default function MultiReceiptDisplay({multiReceiptData}: MultiReceiptDisp
       <div className="space-y-2">
         {multiReceiptData.receipts.map((receipt, index) => (
           <div key={index} className="text-sm text-amber-700 bg-white p-2 rounded border">
-            {index + 1}枚目: {receipt.counterpartyName} - ¥{receipt.amount.toLocaleString()} ({receipt.date})
+            {index + 1}枚目: {receipt.participants} - ¥{receipt.amount.toLocaleString()} ({receipt.date})
           </div>
         ))}
         <div className="text-sm font-medium text-amber-800 pt-2 border-t">

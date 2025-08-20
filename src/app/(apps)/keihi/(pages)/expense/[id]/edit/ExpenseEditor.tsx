@@ -17,8 +17,8 @@ interface ExpenseDetail {
   id: string
   date: Date
   amount: number
-  location?: string | null
-  counterpartyName?: string | null
+  counterparty?: string | null
+  participants?: string | null
   conversationPurpose: string[]
   keywords: string[]
   conversationSummary?: string | null
@@ -44,8 +44,8 @@ interface ExpenseDetail {
 interface FormData {
   date: string
   amount: string
-  location: string
-  counterpartyName: string
+  counterparty: string
+  participants: string
   conversationPurpose: string[]
   keywords: string[]
   conversationSummary: string
@@ -106,8 +106,8 @@ export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string;
   const [formData, setFormData] = useJotaiByKey<FormData>('keihiFormJotai', {
     date: '',
     amount: '',
-    location: '',
-    counterpartyName: '',
+    counterparty: '',
+    participants: '',
     conversationPurpose: [],
     keywords: [],
     conversationSummary: '',
@@ -140,8 +140,8 @@ export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string;
           setFormData({
             date: new Date(data.date).toISOString().split('T')[0],
             amount: data.amount.toString(),
-            location: data.location || '',
-            counterpartyName: data.counterpartyName || '',
+            counterparty: data.counterparty || '',
+            participants: data.participants || '',
             conversationPurpose: data.conversationPurpose || [],
             keywords: data.keywords,
             conversationSummary: data.conversationSummary || '',
@@ -185,8 +185,8 @@ export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string;
         date: formData.date,
         amount: parseFloat(formData.amount) || 0,
         mfSubject: formData.mfSubject, // mfSubjectを使用
-        location: formData.location,
-        counterpartyName: formData.counterpartyName,
+        counterparty: formData.counterparty,
+        participants: formData.participants,
         conversationPurpose: formData.conversationPurpose,
         keywords: formData.keywords,
         conversationSummary: formData.conversationSummary,
@@ -293,8 +293,8 @@ export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string;
             date: receipt.date,
             amount: receipt.amount.toString(),
             mfSubject: receipt.mfSubject, // 統合された科目フィールド
-            location: receipt.location || '',
-            counterpartyName: receipt.counterpartyName || '',
+            counterparty: receipt.counterparty || '',
+            participants: receipt.participants || '',
             conversationPurpose: receipt.conversationPurpose || [],
             keywords: [...prev.keywords, ...(receipt.keywords || [])],
           }))
@@ -322,14 +322,15 @@ export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string;
     }
 
     setIsSaving(true)
+
     try {
       const updateData = {
         // 基本情報
         date: new Date(formData.date),
         amount: parseFloat(formData.amount),
         mfSubject: formData.mfSubject, // mfSubjectをsubjectとして保存
-        location: formData.location || undefined,
-        counterpartyName: formData.counterpartyName || undefined,
+        counterparty: formData.counterparty || undefined,
+        participants: formData.participants || undefined,
         conversationPurpose: formData.conversationPurpose,
         keywords: formData.keywords,
         conversationSummary: formData.conversationSummary || undefined,
@@ -428,8 +429,8 @@ export default function ExpenseEditor({expenseId, onUpdate}: {expenseId: string;
                 formData={{
                   date: formData.date,
                   amount: parseInt(formData.amount) || 0,
-                  location: formData.location,
-                  counterpartyName: formData.counterpartyName,
+                  counterparty: formData.counterparty,
+                  participants: formData.participants,
                   conversationPurpose: formData.conversationPurpose,
                   keywords: formData.keywords,
                   conversationSummary: formData.conversationSummary,

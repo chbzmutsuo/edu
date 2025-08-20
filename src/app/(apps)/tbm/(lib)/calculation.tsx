@@ -1,10 +1,11 @@
 import {eigyoshoRecordKey, getEigyoshoUriageData} from '@app/(apps)/tbm/(server-actions)/getEigyoshoUriageData'
-import {getMonthlyTbmDriveData, meisaiKey} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
+import {getMonthlyTbmDriveData} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
+import {unkoMeisaiKey} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 import {carHistoryKey, getUserListWithCarHistory} from '@app/(apps)/tbm/(server-actions)/getUserListWithCarHistory'
 
 type userSchedule = Awaited<ReturnType<typeof getMonthlyTbmDriveData>>['monthlyTbmDriveList']
 
-export const MEIAI_SUM_ORIGIN = (userSchedule: userSchedule, dataKey: meisaiKey) => {
+export const MEIAI_SUM_ORIGIN = (userSchedule: userSchedule, dataKey: unkoMeisaiKey) => {
   return userSchedule.reduce((acc, cur) => {
     const value = cur.keyValue?.[dataKey]?.cellValue
     return acc + (Number(value) ?? 0)

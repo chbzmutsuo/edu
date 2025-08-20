@@ -115,6 +115,10 @@ model User {
   tbmVehicleId          Int?
   SbmReservation        SbmReservation[]
   SbmDeliveryAssignment SbmDeliveryAssignment[]
+
+  // トレーニングアプリ リレーション
+  ExerciseMaster ExerciseMaster[]
+  WorkoutLog     WorkoutLog[]
 }
 
 model ReleaseNotes {

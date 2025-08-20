@@ -1,7 +1,6 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {debounce} from 'lodash'
 
 export const appbarHeight = 40
 export const footerHeight = 40

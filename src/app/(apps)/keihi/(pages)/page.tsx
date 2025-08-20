@@ -2,7 +2,7 @@
 
 import {useState, useEffect, useCallback} from 'react'
 import {toast} from 'react-toastify'
-import {deleteExpenses, exportExpensesToCsv, exportLocationsToCsv} from '../actions/expense-actions'
+import {deleteExpenses, syncExpensesToSheet, syncLocationsToSheet} from '../actions/expense-actions'
 import {ExpenseListHeader} from '../components/ExpenseListHeader'
 import {ExpenseListItem} from '../components/ExpenseListItem'
 import {ExpenseFilter} from '../components/ExpenseFilter'
@@ -15,14 +15,14 @@ import {useExpenseQueryState} from '../hooks/useExpenseQueryState'
 import {SortableHeader} from '../components/SortableHeader'
 import {StickyBottom, StickyTop} from '@cm/components/styles/common-components/Sticky'
 import {cn} from '@cm/shadcn/lib/utils'
-import {Padding} from '@cm/components/styles/common-components/common-components'
+import {Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
 import useModal from '@cm/components/utils/modal/useModal'
 import ExpenseEditor from '@app/(apps)/keihi/(pages)/expense/[id]/edit/ExpenseEditor'
-import useWindowSize from '@cm/hooks/useWindowSize'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {sleep} from '@cm/lib/methods/common'
+import {Button} from '@cm/components/styles/common-components/Button'
+import useLogOnRender from '@cm/hooks/useLogOnRender'
 
 const ExpenseListPage = () => {
+  useLogOnRender('useExpenseList')
   const {allOptions} = useAllOptions()
   const {queryState, updateQuery, resetQuery, toggleSort} = useExpenseQueryState()
   const {state, setState, fetchExpenses, toggleSelect, toggleSelectAll, updateExpenseStatus, filteredExpenses} = useExpenseList()
@@ -32,6 +32,8 @@ const ExpenseListPage = () => {
   const [subjectColorMap, setSubjectColorMap] = useState<Record<string, string>>({})
   const [isExporting, setIsExporting] = useState(false)
   const [isExportingLocations, setIsExportingLocations] = useState(false)
+  const [isSyncingExpenses, setIsSyncingExpenses] = useState(false)
+  const [isSyncingLocations, setIsSyncingLocations] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
 
   // クエリパラメータが変更されたら再取得
@@ -75,112 +77,53 @@ const ExpenseListPage = () => {
     [queryState.filter, updateQuery]
   )
 
-  // 共通のCSVダウンロード処理
-  const downloadCsv = useCallback((data: string, filename: string) => {
-    const blob = new Blob([data], {type: 'text/csv;charset=utf-8'})
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = filename
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
-  }, [])
-
-  // 経費データCSV出力（全件）
-  const handleExportAll = useCallback(async () => {
-    try {
-      setIsExporting(true)
-      const result = await exportExpensesToCsv()
-
-      if (result.success && result.data) {
-        // CSVファイルのダウンロード
-        downloadCsv(result.data, `経費記録_全件_${new Date().toISOString().split('T')[0]}.csv`)
-        toast.success('経費データのCSV出力が完了しました')
-      } else {
-        toast.error(result.error || '経費データのCSV出力に失敗しました')
-      }
-    } catch (error) {
-      console.error('経費データCSV出力エラー:', error)
-      toast.error('経費データのCSV出力に失敗しました')
-    } finally {
-      setIsExporting(false)
-    }
-  }, [downloadCsv])
-
-  // 経費データCSV出力（選択）
-  const handleExportSelected = useCallback(async () => {
+  // 経費データをスプレッドシートに連携（選択）
+  const handleSyncExpensesSelected = useCallback(async () => {
     if (state.selectedIds.length === 0) {
-      toast.error('出力する記録を選択してください')
+      toast.error('連携する記録を選択してください')
       return
     }
 
     try {
-      setIsExporting(true)
-      const result = await exportExpensesToCsv(state.selectedIds)
+      setIsSyncingExpenses(true)
+      const result = await syncExpensesToSheet(state.selectedIds)
 
-      if (result.success && result.data) {
-        // CSVファイルのダウンロード
-        downloadCsv(result.data, `経費記録_選択_${new Date().toISOString().split('T')[0]}.csv`)
-        toast.success(`${state.selectedIds.length}件の経費データCSV出力が完了しました`)
+      if (result.success) {
+        toast.success(`${state.selectedIds.length}件の経費データをGoogleスプレッドシートに連携しました: ${result.message}`)
       } else {
-        toast.error(result.error || '経費データのCSV出力に失敗しました')
+        toast.error(result.message || '経費データのスプレッドシート連携に失敗しました')
       }
     } catch (error) {
-      console.error('経費データCSV出力エラー:', error)
-      toast.error('経費データのCSV出力に失敗しました')
+      console.error('経費データのスプレッドシート連携エラー:', error)
+      toast.error('経費データのスプレッドシート連携に失敗しました')
     } finally {
-      setIsExporting(false)
+      setIsSyncingExpenses(false)
     }
-  }, [state.selectedIds, downloadCsv])
+  }, [state.selectedIds])
 
-  // 取引先一覧CSV出力（全件）
-  const handleExportLocationsAll = useCallback(async () => {
-    try {
-      setIsExportingLocations(true)
-      const result = await exportLocationsToCsv()
-
-      if (result.success && result.data) {
-        // CSVファイルのダウンロード
-        downloadCsv(result.data, `取引先一覧_全件_${new Date().toISOString().split('T')[0]}.csv`)
-        toast.success('取引先一覧のCSV出力が完了しました')
-      } else {
-        toast.error(result.error || '取引先一覧のCSV出力に失敗しました')
-      }
-    } catch (error) {
-      console.error('取引先一覧CSV出力エラー:', error)
-      toast.error('取引先一覧のCSV出力に失敗しました')
-    } finally {
-      setIsExportingLocations(false)
-    }
-  }, [downloadCsv])
-
-  // 取引先一覧CSV出力（選択）
-  const handleExportLocationsSelected = useCallback(async () => {
+  // 取引先データをスプレッドシートに連携（選択）
+  const handleSyncLocationsSelected = useCallback(async () => {
     if (state.selectedIds.length === 0) {
-      toast.error('出力する記録を選択してください')
+      toast.error('連携する記録を選択してください')
       return
     }
 
     try {
-      setIsExportingLocations(true)
-      const result = await exportLocationsToCsv(state.selectedIds)
+      setIsSyncingLocations(true)
+      const result = await syncLocationsToSheet(state.selectedIds)
 
-      if (result.success && result.data) {
-        // CSVファイルのダウンロード
-        downloadCsv(result.data, `取引先一覧_選択_${new Date().toISOString().split('T')[0]}.csv`)
-        toast.success(`${state.selectedIds.length}件の取引先一覧CSV出力が完了しました`)
+      if (result.success) {
+        toast.success(`${state.selectedIds.length}件の取引先データをGoogleスプレッドシートに連携しました: ${result.message}`)
       } else {
-        toast.error(result.error || '取引先一覧のCSV出力に失敗しました')
+        toast.error(result.message || '取引先データのスプレッドシート連携に失敗しました')
       }
     } catch (error) {
-      console.error('取引先一覧CSV出力エラー:', error)
-      toast.error('取引先一覧のCSV出力に失敗しました')
+      console.error('取引先データのスプレッドシート連携エラー:', error)
+      toast.error('取引先データのスプレッドシート連携に失敗しました')
     } finally {
-      setIsExportingLocations(false)
+      setIsSyncingLocations(false)
     }
-  }, [state.selectedIds, downloadCsv])
+  }, [state.selectedIds])
 
   // 選択削除
   const handleDeleteSelected = useCallback(async () => {
@@ -232,6 +175,8 @@ const ExpenseListPage = () => {
     )
   }
 
+  const allSelected = state.selectedIds.length === filteredExpenses.length && filteredExpenses.length > 0
+
   return (
     <div className="bg-gray-50 px-4">
       <KeihiDetailMD.Modal>
@@ -239,6 +184,7 @@ const ExpenseListPage = () => {
           <ExpenseEditor
             expenseId={KeihiDetailMD?.open?.keihiId}
             onUpdate={async () => {
+              // await fetchExpenses()
               await fetchExpenses()
               KeihiDetailMD.handleClose()
             }}
@@ -252,30 +198,22 @@ const ExpenseListPage = () => {
             <ExpenseListHeader
               totalCount={state.totalCount}
               selectedCount={state.selectedIds.length}
-              onExportAll={handleExportAll}
-              onExportSelected={handleExportSelected}
+              onSyncExpensesSelected={handleSyncExpensesSelected}
+              onSyncLocationsSelected={handleSyncLocationsSelected}
               onDeleteSelected={handleDeleteSelected}
             />
             {/* 表示件数選択 */}
             <div className="px-6 py-3 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  {filteredExpenses.length > 0 && (
-                    <>
-                      <input
-                        type="checkbox"
-                        checked={state.selectedIds.length === filteredExpenses.length && filteredExpenses.length > 0}
-                        onChange={toggleSelectAll}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm text-gray-600">
-                        {state.selectedIds.length === filteredExpenses.length && filteredExpenses.length > 0
-                          ? '全解除'
-                          : '全選択'}
-                      </span>
-                    </>
-                  )}
-                </div>
+                {filteredExpenses.length > 0 && (
+                  <Button onClick={toggleSelectAll} color={allSelected ? 'gray' : 'blue'}>
+                    <R_Stack className="cursor-pointer">
+                      <input type="checkbox" onChange={() => undefined} checked={allSelected} className="h-4 w-4 " />
+                      <span>{allSelected ? '全解除' : '全選択'}</span>
+                    </R_Stack>
+                  </Button>
+                )}
+
                 <div className="flex items-center gap-2">
                   <label className="text-sm text-gray-600">表示件数:</label>
                   <select
@@ -302,6 +240,16 @@ const ExpenseListPage = () => {
           <div>
             <ProcessingStatus isVisible={isExporting} message="経費データCSV出力中..." variant="info" />
             <ProcessingStatus isVisible={isExportingLocations} message="取引先一覧CSV出力中..." variant="info" />
+            <ProcessingStatus
+              isVisible={isSyncingExpenses}
+              message="経費データをGoogleスプレッドシートに連携中..."
+              variant="info"
+            />
+            <ProcessingStatus
+              isVisible={isSyncingLocations}
+              message="取引先データをGoogleスプレッドシートに連携中..."
+              variant="info"
+            />
             <ProcessingStatus isVisible={isDeleting} message="削除処理中..." variant="info" />
           </div>
 
@@ -362,7 +310,7 @@ const ExpenseListPage = () => {
                         currentOrder={queryState.sort.order}
                         onSort={toggleSort}
                       />
-                      <th className="text-xs font-medium text-gray-500">科目/場所</th>
+                      <th className="text-xs font-medium text-gray-500">科目/取引先</th>
                       <th className="text-xs font-medium text-gray-500">相手/会話の目的/会話内容の要約</th>
                       <th className="text-xs font-medium text-gray-500">要約/洞察/キーワード</th>
                       <SortableHeader
@@ -412,3 +360,148 @@ const ExpenseListPage = () => {
 }
 
 export default ExpenseListPage
+
+// // 経費データCSV出力（全件）
+// const handleExportAll = useCallback(async () => {
+//   try {
+//     setIsExporting(true)
+//     const result = await exportExpensesToCsv()
+
+//     if (result.success && result.data) {
+//       // CSVファイルのダウンロード
+//       downloadCsv(result.data, `経費記録_全件_${new Date().toISOString().split('T')[0]}.csv`)
+//       toast.success('経費データのCSV出力が完了しました')
+//     } else {
+//       toast.error(result.error || '経費データのCSV出力に失敗しました')
+//     }
+//   } catch (error) {
+//     console.error('経費データCSV出力エラー:', error)
+//     toast.error('経費データのCSV出力に失敗しました')
+//   } finally {
+//     setIsExporting(false)
+//   }
+// }, [downloadCsv])
+
+// // 経費データCSV出力（選択）
+// const handleExportSelected = useCallback(async () => {
+//   if (state.selectedIds.length === 0) {
+//     toast.error('出力する記録を選択してください')
+//     return
+//   }
+
+//   try {
+//     setIsExporting(true)
+//     const result = await exportExpensesToCsv(state.selectedIds)
+
+//     if (result.success && result.data) {
+//       // CSVファイルのダウンロード
+//       downloadCsv(result.data, `経費記録_選択_${new Date().toISOString().split('T')[0]}.csv`)
+//       toast.success(`${state.selectedIds.length}件の経費データCSV出力が完了しました`)
+//     } else {
+//       toast.error(result.error || '経費データのCSV出力に失敗しました')
+//     }
+//   } catch (error) {
+//     console.error('経費データCSV出力エラー:', error)
+//     toast.error('経費データのCSV出力に失敗しました')
+//   } finally {
+//     setIsExporting(false)
+//   }
+// }, [state.selectedIds, downloadCsv])
+
+// // 取引先一覧CSV出力（全件）
+// const handleExportLocationsAll = useCallback(async () => {
+//   try {
+//     setIsExportingLocations(true)
+//     const result = await exportLocationsToCsv()
+
+//     if (result.success && result.data) {
+//       // CSVファイルのダウンロード
+//       downloadCsv(result.data, `取引先一覧_全件_${new Date().toISOString().split('T')[0]}.csv`)
+//       toast.success('取引先一覧のCSV出力が完了しました')
+//     } else {
+//       toast.error(result.error || '取引先一覧のCSV出力に失敗しました')
+//     }
+//   } catch (error) {
+//     console.error('取引先一覧CSV出力エラー:', error)
+//     toast.error('取引先一覧のCSV出力に失敗しました')
+//   } finally {
+//     setIsExportingLocations(false)
+//   }
+// }, [downloadCsv])
+
+// // 取引先一覧CSV出力（選択）
+// const handleExportLocationsSelected = useCallback(async () => {
+//   if (state.selectedIds.length === 0) {
+//     toast.error('出力する記録を選択してください')
+//     return
+//   }
+
+//   try {
+//     setIsExportingLocations(true)
+//     const result = await exportLocationsToCsv(state.selectedIds)
+
+//     if (result.success && result.data) {
+//       // CSVファイルのダウンロード
+//       downloadCsv(result.data, `取引先一覧_選択_${new Date().toISOString().split('T')[0]}.csv`)
+//       toast.success(`${state.selectedIds.length}件の取引先一覧CSV出力が完了しました`)
+//     } else {
+//       toast.error(result.error || '取引先一覧のCSV出力に失敗しました')
+//     }
+//   } catch (error) {
+//     console.error('取引先一覧CSV出力エラー:', error)
+//     toast.error('取引先一覧のCSV出力に失敗しました')
+//   } finally {
+//     setIsExportingLocations(false)
+//   }
+// }, [state.selectedIds, downloadCsv])
+
+// // 経費データをスプレッドシートに連携（全件）
+// const handleSyncExpensesAll = useCallback(async () => {
+//   try {
+//     setIsSyncingExpenses(true)
+//     const result = await syncExpensesToSheet()
+
+//     if (result.success) {
+//       toast.success(`経費データをGoogleスプレッドシートに連携しました: ${result.message}`)
+//     } else {
+//       toast.error(result.message || '経費データのスプレッドシート連携に失敗しました')
+//     }
+//   } catch (error) {
+//     console.error('経費データのスプレッドシート連携エラー:', error)
+//     toast.error('経費データのスプレッドシート連携に失敗しました')
+//   } finally {
+//     setIsSyncingExpenses(false)
+//   }
+// }, [])
+
+// // 共通のCSVダウンロード処理
+// const downloadCsv = useCallback((data: string, filename: string) => {
+//   const blob = new Blob([data], {type: 'text/csv;charset=utf-8'})
+//   const url = URL.createObjectURL(blob)
+//   const link = document.createElement('a')
+//   link.href = url
+//   link.download = filename
+//   document.body.appendChild(link)
+//   link.click()
+//   document.body.removeChild(link)
+//   URL.revokeObjectURL(url)
+// }, [])
+
+// // 取引先データをスプレッドシートに連携（全件）
+// const handleSyncLocationsAll = useCallback(async () => {
+//   try {
+//     setIsSyncingLocations(true)
+//     const result = await syncLocationsToSheet()
+
+//     if (result.success) {
+//       toast.success(`取引先データをGoogleスプレッドシートに連携しました: ${result.message}`)
+//     } else {
+//       toast.error(result.message || '取引先データのスプレッドシート連携に失敗しました')
+//     }
+//   } catch (error) {
+//     console.error('取引先データのスプレッドシート連携エラー:', error)
+//     toast.error('取引先データのスプレッドシート連携に失敗しました')
+//   } finally {
+//     setIsSyncingLocations(false)
+//   }
+// }, [])

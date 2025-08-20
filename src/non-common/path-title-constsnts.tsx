@@ -11,6 +11,7 @@ import {Grouping_PAGES} from 'src/non-common/getPages/Grouping_PAGES'
 import {KM_PAGES} from 'src/non-common/getPages/KM_PAGES'
 import {stock_PAGES} from 'src/non-common/getPages/stock_PAGES'
 import {colabo_PAGES} from 'src/non-common/getPages/CoLab_PAGES'
+import {training_PAGES} from 'src/non-common/getPages/training_PAGES'
 
 export const PAGES: any = {
   apex_PAGES,
@@ -23,6 +24,7 @@ export const PAGES: any = {
   aquapot_PAGES,
   shinsei_PAGES,
   stock_PAGES,
+  training_PAGES,
   keihi_PAGES: (props: PageGetterType) => {
     const {roles, query, session, rootPath, pathname} = props
 

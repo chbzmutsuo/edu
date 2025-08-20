@@ -10,8 +10,8 @@
 // const defaultValues: ExpenseFormData = {
 //   date: '',
 //   amount: 0,
-//   location: '',
-//   counterpartyName: '',
+//   counterparty: '',
+//   participants: '',
 //   conversationPurpose: [...DEFAULT_CONVERSATION_PURPOSES] as string[],
 //   keywords: [],
 //   conversationSummary: '',
@@ -64,9 +64,9 @@
 //   const addCounterparty = useCallback(
 //     (name: string) => {
 //       if (name.trim()) {
-//         const currentValue = getValues('counterpartyName') || ''
+//         const currentValue = getValues('participants') || ''
 //         const newValue = currentValue ? `${currentValue}, ${name.trim()}` : name.trim()
-//         setValue('counterpartyName', newValue, {shouldDirty: true})
+//         setValue('participants', newValue, {shouldDirty: true})
 //       }
 //     },
 //     [getValues, setValue]
@@ -74,9 +74,9 @@
 
 //   // 「その他複数名」を追加
 //   const addMultipleOthers = useCallback(() => {
-//     const currentValue = getValues('counterpartyName') || ''
+//     const currentValue = getValues('participants') || ''
 //     const newValue = currentValue ? `${currentValue}, その他複数名` : 'その他複数名'
-//     setValue('counterpartyName', newValue, {shouldDirty: true})
+//     setValue('participants', newValue, {shouldDirty: true})
 //   }, [getValues, setValue])
 
 //   // 会話の目的変更

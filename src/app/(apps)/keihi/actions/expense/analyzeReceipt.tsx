@@ -1,6 +1,7 @@
 'use server'
-import {MAJOR_ACCOUNTS} from '@app/(apps)/keihi/actions/expense/constants'
+
 import {CONVERSATION_PURPOSES} from '@app/(apps)/keihi/(constants)/conversation-purposes'
+import {getOptionsByCategory} from '@app/(apps)/keihi/actions/master-actions'
 import {ImageAnalysisResult} from '@app/(apps)/keihi/types'
 import OpenAI from 'openai'
 
@@ -12,10 +13,10 @@ export const analyzeMultipleReceipts = async (
   data?: {
     receipts: Array<{
       date: string
-      location: string
+      counterparty: string
       amount: number
       mfSubject: string // 統合された科目フィールド
-      counterpartyName: string
+      participants: string
       keywords: string[]
       imageIndex: number
       conversationPurpose: string[]
@@ -41,10 +42,10 @@ export const analyzeMultipleReceipts = async (
             receipts: [
               {
                 date: result.data.date,
-                location: result.data.location,
+                counterparty: result.data.counterparty,
                 amount: result.data.amount,
                 mfSubject: result.data.mfSubject,
-                counterpartyName: result.data.suggestedCounterparties[0] || '',
+                participants: result.data.suggestedCounterparties[0] || '',
                 keywords: result.data.generatedKeywords,
                 imageIndex: 0,
                 conversationPurpose: result.data.suggestedPurposes || [],
@@ -66,10 +67,10 @@ export const analyzeMultipleReceipts = async (
         if (result.success && result.data) {
           return {
             date: result.data.date,
-            location: result.data.location,
+            counterparty: result.data.counterparty,
             amount: result.data.amount,
             mfSubject: result.data.mfSubject,
-            counterpartyName: result.data.suggestedCounterparties[0] || '',
+            participants: result.data.suggestedCounterparties[0] || '',
             keywords: result.data.generatedKeywords,
             imageIndex: index,
             conversationPurpose: result.data.suggestedPurposes || [],
@@ -88,10 +89,10 @@ export const analyzeMultipleReceipts = async (
     const totalAmount = validResults.reduce((sum, receipt) => sum + receipt.amount, 0)
     const allKeywords = [...new Set(validResults.flatMap(receipt => receipt.keywords))]
 
-    // 同じ日付・場所の領収書がある場合は統合を提案
+    // 同じ日付・取引先の領収書がある場合は統合を提案
     const suggestedMerge = validResults.some((receipt, index) =>
       validResults.some(
-        (other, otherIndex) => index !== otherIndex && receipt.date === other.date && receipt.location === other.location
+        (other, otherIndex) => index !== otherIndex && receipt.date === other.date && receipt.counterparty === other.counterparty
       )
     )
 
@@ -121,6 +122,10 @@ export const analyzeReceiptImage = async (
   data?: ImageAnalysisResult
   error?: string
 }> => {
+  const getSubjects = await getOptionsByCategory('subjects')
+
+  const MAJOR_ACCOUNTS = getSubjects.data ?? []
+
   try {
     const conversationPurposeOptions = CONVERSATION_PURPOSES.map(p => p.value).join('\n')
 
@@ -129,31 +134,32 @@ export const analyzeReceiptImage = async (
 
 【抽出する情報】
 1. 日付（YYYY-MM-DD形式）
-2. 場所（店舗名・施設名）
+2. 取引先（店舗名・施設名）
 3. 金額（数値のみ）
 4. 適切な勘定科目（以下から選択）：
-${MAJOR_ACCOUNTS.map(acc => `- ${acc.account}`).join('\n')}
+${MAJOR_ACCOUNTS.map(acc => `- ${acc.label}`).join('\n')}
 
 【推測する情報】
 5. 想定される相手（複数可能）：
    - 店舗の種類、立地、時間帯から推測
-   - 例：「Aさん（教師）」「Bさん（エンジニア）」「その他複数名」「店頭スタッフ」「なし（業務利用）」
+   - 例：「Aさん（教師）」「Bさん（エンジニア）」「その他複数名」「店頭スタッフ」
 
 6. 会話の目的（複数選択、以下から推測）：
 ${conversationPurposeOptions}
 
 7. キーワード（1~2個）：
-   - 相手、会話の目的、場所、科目から想定される交流内容
+   - 相手、会話の目的、取引先、科目から想定される交流内容
    - 例：「技術相談」「新規開拓」「人材紹介」
 
 以下のJSON形式で回答してください：
 {
   "date": "YYYY-MM-DD",
-  "location": "店舗名・場所",
+  "counterparty": "店舗名・取引先名",
   "amount": 数値,
   "subject": "勘定科目",
   "suggestedCounterparties": ["相手1", "相手2"],
-  "generatedKeywords": ["キーワード1", "キーワード2", "キーワード3"]
+  "generatedKeywords": ["キーワード1", "キーワード2", "キーワード3"],
+  "conversationSummary": "会話内容の要約"
 }
 `
 
@@ -195,7 +201,7 @@ ${conversationPurposeOptions}
     // データの検証と正規化
     const result: ImageAnalysisResult = {
       date: parsedData.date || new Date().toISOString().split('T')[0],
-      location: parsedData.location || '',
+      counterparty: parsedData.counterparty || '',
       amount: parsedData.amount || 0,
       mfSubject: parsedData.mfSubject || '会議費',
       suggestedCounterparties: Array.isArray(parsedData.suggestedCounterparties)
@@ -203,10 +209,11 @@ ${conversationPurposeOptions}
         : ['その他複数名'],
       suggestedPurposes: Array.isArray(parsedData.suggestedPurposes)
         ? parsedData.suggestedPurposes.filter(p => CONVERSATION_PURPOSES.some(cp => cp.value === p))
-        : ['営業活動', 'リクルーティング'],
+        : ['営業活動'],
       generatedKeywords: Array.isArray(parsedData.generatedKeywords)
         ? parsedData.generatedKeywords.slice(0, 3)
         : ['ビジネス交流', '情報交換'],
+      conversationSummary: parsedData.conversationSummary || '',
     }
 
     return {

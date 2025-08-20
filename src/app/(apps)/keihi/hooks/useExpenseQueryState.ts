@@ -81,21 +81,22 @@ export const useExpenseQueryState = () => {
   const updateQuery = useCallback(
     (updates: Partial<QueryState>) => {
       const current = getQueryState()
+
       const newState = {...current, ...updates}
 
       // 新しいクエリオブジェクトを作成
       const newQuery: Record<string, string> = {}
 
       // フィルター
-      if (newState.filter.dateRange.start) newQuery.startDate = newState.filter.dateRange.start
-      if (newState.filter.dateRange.end) newQuery.endDate = newState.filter.dateRange.end
-      if (newState.filter.mfSubject) newQuery.mfSubject = newState.filter.mfSubject
-      if (newState.filter.status) newQuery.status = newState.filter.status
-      if (newState.filter.keyword) newQuery.keyword = newState.filter.keyword
+      newQuery.startDate = newState?.filter?.dateRange?.start || ''
+      newQuery.endDate = newState?.filter?.dateRange?.end || ''
+      newQuery.mfSubject = newState?.filter?.mfSubject || ''
+      newQuery.status = newState?.filter?.status || ''
+      newQuery.keyword = newState?.filter?.keyword || ''
 
       // ソート
-      if (newState.sort.field) newQuery.sortField = newState.sort.field
-      if (newState.sort.order) newQuery.sortOrder = newState.sort.order
+      newQuery.sortField = newState?.sort?.field || ''
+      newQuery.sortOrder = newState?.sort?.order || ''
 
       // ページネーション
       newQuery.page = newState.page.toString()
