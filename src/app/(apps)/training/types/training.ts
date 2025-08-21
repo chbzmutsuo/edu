@@ -7,6 +7,7 @@ export interface ExerciseMaster {
   part: string
   name: string
   unit: string
+  color: string
   createdAt: Date
   updatedAt: Date
 }

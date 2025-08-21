@@ -2,13 +2,10 @@ import EtcConnectForm from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/E
 import EtcConnectHistoryTable from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/EtcConnector/EtcConnectHistoryTable'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {C_Stack, FitMargin} from '@cm/components/styles/common-components/common-components'
-import BasicModal from '@cm/components/utils/modal/BasicModal'
 import useModal from '@cm/components/utils/modal/useModal'
 import React from 'react'
 
 export default function EtcConnetor({useGlobalProps, tbmVehicleId}) {
-  const {session, query} = useGlobalProps
-
   const EtcConnectFormMD = useModal()
 
   return (

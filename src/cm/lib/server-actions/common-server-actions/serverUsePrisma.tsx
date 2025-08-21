@@ -1,7 +1,4 @@
 'use server'
-
-import {revalidatePath} from 'next/cache'
-
 import * as fs from 'fs'
 
 export const fs_write_text = async ({title, content}) => {

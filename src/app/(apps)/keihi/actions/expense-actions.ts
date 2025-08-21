@@ -1,6 +1,5 @@
 'use server'
 
-import {revalidatePath} from 'next/cache'
 import {FileHandler} from 'src/cm/class/FileHandler'
 import {S3FormData} from '@cm/class/FileHandler'
 import prisma from 'src/lib/prisma'

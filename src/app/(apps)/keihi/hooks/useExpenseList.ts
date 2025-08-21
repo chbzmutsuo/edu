@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import {getExpenses} from '../actions/expense-actions'
 import {ExpenseRecord} from '../types'
 import {useExpenseQueryState} from './useExpenseQueryState'
-import useLogOnRender from '@cm/hooks/useLogOnRender'
 
 interface ExpenseListState {
   selectedIds: string[]

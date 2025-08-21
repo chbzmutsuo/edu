@@ -5,6 +5,7 @@ import {ExerciseMaster} from '../../types/training'
 import {MasterForm} from './MasterForm'
 import {getExerciseMasters, deleteExerciseMaster} from '../../server-actions/exercise-master'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {PART_OPTIONS} from '@app/(apps)/training/(constants)/PART_OPTIONS'
 
 export function MasterManagement() {
   const {session} = useGlobal()
@@ -100,7 +101,7 @@ export function MasterManagement() {
   )
 
   // 部位の表示順序
-  const partOrder = ['胸', '背中', '肩', '腕', '足', '有酸素', 'その他']
+  const partOrder = PART_OPTIONS.map(part => part.name)
   const sortedParts = Object.keys(groupedMasters).sort((a, b) => partOrder.indexOf(a) - partOrder.indexOf(b))
 
   if (isLoading) {

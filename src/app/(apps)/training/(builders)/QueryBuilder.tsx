@@ -2,7 +2,11 @@ import {getIncludeType, includeProps, roopMakeRelationalInclude} from '@cm/class
 
 export class QueryBuilder {
   static getInclude = (includeProps: includeProps) => {
-    const include: getIncludeType = {}
+    const include: getIncludeType = {
+      workoutLog: {
+        include: {User: {}},
+      },
+    }
 
     Object.keys(include).forEach(key => {
       roopMakeRelationalInclude({

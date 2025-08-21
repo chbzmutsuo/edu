@@ -4,10 +4,12 @@ import React, {useMemo} from 'react'
 import {WorkoutLogWithMaster} from '../../types/training'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {LogItem} from './LogItem'
+import {useWorkoutLog} from '@app/(apps)/training/hooks/useWorkoutLog'
+import {PART_OPTIONS} from '@app/(apps)/training/(constants)/PART_OPTIONS'
 
 interface LogListViewProps {
+  userId: number
   selectedDate: string
-  logList: WorkoutLogWithMaster[]
   onAdd: () => void
   onEdit: (log: WorkoutLogWithMaster) => void
   onQuickAdd: (log: WorkoutLogWithMaster) => void
@@ -16,8 +18,26 @@ interface LogListViewProps {
   prLogIds: Set<number>
 }
 
-export function LogListView({selectedDate, logList, onAdd, onEdit, onQuickAdd, onDelete, onBack, prLogIds}: LogListViewProps) {
+export function LogListView({userId, selectedDate, onAdd, onEdit, onQuickAdd, onDelete, onBack, prLogIds}: LogListViewProps) {
   // 記録を部位別にグループ化
+
+  const {logList, setlogList, fetchlogList, isLoading} = useWorkoutLog({userId, selectedDate})
+
+  // 部位ごとの色を取得
+  const partColors = useMemo(() => {
+    const colors: Record<string, string> = {}
+    if (!logList) return colors
+    logList.forEach(log => {
+      const part = log.ExerciseMaster?.part || 'その他'
+
+      const color = log.ExerciseMaster?.color
+      if (color && !colors[part]) {
+        colors[part] = color
+      }
+    })
+    return colors
+  }, [logList])
+
   const {groupedlogList, sortedParts, totalVolume} = useMemo(() => {
     if (!logList || logList.length === 0) {
       return {groupedlogList: {}, sortedParts: [], totalVolume: 0}
@@ -34,7 +54,7 @@ export function LogListView({selectedDate, logList, onAdd, onEdit, onQuickAdd, o
     )
 
     // 部位の表示順序を定義
-    const partOrder = ['胸', '背中', '肩', '腕', '足', '有酸素', 'その他']
+    const partOrder = PART_OPTIONS.map(part => part.name)
     const sorted = Object.keys(grouped).sort((a, b) => partOrder.indexOf(a) - partOrder.indexOf(b))
 
     // 総ボリュームを計算
@@ -42,6 +62,8 @@ export function LogListView({selectedDate, logList, onAdd, onEdit, onQuickAdd, o
 
     return {groupedlogList: grouped, sortedParts: sorted, totalVolume: volume}
   }, [logList])
+
+  if (isLoading) return <div>Loading...</div>
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
@@ -68,7 +90,7 @@ export function LogListView({selectedDate, logList, onAdd, onEdit, onQuickAdd, o
         <div className="space-y-4">
           {sortedParts.map(part => (
             <div key={part}>
-              <h3 className="font-bold text-md text-slate-700 border-b-2 border-slate-200 pb-1 mb-2">{part}</h3>
+              <h3 className="font-bold text-md border-b-2 border-slate-200 pb-1 mb-2">{part}</h3>
               <ul className="space-y-2">
                 {groupedlogList[part].map(log => (
                   <LogItem
@@ -86,13 +108,15 @@ export function LogListView({selectedDate, logList, onAdd, onEdit, onQuickAdd, o
         </div>
       )}
 
-      {/* 新規記録追加ボタン */}
-      <button
-        onClick={onAdd}
-        className="mt-6 w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors"
-      >
-        新しい種目を記録する
-      </button>
+      <div className={` sticky  bottom-0 p-1 bg-white/80`}>
+        {/* 新規記録追加ボタン */}
+        <button
+          onClick={onAdd}
+          className="mt-6 w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          新しい種目を記録する
+        </button>
+      </div>
     </div>
   )
 }

@@ -27,6 +27,7 @@ const withPWA = require('next-pwa')({
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
+  // eslint: {ignoreDuringBuilds: true},
   experimental: {
     serverActions: {bodySizeLimit: '10mb'},
   },

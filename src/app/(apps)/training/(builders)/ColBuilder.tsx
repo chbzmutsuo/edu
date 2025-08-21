@@ -11,4 +11,27 @@ export class ColBuilder {
       {id: 'password', label: 'パスワード', type: `password`, form: {...defaultRegister}},
     ]).transposeColumns()
   }
+  static workoutLog = (props: columnGetterType) => {
+    return new Fields([
+      {id: 'date', label: '日付', type: 'date', form: {...defaultRegister}},
+      {id: 'strength', label: '強度', type: 'number', form: {...defaultRegister}},
+      {id: 'reps', label: '回数', type: 'number', form: {...defaultRegister}},
+      {id: 'exerciseId', label: '種目ID', type: 'number', form: {...defaultRegister}},
+      {
+        id: 'userId',
+        label: 'ユーザーID',
+        forSelect: {},
+        form: {...defaultRegister},
+      },
+    ]).transposeColumns()
+  }
+
+  static exerciseMaster = (props: columnGetterType) => {
+    return new Fields([
+      {id: 'part', label: '部位', form: {...defaultRegister}},
+      {id: 'name', label: '名称', form: {...defaultRegister}},
+      {id: 'unit', label: '単位', form: {...defaultRegister}},
+      {id: 'color', label: '色', type: 'color', form: {}},
+    ]).transposeColumns()
+  }
 }

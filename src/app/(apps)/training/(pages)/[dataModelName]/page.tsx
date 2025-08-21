@@ -39,6 +39,31 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
           }
         },
       },
+      {
+        modelNames: [`exerciseMaster`],
+        setParams: async () => {
+          return {
+            additional: {
+              payload: [],
+              where: {userId: session.id},
+              myTable: {drag: true},
+            },
+          }
+        },
+      },
+      {
+        modelNames: [`workoutLog`],
+        setParams: async () => {
+          return {
+            additional: {
+              payload: [],
+              where: {userId: session.id},
+              orderBy: [{date: 'desc'}, {ExerciseMaster: {sortOrder: 'asc'}}],
+              myTable: {drag: true},
+            },
+          }
+        },
+      },
     ],
   })
   return customParams

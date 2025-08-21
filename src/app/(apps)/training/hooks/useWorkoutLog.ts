@@ -1,4 +1,4 @@
-import {useState, useMemo} from 'react'
+import {useState, useMemo, useEffect} from 'react'
 import {WorkoutLogWithMaster, WorkoutLogInput} from '../types/training'
 import {getWorkoutLogByDate, createWorkoutLog, updateWorkoutLog, deleteWorkoutLog} from '../server-actions/workout-log'
 
@@ -112,6 +112,10 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
     return await addLog(newLogData)
   }
 
+  useEffect(() => {
+    fetchlogList()
+  }, [userId, selectedDate])
+
   // PR記録のIDを計算
   const prLogIds = useMemo(() => {
     const prIds = new Set<number>()
@@ -149,6 +153,8 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
     editLog,
     removeLog,
     quickAddSet,
+
+    setlogList,
 
     // 計算値
     prLogIds,

@@ -4,26 +4,34 @@ import {getScopes} from '../scope-lib/getScopes'
 export const training_PAGES = (props: PageGetterType) => {
   const {roles, query, session, rootPath, pathname} = props
 
-  const {login} = getScopes(session, {query, roles})
+  const {admin, login} = getScopes(session, {query, roles})
 
   const loginPaths = [
     {tabId: '/', label: 'カレンダ/入力'},
     {
-      tabId: 'workoutLog',
-      label: '記録一覧',
+      tabId: '',
+      label: 'データ',
+      children: [
+        {tabId: 'workoutLog', label: '記録一覧'},
+        {tabId: 'exerciseMaster', label: '種目マスタ'},
+      ],
+      exclusiveTo: !!login,
     },
     {
       tabId: '',
       label: '分析',
-      children: [
-        {tabId: 'analysis', label: '月間ダッシュボード'},
-        {tabId: 'exercise', label: '種目別分析'},
-      ],
+      children: [{tabId: 'analysis', label: '月間ダッシュボード'}],
+      exclusiveTo: !!login,
     },
     {
       tabId: '',
-      label: '設定',
-      children: [{tabId: 'master', label: '種目マスタ'}],
+      label: '管理者',
+      children: [
+        {tabId: 'master', label: '種目マスタ'},
+        {tabId: 'settings', label: 'アプリ設定'},
+        {tabId: 'user', label: 'ユーザー管理'},
+      ],
+      exclusiveTo: !!admin,
     },
   ].map((item, i) => {
     return {

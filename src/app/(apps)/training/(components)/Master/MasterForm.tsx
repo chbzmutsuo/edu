@@ -4,6 +4,7 @@ import React, {useState, useEffect} from 'react'
 import {ExerciseMaster, ExerciseMasterInput} from '../../types/training'
 import {createExerciseMaster, updateExerciseMaster} from '../../server-actions/exercise-master'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {PART_OPTIONS} from '@app/(apps)/training/(constants)/PART_OPTIONS'
 
 interface MasterFormProps {
   master: ExerciseMaster | null
@@ -84,7 +85,6 @@ export function MasterForm({master, onSave, onCancel}: MasterFormProps) {
   }
 
   // 部位の選択肢
-  const partOptions = ['胸', '背中', '肩', '腕', '足', '有酸素', 'その他']
 
   // 単位の選択肢
   const unitOptions = ['kg', 'lb', 'min', '回', 'km', 'm']
@@ -111,9 +111,9 @@ export function MasterForm({master, onSave, onCancel}: MasterFormProps) {
             className="w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">部位を選択してください</option>
-            {partOptions.map(part => (
-              <option key={part} value={part}>
-                {part}
+            {PART_OPTIONS.map(part => (
+              <option key={part.name} value={part.name}>
+                {part.name}
               </option>
             ))}
           </select>

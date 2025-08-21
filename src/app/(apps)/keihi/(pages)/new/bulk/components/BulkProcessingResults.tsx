@@ -3,7 +3,7 @@ import {useState, useCallback} from 'react'
 import {toast} from 'react-toastify'
 
 import {AnalyzedReceipt, BulkProcessingSummary} from '@app/(apps)/keihi/types'
-import {getExpenseById, revalidateKeihiPages, updateExpense} from '@app/(apps)/keihi/actions/expense-actions'
+import {getExpenseById, updateExpense} from '@app/(apps)/keihi/actions/expense-actions'
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import {generateInsightsCore} from '@app/(apps)/keihi/actions/expense/insights'
 import {ExpenseFormData} from '@app/(apps)/keihi/types'

@@ -2,13 +2,12 @@
 
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {WorkoutLogInput} from '../types/training'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 // 指定日のワークアウトログ取得（ユーザー別）
 export async function getWorkoutLogByDate(userId: number, date: Date) {
-  const startOfDay = new Date(date)
-  startOfDay.setHours(0, 0, 0, 0)
-  const endOfDay = new Date(date)
-  endOfDay.setHours(23, 59, 59, 999)
+  const startOfDay = toUtc(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0, 0))
+  const endOfDay = toUtc(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 23, 59, 59, 999))
 
   return await doStandardPrisma('workoutLog', 'findMany', {
     where: {
@@ -73,6 +72,7 @@ export async function getWorkoutDates(userId: number) {
 export async function getWorkoutLogByExercise(userId: number, exerciseId: number, months: number = 3) {
   const startDate = new Date()
   startDate.setMonth(startDate.getMonth() - months)
+  startDate.setUTCHours(0, 0, 0, 0)
 
   return await doStandardPrisma('workoutLog', 'findMany', {
     where: {

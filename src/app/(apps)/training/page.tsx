@@ -2,14 +2,15 @@
 
 import React, {useEffect, useState} from 'react'
 
-import {CalendarView} from '../(components)/Calendar/CalendarView'
-import {LogListView} from '../(components)/Log/LogListView'
-import {LogForm} from '../(components)/Log/LogForm'
-import {useCalendar} from '../hooks/useCalendar'
-import {useWorkoutLog} from '../hooks/useWorkoutLog'
-import {useExerciseMasters} from '../hooks/useExerciseMasters'
+import {CalendarView} from './(components)/Calendar/CalendarView'
+import {LogListView} from './(components)/Log/LogListView'
+import {LogForm} from './(components)/Log/LogForm'
+import {useCalendar} from './hooks/useCalendar'
+import {useExerciseMasters} from './hooks/useExerciseMasters'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {WorkoutLogWithMaster, WorkoutLogInput} from '../types/training'
+import {WorkoutLogWithMaster, WorkoutLogInput} from './types/training'
+import {getWorkoutLogByDate, createWorkoutLog, updateWorkoutLog, deleteWorkoutLog} from './server-actions/workout-log'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 // 表示画面の種類
 type ViewType = 'calendar' | 'logList' | 'logForm'
@@ -27,40 +28,54 @@ export default function TrainingPage() {
   // 編集中の記録
   const [editingLog, setEditingLog] = useState<WorkoutLogWithMaster | null>(null)
 
+  // 記録データ
+  const [logList, setlogList] = useState<WorkoutLogWithMaster[]>([])
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
   const {
-    isLoading: calendarLoading,
     currentDate,
     workoutDates,
-    // workoutDateSet,
-    // currentMonthWorkoutCount,
+    workoutDateSet,
+    isLoading: calendarLoading,
+    currentMonthWorkoutCount,
     changeMonth,
     fetchWorkoutDates,
   } = useCalendar({userId})
-
-  const {
-    logList,
-    isLoading: logListLoading,
-    error,
-    fetchlogList,
-    addLog,
-    editLog,
-    removeLog,
-    quickAddSet,
-    prLogIds,
-    totalVolume,
-  } = useWorkoutLog({userId, selectedDate})
 
   const {masters, fetchMasters} = useExerciseMasters({userId})
 
   // 初回ロード時に種目マスタを取得
   useEffect(() => {
     fetchMasters()
-  }, [selectedDate])
+  }, [])
+
+  // 選択された日付の記録を取得
+  const fetchlogList = async (dateStr: string) => {
+    if (!dateStr || !userId) return
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const date = new Date(dateStr + 'T00:00:00Z')
+      const result = await getWorkoutLogByDate(userId, date)
+      if (result.result) {
+        setlogList(result.result)
+      }
+    } catch (err) {
+      setError('記録の取得に失敗しました')
+      console.error('記録取得エラー:', err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   // 日付クリック時の処理
   const handleDateClick = (dateStr: string) => {
     setSelectedDate(dateStr)
     setCurrentView('logList')
+    fetchlogList(dateStr)
   }
 
   // 記録追加時の処理
@@ -78,12 +93,14 @@ export default function TrainingPage() {
   const handleSaveLog = async (data: WorkoutLogInput & {date: Date}) => {
     try {
       if (editingLog) {
-        await editLog(editingLog.id, data)
+        await updateWorkoutLog(userId, editingLog.id, data)
       } else {
-        await addLog(data)
+        await createWorkoutLog(userId, data)
       }
       setCurrentView('logList')
       setEditingLog(null)
+      // 記録を再取得
+      fetchlogList(selectedDate)
       // カレンダーの記録日付も更新
       fetchWorkoutDates()
     } catch (error) {
@@ -94,7 +111,9 @@ export default function TrainingPage() {
   // 記録削除時の処理
   const handleDeleteLog = async (logId: number) => {
     try {
-      await removeLog(logId)
+      await deleteWorkoutLog(userId, logId)
+      // 記録を再取得
+      fetchlogList(selectedDate)
       // カレンダーの記録日付も更新
       fetchWorkoutDates()
     } catch (error) {
@@ -109,9 +128,11 @@ export default function TrainingPage() {
         exerciseId: log.exerciseId,
         strength: log.strength,
         reps: log.reps,
-        date: new Date(selectedDate),
+        date: toUtc(selectedDate),
       }
-      await addLog(newLogData)
+      await createWorkoutLog(userId, newLogData)
+      // 記録を再取得
+      fetchlogList(selectedDate)
       // カレンダーの記録日付も更新
       fetchWorkoutDates()
     } catch (error) {
@@ -175,7 +196,7 @@ export default function TrainingPage() {
             onQuickAdd={handleQuickAdd}
             onDelete={handleDeleteLog}
             onBack={handleBackToCalendar}
-            prLogIds={prLogIds}
+            prLogIds={new Set()}
           />
         </div>
       )

@@ -1,12 +1,11 @@
 import {useState, useMemo, useEffect} from 'react'
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useSearchParams} from 'next/navigation'
 import {getWorkoutDates} from '../server-actions/workout-log'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getTodayString} from '@app/(apps)/training/(lib)/date-utils'
 import {getMonthRange} from '@app/(apps)/training/(lib)/date-utils'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {ObjectMap} from '@cm/lib/methods/common'
 
 interface UseCalendarProps {
   userId: number
@@ -33,7 +32,7 @@ export function useCalendar({userId}: UseCalendarProps) {
 
     // デフォルトは現在の月
     const now = new Date()
-    return new Date(now.getFullYear(), now.getMonth(), 1)
+    return new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0))
   }, [searchParams])
 
   // 選択された日付
