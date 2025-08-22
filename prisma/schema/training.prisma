@@ -9,17 +9,15 @@ model ExerciseMaster {
  updatedAt DateTime @updatedAt
  sortOrder Int      @default(0)
 
- userId Int // ユーザーID（外部キー）
- part   String // 部位（胸、背中、肩、腕、足、有酸素など）
- name   String // 種目名
- unit   String // 強度単位（kg、lb、minなど）
- color  String? // 色（#000000）
+ part  String // 部位（胸、背中、肩、腕、足、有酸素など）
+ name  String // 種目名
+ unit  String // 強度単位（kg、lb、minなど）
+ color String? // 色（#000000）
 
  // リレーション名は対象テーブルと同一、大文字で開始
  User       User         @relation(fields: [userId], references: [id])
+ userId     Int // ユーザーID（外部キー）
  WorkoutLog WorkoutLog[]
-
- @@map("exercise_masters")
 }
 
 model WorkoutLog {
@@ -37,6 +35,4 @@ model WorkoutLog {
  // リレーション名は対象テーブルと同一、大文字で開始
  User           User           @relation(fields: [userId], references: [id])
  ExerciseMaster ExerciseMaster @relation(fields: [exerciseId], references: [id])
-
- @@map("workout_logs")
 }

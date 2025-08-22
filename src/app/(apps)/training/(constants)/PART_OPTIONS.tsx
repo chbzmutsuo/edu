@@ -1,9 +1,10 @@
 export const PART_OPTIONS = [
-  {name: '胸', color: '#FF6B6B'},
-  {name: '背中', color: '#4ECDC4'},
-  {name: '肩', color: '#FFD93D'},
-  {name: '腕', color: '#1A535C'},
-  {name: '足', color: '#5F27CD'},
-  {name: '有酸素', color: '#00B894'},
-  {name: 'その他', color: '#636E72'},
+  {value: '胸', label: '胸', color: '#FFA500'},
+  {value: '背中', label: '背中', color: '#5F27CD'},
+  {value: '腹筋', label: '腹筋', color: '#FF6B6B'},
+  {value: '肩', label: '肩', color: '#FFD93D'},
+  {value: '腕', label: '腕', color: '#1A535C'},
+  {value: '足', label: '足', color: '#4ECDC4'},
+  {value: '有酸素', label: '有酸素', color: '#005FB8'},
+  {value: 'その他', label: 'その他', color: '#636E72'},
 ]

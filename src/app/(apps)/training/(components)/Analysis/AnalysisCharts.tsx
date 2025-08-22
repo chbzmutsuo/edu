@@ -24,7 +24,7 @@ const COLORS = PART_OPTIONS.map(part => part.color)
 
 // 部位別円グラフ
 interface PartPieChartProps {
-  data: Array<{name: string; value: number}>
+  data: Array<{name: string; value: number; color?: string}>
   title: string
 }
 
@@ -49,7 +49,7 @@ export function PartPieChart({data, title}: PartPieChartProps) {
             dataKey="value"
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              <Cell key={`cell-${index}`} fill={entry.color || COLORS[index % COLORS.length]} />
             ))}
           </Pie>
           <Tooltip formatter={(value: number) => [value.toLocaleString(), '値']} />

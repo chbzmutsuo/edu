@@ -1,36 +1,34 @@
-// トレーニング記録アプリ用型定義
-
-// 種目マスタの型
+// 種目マスター
 export interface ExerciseMaster {
   id: number
-  userId: number
-  part: string
   name: string
-  unit: string
-  color: string
+  part: string
+  userId: number
+  isPublic?: boolean
   createdAt: Date
   updatedAt: Date
+  sortOrder?: number
+  color?: string | null
+  unit?: string
 }
 
-// ワークアウトログの型
-export interface WorkoutLog {
-  id: number
-  userId: number
+// トレーニングログの入力データ
+export interface WorkoutLogInput {
   exerciseId: number
-  date: Date
   strength: number
   reps: number
-  createdAt: Date
-  updatedAt: Date
 }
 
-// 種目マスタ作成・更新用の型
-export type ExerciseMasterInput = Pick<ExerciseMaster, 'part' | 'name' | 'unit'>
-
-// ワークアウトログ作成・更新用の型
-export type WorkoutLogInput = Pick<WorkoutLog, 'exerciseId' | 'strength' | 'reps'>
-
-// 記録一覧表示用の型（種目マスタ情報を含む）
-export interface WorkoutLogWithMaster extends WorkoutLog {
-  ExerciseMaster: ExerciseMaster
+// トレーニングログ（マスターデータ含む）
+export interface WorkoutLogWithMaster {
+  id: number
+  exerciseId: number
+  userId: number
+  strength: number
+  reps: number
+  date: Date
+  createdAt: Date
+  updatedAt: Date
+  exercise?: ExerciseMaster
+  ExerciseMaster?: ExerciseMaster
 }

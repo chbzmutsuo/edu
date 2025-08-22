@@ -18,6 +18,7 @@ import {
   StatsCard,
 } from '../../(components)/Analysis/AnalysisCharts'
 import {PART_OPTIONS} from '@app/(apps)/training/(constants)/PART_OPTIONS'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function AnalysisPage() {
   const {session} = useGlobal()
@@ -122,11 +123,15 @@ export default function AnalysisPage() {
   const chartData = useMemo(() => {
     if (!monthlyStats) return null
 
-    // 部位別円グラフ用データ
-    const pieData = monthlyStats.partStats.map(part => ({
-      name: part.part,
-      value: analysisType === 'volume' ? part.totalVolume : part.totalReps,
-    }))
+    // 部位別円グラフ用データ（PART_OPTIONSのカラーを適用）
+    const pieData = monthlyStats.partStats.map(part => {
+      const partColor = PART_OPTIONS.find(p => p.label === part.part)?.color || '#636E72'
+      return {
+        name: part.part,
+        value: analysisType === 'volume' ? part.totalVolume : part.totalReps,
+        color: partColor,
+      }
+    })
 
     // 月間推移棒グラフ用データ
     const trendData = monthlyTrends.map(stats => ({
@@ -166,7 +171,7 @@ export default function AnalysisPage() {
       // 日付ごとにデータを集約
       const dataByDate = logList.reduce(
         (acc: any, log: any) => {
-          const dateStr = new Date(log.date).toISOString().split('T')[0]
+          const dateStr = formatDate(new Date(log.date), 'YYYY-MM-DD')
           if (!acc[dateStr]) {
             acc[dateStr] = {
               date: dateStr,
@@ -207,7 +212,7 @@ export default function AnalysisPage() {
       {} as Record<string, ExerciseMaster[]>
     )
 
-    const partOrder = PART_OPTIONS.map(part => part.name)
+    const partOrder = PART_OPTIONS.map(part => part.label)
     const sortedParts = Object.keys(grouped).sort((a, b) => {
       const aIndex = partOrder.indexOf(a)
       const bIndex = partOrder.indexOf(b)
@@ -233,7 +238,6 @@ export default function AnalysisPage() {
         <h1 className="text-2xl font-bold text-slate-800 mb-2">トレーニング分析</h1>
         <p className="text-slate-600">効率的なデータ取得とRechartsによるグラフ表示</p>
       </div>
-
       {/* タブ切り替え */}
       <div className="flex bg-slate-200 rounded-lg p-1">
         <button
@@ -253,7 +257,20 @@ export default function AnalysisPage() {
           種目別分析
         </button>
       </div>
-
+      {/* 部位別カラーレジェンド（種目別分析時のみ表示） */}
+      {subView === 'exercise' && (
+        <div className="bg-white p-3 rounded-lg shadow-sm">
+          <h3 className="text-sm font-semibold text-slate-700 mb-2">部位別カラー</h3>
+          <div className="flex flex-wrap gap-3">
+            {PART_OPTIONS.map(part => (
+              <div key={part.label} className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full" style={{backgroundColor: part.color}}></div>
+                <span className="text-sm text-slate-600">{part.label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       {/* 分析タイプ切り替え（ダッシュボード時のみ） */}
       {subView === 'dashboard' && (
         <div className="flex bg-slate-200 rounded-lg p-1">
@@ -275,7 +292,6 @@ export default function AnalysisPage() {
           </button>
         </div>
       )}
-
       {/* 月間ダッシュボード */}
       {subView === 'dashboard' && (
         <div className="bg-white p-4 rounded-lg shadow-sm space-y-6">
@@ -347,7 +363,6 @@ export default function AnalysisPage() {
           )}
         </div>
       )}
-
       {/* 種目別分析 */}
       {subView === 'exercise' && (
         <div className="space-y-6">
@@ -356,12 +371,15 @@ export default function AnalysisPage() {
           ) : Object.keys(exerciseChartData).length > 0 ? (
             groupedMasters.sortedParts.map(part => {
               const partExercises = groupedMasters.grouped[part].filter(master => exerciseChartData[master.id])
+              const partColor = PART_OPTIONS.find(p => p.label === part)?.color || '#636E72'
 
               if (partExercises.length === 0) return null
 
               return (
-                <div key={part} className="bg-white p-4 rounded-lg shadow-sm">
-                  <h2 className="font-bold text-xl text-center mb-4">{part}</h2>
+                <div key={part} className="bg-white p-4 rounded-lg shadow-sm border-l-4" style={{borderLeftColor: partColor}}>
+                  <h2 className="font-bold text-xl text-center mb-4" style={{color: partColor}}>
+                    {part}
+                  </h2>
                   <div className="space-y-6">
                     {partExercises.map(master => {
                       const data = exerciseChartData[master.id]
@@ -369,23 +387,26 @@ export default function AnalysisPage() {
 
                       return (
                         <div key={master.id} className="border-t pt-4 first:border-t-0 first:pt-0">
-                          <h3 className="font-bold text-lg mb-3">{master.name}</h3>
+                          <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full" style={{backgroundColor: partColor}}></div>
+                            {master.name}
+                          </h3>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <ExerciseProgressLineChart
                               data={data.chartData}
-                              dataKeys={[{key: 'totalVolume', name: 'ボリューム', color: '#0088FE'}]}
+                              dataKeys={[{key: 'totalVolume', name: 'ボリューム', color: partColor}]}
                               title="トレーニングボリューム"
                               unit={master.unit}
                             />
                             <ExerciseProgressLineChart
                               data={data.chartData}
-                              dataKeys={[{key: 'maxStrength', name: '最大重量', color: '#00C49F'}]}
+                              dataKeys={[{key: 'maxStrength', name: '最大重量', color: partColor}]}
                               title="最大挙上重量"
                               unit={master.unit}
                             />
                             <ExerciseProgressLineChart
                               data={data.chartData}
-                              dataKeys={[{key: 'totalReps', name: 'レップ数', color: '#FFBB28'}]}
+                              dataKeys={[{key: 'totalReps', name: 'レップ数', color: partColor}]}
                               title="合計レップ数"
                             />
                           </div>

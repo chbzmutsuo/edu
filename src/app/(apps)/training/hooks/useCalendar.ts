@@ -1,11 +1,12 @@
 import {useState, useMemo, useEffect} from 'react'
 import {useSearchParams} from 'next/navigation'
-import {getWorkoutDates} from '../server-actions/workout-log'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getTodayString} from '@app/(apps)/training/(lib)/date-utils'
 import {getMonthRange} from '@app/(apps)/training/(lib)/date-utils'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {toJst} from '@cm/class/Days/date-utils/calculations'
+import {getWorkoutDatesForMonth} from '@app/(apps)/training/server-actions/workout-log'
 
 interface UseCalendarProps {
   userId: number
@@ -41,6 +42,9 @@ export function useCalendar({userId}: UseCalendarProps) {
   // 記録がある日付一覧
   const [workoutDates, setWorkoutDates] = useState<Date[]>([])
 
+  // 部位別記録データ（日付別）
+  const [workoutDataByDate, setWorkoutDataByDate] = useState<Record<string, {part: string; count: number}[]>>({})
+
   // ローディング状態
   const [isLoading, setIsLoading] = useState(false)
 
@@ -50,12 +54,49 @@ export function useCalendar({userId}: UseCalendarProps) {
 
     setIsLoading(true)
     try {
-      const dates = await getWorkoutDates(userId)
+      const dates = await getWorkoutDatesForMonth(userId)
       setWorkoutDates(dates)
+
+      // 部位別記録データも取得
+      await fetchWorkoutDataByDate(dates)
     } catch (error) {
       console.error('記録日付の取得に失敗しました:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // 部位別記録データの取得
+  const fetchWorkoutDataByDate = async (dates: Date[]) => {
+    if (!userId) return
+
+    try {
+      const dataByDate: Record<string, {part: string; count: number}[]> = {}
+
+      for (const date of dates) {
+        const logList = await getWorkoutLogByDate(userId, toJst(date))
+
+        if (logList.result && logList.result.length > 0) {
+          // 部位別に集計
+          const partCounts: Record<string, number> = {}
+          logList.result.forEach(log => {
+            const part = log.ExerciseMaster.part
+            partCounts[part] = (partCounts[part] || 0) + 1
+          })
+
+          // 配列形式に変換
+          const partArray = Object.entries(partCounts).map(([part, count]) => ({
+            part,
+            count,
+          }))
+
+          dataByDate[formatDate(date)] = partArray
+        }
+      }
+
+      setWorkoutDataByDate(dataByDate)
+    } catch (error) {
+      console.error('部位別記録データの取得に失敗しました:', error)
     }
   }
 
@@ -95,6 +136,7 @@ export function useCalendar({userId}: UseCalendarProps) {
     selectedDate,
     workoutDates,
     workoutDateSet,
+    workoutDataByDate,
     isLoading,
     currentMonthWorkoutCount,
 

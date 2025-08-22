@@ -1,10 +1,12 @@
 'use client'
 
 import React, {useState, useEffect, useMemo} from 'react'
-import {ExerciseMaster} from '../../types/training'
-import {getWorkoutLogByExercise} from '../../server-actions/workout-log'
+import {ExerciseMaster, WorkoutLogWithMaster} from '../../types/training'
+
 import {PerformanceChart} from '../Log/PerformanceChart'
 import {StrengthProgressChart} from './StrengthProgressChart'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {getExerciseProgressData} from '@app/(apps)/training/server-actions/analysis-data'
 
 interface ExerciseAnalysisProps {
   userId: number
@@ -13,15 +15,8 @@ interface ExerciseAnalysisProps {
   onBack: () => void
 }
 
-interface WorkoutLog {
-  id: number
-  date: Date
-  strength: number
-  reps: number
-}
-
 export function ExerciseAnalysis({userId, exerciseId, masters, onBack}: ExerciseAnalysisProps) {
-  const [logList, setlogList] = useState<WorkoutLog[]>([])
+  const [logList, setlogList] = useState<WorkoutLogWithMaster[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [selectedPeriod, setSelectedPeriod] = useState<'3m' | '6m' | '1y'>('3m')
 
@@ -47,7 +42,7 @@ export function ExerciseAnalysis({userId, exerciseId, masters, onBack}: Exercise
 
     setIsLoading(true)
     try {
-      const result = await getWorkoutLogByExercise(userId, exerciseId, getMonthCount(selectedPeriod))
+      const result = await getExerciseProgressData(userId, exerciseId, getMonthCount(selectedPeriod))
       if (result.result) {
         setlogList(result.result)
       }
@@ -121,7 +116,7 @@ export function ExerciseAnalysis({userId, exerciseId, masters, onBack}: Exercise
       const date = new Date(log.date)
       const weekStart = new Date(date)
       weekStart.setDate(date.getDate() - date.getDay()) // 日曜日を週の開始とする
-      const weekKey = weekStart.toISOString().split('T')[0]
+      const weekKey = formatDate(weekStart, 'YYYY-MM-DD')
 
       const existing = weeklyMap.get(weekKey) || {strength: 0, reps: 0, volume: 0, count: 0}
       existing.strength += log.strength
@@ -273,7 +268,14 @@ export function ExerciseAnalysis({userId, exerciseId, masters, onBack}: Exercise
           {logList.length > 0 && (
             <div className="bg-white p-6 rounded-lg shadow-sm">
               <h3 className="text-lg font-semibold text-slate-800 mb-4">詳細分析</h3>
-              <PerformanceChart {...{exerciseId, userId, unit: exercise.unit}} />
+              <PerformanceChart
+                {...{
+                  logList,
+                  // exerciseId,
+                  // userId,
+                  // unit: exercise.unit,
+                }}
+              />
             </div>
           )}
 

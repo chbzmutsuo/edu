@@ -10,26 +10,24 @@ export const training_PAGES = (props: PageGetterType) => {
     {tabId: '/', label: 'カレンダ/入力'},
     {
       tabId: '',
-      label: 'データ',
-      children: [
-        {tabId: 'workoutLog', label: '記録一覧'},
-        {tabId: 'exerciseMaster', label: '種目マスタ'},
-      ],
+      label: '分析',
+      children: [{tabId: 'analysis', label: '月間サマリー'}],
       exclusiveTo: !!login,
     },
     {
       tabId: '',
-      label: '分析',
-      children: [{tabId: 'analysis', label: '月間ダッシュボード'}],
+      label: 'データ',
+      children: [{tabId: 'exerciseMaster', label: '種目マスタ'}],
       exclusiveTo: !!login,
     },
     {
       tabId: '',
       label: '管理者',
       children: [
-        {tabId: 'master', label: '種目マスタ'},
+        // {tabId: 'master', label: '種目マスタ'},
         {tabId: 'settings', label: 'アプリ設定'},
         {tabId: 'user', label: 'ユーザー管理'},
+        {tabId: 'workoutLog', label: '記録一覧'},
       ],
       exclusiveTo: !!admin,
     },

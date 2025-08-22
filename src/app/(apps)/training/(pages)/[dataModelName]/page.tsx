@@ -44,7 +44,7 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
         setParams: async () => {
           return {
             additional: {
-              payload: [],
+              payload: {userId: session.id},
               where: {userId: session.id},
               myTable: {drag: true},
             },
@@ -56,11 +56,12 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
         setParams: async () => {
           return {
             additional: {
-              payload: [],
+              payload: {},
               where: {userId: session.id},
               orderBy: [{date: 'desc'}, {ExerciseMaster: {sortOrder: 'asc'}}],
-              myTable: {drag: true},
+              myForm: {},
             },
+            myTable: {create: false},
           }
         },
       },

@@ -1,101 +1,84 @@
 'use client'
 
-import React, {useState, useEffect, useRef, useMemo} from 'react'
-import {ExerciseMaster, WorkoutLogWithMaster, WorkoutLogInput} from '../../types/training'
+import React, {useState, useEffect, useRef} from 'react'
+import {WorkoutLogWithMaster, WorkoutLogInput, ExerciseMaster} from '../../types/training'
+import {addLog, editLog, getExerciseHistory} from '../../server-actions/workout-log'
+import {PART_OPTIONS} from '../../(constants)/PART_OPTIONS'
 import {PerformanceChart} from './PerformanceChart'
-import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
 
-interface LogFormProps {
+type LogFormProps = {
   masters: ExerciseMaster[]
-  logList: WorkoutLogWithMaster[]
-  editingLog: WorkoutLogWithMaster | null
-  selectedDate: string // 選択された日付を追加
-  onSave: (data: WorkoutLogInput & {date: Date}) => void
-  onCancel: () => void
+  logList?: WorkoutLogWithMaster[]
+  editingLog?: WorkoutLogWithMaster | null
+  selectedDate: string
 }
 
-export function LogForm({masters, logList, editingLog, selectedDate, onSave, onCancel}: LogFormProps) {
-  const {session} = useGlobal()
-  const userId = session?.id
-  const [part, setPart] = useState('')
-  const [exerciseId, setExerciseId] = useState('')
-  const [strength, setStrength] = useState('')
-  const [reps, setReps] = useState('')
-  const [searchTerm, setSearchTerm] = useState('')
-  const [showResults, setShowResults] = useState(false)
+export function LogForm({masters, logList = [], editingLog = null, selectedDate}: LogFormProps) {
+  const {router, session} = useGlobal()
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const searchWrapperRef = useRef<HTMLDivElement>(null)
+  // フォームの状態
+  const [formData, setFormData] = useState<WorkoutLogInput>({
+    exerciseId: editingLog?.exerciseId || 0,
+    strength: editingLog?.strength || 0,
+    reps: editingLog?.reps || 0,
+  })
 
-  // 編集中の記録がある場合は初期値を設定
+  // 選択された種目の前回の記録
+  const [lastLog, setLastLog] = useState<WorkoutLogWithMaster | null>(null)
+
+  // 種目フィルタリング用の状態
+  const [selectedPart, setSelectedPart] = useState<string>('')
+  const [searchTerm, setSearchTerm] = useState<string>('')
+  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
+
+  // 過去の記録
+  const [exerciseHistory, setExerciseHistory] = useState<WorkoutLogWithMaster[]>([])
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false)
+
+  // フィルタリングされた種目マスター
+  const filteredMasters = masters.filter(master => {
+    const matchesPart = !selectedPart || master.part === selectedPart
+    const matchesSearch = !searchTerm || master.name.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesPart && matchesSearch
+  })
+
+  // 種目が変更されたときに前回の記録を更新
   useEffect(() => {
-    if (editingLog) {
-      setPart(editingLog.ExerciseMaster.part)
-      setExerciseId(editingLog.exerciseId.toString())
-      setStrength(editingLog.strength.toString())
-      setReps(editingLog.reps.toString())
-      setSearchTerm(editingLog.ExerciseMaster.name)
-    } else {
-      // 新規作成時はリセット
-      setPart('')
-      setExerciseId('')
-      setStrength('')
-      setReps('')
-      setSearchTerm('')
+    if (formData.exerciseId) {
+      const exerciselogList = logList.filter(log => log.exerciseId === formData.exerciseId)
+
+      if (exerciselogList.length > 0) {
+        // 同じ種目の最新の記録を取得
+        const latestLog = exerciselogList.reduce((prev, current) => {
+          return new Date(prev.createdAt) > new Date(current.createdAt) ? prev : current
+        })
+        setLastLog(latestLog)
+
+        // 編集中でなければ、前回の記録を初期値として設定
+        if (!editingLog) {
+          setFormData(prev => ({
+            ...prev,
+            strength: latestLog.strength,
+            reps: latestLog.reps,
+          }))
+        }
+      } else {
+        setLastLog(null)
+      }
+
+      // 過去の記録を取得
+      fetchExerciseHistory(formData.exerciseId)
     }
-  }, [editingLog])
+  }, [formData.exerciseId, logList, editingLog])
 
-  // 選択された種目の単位を取得
-  const selectedUnit = useMemo(() => {
-    if (!exerciseId) return ''
-    const master = masters.find(m => m.id === parseInt(exerciseId))
-    return master?.unit || ''
-  }, [exerciseId, masters])
-
-  // 部位でフィルタリングされた種目
-  const filteredMasters = useMemo(() => {
-    let filtered = masters
-    if (part) {
-      filtered = filtered.filter(m => m.part === part)
-    }
-    if (searchTerm) {
-      filtered = filtered.filter(m => m.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    }
-    return filtered
-  }, [masters, part, searchTerm])
-
-  // 検索結果のクリック処理
-  const handleExerciseSelect = (master: ExerciseMaster) => {
-    setExerciseId(master.id.toString())
-    setSearchTerm(master.name)
-    setPart(master.part) // 部位も自動設定
-    setShowResults(false)
-  }
-
-  // フォーム送信処理
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!exerciseId || !strength || !reps) {
-      alert('すべての項目を入力してください')
-      return
-    }
-
-    const logData: WorkoutLogInput & {date: Date} = {
-      exerciseId: parseInt(exerciseId),
-      strength: parseFloat(strength),
-      reps: parseInt(reps),
-      date: editingLog ? editingLog.date : toUtc(new Date(selectedDate + 'T00:00:00Z')),
-    }
-
-    onSave(logData)
-  }
-
-  // 検索結果の外側をクリックした時にドロップダウンを閉じる
+  // ドロップダウン外のクリックを検知して閉じる
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchWrapperRef.current && !searchWrapperRef.current.contains(event.target as Node)) {
-        setShowResults(false)
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false)
       }
     }
 
@@ -105,208 +88,241 @@ export function LogForm({masters, logList, editingLog, selectedDate, onSave, onC
     }
   }, [])
 
-  // 種目が選択されていない場合のメッセージ
-  if (masters.length === 0) {
-    return (
-      <div className="bg-white p-4 rounded-lg shadow-md">
-        <h2 className="font-bold text-lg text-center mb-4">記録を追加</h2>
-        <div className="text-center py-8">
-          <p className="text-slate-500 mb-4">種目マスタが登録されていません。</p>
-          <p className="text-slate-500 mb-6">まずは種目マスタで種目を登録してください。</p>
-          <button
-            onClick={onCancel}
-            className="bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            戻る
-          </button>
-        </div>
-      </div>
-    )
+  // 過去の記録を取得
+  const fetchExerciseHistory = async (exerciseId: number) => {
+    if (!exerciseId) return
+
+    setIsLoadingHistory(true)
+    try {
+      const history = await getExerciseHistory(exerciseId)
+      setExerciseHistory(history)
+    } catch (error) {
+      console.error('過去の記録の取得に失敗しました:', error)
+    } finally {
+      setIsLoadingHistory(false)
+    }
   }
 
+  // 入力変更時の処理
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const {name, value} = e.target
+    setFormData({
+      ...formData,
+      [name]: name === 'exerciseId' ? parseInt(value) : parseFloat(value),
+    })
+  }
+
+  // 部位選択時の処理
+  const handlePartChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPart(e.target.value)
+  }
+
+  // 検索語入力時の処理
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value)
+    setIsDropdownOpen(true)
+  }
+
+  // 種目選択時の処理
+  const handleExerciseSelect = (exerciseId: number) => {
+    setFormData({
+      ...formData,
+      exerciseId,
+    })
+    setIsDropdownOpen(false)
+
+    // 選択された種目の名前を検索欄に表示
+    const selectedExercise = masters.find(m => m.id === exerciseId)
+    if (selectedExercise) {
+      setSearchTerm(selectedExercise.name)
+    }
+  }
+
+  // 保存処理
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      const data = {
+        ...formData,
+        date: new Date(selectedDate),
+        userId: session?.id,
+      }
+
+      if (editingLog) {
+        await editLog(editingLog.id, data)
+      } else {
+        await addLog(data)
+      }
+
+      // 日付ページに戻る
+      router.push(`/training`)
+      router.refresh()
+    } catch (error) {
+      console.error('記録の保存に失敗しました:', error)
+    }
+  }
+
+  // キャンセル処理
+  const handleCancel = () => {
+    router.back()
+  }
+
+  // 選択中の種目名を取得
+  const selectedExerciseName = formData.exerciseId ? masters.find(m => m.id === formData.exerciseId)?.name : ''
+
+  // 過去の記録のサマリーを計算
+  const historySummary =
+    exerciseHistory.length > 0
+      ? {
+          count: exerciseHistory.length,
+          maxWeight: Math.max(...exerciseHistory.map(log => log.strength)),
+          maxReps: Math.max(...exerciseHistory.map(log => log.reps)),
+          avgWeight: exerciseHistory.reduce((sum, log) => sum + log.strength, 0) / exerciseHistory.length,
+          avgReps: exerciseHistory.reduce((sum, log) => sum + log.reps, 0) / exerciseHistory.length,
+          lastTrainingDate: new Date(Math.max(...exerciseHistory.map(log => new Date(log.date).getTime()))).toLocaleDateString(
+            'ja-JP'
+          ),
+        }
+      : null
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md">
-      <h2 className="font-bold text-lg text-center mb-4">
-        {editingLog ? '記録を編集' : '記録を追加'} - {selectedDate}
-      </h2>
+    <C_Stack className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-xl font-bold mb-4">{editingLog ? 'トレーニング記録の編集' : 'トレーニング記録の追加'}</h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* 部位・種目選択 */}
-        <div className="grid grid-cols-4 gap-4">
-          <div>
-            <label htmlFor="part" className="block text-sm font-medium text-slate-700">
-              部位
-            </label>
-            <select
-              id="part"
-              value={part}
-              onChange={e => setPart(e.target.value)}
-              className="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">すべて</option>
-              {[...new Set(masters.map(m => m.part))].map(p => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </div>
+      <section>
+        <form onSubmit={handleSubmit}>
+          {/* 部位フィルタリング */}
+          {!editingLog && (
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">部位でフィルタ</label>
+              <select value={selectedPart} onChange={handlePartChange} className="w-full p-2 border rounded">
+                <option value="">すべての部位</option>
+                {PART_OPTIONS.map(part => (
+                  <option key={part.value} value={part.value}>
+                    {part.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
-          <div className="relative col-span-3" ref={searchWrapperRef}>
-            <label htmlFor="exercise-search" className="block text-sm font-medium text-slate-700">
-              種目
-            </label>
-            <input
-              type="text"
-              id="exercise-search"
-              value={searchTerm}
-              onChange={e => {
-                setSearchTerm(e.target.value)
-                setExerciseId('')
-                setShowResults(true)
-              }}
-              onFocus={() => {
-                if (masters.length > 0) {
-                  setShowResults(true)
-                }
-              }}
-              onBlur={() => {
-                // 少し遅延させてドロップダウンのクリックイベントを処理
-                setTimeout(() => setShowResults(false), 150)
-              }}
-              placeholder="種目名を入力またはクリックして選択..."
-              className="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-            />
-
-            {/* 検索結果ドロップダウン */}
-            {showResults && (
-              <div className="absolute z-10 w-full mt-1 bg-white border border-slate-300 rounded-md shadow-lg max-h-60 overflow-auto">
-                {filteredMasters.length > 0 ? (
-                  filteredMasters.map(master => (
-                    <button
+          {/* カスタム種目選択 */}
+          <div className="mb-4" ref={dropdownRef}>
+            <label className="block text-gray-700 mb-2">種目を選択</label>
+            <div className="relative">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                onFocus={() => setIsDropdownOpen(true)}
+                className="w-full p-2 border rounded"
+                placeholder="種目名を入力して検索"
+              />
+              {isDropdownOpen && filteredMasters.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-60 overflow-auto">
+                  {filteredMasters.map(master => (
+                    <div
                       key={master.id}
-                      type="button"
-                      onClick={() => handleExerciseSelect(master)}
-                      className="w-full text-left px-3 py-2 hover:bg-slate-100 focus:bg-slate-100 focus:outline-none"
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center"
+                      onClick={() => handleExerciseSelect(master.id)}
                     >
-                      <div className="font-medium text-slate-800">{master.name}</div>
-                      <div className="text-sm text-slate-500">
-                        {master.part} - {master.unit}
-                      </div>
-                    </button>
-                  ))
-                ) : searchTerm ? (
-                  <div className="p-3 text-center">
-                    <p className="text-sm text-slate-500">該当する種目が見つかりません</p>
-                  </div>
-                ) : (
-                  <div className="p-3 text-center">
-                    <p className="text-sm text-slate-500">種目を入力するか、部位を選択してください</p>
-                  </div>
-                )}
-              </div>
-            )}
+                      {master.part && (
+                        <span
+                          className="w-3 h-3 rounded-full mr-2"
+                          style={{
+                            backgroundColor: PART_OPTIONS.find(p => p.value === master.part)?.color || '#ccc',
+                          }}
+                        ></span>
+                      )}
+                      <span>{master.name}</span>
+                      {master.part && <span className="text-gray-500 text-xs ml-2">({master.part})</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {/* 隠しフィールド - 実際のフォームデータ用 */}
+              <input type="hidden" name="exerciseId" value={formData.exerciseId} />
+            </div>
+            {!formData.exerciseId && searchTerm && <p className="text-sm text-red-500 mt-1">種目を選択してください</p>}
           </div>
-        </div>
 
-        {/* パフォーマンス指標表示 */}
-        {exerciseId && (
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2">📊 過去のパフォーマンス指標</h3>
-            <PerformanceChart
-              {...{
-                unit: selectedUnit,
-                exerciseId: parseInt(exerciseId),
-                userId,
-                // logList,
-              }}
-            />
-          </div>
-        )}
-
-        {/* 種目が選択されていない場合の注意メッセージ */}
-        {!exerciseId && (
-          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-sm text-yellow-800">
-              💡 種目を選択すると、過去のパフォーマンス指標と強度・回数を入力できるようになります
-            </p>
-          </div>
-        )}
-
-        {/* 強度・回数入力 */}
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="strength" className="block text-sm font-medium text-slate-700">
-              強度 {selectedUnit && `(${selectedUnit})`}
-            </label>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">重量 (kg)</label>
             <input
               type="number"
-              id="strength"
-              value={strength}
-              onChange={e => setStrength(e.target.value)}
-              disabled={!exerciseId}
+              name="strength"
+              value={formData.strength.toString() ?? ''}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
               step="0.5"
               min="0"
               required
-              placeholder={!exerciseId ? '種目を選択してください' : ''}
-              className="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100"
             />
+            {lastLog && !editingLog && <p className="text-sm text-gray-500 mt-1">前回: {lastLog.strength}kg</p>}
           </div>
 
-          <div>
-            <label htmlFor="reps" className="block text-sm font-medium text-slate-700">
-              回数
-            </label>
+          <div className="mb-6">
+            <label className="block text-gray-700 mb-2">回数</label>
             <input
               type="number"
-              id="reps"
-              value={reps}
-              onChange={e => setReps(e.target.value)}
-              disabled={!exerciseId}
+              name="reps"
+              value={formData.reps.toString() ?? ''}
+              onChange={handleChange}
+              className="w-full p-2 border rounded"
               min="1"
               required
-              placeholder={!exerciseId ? '種目を選択してください' : ''}
-              className="mt-1 block w-full p-2 border border-slate-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 disabled:bg-slate-100"
             />
+            {lastLog && !editingLog && <p className="text-sm text-gray-500 mt-1">前回: {lastLog.reps}回</p>}
           </div>
-        </div>
 
-        {/* 種目が選択されていない場合の注意メッセージ */}
-        {!exerciseId && (
-          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-            <p className="text-sm text-yellow-800">💡 種目を選択すると、強度と回数を入力できるようになります</p>
+          <div className="flex justify-between">
+            <button type="button" onClick={handleCancel} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+              キャンセル
+            </button>
+            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+              保存
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <section className={`pt-8 mt-8 border-t `}>
+        {/* 過去のトレーニングサマリー */}
+        {formData.exerciseId > 0 && historySummary && (
+          <div className="mb-4 p-3 bg-gray-50 rounded">
+            <h3 className="font-semibold text-md mb-2">{selectedExerciseName} の記録サマリー</h3>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <div>
+                トレーニング回数: <span className="font-medium">{historySummary.count}回</span>
+              </div>
+              <div>
+                最終トレーニング: <span className="font-medium">{historySummary.lastTrainingDate}</span>
+              </div>
+              <div>
+                最大重量: <span className="font-medium">{historySummary.maxWeight}kg</span>
+              </div>
+              <div>
+                最大回数: <span className="font-medium">{historySummary.maxReps}回</span>
+              </div>
+              <div>
+                平均重量: <span className="font-medium">{historySummary.avgWeight.toFixed(1)}kg</span>
+              </div>
+              <div>
+                平均回数: <span className="font-medium">{historySummary.avgReps.toFixed(1)}回</span>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* ボタン */}
-        <div className="flex gap-4 pt-4">
-          <button
-            type="button"
-            onClick={onCancel}
-            className="w-full bg-slate-200 text-slate-800 font-bold py-3 rounded-lg hover:bg-slate-300 transition-colors"
-          >
-            戻る
-          </button>
-          <button
-            type="submit"
-            disabled={!exerciseId || !strength || !reps}
-            className="w-full bg-blue-600 text-white font-bold py-3 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {editingLog ? '更新' : '保存'}
-          </button>
-        </div>
-
-        {/* 保存ボタンが無効な場合の説明 */}
-        {(!exerciseId || !strength || !reps) && (
-          <div className="text-center">
-            <p className="text-sm text-slate-500">
-              {!exerciseId && '種目を選択してください'}
-              {exerciseId && !strength && '強度を入力してください'}
-              {exerciseId && strength && !reps && '回数を入力してください'}
-            </p>
+        {/* 記録の推移グラフ */}
+        {formData.exerciseId > 0 && exerciseHistory.length > 0 && (
+          <div className="mb-6">
+            <h3 className="font-semibold text-md mb-2">記録の推移</h3>
+            <PerformanceChart logList={exerciseHistory} />
           </div>
         )}
-      </form>
-    </div>
+      </section>
+    </C_Stack>
   )
 }

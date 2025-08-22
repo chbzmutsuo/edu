@@ -23,6 +23,8 @@ export default async function AppRootLayout(props) {
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/app-icon.png" />
+        <link rel="apple-touch-icon" href="/app-icon.png" />
       </head>
       <body suppressHydrationWarning>
         <Suspense>

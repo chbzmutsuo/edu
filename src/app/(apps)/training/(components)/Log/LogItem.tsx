@@ -13,32 +13,36 @@ interface LogItemProps {
   onEdit: () => void
   onQuickAdd: () => void
   onDelete: () => void
+  showWorkName: boolean
 }
 
-export function LogItem({log, isPR, onEdit, onQuickAdd, onDelete}: LogItemProps) {
-  const partColor = PART_OPTIONS.find(part => part.name === log.ExerciseMaster.part)?.color
+export function LogItem({log, isPR, onEdit, onQuickAdd, onDelete, showWorkName}: LogItemProps) {
+  const partColor = PART_OPTIONS.find(part => part.value === log.ExerciseMaster?.part)?.color
+
   return (
-    <li className="p-2 bg-slate-50 rounded-lg ">
+    <div className="p-2 bg-slate-50 rounded-lg  ">
       <C_Stack>
         <R_Stack className={` justify-between flex-nowrap`}>
           <div>
             <div className="font-semibold text-slate-800 flex items-center gap-2">
-              <R_Stack className={` flex-nowrap gap-0.5`}>
-                <IconBtn
-                  {...{
-                    rounded: true,
-                    className: 'w-5 h-5 scale-75',
-                    color: partColor ?? 'gray',
-                  }}
-                ></IconBtn>
-                {log.ExerciseMaster.name}
-              </R_Stack>
+              {showWorkName && (
+                <R_Stack className={` flex-nowrap gap-0.5`}>
+                  <IconBtn
+                    {...{
+                      rounded: true,
+                      className: 'w-5 h-5 scale-75',
+                      color: partColor ?? 'gray',
+                    }}
+                  ></IconBtn>
+                  {log.ExerciseMaster?.name}
+                </R_Stack>
+              )}
 
               {isPR && <span className="text-xs font-bold text-white bg-yellow-500 px-2 py-0.5 rounded-full">PR</span>}
             </div>
             <div className="flex items-end gap-1 mt-1">
               <span className="text-2xl font-extrabold text-gray-800 drop-shadow-sm">{log.strength}</span>
-              <span className="text-base  text-gray-400 mb-0.5">{log.ExerciseMaster.unit}</span>
+              <span className="text-base  text-gray-400 mb-0.5">{log?.ExerciseMaster?.unit}</span>
               <span className="text-xl fo text-gray-300 ml-2">×</span>
               <span className="text-2xl font-extrabold text-gray-800 ml-2">{log.reps}</span>
               <span className="text-base  text-gray-400 mb-0.5">回</span>
@@ -72,6 +76,6 @@ export function LogItem({log, isPR, onEdit, onQuickAdd, onDelete}: LogItemProps)
       <div className={` flex justify-end`}>
         <small className={` text-xs`}>{formatDate(log.date, 'MM/DD(ddd) HH:mm')}</small>
       </div>
-    </li>
+    </div>
   )
 }

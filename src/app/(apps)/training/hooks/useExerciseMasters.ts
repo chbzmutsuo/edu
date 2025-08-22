@@ -119,7 +119,7 @@ export function useExerciseMasters({userId}: UseExerciseMastersProps) {
   }, [masters])
 
   // 部位の表示順序
-  const partOrder = PART_OPTIONS.map(part => part.name)
+  const partOrder = PART_OPTIONS.map(part => part.label)
   const sortedParts = useMemo(() => {
     return Object.keys(groupedMasters).sort((a, b) => partOrder.indexOf(a) - partOrder.indexOf(b))
   }, [groupedMasters])

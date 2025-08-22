@@ -1,5 +1,6 @@
 'use client'
 
+import {PART_OPTIONS} from '@app/(apps)/training/(constants)/PART_OPTIONS'
 import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {Fields} from '@cm/class/Fields/Fields'
 import {columnGetterType} from '@cm/types/types'
@@ -28,10 +29,23 @@ export class ColBuilder {
 
   static exerciseMaster = (props: columnGetterType) => {
     return new Fields([
-      {id: 'part', label: '部位', form: {...defaultRegister}},
+      {
+        id: 'part',
+        label: '部位',
+        forSelect: {
+          optionsOrOptionFetcher: PART_OPTIONS.map(item => {
+            return {
+              value: item.label,
+              label: item.label,
+              color: item.color,
+            }
+          }),
+        },
+        form: {...defaultRegister},
+      },
       {id: 'name', label: '名称', form: {...defaultRegister}},
-      {id: 'unit', label: '単位', form: {...defaultRegister}},
-      {id: 'color', label: '色', type: 'color', form: {}},
+      {id: 'unit', label: '単位', form: {...defaultRegister, defaultValue: 'kg'}},
+      // {id: 'color', label: '色', type: 'color', form: {}},
     ]).transposeColumns()
   }
 }

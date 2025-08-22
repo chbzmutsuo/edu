@@ -1,6 +1,6 @@
 import {useState, useMemo, useEffect} from 'react'
 import {WorkoutLogWithMaster, WorkoutLogInput} from '../types/training'
-import {getWorkoutLogByDate, createWorkoutLog, updateWorkoutLog, deleteWorkoutLog} from '../server-actions/workout-log'
+import { getWorkoutlogListByDate} from '@app/(apps)/training/server-actions/workout-log'
 
 interface UseWorkoutLogProps {
   userId: number
@@ -25,9 +25,9 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
     setError(null)
 
     try {
-      const result = await getWorkoutLogByDate(userId, new Date(selectedDate))
-      if (result.result) {
-        setlogList(result.result)
+      const result = await getWorkoutlogListByDate(userId, selectedDate)
+      if (result) {
+        setlogList(result)
       }
     } catch (err) {
       setError('記録の取得に失敗しました')
@@ -45,11 +45,11 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
     setError(null)
 
     try {
-      const result = await createWorkoutLog(userId, data)
-      if (result.result) {
-        setlogList(prev => [...prev, result.result])
+      const result = await addLog(data)
+      if (result) {
+        setlogList(prev => [...prev, result])
       }
-      return result.result
+      return result
     } catch (err) {
       setError('記録の作成に失敗しました')
       console.error('記録作成エラー:', err)
@@ -67,11 +67,11 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
     setError(null)
 
     try {
-      const result = await updateWorkoutLog(userId, id, data)
-      if (result.result) {
-        setlogList(prev => prev.map(log => (log.id === id ? result.result : log)))
+      const result = await editLog(id, data)
+      if (result) {
+        setlogList(prev => prev.map(log => (log.id === id ? result : log)))
       }
-      return result.result
+      return result
     } catch (err) {
       setError('記録の更新に失敗しました')
       console.error('記録更新エラー:', err)
@@ -89,8 +89,9 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
     setError(null)
 
     try {
-      await deleteWorkoutLog(userId, id)
+      await removeLog(id)
       setlogList(prev => prev.filter(log => log.id !== id))
+      return true
     } catch (err) {
       setError('記録の削除に失敗しました')
       console.error('記録削除エラー:', err)
@@ -102,11 +103,12 @@ export function useWorkoutLog({userId, selectedDate}: UseWorkoutLogProps) {
 
   // クイック追加（同じ内容でセット追加）
   const quickAddSet = async (logToCopy: WorkoutLogWithMaster) => {
-    const newLogData: WorkoutLogInput & {date: Date} = {
+    const newLogData: WorkoutLogInput & {date: Date; userId: number} = {
       exerciseId: logToCopy.exerciseId,
       strength: logToCopy.strength,
       reps: logToCopy.reps,
       date: new Date(selectedDate),
+      userId: logToCopy.userId,
     }
 
     return await addLog(newLogData)

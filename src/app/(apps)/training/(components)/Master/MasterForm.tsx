@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {ExerciseMaster, ExerciseMasterInput} from '../../types/training'
+import {ExerciseMaster} from '../../types/training'
 import {createExerciseMaster, updateExerciseMaster} from '../../server-actions/exercise-master'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {PART_OPTIONS} from '@app/(apps)/training/(constants)/PART_OPTIONS'
@@ -17,7 +17,7 @@ export function MasterForm({master, onSave, onCancel}: MasterFormProps) {
   const userId = session?.id || 1
 
   // フォームデータ
-  const [formData, setFormData] = useState<ExerciseMasterInput>({
+  const [formData, setFormData] = useState<any>({
     part: '',
     name: '',
     unit: 'kg',
@@ -112,8 +112,8 @@ export function MasterForm({master, onSave, onCancel}: MasterFormProps) {
           >
             <option value="">部位を選択してください</option>
             {PART_OPTIONS.map(part => (
-              <option key={part.name} value={part.name}>
-                {part.name}
+              <option key={part.label} value={part.label}>
+                {part.label}
               </option>
             ))}
           </select>

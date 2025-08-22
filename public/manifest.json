@@ -1,14 +1,14 @@
 {
- "name": "Next.js PWA",
- "short_name": "NextPWA",
- "description": "An example of a PWA using Next.js and TypeScript",
+ "name": "WEB APP",
+ "short_name": "WEB APP",
+ "description": "WEB APP",
  "start_url": "/",
  "display": "standalone",
  "background_color": "#ffffff",
  "theme_color": "#1E1E1E",
  "icons": [
   {
-   "src": "next-js-icon.jpg",
+   "src": "app-icon.png",
    "sizes": "192x192",
    "type": "image/png"
   }
