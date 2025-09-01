@@ -14,7 +14,9 @@ import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {NumHandler} from '@cm/class/NumHandler'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {cn} from '@cm/shadcn/lib/utils'
-import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
+import DriveScheduleSelectModal from '@app/(apps)/tbm/(components)/EtcScheduleLink/DriveScheduleSelectModal'
+import useModal from '@cm/components/utils/modal/useModal'
+import {isDev} from '@cm/lib/methods/common'
 
 // 型定義
 interface EtcRecord {
@@ -48,14 +50,15 @@ interface GroupHeader {
   fee: number
   records: EtcRecord[]
   groupIndex: number
+  tbmDriveScheduleId?: number | null
+  TbmDriveSchedule?: any
 }
 
 type TableRecord = EtcRecord | GroupHeader
 
 export default function EtcCsvImportPage() {
-  const [csvData, setCsvData] = useState<any[]>([])
   const [etcRawData, setEtcRawData] = useState<EtcRecord[]>([])
-  const [selectedMonth, setSelectedMonth] = useState<Date | null>(null)
+
   const [isLoading, setIsLoading] = useState(false)
 
   const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
@@ -66,7 +69,7 @@ export default function EtcCsvImportPage() {
         id: `tbmVehicleId`,
         label: `車両`,
         form: {
-          defaultValue: null,
+          defaultValue: isDev ? 5 : null,
         },
         forSelect: {config: getVehicleForSelectConfig({})},
       },
@@ -74,19 +77,21 @@ export default function EtcCsvImportPage() {
         id: `month`,
         label: `月`,
         form: {
-          defaultValue: firstDayOfMonth,
+          defaultValue: isDev ? '2025-08-01T00:00:00+09:00' : firstDayOfMonth,
         },
         type: `month`,
       },
       {
         id: `csvData`,
         label: `CSVデータ`,
-        form: {defaultValue: '', style: {maxHeight: 200, lineHeight: 1.2}},
+        form: {defaultValue: '', style: {maxHeight: 120, minWidth: 350, lineHeight: 1.2}},
 
         type: 'textarea',
       },
     ]).transposeColumns(),
   })
+
+  const LinkModalReturn = useModal<{etcMeisaiId: number; scheduleId: number | null}>()
 
   // フォームデータが変更されたときに呼び出される
   useEffect(() => {
@@ -175,8 +180,8 @@ export default function EtcCsvImportPage() {
       toastByResult(result)
 
       if (result.success) {
-        setCsvData(parsedData)
-        setSelectedMonth(month)
+        // setCsvData(parsedData)
+        // setSelectedMonth(month)
         loadEtcRawData(tbmVehicleId, month)
       }
     } catch (error) {
@@ -211,7 +216,15 @@ export default function EtcCsvImportPage() {
         },
         orderBy: [{fromDate: 'asc'}, {fromTime: 'asc'}],
         include: {
-          TbmEtcMeisai: true,
+          TbmEtcMeisai: {
+            include: {
+              TbmDriveSchedule: {
+                include: {
+                  TbmRouteGroup: true,
+                },
+              },
+            },
+          },
         },
       })
 
@@ -425,6 +438,9 @@ export default function EtcCsvImportPage() {
       // const sum = records.reduce((acc, record) => acc + record.fee, 0)
 
       // グループヘッダーを追加
+      // TbmEtcMeisaiの情報を取得
+      const tbmEtcMeisai = firstRecord.TbmEtcMeisai || {}
+
       groupedRows.push({
         isGroupHeader: true,
         meisaiId: parseInt(meisaiId),
@@ -437,6 +453,8 @@ export default function EtcCsvImportPage() {
         fee: firstRecord.fee,
         records,
         groupIndex: index, // グループインデックスを追加
+        tbmDriveScheduleId: tbmEtcMeisai.tbmDriveScheduleId,
+        TbmDriveSchedule: tbmEtcMeisai.TbmDriveSchedule,
       })
 
       // グループの内訳を追加（最初の1件はヘッダーなので含めない）
@@ -481,12 +499,12 @@ export default function EtcCsvImportPage() {
       {label: '利用IC（自）'},
       {label: '利用IC（至）'},
       {label: '通行料金'},
-
       {label: 'グループ料金'},
+      {label: '紐付け運行'},
     ]
 
     return (
-      <div className="max-h-[600px] max-w-[1000px] overflow-auto">
+      <div className="max-h-[600px] max-w-[1300px] overflow-auto">
         <table
           className={cn(
             //
@@ -527,6 +545,20 @@ export default function EtcCsvImportPage() {
                         >
                           {record.groupIndex + 1}
                         </button>
+                        <button
+                          onClick={e => {
+                            e.stopPropagation()
+
+                            LinkModalReturn.handleOpen({
+                              etcMeisaiId: record.meisaiId,
+                              scheduleId: record.tbmDriveScheduleId || 0,
+                            })
+                          }}
+                          className="text-xs px-2 py-1 bg-blue-100 border-blue-300 border hover:bg-blue-200 rounded ml-1"
+                          title="運行データと紐付け"
+                        >
+                          {record.tbmDriveScheduleId ? '紐付け済' : '紐付け'}
+                        </button>
                       </R_Stack>
                     </td>
                     <td>{formatDate(record.fromDate)}</td>
@@ -537,6 +569,15 @@ export default function EtcCsvImportPage() {
                     <td>{record.toIc}</td>
                     <td className="font-bold">¥{NumHandler.WithUnit(record.fee, '円')}</td>
                     <td className="font-bold">¥{NumHandler.WithUnit(groupFee, '円')}</td>
+                    <td>
+                      {record.tbmDriveScheduleId && record.TbmDriveSchedule ? (
+                        <span className="text-xs bg-green-100 px-2 py-1 rounded">
+                          {formatDate(record.TbmDriveSchedule.date)} {record.TbmDriveSchedule.TbmRouteGroup?.name || ''}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-red-500">未紐付け</span>
+                      )}
+                    </td>
                   </tr>
                 )
               } else if ('isGroupDetail' in record && record.isGroupDetail) {
@@ -555,6 +596,7 @@ export default function EtcCsvImportPage() {
                     <td>{record.toIc}</td>
                     <td>¥{NumHandler.WithUnit(record.fee, '円')}</td>
                     <td>-</td>
+                    <td></td>
                   </tr>
                 )
               } else {
@@ -590,6 +632,7 @@ export default function EtcCsvImportPage() {
                     <td>{etcRecord.toIc}</td>
                     <td>¥{NumHandler.WithUnit(etcRecord.fee, '円')}</td>
                     <td>-</td>
+                    <td></td>
                   </tr>
                 )
               }
@@ -617,7 +660,7 @@ export default function EtcCsvImportPage() {
       <C_Stack className="gap-6">
         <h1 className="text-2xl font-bold">ETC利用明細インポート</h1>
 
-        <R_Stack className={` items-start`}>
+        <C_Stack className={` items-start`}>
           <Card className="p-4">
             <h2 className="text-xl font-bold mb-4">①データインポート</h2>
             <BasicForm
@@ -639,9 +682,8 @@ export default function EtcCsvImportPage() {
                   <div className="flex flex-col gap-2">
                     <Button
                       onClick={() => updateGrouping(selectedRecords, getNextGroupIndex())}
-                      disabled={isLoading}
+                      disabled={isLoading || selectedRecords.length === 0}
                       className="mt-2"
-                      disabled={selectedRecords.length === 0}
                     >
                       選択したレコードをグループ化
                     </Button>
@@ -659,8 +701,23 @@ export default function EtcCsvImportPage() {
               <p>表示するデータがありません。車両と月を選択するか、CSVデータをインポートしてください。</p>
             )}
           </Card>
-        </R_Stack>
+        </C_Stack>
       </C_Stack>
+
+      {/* 運行データ紐付けモーダル */}
+      <LinkModalReturn.Modal>
+        <DriveScheduleSelectModal
+          vehicleId={latestFormData.tbmVehicleId}
+          month={latestFormData.month}
+          handleClose={LinkModalReturn.handleClose}
+          etcMeisaiId={LinkModalReturn?.open?.etcMeisaiId}
+          currentScheduleId={LinkModalReturn?.open?.scheduleId}
+          onLinkUpdated={() => {
+            // 紐付け更新後にデータを再読み込み
+            loadEtcRawData(latestFormData.tbmVehicleId, latestFormData.month)
+          }}
+        />
+      </LinkModalReturn.Modal>
     </FitMargin>
   )
 }

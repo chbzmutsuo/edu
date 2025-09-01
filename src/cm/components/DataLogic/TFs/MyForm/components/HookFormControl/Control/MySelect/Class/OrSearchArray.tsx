@@ -59,10 +59,12 @@ export class OrSearchArray {
         // 全てのバリエーションを配列に追加
         const add = obj => {
           const {type, value} = obj
+          if (obj.value === ``) return
           if (!variations.find(v => v.value === value)) {
             variations.push({type, value})
           }
         }
+
         add({type: `plane`, value: input})
         add({type: `hiraganaInput`, value: hiraganaInput})
         add({type: `katakanaInput`, value: katakanaInput})

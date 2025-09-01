@@ -1,17 +1,27 @@
 import {useCallback, useState} from 'react'
 import {basicModalPropType, ModalCore} from '@cm/components/utils/modal/ModalCore'
 
-export type useModalReturn = {
+/**
+ * useModal フック
+ * @template T openの型
+ */
+export type useModalReturn<T = boolean> = {
   Modal: React.FC<basicModalPropType>
-  handleOpen: (openValue?: any) => void
-  handleClose: (closeValue?: any) => void
-  open: any
-  setopen: (openValue?: any) => void
+  handleOpen: (openValue?: T) => void
+  handleClose: (closeValue?: T) => void
+  open: T
+  setopen: (openValue: T) => void
 }
-const useModal = (props?: {defaultOpen?: boolean; defaultState?: any; alertOnClose?: boolean}) => {
-  const [open, setopen] = useState<any>(props?.defaultState || props?.defaultOpen ? true : false)
-  const handleOpen = (openValue?: any) => setopen(openValue || true)
-  const handleClose = (closeValue?: any) => setopen(closeValue || false)
+
+function useModal<T = boolean>(props?: {defaultOpen?: boolean; defaultState?: T; alertOnClose?: boolean}): useModalReturn<T> {
+  // 初期値の決定
+  const initialOpen =
+    props?.defaultState !== undefined ? props.defaultState : props?.defaultOpen ? (true as any as T) : (false as any as T)
+
+  const [open, setopen] = useState<T>(initialOpen)
+
+  const handleOpen = (openValue?: T) => setopen(openValue !== undefined ? openValue : (true as any as T))
+  const handleClose = (closeValue?: T) => setopen(closeValue !== undefined ? closeValue : (false as any as T))
 
   const Modal = useCallback(
     (modalProps: basicModalPropType) => {
@@ -28,7 +38,7 @@ const useModal = (props?: {defaultOpen?: boolean; defaultState?: any; alertOnClo
         </ModalCore>
       )
     },
-    [open, handleClose, props]
+    [open, setopen, props]
   )
 
   return {
