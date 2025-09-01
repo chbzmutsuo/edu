@@ -105,6 +105,8 @@ export async function initQueryObject({model, method, queryObject, prismaModel})
 
 export async function doDelete({prismaModel, queryObject, model, method}) {
   const {where} = queryObject
+
+  console.log(queryObject) //logs
   let result = null
   const findUnique = await prismaModel.findUnique({where: where ?? {id: 0}})
   if (findUnique) {

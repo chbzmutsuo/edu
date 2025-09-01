@@ -133,6 +133,7 @@ model TbmVehicle {
 
   TbmVehicleMaintenanceRecord TbmVehicleMaintenanceRecord[]
   TbmEtcMeisai                TbmEtcMeisai[]
+  EtcCsvRaw                   EtcCsvRaw[]
   User                        User[]
 
   @@unique([tbmBaseId, vehicleNumber], name: "unique_tbmBaseId_vehicleNumber")
@@ -408,7 +409,47 @@ model TbmEtcMeisai {
   TbmDriveSchedule   TbmDriveSchedule? @relation(fields: [tbmDriveScheduleId], references: [id])
   tbmDriveScheduleId Int?              @unique
 
-  @@unique([tbmVehicleId, groupIndex, month], name: "unique_tbmVehicleId_groupIndex_month")
+  EtcCsvRaw EtcCsvRaw[]
+
+  @@index([tbmVehicleId])
+}
+
+model EtcCsvRaw {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
+
+  // 利用年月日（自）と時分（自）
+  fromDate DateTime
+  fromTime String
+
+  // 利用年月日（至）と時分（至）
+  toDate DateTime
+  toTime String
+
+  // 利用IC
+  fromIc String
+  toIc   String
+
+  // 料金情報
+  originalFee    Float? // 割引前料金
+  discountAmount Float? // ETC割引額
+  fee            Float // 通行料金
+  totalAmount    Float? // 合計金額
+
+  // グルーピングフラグ
+  isGrouped Boolean @default(false)
+
+  // 関連
+  TbmVehicle   TbmVehicle @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)
+  tbmVehicleId Int
+
+  // グルーピングされた場合の関連
+  TbmEtcMeisai   TbmEtcMeisai? @relation(fields: [tbmEtcMeisaiId], references: [id])
+  tbmEtcMeisaiId Int?
+
+  @@unique([tbmVehicleId, fromDate, fromTime], name: "unique_tbmVehicleId_fromDate_fromTime")
   @@index([tbmVehicleId])
 }
 

@@ -61,12 +61,12 @@ export function LogItem({log, isPR, onEdit, onQuickAdd, onDelete, showWorkName}:
             </button>
 
             {/* 編集ボタン */}
-            <button onClick={onEdit} className="text-sm text-blue-600 hover:underline transition-colors">
+            <button onClick={onEdit} className="text-sm text-blue-600 hover:underline cursor-pointer transition-colors">
               編集
             </button>
 
             {/* 削除ボタン */}
-            <button onClick={onDelete} className="text-sm text-red-600 hover:underline transition-colors">
+            <button onClick={onDelete} className="text-sm text-red-600 hover:underline cursor-pointer transition-colors">
               削除
             </button>
           </div>

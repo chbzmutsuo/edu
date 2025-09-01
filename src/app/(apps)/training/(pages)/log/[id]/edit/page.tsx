@@ -13,6 +13,7 @@ export default async function EditLogPage(props) {
     return redirect('/login')
   }
 
+  console.log(params) //////logList
   const userId = session.id
   const logId = parseInt(params.id)
 

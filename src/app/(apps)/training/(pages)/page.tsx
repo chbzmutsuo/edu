@@ -26,6 +26,9 @@ export default async function TrainingPage(props) {
 
   return (
     <div className="container mx-auto max-w-lg p-4">
+      {/* <div className={` border border-red-500  p-4 bg-red-100 text-center  font-bold underline text-2xl absolute left-[200px]`}>
+        aiueo
+      </div> */}
       <CalendarView currentDate={now} workoutDates={workoutDates} workoutDataByDate={workoutDataByDate} />
     </div>
   )

@@ -115,8 +115,8 @@
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
-    "**/tmp/**": true
+    "**/tmp/**": true,
+    "**/training/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -140,8 +140,8 @@
     "shinsei",
     "sohken",
     "stock",
-    "tbm",
-    "tmp"
+    "tmp",
+    "training"
   ],
   "editor.stickyScroll.enabled": false
 }

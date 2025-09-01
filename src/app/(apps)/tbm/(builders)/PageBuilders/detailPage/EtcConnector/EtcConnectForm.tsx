@@ -18,16 +18,17 @@ import {toastByResult} from '@cm/lib/ui/notifications'
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {Card} from '@cm/shadcn/ui/card'
 
-export default function EtcConnectForm({EtcConnectFormMD}) {
+export default function EtcConnectForm({EtcConnectFormMD, tbmVehicleId}) {
   const [groupList, setgroupList] = useState<any[]>([])
 
+  console.log(tbmVehicleId) //logs
   const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
   const {BasicForm, latestFormData} = useBasicFormProps({
     columns: new Fields([
       {
         id: `tbmVehicleId`,
         label: `車両`,
-        form: {defaultValue: 1},
+        form: {defaultValue: tbmVehicleId ?? null},
         forSelect: {config: getVehicleForSelectConfig({})},
       },
       {

@@ -1,5 +1,5 @@
 import {useState, useMemo} from 'react'
-import {ExerciseMaster, ExerciseMasterInput} from '../types/training'
+import {ExerciseMaster} from '../types/training'
 import {
   getExerciseMasters,
   createExerciseMaster,
@@ -43,7 +43,7 @@ export function useExerciseMasters({userId}: UseExerciseMastersProps) {
   }
 
   // 種目マスタを作成
-  const addMaster = async (data: ExerciseMasterInput) => {
+  const addMaster = async (data: any) => {
     if (!userId) return
 
     setIsLoading(true)
@@ -65,7 +65,7 @@ export function useExerciseMasters({userId}: UseExerciseMastersProps) {
   }
 
   // 種目マスタを更新
-  const editMaster = async (id: number, data: ExerciseMasterInput) => {
+  const editMaster = async (id: number, data: any) => {
     if (!userId) return
 
     setIsLoading(true)

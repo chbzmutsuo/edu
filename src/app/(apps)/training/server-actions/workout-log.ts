@@ -246,14 +246,14 @@ export async function getExerciseMasters(userId: number) {
 }
 
 // トレーニングログを追加
-export async function addLog(data: WorkoutLogInput & {date: Date; userId: number}) {
+export async function addLog(data: WorkoutLogInput & {date: Date; userId?: number}) {
   const result = await prisma.workoutLog.create({
     data: {
       exerciseId: data.exerciseId,
       strength: data.strength,
       reps: data.reps,
       date: toUtc(data.date),
-      userId: data.userId, // ユーザーIDが指定されていない場合はデフォルト値を使用
+      userId: data.userId || 1, // ユーザーIDが指定されていない場合はデフォルト値を使用
     },
   })
 
@@ -273,6 +273,7 @@ export async function editLog(id: number, data: WorkoutLogInput & {date: Date}) 
       exerciseId: data.exerciseId,
       strength: data.strength,
       reps: data.reps,
+      date: toUtc(data.date),
     },
   })
 
@@ -291,7 +292,9 @@ export async function removeLog(id: number) {
     select: {date: true},
   })
 
-  const result = await prisma.workoutLog.delete({where: {id}})
+  const result = await prisma.workoutLog.delete({
+    where: {id},
+  })
 
   // キャッシュを更新
   if (log) {

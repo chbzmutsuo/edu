@@ -1,6 +1,6 @@
 import {useState, useMemo, useEffect} from 'react'
 import {WorkoutLogWithMaster, WorkoutLogInput} from '../types/training'
-import { getWorkoutlogListByDate} from '@app/(apps)/training/server-actions/workout-log'
+import {getWorkoutlogListByDate} from '@app/(apps)/training/server-actions/workout-log'
 
 interface UseWorkoutLogProps {
   userId: number

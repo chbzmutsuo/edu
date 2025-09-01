@@ -17,7 +17,7 @@ export default function EtcConnetor({useGlobalProps, tbmVehicleId}) {
           </Button>
 
           <EtcConnectFormMD.Modal>
-            <EtcConnectForm {...{EtcConnectFormMD}} />
+            <EtcConnectForm {...{EtcConnectFormMD, tbmVehicleId}} />
           </EtcConnectFormMD.Modal>
           {/* <div className={`text-gray-500`}>ETC利用明細スプレッドシートに所定の設定をしてからじｓ</div> */}
           <EtcConnectHistoryTable {...{tbmVehicleId}} />

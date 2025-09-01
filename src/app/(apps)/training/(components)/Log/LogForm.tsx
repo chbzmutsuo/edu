@@ -156,7 +156,7 @@ export function LogForm({masters, logList = [], editingLog = null, selectedDate}
       }
 
       // 日付ページに戻る
-      router.push(`/training`)
+      router.push(`/training/date?date=${selectedDate}`)
       router.refresh()
     } catch (error) {
       console.error('記録の保存に失敗しました:', error)

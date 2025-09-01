@@ -1,7 +1,6 @@
 'use server'
 
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {ExerciseMasterInput} from '../types/training'
 
 // 種目マスタ一覧取得（ユーザー別）
 export async function getExerciseMasters(userId: number) {
@@ -12,7 +11,7 @@ export async function getExerciseMasters(userId: number) {
 }
 
 // 種目マスタ作成
-export async function createExerciseMaster(userId: number, data: ExerciseMasterInput) {
+export async function createExerciseMaster(userId: number, data: any) {
   return await doStandardPrisma('exerciseMaster', 'create', {
     data: {
       ...data,
@@ -22,7 +21,7 @@ export async function createExerciseMaster(userId: number, data: ExerciseMasterI
 }
 
 // 種目マスタ更新
-export async function updateExerciseMaster(userId: number, id: number, data: ExerciseMasterInput) {
+export async function updateExerciseMaster(userId: number, id: number, data: any) {
   return await doStandardPrisma('exerciseMaster', 'update', {
     where: {id, userId}, // ユーザーIDも条件に含める
     data,
