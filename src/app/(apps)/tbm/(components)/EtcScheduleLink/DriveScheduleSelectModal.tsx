@@ -110,7 +110,7 @@ export default function DriveScheduleSelectModal({
     : schedules
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full max-w-3xl p-4">
       <C_Stack className="gap-4">
         <div className="mb-4">
           <Input
@@ -133,8 +133,7 @@ export default function DriveScheduleSelectModal({
                 key={schedule.id}
                 className={cn(
                   'mb-2 p-3 cursor-pointer hover:bg-gray-50',
-                  selectedScheduleId === schedule.id ? 'bg-blue-50 border-blue-300' : '',
-                  schedule.TbmEtcMeisai && schedule.TbmEtcMeisai.id !== etcMeisaiId ? 'bg-gray-100 opacity-70' : ''
+                  selectedScheduleId === schedule.id ? 'bg-blue-50 border-blue-300' : ''
                 )}
                 onClick={() => setSelectedScheduleId(schedule.id)}
               >
@@ -144,10 +143,13 @@ export default function DriveScheduleSelectModal({
                     <div>{schedule.TbmRouteGroup?.name || '(ルート名なし)'}</div>
                   </div>
                   <div>
-                    {schedule.TbmEtcMeisai && schedule.TbmEtcMeisai.id !== etcMeisaiId ? (
-                      <span className="text-xs bg-yellow-100 px-2 py-1 rounded">他のETCグループと紐付け済み</span>
-                    ) : schedule.TbmEtcMeisai && schedule.TbmEtcMeisai.id === etcMeisaiId ? (
-                      <span className="text-xs bg-green-100 px-2 py-1 rounded">現在紐付け中</span>
+                    {schedule.TbmEtcMeisai && schedule.TbmEtcMeisai.length > 0 ? (
+                      <span className="text-xs bg-blue-100 px-2 py-1 rounded">
+                        {schedule.TbmEtcMeisai.length}件のETCグループと紐付け済み
+                      </span>
+                    ) : null}
+                    {schedule.TbmEtcMeisai && schedule.TbmEtcMeisai.some(meisai => meisai.id === etcMeisaiId) ? (
+                      <span className="text-xs bg-green-100 px-2 py-1 rounded ml-1">現在紐付け中</span>
                     ) : null}
                   </div>
                 </R_Stack>
@@ -157,7 +159,7 @@ export default function DriveScheduleSelectModal({
         )}
 
         <R_Stack className="justify-end gap-2 mt-4">
-          {currentScheduleId && (
+          {!!currentScheduleId && (
             <Button color="red" onClick={handleUnlink} disabled={loading}>
               紐付けを解除
             </Button>

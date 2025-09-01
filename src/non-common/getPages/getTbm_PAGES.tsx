@@ -57,7 +57,16 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'kyuyo', label: <IconLetter {...{Icon: JapaneseYenIcon}}>給与</IconLetter>},
         {tabId: 'attendance', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
       ],
-      exclusiveTo: admin,
+      exclusiveTo: login,
+    },
+    {
+      tabId: '',
+      label: 'その他',
+      children: [
+        //
+        {tabId: 'etc', label: 'ETC連携'},
+      ],
+      exclusiveTo: login,
     },
 
     {
