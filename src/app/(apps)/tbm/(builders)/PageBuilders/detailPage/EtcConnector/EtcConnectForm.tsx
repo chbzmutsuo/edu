@@ -21,7 +21,6 @@ import {Card} from '@cm/shadcn/ui/card'
 export default function EtcConnectForm({EtcConnectFormMD, tbmVehicleId}) {
   const [groupList, setgroupList] = useState<any[]>([])
 
-  console.log(tbmVehicleId) //logs
   const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
   const {BasicForm, latestFormData} = useBasicFormProps({
     columns: new Fields([
@@ -59,7 +58,6 @@ export default function EtcConnectForm({EtcConnectFormMD, tbmVehicleId}) {
           month,
         }
 
-        console.log(tbmVehicleId) //logs
         const sum = obj.data.reduce((acc, data) => acc + data.toll, 0)
 
         return {

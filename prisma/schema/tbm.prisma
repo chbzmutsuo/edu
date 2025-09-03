@@ -405,11 +405,11 @@ model TbmEtcMeisai {
 
   sum Float
 
-  TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id])
+  TbmVehicle   TbmVehicle? @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)
   tbmVehicleId Int?
 
   // 1対多の関係に変更
-  TbmDriveSchedule   TbmDriveSchedule? @relation(fields: [tbmDriveScheduleId], references: [id])
+  TbmDriveSchedule   TbmDriveSchedule? @relation(fields: [tbmDriveScheduleId], references: [id], onDelete: Cascade)
   tbmDriveScheduleId Int?
 
   EtcCsvRaw EtcCsvRaw[]

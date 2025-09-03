@@ -52,7 +52,6 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'nempiKanri', label: <IconLetter {...{Icon: JapaneseYenIcon}}>燃費管理</IconLetter>},
         {tabId: 'ruiseki', label: <IconLetter {...{Icon: Calculator}}>累積距離記帳</IconLetter>},
         {tabId: 'eigyosho', label: <IconLetter {...{Icon: JapaneseYenIcon}}>営業所別売上</IconLetter>},
-        {tabId: 'etc', label: <IconLetter {...{Icon: JapaneseYenIcon}}>ETC明細連携</IconLetter>},
         {tabId: 'simpleDriveHistory', label: <IconLetter {...{Icon: FileText}}>簡易走行記録（PDF）</IconLetter>},
         {tabId: 'kyuyo', label: <IconLetter {...{Icon: JapaneseYenIcon}}>給与</IconLetter>},
         {tabId: 'attendance', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},

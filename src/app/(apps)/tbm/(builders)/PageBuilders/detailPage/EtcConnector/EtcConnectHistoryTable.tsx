@@ -161,7 +161,7 @@ const HimodukeKaijo = ({TbmDriveSchedule}: {TbmDriveSchedule: TbmDriveScheduleDa
 
 const DriveScheduleSelector = ({TbmDriveSchedule}: {TbmDriveSchedule: TbmDriveScheduleData}) => {
   const {data: tbmDriveScheduleList = []} = useDoStandardPrisma(`tbmDriveSchedule`, `findMany`, {
-    where: {TbmEtcMeisai: null},
+    where: {TbmEtcMeisai: {none: {}}},
     include: {
       User: {},
       TbmVehicle: {},

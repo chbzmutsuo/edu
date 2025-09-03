@@ -43,11 +43,11 @@ export async function getDriveSchedules(vehicleId: number, month: Date) {
 /**
  * ETCグループと運行スケジュールを紐付ける
  */
-export async function linkEtcToSchedule(etcMeisaiId: number, driveScheduleId: number | null) {
+export async function linkEtcToSchedule(etcMeisaiId: number | null, driveScheduleId: number | null) {
   try {
     // 現在のEtcMeisaiの状態を取得
     const {result: currentEtcMeisai} = await doStandardPrisma('tbmEtcMeisai', 'findUnique', {
-      where: {id: etcMeisaiId},
+      where: {id: etcMeisaiId || undefined},
       include: {TbmDriveSchedule: true},
     })
 
@@ -57,17 +57,21 @@ export async function linkEtcToSchedule(etcMeisaiId: number, driveScheduleId: nu
 
     // 紐付け解除または新しい紐付けを設定
     if (driveScheduleId === null) {
-      // 紐付け解除の場合
-      await doStandardPrisma('tbmEtcMeisai', 'update', {
-        where: {id: etcMeisaiId},
-        data: {tbmDriveScheduleId: null},
-      })
+      if (etcMeisaiId !== null) {
+        // 紐付け解除の場合
+        await doStandardPrisma('tbmEtcMeisai', 'update', {
+          where: {id: etcMeisaiId},
+          data: {tbmDriveScheduleId: null},
+        })
+      }
     } else {
       // 新しい紐付けの場合（1対多の関係なので既存の紐付けを解除する必要はない）
-      await doStandardPrisma('tbmEtcMeisai', 'update', {
-        where: {id: etcMeisaiId},
-        data: {tbmDriveScheduleId: driveScheduleId},
-      })
+      if (etcMeisaiId !== null) {
+        await doStandardPrisma('tbmEtcMeisai', 'update', {
+          where: {id: etcMeisaiId},
+          data: {tbmDriveScheduleId: driveScheduleId},
+        })
+      }
     }
 
     return {

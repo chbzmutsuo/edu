@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useEffect, useState} from 'react'
-import {useParams} from 'next/navigation'
+
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {Card} from '@cm/shadcn/ui/card'
@@ -14,10 +14,8 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {Days} from '@cm/class/Days/Days'
 import useModal from '@cm/components/utils/modal/useModal'
 
-export default function DriveScheduleDetailPage() {
-  const params = useParams()
-  const id = params && params.id ? parseInt(params.id as string) : 0
-  const {session} = useGlobal()
+export default function UnkomeisaiDetailModal(props: {id: number}) {
+  const {id} = props
 
   const [driveSchedule, setDriveSchedule] = useState<any>(null)
   const [loading, setLoading] = useState(true)
@@ -235,40 +233,32 @@ export default function DriveScheduleDetailPage() {
   }
 
   return (
-    <FitMargin>
+    <FitMargin className={` p-4`}>
       <C_Stack className="gap-6">
         <h1 className="text-2xl font-bold">運行詳細</h1>
 
         <Card className="p-4">
           <h2 className="text-xl font-bold mb-4">基本情報</h2>
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p>
-                <span className="font-bold">日付:</span> {formatDate(driveSchedule.date)}
-              </p>
-              <p>
-                <span className="font-bold">ルート:</span> {driveSchedule.TbmRouteGroup?.name}
-              </p>
-              <p>
-                <span className="font-bold">車両:</span> {driveSchedule.TbmVehicle?.vehicleNumber}
-              </p>
-            </div>
-            <div>
-              <p>
-                <span className="font-bold">ドライバー:</span> {driveSchedule.User?.name}
-              </p>
-              <p>
-                <span className="font-bold">拠点:</span> {driveSchedule.TbmBase?.name}
-              </p>
-              <p>
-                <span className="font-bold">ステータス:</span>
-                {driveSchedule.finished ? (
-                  <span className="text-green-600">完了</span>
-                ) : (
-                  <span className="text-red-600">未完了</span>
-                )}
-              </p>
-            </div>
+            <p>
+              <span className="font-bold">日付:</span> {formatDate(driveSchedule.date)}
+            </p>
+            <p>
+              <span className="font-bold">車両:</span> {driveSchedule.TbmVehicle?.vehicleNumber}
+            </p>
+            <p>
+              <span className="font-bold">便名:</span> {driveSchedule.TbmRouteGroup?.name}
+            </p>
+            <p>
+              <span className="font-bold">路線名:</span> {driveSchedule.TbmRouteGroup?.routeName}
+            </p>
+
+            <p>
+              <span className="font-bold">ドライバー:</span> {driveSchedule.User?.name}
+            </p>
+            <p>
+              <span className="font-bold">拠点:</span> {driveSchedule.TbmBase?.name}
+            </p>
           </div>
         </Card>
 
@@ -280,18 +270,20 @@ export default function DriveScheduleDetailPage() {
 
       {/* ETC紐付けモーダル */}
       <EtcLinkModalReturn.Modal>
-        {driveSchedule && driveSchedule.TbmVehicle && (
-          <EtcMeisaiSelectModal
-            vehicleId={driveSchedule.tbmVehicleId}
-            month={Days.month.getMonthDatum(driveSchedule.date).firstDayOfMonth}
-            driveScheduleId={driveSchedule.id}
-            handleClose={EtcLinkModalReturn.handleClose}
-            onLinkUpdated={() => {
-              // 紐付け更新後にデータを再読み込み
-              loadDriveSchedule()
-            }}
-          />
-        )}
+        <div className={` p-4`}>
+          {driveSchedule && driveSchedule.TbmVehicle && (
+            <EtcMeisaiSelectModal
+              vehicleId={driveSchedule.tbmVehicleId}
+              month={Days.month.getMonthDatum(driveSchedule.date).firstDayOfMonth}
+              driveScheduleId={driveSchedule.id}
+              handleClose={EtcLinkModalReturn.handleClose}
+              onLinkUpdated={() => {
+                // 紐付け更新後にデータを再読み込み
+                loadDriveSchedule()
+              }}
+            />
+          )}
+        </div>
       </EtcLinkModalReturn.Modal>
     </FitMargin>
   )

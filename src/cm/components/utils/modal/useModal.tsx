@@ -5,7 +5,7 @@ import {basicModalPropType, ModalCore} from '@cm/components/utils/modal/ModalCor
  * useModal フック
  * @template T openの型
  */
-export type useModalReturn<T = boolean> = {
+export type useModalReturn<T = any> = {
   Modal: React.FC<basicModalPropType>
   handleOpen: (openValue?: T) => void
   handleClose: (closeValue?: T) => void
@@ -13,7 +13,7 @@ export type useModalReturn<T = boolean> = {
   setopen: (openValue: T) => void
 }
 
-function useModal<T = boolean>(props?: {defaultOpen?: boolean; defaultState?: T; alertOnClose?: boolean}): useModalReturn<T> {
+function useModal<T = any>(props?: {defaultOpen?: boolean; defaultState?: T; alertOnClose?: boolean}): useModalReturn<T> {
   // 初期値の決定
   const initialOpen =
     props?.defaultState !== undefined ? props.defaultState : props?.defaultOpen ? (true as any as T) : (false as any as T)
