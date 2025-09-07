@@ -1,6 +1,5 @@
 'use server'
 
-import {revalidatePath} from 'next/cache'
 
 import {
   Customer,
@@ -227,6 +226,38 @@ export async function createOrUpdateCustomer(
 
 export async function getAllProducts(): Promise<Product[]> {
   const products = await prisma.sbmProduct.findMany({
+    include: {
+      SbmProductPriceHistory: {
+        orderBy: {effectiveDate: 'desc'},
+        take: 5,
+      },
+    },
+    orderBy: {name: 'asc'},
+  })
+
+  return products.map(p => ({
+    id: p.id,
+    name: p.name,
+    description: p.description || '',
+    currentPrice: p.currentPrice,
+    currentCost: p.currentCost,
+    category: p.category,
+    isActive: p.isActive,
+    priceHistory: p.SbmProductPriceHistory.map(h => ({
+      id: h.id,
+      productId: h.productId,
+      price: h.price,
+      cost: h.cost,
+      effectiveDate: h.effectiveDate,
+    })),
+
+    updatedAt: p.updatedAt,
+  }))
+}
+
+// 予約登録時用：表示可能な商品のみ取得
+export async function getVisibleProducts(): Promise<Product[]> {
+  const products = await prisma.sbmProduct.findMany({
     where: {isActive: true},
     include: {
       SbmProductPriceHistory: {
@@ -245,44 +276,6 @@ export async function getAllProducts(): Promise<Product[]> {
     currentCost: p.currentCost,
     category: p.category,
     isActive: p.isActive,
-    isVisible: p.isVisible,
-    priceHistory: p.SbmProductPriceHistory.map(h => ({
-      id: h.id,
-      productId: h.productId,
-      price: h.price,
-      cost: h.cost,
-      effectiveDate: h.effectiveDate,
-    })),
-
-    updatedAt: p.updatedAt,
-  }))
-}
-
-// 予約登録時用：表示可能な商品のみ取得
-export async function getVisibleProducts(): Promise<Product[]> {
-  const products = await prisma.sbmProduct.findMany({
-    where: {
-      isActive: true,
-      isVisible: true, // 表示可能な商品のみ
-    },
-    include: {
-      SbmProductPriceHistory: {
-        orderBy: {effectiveDate: 'desc'},
-        take: 5,
-      },
-    },
-    orderBy: {name: 'asc'},
-  })
-
-  return products.map(p => ({
-    id: p.id,
-    name: p.name,
-    description: p.description || '',
-    currentPrice: p.currentPrice,
-    currentCost: p.currentCost,
-    category: p.category,
-    isActive: p.isActive,
-    isVisible: p.isVisible,
     priceHistory: p.SbmProductPriceHistory.map(h => ({
       id: h.id,
       productId: h.productId,
@@ -468,7 +461,6 @@ export async function getAllUsers(): Promise<User[]> {
 
 export async function getAllTeams(): Promise<SbmDeliveryTeam[]> {
   const teams = await prisma.sbmDeliveryTeam.findMany({
-    where: {isActive: true},
     orderBy: {name: 'asc'},
   })
 
@@ -706,7 +698,6 @@ export async function createProduct(productData: Omit<Product, 'id' | 'priceHist
         currentCost: productData.currentCost || 0,
         category: productData.category ?? '',
         isActive: productData.isActive,
-        isVisible: productData.isVisible ?? true,
         SbmProductPriceHistory: {
           create: {
             productId: '', // 後で設定
@@ -754,7 +745,6 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
         currentCost: productData.currentCost,
         category: productData.category,
         isActive: productData.isActive,
-        isVisible: productData.isVisible,
         ...(shouldCreateHistory && {
           SbmProductPriceHistory: {
             create: {

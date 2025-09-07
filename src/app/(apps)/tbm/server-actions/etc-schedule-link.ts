@@ -1,8 +1,6 @@
 'use server'
 
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
-import {Days} from '@cm/class/Days/Days'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 /**
  * 特定の月と車両IDに基づいて運行スケジュールを取得する

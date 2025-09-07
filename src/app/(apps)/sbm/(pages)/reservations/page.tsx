@@ -26,7 +26,6 @@ import {
   createReservation,
   updateReservation,
   deleteReservation,
-  searchCustomersByPhone,
   createOrUpdateCustomer,
 } from '../../(builders)/serverActions'
 import {Reservation, Customer, Product, ReservationFilter, ReservationItem} from '../../types'
@@ -878,7 +877,7 @@ const ReservationModal = ({
     }
 
     // 顧客情報更新確認
-    if (!reservation && !customerFound) {
+    if (!reservation) {
       setShowCustomerUpdateDialog(true)
       return
     }
@@ -889,7 +888,7 @@ const ReservationModal = ({
   const saveReservation = async () => {
     try {
       // 顧客情報をUPSERT
-      if (showCustomerUpdateDialog || (!reservation && !customerFound)) {
+      if (showCustomerUpdateDialog || !reservation) {
         const customerData: Partial<Customer> = {
           companyName: formData.customerName,
           contactName: formData.contactName,

@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Phone, Plus, Edit, Trash2, Star, X} from 'lucide-react'
+import {Phone, Plus, Edit, Trash2, X} from 'lucide-react'
 import {getCustomerPhones, createCustomerPhone, updateCustomerPhone, deleteCustomerPhone} from '../(builders)/serverActions'
 import {CustomerPhone, PhoneLabel} from '../types'
 import useModal from '@cm/components/utils/modal/useModal'

@@ -10,7 +10,6 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {NumHandler} from '@cm/class/NumHandler'
 import {getEtcMeisaiBySchedule} from '@app/(apps)/tbm/server-actions/etc-schedule-link'
 import EtcMeisaiSelectModal from '@app/(apps)/tbm/(components)/EtcScheduleLink/EtcMeisaiSelectModal'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {Days} from '@cm/class/Days/Days'
 import useModal from '@cm/components/utils/modal/useModal'
 

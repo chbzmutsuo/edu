@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, PlusCircle, Edit, Trash2, X, Package, History, Eye, EyeOff} from 'lucide-react'
+import {Search, PlusCircle, Edit, Trash2, X, Package, History} from 'lucide-react'
 import {getAllProducts, createProduct, updateProduct, deleteProduct} from '../../(builders)/serverActions'
 import {Product} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -63,7 +63,7 @@ export default function ProductsPage() {
 
   const handleSave = async (productData: Partial<Product>) => {
     try {
-      const editingProduct = EditProductModalReturn.open.product
+      const editingProduct = EditProductModalReturn?.open?.product
 
       if (editingProduct) {
         const result = await updateProduct(editingProduct.id!, productData)
@@ -109,24 +109,24 @@ export default function ProductsPage() {
     }
   }
 
-  // 表示/非表示切り替え
-  const toggleVisibility = async (product: Product) => {
-    if (!product.id) return
+  // // 表示/非表示切り替え
+  // const toggleVisibility = async (product: Product) => {
+  //   if (!product.id) return
 
-    try {
-      const result = await updateProduct(Number(product.id), {
-        isVisible: !product.isVisible,
-      })
-      if (result.success) {
-        await loadProducts()
-      } else {
-        alert(result.error || '更新に失敗しました')
-      }
-    } catch (error) {
-      console.error('表示切り替えエラー:', error)
-      alert('更新中にエラーが発生しました')
-    }
-  }
+  //   try {
+  //     const result = await updateProduct(Number(product.id), {
+  //       isActive: !product.isActive,
+  //     })
+  //     if (result.success) {
+  //       await loadProducts()
+  //     } else {
+  //       alert(result.error || '更新に失敗しました')
+  //     }
+  //   } catch (error) {
+  //     console.error('表示切り替えエラー:', error)
+  //     alert('更新中にエラーが発生しました')
+  //   }
+  // }
 
   if (loading) {
     return (
@@ -218,7 +218,7 @@ export default function ProductsPage() {
                       ? ((product.currentPrice - product.currentCost) / product.currentPrice) * 100
                       : 0
 
-                  const isHidden = !product.isVisible
+                  const isHidden = !product.isActive
 
                   return (
                     <tr key={product.id} className={cn(isHidden ? 'bg-gray-500' : 'bg-gray-100 hover:bg-gray-50')}>
@@ -250,17 +250,10 @@ export default function ProductsPage() {
                         <div className="flex flex-col space-y-1">
                           <span
                             className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                              product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                              product.isActive ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
                             }`}
                           >
-                            {product.isActive ? '有効' : '無効'}
-                          </span>
-                          <span
-                            className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                              product.isVisible ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {product.isVisible ? '表示中' : '非表示'}
+                            {product.isActive ? '表示中' : '非表示'}
                           </span>
                         </div>
                       </td>
@@ -269,15 +262,15 @@ export default function ProductsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
-                          <button
+                          {/* <button
                             onClick={() => toggleVisibility(product)}
                             className={`${
-                              product.isVisible ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400 hover:text-gray-600'
+                              product.isActive ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400 hover:text-gray-600'
                             }`}
-                            title={product.isVisible ? '非表示にする' : '表示する'}
+                            title={product.isActive ? '非表示にする' : '表示する'}
                           >
-                            {product.isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
-                          </button>
+                            {product.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </button> */}
                           <button
                             onClick={() => PriceHistoryModalReturn.handleOpen({product})}
                             className="text-green-600 hover:text-green-800"
@@ -323,7 +316,7 @@ export default function ProductsPage() {
       <EditProductModalReturn.Modal>
         <Padding>
           <ProductModal
-            product={EditProductModalReturn.open.product}
+            product={EditProductModalReturn?.open?.product}
             onSave={handleSave}
             onClose={EditProductModalReturn.handleClose}
           />
@@ -334,7 +327,7 @@ export default function ProductsPage() {
       <PriceHistoryModalReturn.Modal>
         <Padding>
           <PriceHistoryModal
-            product={PriceHistoryModalReturn.open.product}
+            product={PriceHistoryModalReturn?.open?.product}
             onClose={() => PriceHistoryModalReturn.handleClose()}
           />
         </Padding>
@@ -496,16 +489,6 @@ const ProductModal = ({
             type="checkbox"
             name="isActive"
             checked={formData.isActive ?? true}
-            onChange={handleInputChange}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label className="ml-2 block text-sm text-gray-700">有効（販売可能）</label>
-        </div>
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            name="isVisible"
-            checked={formData.isVisible ?? true}
             onChange={handleInputChange}
             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
           />

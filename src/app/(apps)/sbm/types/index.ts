@@ -37,7 +37,7 @@ export type Product = Partial<{
   currentCost: number
   category: string
   isActive: boolean
-  isVisible: boolean // 予約登録時の表示制御
+  m
   createdAt: Date
   updatedAt: Date
   priceHistory?: ProductPriceHistory[]

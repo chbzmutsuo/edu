@@ -10,7 +10,6 @@ import {Padding} from '@cm/components/styles/common-components/common-components
 import CustomerPhoneManager from '../../components/CustomerPhoneManager'
 import PostalCodeInput from '../../components/PostalCodeInput'
 import {formatPhoneNumber} from '../../components/CustomerPhoneManager'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])

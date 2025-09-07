@@ -5,7 +5,7 @@ import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTa
 import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
 import {htmlProps} from '@cm/components/styles/common-components/type'
 
-import React, {CSSProperties, use} from 'react'
+import React, {CSSProperties} from 'react'
 import {twMerge} from 'tailwind-merge'
 
 export type ChunkedOptions = {

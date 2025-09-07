@@ -49,7 +49,6 @@ model SbmProduct {
   currentCost  Int // 現在原価（円）
   category     String  @db.VarChar(100)
   isActive     Boolean @default(true)
-  isVisible    Boolean @default(true) // 予約登録時の表示制御
 
   // タイムスタンプ
   createdAt DateTime @default(now())
