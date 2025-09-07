@@ -39,8 +39,8 @@ export default async function Page(props) {
           return (
             <div key={userId} className={`t-paper w-[500px] p-2`}>
               <R_Stack className={` w-full justify-between`}>
-                <span>{user.code}</span>
-                <h2 className={` text-2xl`}>{user.name}</h2>
+                {/* <span>{user.code}</span> */}
+                <h2 className={` `}>{user.name}</h2>
               </R_Stack>
               {allCars.length > 0 ? (
                 CsvTable({

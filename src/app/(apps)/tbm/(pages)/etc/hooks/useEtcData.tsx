@@ -11,7 +11,6 @@ export const useEtcData = () => {
 
   // CSVデータをインポートする関数
   const importCsvData = async (data: {tbmVehicleId: number; month: Date; csvData: string}) => {
-    console.log(data) //logs
     setIsLoading(true)
     try {
       const {tbmVehicleId, month, csvData} = data
@@ -111,7 +110,6 @@ export const useEtcData = () => {
 
   // EtcCsvRawデータをロードする関数
   const loadEtcRawData = async (vehicleId: number, month: Date) => {
-    console.log({vehicleId}) //logs
     if (!vehicleId || !month) return
 
     setIsLoading(true)
@@ -138,6 +136,7 @@ export const useEtcData = () => {
               TbmDriveSchedule: {
                 include: {
                   TbmRouteGroup: true,
+                  User: true,
                 },
               },
             },

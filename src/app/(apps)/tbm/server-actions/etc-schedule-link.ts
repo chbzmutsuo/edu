@@ -27,6 +27,7 @@ export async function getDriveSchedules(vehicleId: number, month: Date) {
       include: {
         TbmRouteGroup: true,
         TbmEtcMeisai: true,
+        User: true,
       },
       orderBy: {
         date: 'asc',

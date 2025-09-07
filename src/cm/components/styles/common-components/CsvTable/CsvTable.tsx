@@ -5,7 +5,7 @@ import {CsvTableVirtualized} from '@cm/components/styles/common-components/CsvTa
 import {TableBordered, TableWrapper} from '@cm/components/styles/common-components/Table'
 import {htmlProps} from '@cm/components/styles/common-components/type'
 
-import React, {CSSProperties} from 'react'
+import React, {CSSProperties, use} from 'react'
 import {twMerge} from 'tailwind-merge'
 
 export type ChunkedOptions = {
@@ -54,6 +54,7 @@ export type stylesInColumns = {
 
 export type CsvTableProps = {
   records: bodyRecordsType
+  headers?: bodyRecordsType
   stylesInColumns?: stylesInColumns
   csvOutput?: {
     fileTitle: string
@@ -63,12 +64,13 @@ export type CsvTableProps = {
   chunked?: ChunkedOptions
   // 🔥 仮想化オプション（クライアント専用）
   virtualized?: VirtualizedOptions
+  useOriginalWrapperClass?: boolean
 }
 
 /**
  * recordsからheaderとbodyを分離
  */
-export const separateHeaderAndBody = (records: bodyRecordsType) => {
+export const separateHeaderAndBody = (records: bodyRecordsType, headers?: bodyRecordsType) => {
   if (!records || records.length === 0) {
     return {headerRecords: [], bodyRecords: []}
   }
@@ -77,15 +79,17 @@ export const separateHeaderAndBody = (records: bodyRecordsType) => {
   const bodyRows = records
 
   // ヘッダー用の変換：labelをcellValueに
-  const headerRecords = [
-    {
-      ...headerRow,
-      csvTableRow: headerRow.csvTableRow.map(col => ({
-        ...col,
-        cellValue: col.label || col.cellValue,
-      })),
-    },
-  ]
+  const headerRecords = headers
+    ? [...headers]
+    : [
+        {
+          ...headerRow,
+          csvTableRow: headerRow.csvTableRow.map(col => ({
+            ...col,
+            cellValue: col.label || col.cellValue,
+          })),
+        },
+      ]
 
   // ボディ用の変換：labelを除去
   const bodyRecords = bodyRows.map(row => ({
@@ -132,11 +136,17 @@ export const CsvTable = (props: CsvTableProps) => {
  * Core CsvTable functionality (Server Component compatible)
  */
 export const createCsvTableCore = (props: CsvTableProps) => {
-  const {headerRecords, bodyRecords} = separateHeaderAndBody(props.records)
+  const {headerRecords, bodyRecords} = separateHeaderAndBody(props.records, props.headers)
 
   const WithWrapper = (wrapperProps: htmlProps & {size?: `sm` | `base` | `lg` | `xl`}) => {
     return (
-      <TableWrapper {...wrapperProps} {...{className: twMerge('max-h-[80vh] max-w-[90vw]  mx-auto', wrapperProps.className)}}>
+      <TableWrapper
+        {...{
+          ...wrapperProps,
+          useOriginalWrapperClass: props.useOriginalWrapperClass,
+        }}
+        {...{className: twMerge('max-h-[80vh] max-w-[90vw]  mx-auto', wrapperProps.className)}}
+      >
         <TableBordered {...{size: wrapperProps?.size}}>
           <CsvTableHead headerRecords={headerRecords} stylesInColumns={props.stylesInColumns} />
           <CsvTableBody bodyRecords={bodyRecords} stylesInColumns={props.stylesInColumns} />

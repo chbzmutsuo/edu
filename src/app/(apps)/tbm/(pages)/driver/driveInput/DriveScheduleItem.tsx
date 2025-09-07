@@ -2,7 +2,7 @@
 
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
-import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
+import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driver/driveInput/driveInput-page-type'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 

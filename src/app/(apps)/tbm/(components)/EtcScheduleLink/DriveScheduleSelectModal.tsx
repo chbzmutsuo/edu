@@ -140,7 +140,9 @@ export default function DriveScheduleSelectModal({
                 <R_Stack className="justify-between">
                   <div>
                     <div className="font-bold">{formatDate(schedule.date)}</div>
-                    <div>{schedule.TbmRouteGroup?.name || '(ルート名なし)'}</div>
+                    <div>便名：{schedule.TbmRouteGroup?.name || '(便名なし)'}</div>
+                    <div>路線名：{schedule.TbmRouteGroup?.routeName || '(ルート名なし)'}</div>
+                    <div className="text-sm text-gray-600">担当: {schedule.User?.name || '(ドライバー名なし)'}</div>
                   </div>
                   <div>
                     {schedule.TbmEtcMeisai && schedule.TbmEtcMeisai.length > 0 ? (

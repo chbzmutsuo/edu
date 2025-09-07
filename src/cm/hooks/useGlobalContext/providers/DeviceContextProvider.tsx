@@ -12,7 +12,7 @@ const DeviceContextProvider = ({children}: {children: ReactNode}) => {
   const {device, width} = deviceData
 
   if (!device || width === 0) {
-    return <Loader>Validating Device Data...</Loader>
+    return <Loader>Validating Device Data</Loader>
   }
 
   return <DeviceContext.Provider value={deviceData}>{children}</DeviceContext.Provider>

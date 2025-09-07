@@ -1,12 +1,16 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, PlusCircle, Edit, Trash2, Users} from 'lucide-react'
+import {Search, PlusCircle, Edit, Trash2, Users, Phone} from 'lucide-react'
 import {getAllCustomers, createCustomer, updateCustomer, deleteCustomer} from '../../(builders)/serverActions'
 import {Customer} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
+import CustomerPhoneManager from '../../components/CustomerPhoneManager'
+import PostalCodeInput from '../../components/PostalCodeInput'
+import {formatPhoneNumber} from '../../components/CustomerPhoneManager'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -14,6 +18,8 @@ export default function CustomersPage() {
   const [searchKeyword, setSearchKeyword] = useState('')
 
   const DeleteCustomerModalReturn = useModal()
+
+  const PhoneManagerModalReturn = useModal()
 
   useEffect(() => {
     loadCustomers()
@@ -47,37 +53,12 @@ export default function CustomersPage() {
     )
   })
 
-  const handleSave = async (customerData: Partial<Customer>) => {
-    const customer = EditCustomerModalReturn.open?.customer
-    try {
-      if (customer) {
-        const result = await updateCustomer(customer.id!, customerData)
-        if (result.success) {
-          await loadCustomers()
-          EditCustomerModalReturn.handleClose()
-        } else {
-          alert(result.error || '更新に失敗しました')
-        }
-      } else {
-        const result = await createCustomer(customerData as Omit<Customer, 'id' | 'createdAt' | 'updatedAt'>)
-        if (result.success) {
-          await loadCustomers()
-          EditCustomerModalReturn.handleClose()
-        } else {
-          alert(result.error || '作成に失敗しました')
-        }
-      }
-    } catch (error) {
-      console.error('保存エラー:', error)
-      alert('保存中にエラーが発生しました')
-    }
-  }
-
   const handleDelete = async () => {
     if (!DeleteCustomerModalReturn.open?.customer) return
-    if (!confirm('この顧客を削除してもよろしいですか？')) {
+    if (confirm('この顧客を削除してもよろしいですか？')) {
       try {
-        const result = await deleteCustomer(DeleteCustomerModalReturn.open.customer.id!)
+        const result = await deleteCustomer(DeleteCustomerModalReturn.open.customer.id)
+
         if (result.success) {
           await loadCustomers()
           DeleteCustomerModalReturn.handleClose()
@@ -162,43 +143,60 @@ export default function CustomersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredCustomers.map(customer => (
-                  <tr key={customer.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">{customer.companyName}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">{customer.contactName || '-'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">{customer.phoneNumber}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">{customer.email || '-'}</td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                      {`${customer.prefecture || ''}${customer.city || ''}${customer.street || ''}${customer.building ? ' ' + customer.building : ''}`}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-blue-600 font-semibold">{customer.availablePoints?.toLocaleString()}pt</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-gray-500">
-                      {customer.createdAt ? formatDate(customer.createdAt) : '-'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() => EditCustomerModalReturn.handleOpen({customer})}
-                          className="text-blue-600 hover:text-blue-800"
-                          title="編集"
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          onClick={() => DeleteCustomerModalReturn.handleOpen({customer})}
-                          className="text-red-600 hover:text-red-800"
-                          title="削除"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {filteredCustomers.map(customer => {
+                  return (
+                    <tr key={customer.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-medium text-gray-900">{customer.companyName}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{customer.contactName || '-'}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                        {customer.phones?.map(phone => {
+                          return (
+                            <div key={phone.id} className={` text-gray-700 text-xs`}>
+                              {formatPhoneNumber(phone.phoneNumber)} ({phone.label})
+                            </div>
+                          )
+                        })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{customer.email || '-'}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
+                        {`${customer.prefecture || ''}${customer.city || ''}${customer.street || ''}${customer.building ? ' ' + customer.building : ''}`}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-blue-600 font-semibold">{customer.availablePoints?.toLocaleString()}pt</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-500">
+                        {customer.createdAt ? formatDate(customer.createdAt) : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => PhoneManagerModalReturn.handleOpen({customer})}
+                            className="text-green-600 hover:text-green-800"
+                            title="電話番号管理"
+                          >
+                            <Phone size={16} />
+                          </button>
+                          <button
+                            onClick={() => EditCustomerModalReturn.handleOpen({customer})}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="編集"
+                          >
+                            <Edit size={16} />
+                          </button>
+                          <button
+                            onClick={() => DeleteCustomerModalReturn.handleOpen({customer})}
+                            className="text-red-600 hover:text-red-800"
+                            title="削除"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
@@ -213,18 +211,37 @@ export default function CustomersPage() {
           )}
         </div>
       </div>
-
       {/* 顧客フォームモーダル */}
       <EditCustomerModalReturn.Modal>
         <Padding>
           <CustomerModal
+            onUpdate={loadCustomers}
             customer={EditCustomerModalReturn.open?.customer}
-            onSave={handleSave}
             onClose={EditCustomerModalReturn.handleClose}
           />
         </Padding>
       </EditCustomerModalReturn.Modal>
-
+      {/* 電話番号管理モーダル */}
+      <PhoneManagerModalReturn.Modal>
+        <Padding>
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl">
+            <div className="p-6">
+              <CustomerPhoneManager
+                customerId={PhoneManagerModalReturn.open?.customer?.id || 0}
+                customerName={PhoneManagerModalReturn.open?.customer?.companyName || ''}
+              />
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={PhoneManagerModalReturn.handleClose}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+                >
+                  閉じる
+                </button>
+              </div>
+            </div>
+          </div>
+        </Padding>
+      </PhoneManagerModalReturn.Modal>
       {/* 削除確認モーダル */}
       <DeleteCustomerModalReturn.Modal>
         <Padding>
@@ -241,21 +258,12 @@ export default function CustomersPage() {
 }
 
 // 顧客フォームモーダル
-const CustomerModal = ({
-  customer,
-  onSave,
-  onClose,
-}: {
-  customer: Customer | null
-  onSave: (customerData: Partial<Customer>) => void
-  onClose: () => void
-}) => {
+const CustomerModal = ({customer, onUpdate, onClose}: {onUpdate: () => void; customer: Customer | null; onClose: () => void}) => {
   const [formData, setFormData] = useState<Partial<Customer>>({
     companyName: customer?.companyName || '',
     contactName: customer?.contactName || '',
     phoneNumber: customer?.phoneNumber || '',
     email: customer?.email || '',
-
     prefecture: customer?.prefecture || '',
     city: customer?.city || '',
     street: customer?.street || '',
@@ -273,21 +281,41 @@ const CustomerModal = ({
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    // バリデーション
-    if (!formData.companyName || !formData.phoneNumber) {
-      alert('会社名、電話番号は必須です')
-      return
-    }
 
     if (!formData.prefecture || !formData.city || !formData.street) {
       alert('都道府県、市区町村、町名番地は必須です')
       return
     }
 
-    onSave(formData)
+    const customerData = formData
+
+    try {
+      if (customer) {
+        const result = await updateCustomer(customer.id!, customerData)
+        if (result.success) {
+          // await loadCustomers()
+          // EditCustomerModalReturn.handleClose()
+          await onUpdate()
+          await onClose()
+        } else {
+          alert(result.error || '更新に失敗しました')
+        }
+      } else {
+        const result = await createCustomer(customerData as Omit<Customer, 'id' | 'createdAt' | 'updatedAt'>)
+
+        if (result.success) {
+          await onUpdate()
+          await onClose()
+        } else {
+          alert(result.error || '作成に失敗しました')
+        }
+      }
+    } catch (error) {
+      console.error('保存エラー:', error)
+      alert('保存中にエラーが発生しました')
+    }
   }
 
   return (
@@ -316,18 +344,6 @@ const CustomerModal = ({
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">電話番号 *</label>
-        <input
-          type="tel"
-          name="phoneNumber"
-          value={formData.phoneNumber || ''}
-          onChange={handleInputChange}
-          required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
         <input
           type="email"
@@ -338,68 +354,19 @@ const CustomerModal = ({
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">郵便番号</label>
-        <input
-          type="text"
-          name="postalCode"
-          value={formData.postalCode || ''}
-          onChange={handleInputChange}
-          placeholder="1234567"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">都道府県 *</label>
-        <input
-          type="text"
-          name="prefecture"
-          value={formData.prefecture || ''}
-          onChange={handleInputChange}
-          required
-          placeholder="東京都"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">市区町村 *</label>
-        <input
-          type="text"
-          name="city"
-          value={formData.city || ''}
-          onChange={handleInputChange}
-          required
-          placeholder="渋谷区"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">町名番地 *</label>
-        <input
-          type="text"
-          name="street"
-          value={formData.street || ''}
-          onChange={handleInputChange}
-          required
-          placeholder="神南1-2-3"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">その他（建物名等）</label>
-        <input
-          type="text"
-          name="building"
-          value={formData.building || ''}
-          onChange={handleInputChange}
-          placeholder="○○ビル4F"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      <PostalCodeInput
+        postalCode={formData.postalCode || ''}
+        prefecture={formData.prefecture || ''}
+        city={formData.city || ''}
+        street={formData.street || ''}
+        building={formData.building || ''}
+        onAddressChange={addressData => {
+          setFormData(prev => ({
+            ...prev,
+            ...addressData,
+          }))
+        }}
+      />
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">利用可能ポイント</label>

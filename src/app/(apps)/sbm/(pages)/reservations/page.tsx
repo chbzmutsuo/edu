@@ -22,11 +22,11 @@ import {
 import {
   getReservations,
   getAllCustomers,
-  getAllProducts,
+  getVisibleProducts,
   createReservation,
   updateReservation,
   deleteReservation,
-  getCustomerByPhone,
+  searchCustomersByPhone,
   createOrUpdateCustomer,
 } from '../../(builders)/serverActions'
 import {Reservation, Customer, Product, ReservationFilter, ReservationItem} from '../../types'
@@ -44,6 +44,7 @@ import {Padding, R_Stack} from '@cm/components/styles/common-components/common-c
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {cn} from '@cm/shadcn/lib/utils'
 import ReservationMapModal from '../../components/ReservationMapModal'
+import CustomerSearchModal from '../../components/CustomerSearchModal'
 
 export default function ReservationPage() {
   const [reservations, setReservations] = useState<Reservation[]>([])
@@ -194,7 +195,7 @@ export default function ReservationPage() {
 
   const loadData = async () => {
     try {
-      const [customersData, productsData] = await Promise.all([getAllCustomers(), getAllProducts()])
+      const [customersData, productsData] = await Promise.all([getAllCustomers(), getVisibleProducts()])
       setCustomers(customersData)
       setProducts(productsData)
       await loadReservations()
@@ -719,45 +720,24 @@ const ReservationModal = ({
     }
   })
 
-  const [isLoadingCustomer, setIsLoadingCustomer] = useState(false)
-  const [customerFound, setCustomerFound] = useState<Customer | null>(null)
   const [showCustomerUpdateDialog, setShowCustomerUpdateDialog] = useState(false)
+  const [showCustomerSearchModal, setShowCustomerSearchModal] = useState(false)
   const [addressSuggestions, setAddressSuggestions] = useState<string[]>([])
 
-  // 電話番号から顧客情報を取得
-  const handlePhoneNumberLookup = async () => {
-    if (!formData.phoneNumber) {
-      alert('電話番号を入力してください')
-      return
-    }
-
-    setIsLoadingCustomer(true)
-    try {
-      const customer = await getCustomerByPhone(formData.phoneNumber)
-      if (customer) {
-        setCustomerFound(customer)
-        setFormData((prev: any) => ({
-          ...prev,
-          sbmCustomerId: customer.id,
-          customerName: customer.companyName,
-          contactName: customer.contactName,
-          postalCode: customer.postalCode,
-          prefecture: customer.prefecture,
-          city: customer.city,
-          street: customer.street,
-          building: customer.building,
-        }))
-        alert('顧客情報を取得しました')
-      } else {
-        alert('該当する顧客が見つかりませんでした')
-        setCustomerFound(null)
-      }
-    } catch (error) {
-      console.error('顧客検索エラー:', error)
-      alert('顧客情報の取得に失敗しました')
-    } finally {
-      setIsLoadingCustomer(false)
-    }
+  // 顧客選択時の処理
+  const handleSelectCustomer = (customer: Customer) => {
+    setFormData((prev: any) => ({
+      ...prev,
+      sbmCustomerId: customer.id,
+      customerName: customer.companyName,
+      contactName: customer.contactName,
+      phoneNumber: customer.phoneNumber,
+      postalCode: customer.postalCode,
+      prefecture: customer.prefecture,
+      city: customer.city,
+      street: customer.street,
+      building: customer.building,
+    }))
   }
 
   // 郵便番号から住所を取得（簡易実装）
@@ -967,21 +947,13 @@ const ReservationModal = ({
                 />
                 <button
                   type="button"
-                  onClick={handlePhoneNumberLookup}
-                  disabled={isLoadingCustomer}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm flex items-center"
+                  onClick={() => setShowCustomerSearchModal(true)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm flex items-center"
                 >
-                  {isLoadingCustomer ? (
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  ) : (
-                    <>
-                      <Phone size={16} className="mr-1" />
-                      連携
-                    </>
-                  )}
+                  <Phone size={16} className="mr-1" />
+                  検索
                 </button>
               </div>
-              {customerFound && <p className="text-sm text-green-600 mt-1">✓ 顧客情報を取得済み</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">会社・団体名 *</label>
@@ -1338,6 +1310,14 @@ const ReservationModal = ({
           </div>
         </div>
       )}
+
+      {/* 顧客検索モーダル */}
+      <CustomerSearchModal
+        isOpen={showCustomerSearchModal}
+        onClose={() => setShowCustomerSearchModal(false)}
+        onSelectCustomer={handleSelectCustomer}
+        initialPhone={formData.phoneNumber}
+      />
     </div>
   )
 }

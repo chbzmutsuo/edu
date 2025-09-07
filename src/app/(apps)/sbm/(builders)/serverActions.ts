@@ -2,7 +2,16 @@
 
 import {revalidatePath} from 'next/cache'
 
-import {Customer, Product, User, Reservation, ReservationFilter, DashboardStats} from '../types'
+import {
+  Customer,
+  Product,
+  User,
+  Reservation,
+  ReservationFilter,
+  DashboardStats,
+  CustomerPhone,
+  CustomerSearchResult,
+} from '../types'
 import {RFM_SCORE_CRITERIA} from '../(constants)'
 import prisma from 'src/lib/prisma'
 import {SbmDeliveryTeam} from '@prisma/client'
@@ -10,14 +19,16 @@ import {SbmDeliveryTeam} from '@prisma/client'
 // データ取得アクション
 export async function getAllCustomers(): Promise<Customer[]> {
   const customers = await prisma.sbmCustomer.findMany({
-    orderBy: {createdAt: 'desc'},
+    include: {
+      SbmCustomerPhone: true,
+    },
+    orderBy: {id: 'asc'},
   })
 
   return customers.map(c => ({
     id: c.id,
     companyName: c.companyName,
     contactName: c.contactName || '',
-    phoneNumber: c.phoneNumber,
     postalCode: c.postalCode || '',
     prefecture: c.prefecture || '',
     city: c.city || '',
@@ -28,14 +39,103 @@ export async function getAllCustomers(): Promise<Customer[]> {
     notes: c.notes || '',
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
+    phones: c.SbmCustomerPhone,
   }))
 }
 
 // 電話番号で顧客を検索
+// 電話番号による顧客検索（部分一致）
+export async function searchCustomersByPhone(phoneNumber: string): Promise<CustomerSearchResult[]> {
+  try {
+    if (!phoneNumber || phoneNumber.length < 3) {
+      return []
+    }
+
+    // 電話番号テーブルからのみ検索（メイン電話番号フィールドは削除済み）
+    const mainPhoneCustomers: any[] = []
+
+    // 電話番号テーブルでの検索
+    const phoneCustomers = await prisma.sbmCustomer.findMany({
+      where: {
+        SbmCustomerPhone: {
+          some: {
+            phoneNumber: {
+              contains: phoneNumber,
+              mode: 'insensitive',
+            },
+          },
+        },
+      },
+      include: {
+        SbmCustomerPhone: true,
+      },
+    })
+
+    // 重複を除去してマージ
+    const allCustomers = [...mainPhoneCustomers, ...phoneCustomers]
+    const uniqueCustomers = allCustomers.filter((customer, index, self) => index === self.findIndex(c => c.id === customer.id))
+
+    return uniqueCustomers.map(customer => {
+      // マッチした電話番号を特定
+      const matchedPhones: CustomerPhone[] = []
+
+      // メイン電話番号フィールドは削除済み
+
+      // 追加電話番号がマッチした場合
+      customer.SbmCustomerPhone.filter(phone => phone.phoneNumber.includes(phoneNumber)).forEach(phone => {
+        matchedPhones.push({
+          id: phone.id,
+          sbmCustomerId: phone.sbmCustomerId,
+          label: phone.label,
+          phoneNumber: phone.phoneNumber,
+          createdAt: phone.createdAt,
+          updatedAt: phone.updatedAt,
+        })
+      })
+
+      return {
+        customer: {
+          id: customer.id,
+          companyName: customer.companyName,
+          contactName: customer.contactName || '',
+          postalCode: customer.postalCode || '',
+          prefecture: customer.prefecture || '',
+          city: customer.city || '',
+          street: customer.street || '',
+          building: customer.building || '',
+          email: customer.email || '',
+          availablePoints: customer.availablePoints,
+          notes: customer.notes || '',
+
+          updatedAt: customer.updatedAt,
+          phones: customer.SbmCustomerPhone.map(phone => ({
+            id: phone.id,
+            sbmCustomerId: phone.sbmCustomerId,
+            label: phone.label,
+            phoneNumber: phone.phoneNumber,
+            createdAt: phone.createdAt,
+            updatedAt: phone.updatedAt,
+          })),
+        },
+        matchedPhones,
+      }
+    })
+  } catch (error) {
+    console.error('顧客検索エラー:', error)
+    return []
+  }
+}
+
+// 従来の関数は互換性のため残す（deprecated）
 export async function getCustomerByPhone(phoneNumber: string): Promise<Customer | null> {
   const customer = await prisma.sbmCustomer.findFirst({
     where: {
-      phoneNumber: phoneNumber,
+      SbmCustomerPhone: {
+        some: {phoneNumber: phoneNumber},
+      },
+    },
+    include: {
+      SbmCustomerPhone: true,
     },
   })
 
@@ -45,7 +145,6 @@ export async function getCustomerByPhone(phoneNumber: string): Promise<Customer 
     id: customer.id,
     companyName: customer.companyName,
     contactName: customer.contactName || '',
-    phoneNumber: customer.phoneNumber,
     postalCode: customer.postalCode || '',
     prefecture: customer.prefecture || '',
     city: customer.city || '',
@@ -56,6 +155,14 @@ export async function getCustomerByPhone(phoneNumber: string): Promise<Customer 
     notes: customer.notes || '',
     createdAt: customer.createdAt,
     updatedAt: customer.updatedAt,
+    phones: customer.SbmCustomerPhone.map(phone => ({
+      id: phone.id,
+      sbmCustomerId: phone.sbmCustomerId,
+      label: phone.label,
+      phoneNumber: phone.phoneNumber,
+      createdAt: phone.createdAt,
+      updatedAt: phone.updatedAt,
+    })),
   }
 }
 
@@ -64,13 +171,9 @@ export async function createOrUpdateCustomer(
   customerData: Partial<Customer>
 ): Promise<{success: boolean; customer?: Customer; error?: string}> {
   try {
-    if (!customerData.phoneNumber) {
-      return {success: false, error: '電話番号は必須です'}
-    }
-
     const customer = await prisma.sbmCustomer.upsert({
       where: {
-        phoneNumber: customerData.phoneNumber || '',
+        id: customerData.id || 0,
       },
       update: {
         companyName: customerData.companyName || '',
@@ -87,7 +190,6 @@ export async function createOrUpdateCustomer(
       create: {
         companyName: customerData.companyName || '',
         contactName: customerData.contactName || '',
-        phoneNumber: customerData.phoneNumber || '',
         postalCode: customerData.postalCode || '',
         prefecture: customerData.prefecture || '',
         city: customerData.city || '',
@@ -105,7 +207,6 @@ export async function createOrUpdateCustomer(
         id: customer.id,
         companyName: customer.companyName,
         contactName: customer.contactName || '',
-        phoneNumber: customer.phoneNumber,
         postalCode: customer.postalCode || '',
         prefecture: customer.prefecture || '',
         city: customer.city || '',
@@ -144,17 +245,179 @@ export async function getAllProducts(): Promise<Product[]> {
     currentCost: p.currentCost,
     category: p.category,
     isActive: p.isActive,
+    isVisible: p.isVisible,
     priceHistory: p.SbmProductPriceHistory.map(h => ({
       id: h.id,
       productId: h.productId,
       price: h.price,
       cost: h.cost,
       effectiveDate: h.effectiveDate,
-      createdAt: h.createdAt,
     })),
-    createdAt: p.createdAt,
+
     updatedAt: p.updatedAt,
   }))
+}
+
+// 予約登録時用：表示可能な商品のみ取得
+export async function getVisibleProducts(): Promise<Product[]> {
+  const products = await prisma.sbmProduct.findMany({
+    where: {
+      isActive: true,
+      isVisible: true, // 表示可能な商品のみ
+    },
+    include: {
+      SbmProductPriceHistory: {
+        orderBy: {effectiveDate: 'desc'},
+        take: 5,
+      },
+    },
+    orderBy: {name: 'asc'},
+  })
+
+  return products.map(p => ({
+    id: p.id,
+    name: p.name,
+    description: p.description || '',
+    currentPrice: p.currentPrice,
+    currentCost: p.currentCost,
+    category: p.category,
+    isActive: p.isActive,
+    isVisible: p.isVisible,
+    priceHistory: p.SbmProductPriceHistory.map(h => ({
+      id: h.id,
+      productId: h.productId,
+      price: h.price,
+      cost: h.cost,
+      effectiveDate: h.effectiveDate,
+    })),
+
+    updatedAt: p.updatedAt,
+  }))
+}
+
+// 顧客統合アクション
+export async function mergeCustomers(parentId: number, childId: number): Promise<{success: boolean; error?: string}> {
+  if (parentId === childId) {
+    return {success: false, error: '同じ顧客を統合することはできません'}
+  }
+
+  try {
+    // トランザクション内で実行
+    await prisma.$transaction(async tx => {
+      // 子顧客の存在確認
+      const parentCustomer = await tx.sbmCustomer.findUnique({where: {id: parentId}})
+      const childCustomer = await tx.sbmCustomer.findUnique({where: {id: childId}})
+
+      if (!parentCustomer) {
+        throw new Error('統合先の顧客が見つかりません')
+      }
+      if (!childCustomer) {
+        throw new Error('統合元の顧客が見つかりません')
+      }
+
+      // 1. 子顧客の予約データを親顧客に移行
+      await tx.sbmReservation.updateMany({
+        where: {sbmCustomerId: childId},
+        data: {sbmCustomerId: parentId},
+      })
+
+      // 2. 子顧客の電話番号データを親顧客に移行
+      await tx.sbmCustomerPhone.updateMany({
+        where: {sbmCustomerId: childId},
+        data: {sbmCustomerId: parentId},
+      })
+
+      // 3. 子顧客のRFM分析データを親顧客に移行
+      await tx.sbmRfmAnalysis.updateMany({
+        where: {sbmCustomerId: childId},
+        data: {sbmCustomerId: parentId},
+      })
+
+      // 4. 子顧客を削除
+      await tx.sbmCustomer.delete({
+        where: {id: childId},
+      })
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('顧客統合エラー:', error)
+    return {success: false, error: error instanceof Error ? error.message : '顧客統合に失敗しました'}
+  }
+}
+
+// 電話番号管理アクション
+export async function createCustomerPhone(
+  customerPhoneData: Omit<CustomerPhone, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<{success: boolean; error?: string}> {
+  try {
+    await prisma.sbmCustomerPhone.create({
+      data: {
+        sbmCustomerId: customerPhoneData.sbmCustomerId,
+        label: customerPhoneData.label,
+        phoneNumber: customerPhoneData.phoneNumber,
+      },
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('電話番号追加エラー:', error)
+    return {success: false, error: '電話番号の追加に失敗しました'}
+  }
+}
+
+export async function updateCustomerPhone(
+  id: number,
+  customerPhoneData: Partial<CustomerPhone>
+): Promise<{success: boolean; error?: string}> {
+  try {
+    await prisma.sbmCustomerPhone.update({
+      where: {id},
+      data: {
+        label: customerPhoneData.label,
+        phoneNumber: customerPhoneData.phoneNumber,
+      },
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('電話番号更新エラー:', error)
+    return {success: false, error: '電話番号の更新に失敗しました'}
+  }
+}
+
+export async function deleteCustomerPhone(id: number): Promise<{success: boolean; error?: string}> {
+  try {
+    await prisma.sbmCustomerPhone.delete({
+      where: {id},
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('電話番号削除エラー:', error)
+    return {success: false, error: '電話番号の削除に失敗しました'}
+  }
+}
+
+// 顧客の電話番号一覧を取得
+export async function getCustomerPhones(customerId: number): Promise<CustomerPhone[]> {
+  try {
+    const phones = await prisma.sbmCustomerPhone.findMany({
+      where: {sbmCustomerId: customerId},
+    })
+
+    return phones.map(phone => ({
+      id: phone.id,
+      sbmCustomerId: phone.sbmCustomerId,
+      label: phone.label,
+      phoneNumber: phone.phoneNumber,
+      createdAt: phone.createdAt,
+      updatedAt: phone.updatedAt,
+    }))
+  } catch (error) {
+    console.error('電話番号取得エラー:', error)
+    return []
+  }
 }
 
 export async function getAllUsers(): Promise<User[]> {
@@ -173,7 +436,7 @@ export async function getAllUsers(): Promise<User[]> {
     email: u.email,
     role: u.role as 'admin' | 'manager' | 'staff',
     isActive: u.isActive,
-    createdAt: u.createdAt,
+
     updatedAt: u.updatedAt,
   }))
   */
@@ -187,7 +450,7 @@ export async function getAllUsers(): Promise<User[]> {
       email: 'admin@sbm.local',
       role: 'admin' as const,
       isActive: true,
-      createdAt: new Date(),
+
       updatedAt: new Date(),
     },
     {
@@ -197,7 +460,7 @@ export async function getAllUsers(): Promise<User[]> {
       email: 'staff1@sbm.local',
       role: 'staff' as const,
       isActive: true,
-      createdAt: new Date(),
+
       updatedAt: new Date(),
     },
   ]
@@ -307,7 +570,6 @@ export async function getReservations(filter: ReservationFilter = {}) {
     sbmCustomerId: r.sbmCustomerId,
     customerName: r.customerName,
     contactName: r.contactName || '',
-    phoneNumber: r.phoneNumber,
     postalCode: r.postalCode,
     prefecture: r.prefecture,
     city: r.city,
@@ -334,7 +596,6 @@ export async function getReservations(filter: ReservationFilter = {}) {
       quantity: item.quantity,
       unitPrice: item.unitPrice,
       totalPrice: item.totalPrice,
-      createdAt: item.createdAt,
     })),
     tasks: r.SbmReservationTask.map(task => ({
       id: task.id,
@@ -356,7 +617,7 @@ export async function getReservations(filter: ReservationFilter = {}) {
       oldValues: (ch.oldValues as Record<string, any>) || {},
       newValues: (ch.newValues as Record<string, any>) || {},
     })),
-    createdAt: r.createdAt,
+
     updatedAt: r.updatedAt,
   }))
 }
@@ -368,7 +629,7 @@ export async function createCustomer(customerData: Omit<Customer, 'id' | 'create
       data: {
         companyName: customerData.companyName || '',
         contactName: customerData.contactName || null,
-        phoneNumber: customerData.phoneNumber || '',
+
         postalCode: customerData.postalCode || null,
         prefecture: customerData.prefecture || null,
         city: customerData.city || null,
@@ -380,7 +641,6 @@ export async function createCustomer(customerData: Omit<Customer, 'id' | 'create
       },
     })
 
-    revalidatePath('/sbm')
     return {success: true, data: newCustomer}
   } catch (error) {
     console.error('顧客作成エラー:', error)
@@ -395,7 +655,6 @@ export async function updateCustomer(id: number, customerData: Partial<Customer>
       data: {
         companyName: customerData.companyName,
         contactName: customerData.contactName || null,
-        phoneNumber: customerData.phoneNumber,
         postalCode: customerData.postalCode || null,
         prefecture: customerData.prefecture || null,
         city: customerData.city || null,
@@ -407,7 +666,6 @@ export async function updateCustomer(id: number, customerData: Partial<Customer>
       },
     })
 
-    revalidatePath('/sbm')
     return {success: true, data: updatedCustomer}
   } catch (error) {
     console.error('顧客更新エラー:', error)
@@ -430,7 +688,6 @@ export async function deleteCustomer(id: number) {
       where: {id},
     })
 
-    revalidatePath('/sbm')
     return {success: true}
   } catch (error) {
     console.error('顧客削除エラー:', error)
@@ -449,6 +706,7 @@ export async function createProduct(productData: Omit<Product, 'id' | 'priceHist
         currentCost: productData.currentCost || 0,
         category: productData.category ?? '',
         isActive: productData.isActive,
+        isVisible: productData.isVisible ?? true,
         SbmProductPriceHistory: {
           create: {
             productId: '', // 後で設定
@@ -467,7 +725,6 @@ export async function createProduct(productData: Omit<Product, 'id' | 'priceHist
       data: {productId: newProduct.id.toString()},
     })
 
-    revalidatePath('/sbm')
     return {success: true, data: newProduct}
   } catch (error) {
     console.error('商品作成エラー:', error)
@@ -497,6 +754,7 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
         currentCost: productData.currentCost,
         category: productData.category,
         isActive: productData.isActive,
+        isVisible: productData.isVisible,
         ...(shouldCreateHistory && {
           SbmProductPriceHistory: {
             create: {
@@ -511,7 +769,6 @@ export async function updateProduct(id: number, productData: Partial<Product>) {
       include: {SbmProductPriceHistory: true},
     })
 
-    revalidatePath('/sbm')
     return {success: true, data: updatedProduct}
   } catch (error) {
     console.error('商品更新エラー:', error)
@@ -535,7 +792,6 @@ export async function deleteProduct(id: number) {
       where: {id},
     })
 
-    revalidatePath('/sbm')
     return {success: true}
   } catch (error) {
     console.error('商品削除エラー:', error)
@@ -603,7 +859,6 @@ export async function createReservation(
       },
     })
 
-    revalidatePath('/sbm')
     return {success: true, data: newReservation}
   } catch (error) {
     console.error('予約作成エラー:', error.message)
@@ -677,7 +932,6 @@ export async function updateReservation(id: number, reservationData: Partial<Res
       },
     })
 
-    revalidatePath('/sbm')
     return {success: true, data: updatedReservation}
   } catch (error) {
     console.error('予約更新エラー:', error)
@@ -691,7 +945,6 @@ export async function deleteReservation(id: number) {
       where: {id},
     })
 
-    revalidatePath('/sbm')
     return {success: true}
   } catch (error) {
     console.error('予約削除エラー:', error)
@@ -882,8 +1135,12 @@ export async function lookupCustomerByPhone(phoneNumber: string): Promise<Custom
 
   const customer = await prisma.sbmCustomer.findFirst({
     where: {
-      phoneNumber: {
-        contains: cleanPhoneNumber,
+      SbmCustomerPhone: {
+        some: {
+          phoneNumber: {
+            contains: cleanPhoneNumber,
+          },
+        },
       },
     },
   })
@@ -894,7 +1151,6 @@ export async function lookupCustomerByPhone(phoneNumber: string): Promise<Custom
     id: customer.id,
     companyName: customer.companyName,
     contactName: customer.contactName || '',
-    phoneNumber: customer.phoneNumber,
     prefecture: customer.prefecture || '',
     city: customer.city || '',
     street: customer.street || '',
@@ -903,7 +1159,7 @@ export async function lookupCustomerByPhone(phoneNumber: string): Promise<Custom
     email: customer.email || '',
     availablePoints: customer.availablePoints,
     notes: customer.notes || '',
-    createdAt: customer.createdAt,
+
     updatedAt: customer.updatedAt,
   }
 }

@@ -29,13 +29,13 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
 
             return {
               csvTableRow: [
-                {
-                  //
-                  label: 'ID',
-                  cellValue: schedule.id,
-                  className: 't-link cursor-pointer',
-                  onClick: () => UnkoMeisaiModalReturn.handleOpen({id: schedule.id}),
-                },
+                // {
+                //   //
+                //   label: 'ID',
+                //   cellValue: schedule.id,
+                //   className: 't-link cursor-pointer',
+                //   onClick: () => UnkoMeisaiModalReturn.handleOpen({id: schedule.id}),
+                // },
                 ...cols.map((props: any, colIdx) => {
                   const [dataKey, item] = props
 

@@ -74,70 +74,73 @@ export default function TenkoPaperHeader({date, tableStyle}) {
           <div>
             {CsvTable({
               records: [
-                {role: `運行管理者`, name: `佐藤 一郎`, check: `印`},
-                {role: `運行管理補助者`, name: `田代 広志`, check: `印`},
-                {role: `運行管理補助者`, name: `別山 志織`, check: `印`},
+                {role: `運行管理者`, name: `XXXXX`, check: `印`},
+                {role: `運行管理補助者`, name: `XXXXX`, check: `印`},
+                {role: `運行管理補助者`, name: `XXXXX`, check: `印`},
               ].map(data => {
                 return {
                   csvTableRow: [
                     //
-                    {cellValue: data.role},
-                    {cellValue: data.name},
-                    {cellValue: data.check},
+                    {label: `職務`, cellValue: data.role},
+                    {label: `氏名`, cellValue: data.name},
+                    {label: `印鑑`, cellValue: data.check},
                   ],
                 }
               }),
             }).WithWrapper({
-              className: `text-center border rounded-none [&_td]:!px-6`,
+              className: `text-center border rounded-none [&_td]:!px-6 `,
             })}
           </div>
         </div>
       </R_Stack>
-      <R_Stack className={`gap-8`}>
-        <R_Stack className={`border gap-0 w-fit `}>
-          <div className={`border p-2`}>検知器の状態</div>
-          <R_Stack className={`border p-2 gap-6,,`}>
-            <span>良</span>
-            <span>否</span>
+
+      <div className={'[&_*]:border-gray-700  '}>
+        <R_Stack className={`gap-8`}>
+          <R_Stack className={`border gap-0 w-fit `}>
+            <div className={`border p-2`}>検知器の状態</div>
+            <R_Stack className={`border p-2 gap-6`}>
+              <span>良</span>
+              <span>否</span>
+            </R_Stack>
           </R_Stack>
+
+          {/* サブヘッダー */}
+          <div style={{margin: '10px 0 6px 0', fontSize: 11}}>
+            運行管理者はアルコール検知器を使い「特例的に」点呼する。義務あり。
+            <br />
+            定期的に個別チェックすることを求められる。
+          </div>
         </R_Stack>
 
-        {/* サブヘッダー */}
-        <div style={{margin: '10px 0 6px 0', fontSize: 11}}>
-          運行管理者はアルコール検知器を使い「特例的に」点呼する。義務あり。
-          <br />
-          定期的に個別チェックすることを求められる。
+        <div className={`border`}>
+          {/* 選択欄 */}
+          <div className={` grid grid-cols-5`}>
+            {sections.map((section, i) => (
+              <Fragment key={i}>
+                <div className={` border [&_td]:p-1 p-1 w-full `}>
+                  <table className={` w-full `}>
+                    <thead>
+                      <tr>
+                        <th>{section.header}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {section.children.map((cols, i) => {
+                        return (
+                          <tr key={i}>
+                            {cols.map((data, j) => {
+                              return <td key={j}>{data}</td>
+                            })}
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </Fragment>
+            ))}
+          </div>
         </div>
-      </R_Stack>
-
-      <div>
-        {/* 選択欄 */}
-        <R_Stack className={` justify-between items-stretch gap-0`}>
-          {sections.map((section, i) => (
-            <Fragment key={i}>
-              <div className={` border [&_td]:p-1 w-1/5 p-1`}>
-                <table className={` w-full `}>
-                  <thead>
-                    <tr>
-                      <th>{section.header}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {section.children.map((cols, i) => {
-                      return (
-                        <tr key={i}>
-                          {cols.map((data, j) => {
-                            return <td key={j}>{data}</td>
-                          })}
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </Fragment>
-          ))}
-        </R_Stack>
       </div>
     </div>
   )

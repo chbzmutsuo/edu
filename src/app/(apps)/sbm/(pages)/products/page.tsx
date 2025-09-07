@@ -1,12 +1,13 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, PlusCircle, Edit, Trash2, X, Package, History} from 'lucide-react'
+import {Search, PlusCircle, Edit, Trash2, X, Package, History, Eye, EyeOff} from 'lucide-react'
 import {getAllProducts, createProduct, updateProduct, deleteProduct} from '../../(builders)/serverActions'
 import {Product} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
@@ -108,6 +109,25 @@ export default function ProductsPage() {
     }
   }
 
+  // 表示/非表示切り替え
+  const toggleVisibility = async (product: Product) => {
+    if (!product.id) return
+
+    try {
+      const result = await updateProduct(Number(product.id), {
+        isVisible: !product.isVisible,
+      })
+      if (result.success) {
+        await loadProducts()
+      } else {
+        alert(result.error || '更新に失敗しました')
+      }
+    } catch (error) {
+      console.error('表示切り替えエラー:', error)
+      alert('更新中にエラーが発生しました')
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -198,8 +218,10 @@ export default function ProductsPage() {
                       ? ((product.currentPrice - product.currentCost) / product.currentPrice) * 100
                       : 0
 
+                  const isHidden = !product.isVisible
+
                   return (
-                    <tr key={product.id} className="hover:bg-gray-50">
+                    <tr key={product.id} className={cn(isHidden ? 'bg-gray-500' : 'bg-gray-100 hover:bg-gray-50')}>
                       <td className="px-6 py-4">
                         <div>
                           <div className="font-medium text-gray-900">{product.name}</div>
@@ -225,39 +247,57 @@ export default function ProductsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                            product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                          }`}
-                        >
-                          {product.isActive ? '有効' : '無効'}
-                        </span>
+                        <div className="flex flex-col space-y-1">
+                          <span
+                            className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                              product.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
+                            }`}
+                          >
+                            {product.isActive ? '有効' : '無効'}
+                          </span>
+                          <span
+                            className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                              product.isVisible ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            {product.isVisible ? '表示中' : '非表示'}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-gray-500">
                         {product.createdAt ? formatDate(product.createdAt) : '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => toggleVisibility(product)}
+                            className={`${
+                              product.isVisible ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400 hover:text-gray-600'
+                            }`}
+                            title={product.isVisible ? '非表示にする' : '表示する'}
+                          >
+                            {product.isVisible ? <Eye size={16} /> : <EyeOff size={16} />}
+                          </button>
                           <button
                             onClick={() => PriceHistoryModalReturn.handleOpen({product})}
                             className="text-green-600 hover:text-green-800"
                             title="価格履歴"
                           >
-                            <History size={18} />
+                            <History size={16} />
                           </button>
                           <button
                             onClick={() => EditProductModalReturn.handleOpen({product})}
                             className="text-blue-600 hover:text-blue-800"
                             title="編集"
                           >
-                            <Edit size={18} />
+                            <Edit size={16} />
                           </button>
                           <button
                             onClick={() => DeleteProductModalReturn.handleOpen({product})}
                             className="text-red-600 hover:text-red-800"
                             title="削除"
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -450,15 +490,27 @@ const ProductModal = ({
         />
       </div>
 
-      <div className="flex items-center">
-        <input
-          type="checkbox"
-          name="isActive"
-          checked={formData.isActive ?? true}
-          onChange={handleInputChange}
-          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-        />
-        <label className="ml-2 block text-sm text-gray-700">有効（販売可能）</label>
+      <div className="space-y-3">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            name="isActive"
+            checked={formData.isActive ?? true}
+            onChange={handleInputChange}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label className="ml-2 block text-sm text-gray-700">有効（販売可能）</label>
+        </div>
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            name="isVisible"
+            checked={formData.isVisible ?? true}
+            onChange={handleInputChange}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+          />
+          <label className="ml-2 block text-sm text-gray-700">予約登録時に表示</label>
+        </div>
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

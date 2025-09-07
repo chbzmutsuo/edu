@@ -34,13 +34,17 @@ export const tbm_PAGES = (props: PageGetterType) => {
           label: <IconLetter {...{Icon: Truck}}>配車設定</IconLetter>,
           exclusiveTo: login,
         },
-
-        {
-          tabId: 'driveInput',
-          label: <IconLetter {...{Icon: Truck}}>ドライバ入力</IconLetter>,
-          exclusiveTo: login,
-        },
       ],
+    },
+    {
+      tabId: 'driver',
+      label: <IconLetter {...{Icon: Truck}}>ドライバ</IconLetter>,
+      children: [
+        {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
+        {tabId: 'monthly-schedule', label: <IconLetter {...{Icon: Calendar}}>月間予定</IconLetter>},
+      ],
+      exclusiveTo: login,
+      ROOT: [rootPath, 'driver'],
     },
 
     {
@@ -106,7 +110,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
   ].map(item => ({
     ...item,
     exclusiveTo: item.exclusiveTo ?? scopes.login,
-    ROOT: [rootPath],
+    ROOT: item.ROOT ?? [rootPath],
   }))
 
   const pathSource = [{tabId: 'top', label: 'トップ', hide: true, ROOT: [rootPath]}, ...publicPaths, ...loginPath]

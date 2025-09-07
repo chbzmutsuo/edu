@@ -13,6 +13,7 @@ import {TbmDriveSchedule, TbmRouteGroup, TbmVehicle, User} from '@prisma/client'
 import React, {useRef} from 'react'
 import {useReactToPrint} from 'react-to-print'
 import {Card} from '@cm/shadcn/ui/card'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export default function TenkoPage(props) {
   const {query} = useGlobal()
@@ -68,18 +69,28 @@ export default function TenkoPage(props) {
     <div>
       <Button onClick={() => prinfFunc()}>印刷</Button>
 
-      <Card className={` w-fit mx-auto`}>
+      <div
+        className={cn(
+          //
+
+          ` w-fit mx-auto `
+        )}
+      >
         <div style={wrapperStyle} ref={printRef}>
           <C_Stack className={`mx-auto text-xs print-target mt-4 `}>
             {/* ヘッダー */}
 
             <>
-              <TenkoPaperHeader {...{date, tableStyle}} />
-              <TenkoPaperBody {...{OrderByPickUpTime, tableStyle}} />
+              <div>
+                <TenkoPaperHeader {...{date, tableStyle}} />
+              </div>
+              <div className={'[&_*]:border-gray-700 '}>
+                <TenkoPaperBody {...{OrderByPickUpTime, tableStyle}} />
+              </div>
             </>
           </C_Stack>
         </div>
-      </Card>
+      </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
+import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driver/driveInput/driveInput-page-type'
 import {tbmTableKeyValue} from '@app/(apps)/tbm/(server-actions)/getMonthlyTbmDriveData'
 import {Days} from '@cm/class/Days/Days'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
@@ -15,16 +15,16 @@ import {
 
 export type unkoMeisaiKey =
   | `date`
-  | `routeCode`
+  // | `routeCode`
   | `name`
   | `routeName`
   | `vehicleType`
   | `productName`
-  | `customerCode`
+  // | `customerCode`
   | `customerName`
-  | `vehicleTypeCode`
+  // | `vehicleTypeCode`
   | `plateNumber`
-  | `driverCode`
+  // | `driverCode`
   | `driverName`
   | `L_postalFee`
   | `M_postalHighwayFee`
@@ -101,7 +101,9 @@ export class DriveScheduleCl {
       },
       orderBy: [{date: 'asc'}, {createdAt: 'asc'}, {userId: 'asc'}],
       include: {
-        // TbmEtcMeisai:{},
+        TbmEtcMeisai: {
+          include: {},
+        },
         TbmRouteGroup: {
           include: {
             TbmMonthlyConfigForRouteGroup: {where: {yearMonth: whereQuery.gte}},
@@ -154,15 +156,15 @@ export class DriveScheduleCl {
     const keyValue: unkoMeisaiKeyValue = {
       date: {
         type: 'date',
-        label: '運行日',
+        label: 'A運行日',
         cellValue: schedule.date,
       },
-      routeCode: {
-        label: '便CD',
-        cellValue: schedule.TbmRouteGroup.code,
-      },
+      // routeCode: {
+      //   label: 'B便CD',
+      //   cellValue: schedule.TbmRouteGroup.code,
+      // },
       name: {
-        label: '便名',
+        label: 'C便名',
         cellValue: schedule.TbmRouteGroup.name,
         style: {minWidth: 160},
       },
@@ -172,42 +174,42 @@ export class DriveScheduleCl {
         style: {minWidth: 160},
       },
       vehicleType: {
-        label: '車種',
+        label: 'D車種',
         cellValue: schedule.TbmVehicle?.type,
       },
 
       productName: {
-        label: '品名',
+        label: 'E品名',
         cellValue: schedule.TbmRouteGroup.productName,
       },
-      customerCode: {
-        label: '取引先CD',
-        cellValue: Customer?.code,
-      },
+      // customerCode: {
+      //   label: 'F取引先CD',
+      //   cellValue: Customer?.code,
+      // },
       customerName: {
-        label: '取引先',
+        label: 'G取引先',
         cellValue: Customer?.name,
       },
-      vehicleTypeCode: {
-        label: '車種CD',
-        cellValue: 'コード',
-      },
+      // vehicleTypeCode: {
+      //   label: '車種CD',
+      //   cellValue: 'コード',
+      // },
       plateNumber: {
-        label: '車番',
+        label: 'I車番',
         cellValue: schedule.TbmVehicle?.vehicleNumber,
       },
-      driverCode: {
-        label: '運転手CD',
-        cellValue: 'コード',
-      },
+      // driverCode: {
+      //   label: '運転手CD',
+      //   cellValue: 'コード',
+      // },
       driverName: {
-        label: '運転手',
+        label: 'K運転手',
         cellValue: schedule.User?.name,
       },
       L_postalFee: {
         label: (
           <div>
-            <div>通行料</div> <div>(郵便)</div>
+            <div>L通行料</div> <div>(郵便)</div>
           </div>
         ),
         cellValue: L_postalFee,
@@ -216,7 +218,7 @@ export class DriveScheduleCl {
       M_postalHighwayFee: {
         label: (
           <div>
-            <div>有料利用料</div> <div>(郵便)</div>
+            <div>M有料利用料</div> <div>(郵便)</div>
           </div>
         ),
         cellValue: M_postalHighwayFee,
@@ -225,7 +227,7 @@ export class DriveScheduleCl {
       N_generalFee: {
         label: (
           <div>
-            <div>通行料</div> <div>(一般)</div>
+            <div>N通行料</div> <div>(一般)</div>
           </div>
         ),
         cellValue: N_generalFee,
@@ -234,22 +236,22 @@ export class DriveScheduleCl {
       O_generalHighwayFee: {
         label: (
           <div>
-            <div>有料利用料</div> <div>(一般)</div>
+            <div>O有料利用料</div> <div>(一般)</div>
           </div>
         ),
         cellValue: O_generalHighwayFee,
         style: {backgroundColor: '#deebfc'},
       },
       P_KosokuShiyodai: {
-        label: '高速使用代',
+        label: 'P高速使用代',
         cellValue: S_jomuinFutan,
       },
       Q_driverFee: {
-        label: '運賃',
+        label: 'Q運賃',
         cellValue: Q_driverFee,
       },
       R_JomuinUnchin: {
-        label: '給与算定運賃',
+        label: 'R給与算定運賃',
         cellValue: R_JomuinUnchin,
         style: {
           minWidth: 100,
@@ -259,7 +261,7 @@ export class DriveScheduleCl {
       S_jomuinFutan: {
         label: (
           <div>
-            <div>乗務員負担</div> <div>高速代-(通行料+30％)</div>
+            <div>S乗務員負担</div> <div>高速代-(通行料+30％)</div>
           </div>
         ),
         cellValue: S_jomuinFutan,
@@ -268,30 +270,34 @@ export class DriveScheduleCl {
       T_thirteenPercentOfPostalHighway: {
         label: (
           <div>
-            <div>運賃から負担</div> <div>高速代の30％</div>
+            <div>T運賃から負担</div> <div>高速代の30％</div>
           </div>
         ),
         cellValue: T_thirteenPercentOfPostalHighway,
         style: {backgroundColor: '#defceb'},
       },
       U_general: {
-        label: '高速代-通行料',
+        label: 'U高速代-通行料',
         cellValue: U_general,
         style: {backgroundColor: '#9ec1ff'},
       },
       V_highwayExcess: {
-        label: '高速超過分',
+        label: 'V高速超過分',
         cellValue: 0,
       },
       W_remarks: {
-        label: '備考',
+        label: 'W備考',
         cellValue: '要検討',
       },
       X_orderNumber: {
-        label: '発注書NO',
+        label: 'X発注書NO',
         cellValue: '要検討',
       },
     }
+
+    Object.keys(keyValue).forEach(key => {
+      keyValue[key].style = {minWidth: 90, fontSize: 12, ...keyValue[key].style}
+    })
     return keyValue
   }
 }

@@ -183,9 +183,14 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
                   <td className="font-bold">¥{NumHandler.WithUnit(groupFee, '円')}</td>
                   <td>
                     {groupHeader.tbmDriveScheduleId && groupHeader.TbmDriveSchedule ? (
-                      <span className="text-xs bg-green-100 px-2 py-1 rounded">
-                        {formatDate(groupHeader.TbmDriveSchedule.date)} {groupHeader.TbmDriveSchedule.TbmRouteGroup?.name || ''}
-                      </span>
+                      <div className="text-xs">
+                        <div className="bg-green-100 px-2 py-1 rounded mb-1">
+                          {formatDate(groupHeader.TbmDriveSchedule.date)} {groupHeader.TbmDriveSchedule.TbmRouteGroup?.name || ''}
+                        </div>
+                        <div className="text-gray-600">
+                          担当: {groupHeader.TbmDriveSchedule.User?.name || '(ドライバー名なし)'}
+                        </div>
+                      </div>
                     ) : (
                       <span className="text-xs text-red-500">未紐付け</span>
                     )}

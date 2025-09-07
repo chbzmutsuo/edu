@@ -1,11 +1,21 @@
 import {SbmCustomer} from '@prisma/client'
 
+// 顧客電話番号管理
+export type CustomerPhone = {
+  id: number
+  sbmCustomerId: number
+  label: string // '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
+  phoneNumber: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 // 基本エンティティ型定義（Prismaスキーマに準拠）
 export type Customer = Partial<{
   id: number
   companyName: string
   contactName?: string
-  phoneNumber: string
+  phoneNumber?: string // メイン電話番号（オプション）
   postalCode?: string
   prefecture?: string
   city?: string
@@ -16,6 +26,7 @@ export type Customer = Partial<{
   notes?: string
   createdAt: Date
   updatedAt: Date
+  phones?: CustomerPhone[] // 電話番号リスト
 }>
 
 export type Product = Partial<{
@@ -26,6 +37,7 @@ export type Product = Partial<{
   currentCost: number
   category: string
   isActive: boolean
+  isVisible: boolean // 予約登録時の表示制御
   createdAt: Date
   updatedAt: Date
   priceHistory?: ProductPriceHistory[]
@@ -186,6 +198,7 @@ export type OrderChannel = '電話' | 'FAX' | 'メール' | 'Web' | '営業' | '
 export type Purpose = '会議' | '研修' | '接待' | 'イベント' | '懇親会' | 'その他'
 export type PaymentMethod = '現金' | '銀行振込' | '請求書' | 'クレジットカード'
 export type PickupLocation = '配達' | '店舗受取'
+export type PhoneLabel = '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
 
 // フィルター・検索用型
 export type ReservationFilter = {
@@ -202,6 +215,12 @@ export type ReservationFilter = {
   paymentMethod?: PaymentMethod
   deliveryCompleted?: boolean
   recoveryCompleted?: boolean
+}
+
+// 電話番号検索結果
+export type CustomerSearchResult = {
+  customer: Customer
+  matchedPhones: CustomerPhone[]
 }
 
 // RFM分析用型

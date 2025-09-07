@@ -179,14 +179,12 @@
     }
 
     // 最終行のボーダーを削除
-    tr {
-     &:last-child {
-      td {
-       border-bottom-width: 0px;
-      }
-      th {
-       border-bottom-width: 0px;
-      }
+    tr &:last-child {
+     td {
+      border-bottom-width: 0px;
+     }
+     th {
+      border-bottom-width: 0px;
      }
     }
    }

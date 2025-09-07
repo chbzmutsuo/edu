@@ -152,7 +152,7 @@ export default function AttendancePage() {
 
       const dateStr = formatDate(date, 'DD(ddd)')
 
-      const driveInputPageHref = HREF('/tbm/driveInput', {g_userId: selectedUserId, from: date}, query)
+      const driveInputPageHref = HREF('/tbm/driver/driveInput', {g_userId: selectedUserId, from: date}, query)
 
       return {
         csvTableRow: [

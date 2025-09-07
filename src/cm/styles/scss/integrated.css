@@ -252,10 +252,10 @@
     z-index: 10;
     left: 0;
   }
-  .table-wrapper table tbody tr:last-child td {
+  tr .table-wrapper table tbody:last-child td {
     border-bottom-width: 0px;
   }
-  .table-wrapper table tbody tr:last-child th {
+  tr .table-wrapper table tbody:last-child th {
     border-bottom-width: 0px;
   }
   .table-wrapper table tfoot {

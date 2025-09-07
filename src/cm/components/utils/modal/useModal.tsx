@@ -21,7 +21,7 @@ function useModal<T = any>(props?: {defaultOpen?: boolean; defaultState?: T; ale
   const [open, setopen] = useState<T>(initialOpen)
 
   const handleOpen = (openValue?: T) => setopen(openValue !== undefined ? openValue : (true as any as T))
-  const handleClose = (closeValue?: T) => setopen(closeValue !== undefined ? closeValue : (false as any as T))
+  const handleClose = () => setopen(null)
 
   const Modal = useCallback(
     (modalProps: basicModalPropType) => {

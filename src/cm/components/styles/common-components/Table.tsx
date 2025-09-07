@@ -3,12 +3,16 @@ import {htmlProps} from 'src/cm/components/styles/common-components/type'
 import {cn} from '@shadcn/lib/utils'
 
 export const TableWrapper = (props: any & {className?: string; children: React.ReactNode}) => {
-  const {className, children, ...rest} = props
+  const {className, children, useOriginalWrapperClass, ...rest} = props
 
   return (
     <div
       {...{
-        className: cn(className, `table-wrapper overflow-auto border-collapse `, `w-fit  h-fit `),
+        className: cn(
+          //
+          className,
+          useOriginalWrapperClass ? '' : `table-wrapper overflow-auto border-collapse w-fit  h-fit `
+        ),
         ...rest,
       }}
     >

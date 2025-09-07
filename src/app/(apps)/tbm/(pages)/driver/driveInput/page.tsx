@@ -1,5 +1,5 @@
-import {getDriveInputPageData} from '@app/(apps)/tbm/(pages)/driveInput/driveInput-page-type'
-import DriveInputCC from '@app/(apps)/tbm/(pages)/driveInput/DriveInputCC'
+import {getDriveInputPageData} from '@app/(apps)/tbm/(pages)/driver/driveInput/driveInput-page-type'
+import DriveInputCC from '@app/(apps)/tbm/(pages)/driver/driveInput/DriveInputCC'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import {C_Stack, FitMargin, Padding} from '@cm/components/styles/common-components/common-components'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'

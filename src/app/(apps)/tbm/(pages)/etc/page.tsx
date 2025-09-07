@@ -29,7 +29,7 @@ export default function EtcCsvImportPage() {
         id: `tbmVehicleId`,
         label: `車両`,
         form: {
-          style: {width: 200},
+          style: {width: 350},
           defaultValue: isDev ? 5 : null,
         },
         forSelect: {config: getVehicleForSelectConfig({})},
@@ -37,7 +37,7 @@ export default function EtcCsvImportPage() {
       {
         id: `month`,
         label: `月`,
-        form: {defaultValue: isDev ? '2025-08-01T00:00:00+09:00' : firstDayOfMonth, style: {width: 200}},
+        form: {defaultValue: isDev ? '2025-08-01T00:00:00+09:00' : firstDayOfMonth, style: {width: 350}},
         type: `month`,
       },
       {
@@ -46,7 +46,7 @@ export default function EtcCsvImportPage() {
         form: {
           defaultValue: '',
           style: {
-            maxWidth: 100,
+            maxWidth: 175,
             maxHeight: 120,
             lineHeight: 1.2,
           },

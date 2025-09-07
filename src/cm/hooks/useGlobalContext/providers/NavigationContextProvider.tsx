@@ -12,7 +12,7 @@ const NavigationContextProvider = ({children}: {children: ReactNode}) => {
   const {pathname} = navigationData
 
   if (navigationData.query === null || navigationData.query === undefined) {
-    return <Loader>Validating Navigation Data...</Loader>
+    return <Loader>Validating Navigation Data</Loader>
   }
 
   if (pathname === `/` && process.env.NEXT_PUBLIC_DEFAULT_REDIRECT_PATH) {

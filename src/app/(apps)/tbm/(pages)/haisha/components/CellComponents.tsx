@@ -171,7 +171,7 @@ export const ScheduleCard = React.memo(
                   })
                 }}
               />
-              <Link target="_blank" href={HREF('/tbm/driveInput', {g_userId: User?.id, from: formatDate(date)}, query)}>
+              <Link target="_blank" href={HREF('/tbm/driver/driveInput', {g_userId: User?.id, from: formatDate(date)}, query)}>
                 <TruckIcon className="text-yellow-main w-4 h-4 hover:opacity-80" />
               </Link>
             </R_Stack>

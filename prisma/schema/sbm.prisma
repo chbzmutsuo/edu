@@ -4,7 +4,7 @@ model SbmCustomer {
   id              Int     @id @default(autoincrement())
   companyName     String  @db.VarChar(200)
   contactName     String? @db.VarChar(100)
-  phoneNumber     String  @unique @db.VarChar(20)
+  // phoneNumber     String? @db.VarChar(20) // ユニーク制約を削除、メイン電話番号として残す
   postalCode      String? @db.VarChar(10)
   prefecture      String? @db.VarChar(50) // 都道府県
   city            String? @db.VarChar(100) // 市区町村
@@ -19,8 +19,26 @@ model SbmCustomer {
   updatedAt DateTime @updatedAt
 
   // リレーション
-  SbmReservation SbmReservation[]
-  SbmRfmAnalysis SbmRfmAnalysis[]
+  SbmReservation   SbmReservation[]
+  SbmRfmAnalysis   SbmRfmAnalysis[]
+  SbmCustomerPhone SbmCustomerPhone[]
+}
+
+// 顧客電話番号管理
+model SbmCustomerPhone {
+  id            Int    @id @default(autoincrement())
+  sbmCustomerId Int
+  label         String @db.VarChar(50) // '自宅', '携帯', '職場', 'FAX', 'その他'
+  phoneNumber   String @db.VarChar(20)
+
+  // タイムスタンプ
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  SbmCustomer SbmCustomer @relation(fields: [sbmCustomerId], references: [id], onDelete: Cascade)
+
+  @@unique([sbmCustomerId, phoneNumber]) // 同じ顧客で同じ電話番号は重複不可
 }
 
 model SbmProduct {
@@ -31,6 +49,7 @@ model SbmProduct {
   currentCost  Int // 現在原価（円）
   category     String  @db.VarChar(100)
   isActive     Boolean @default(true)
+  isVisible    Boolean @default(true) // 予約登録時の表示制御
 
   // タイムスタンプ
   createdAt DateTime @default(now())

@@ -111,12 +111,12 @@
     "**/migrations/**": true,
     "**/page/**": true,
     "**/sara/**": true,
-    "**/sbm/**": true,
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
     "**/tmp/**": true,
-    "**/training/**": true
+    "**/training/**": true,
+    "**/tbm/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -136,10 +136,10 @@
     "migrations",
     "page",
     "sara",
-    "sbm",
     "shinsei",
     "sohken",
     "stock",
+    "tbm",
     "tmp",
     "training"
   ],
