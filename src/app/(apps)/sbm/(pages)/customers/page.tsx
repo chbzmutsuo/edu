@@ -2,14 +2,22 @@
 
 import React, {useState, useEffect} from 'react'
 import {Search, PlusCircle, Edit, Trash2, Users, Phone} from 'lucide-react'
-import {getAllCustomers, createCustomer, updateCustomer, deleteCustomer} from '../../(builders)/serverActions'
+import {
+  getAllCustomers,
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
+  updateCustomerPhone,
+  updateCustomerPhoneList,
+} from '../../(builders)/serverActions'
 import {Customer} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import CustomerPhoneManager from '../../components/CustomerPhoneManager'
 import PostalCodeInput from '../../components/PostalCodeInput'
-import {formatPhoneNumber} from '../../components/CustomerPhoneManager'
+import {formatPhoneNumber} from '../../utils/phoneUtils'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
@@ -111,7 +119,7 @@ export default function CustomersPage() {
                   type="text"
                   value={searchKeyword}
                   onChange={handleSearchChange}
-                  placeholder="会社名、担当者名、電話番号、メールアドレスで検索..."
+                  placeholder="会社名、氏名、電話番号、で検索..."
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -132,9 +140,7 @@ export default function CustomersPage() {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">会社名</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">担当者</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">電話番号</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    メールアドレス
-                  </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">配達先住所</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ポイント</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">登録日</th>
@@ -158,7 +164,7 @@ export default function CustomersPage() {
                           )
                         })}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-900">{customer.email || '-'}</td>
+
                       <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
                         {`${customer.prefecture || ''}${customer.city || ''}${customer.street || ''}${customer.building ? ' ' + customer.building : ''}`}
                       </td>
@@ -171,7 +177,12 @@ export default function CustomersPage() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
                           <button
-                            onClick={() => PhoneManagerModalReturn.handleOpen({customer})}
+                            onClick={() =>
+                              PhoneManagerModalReturn.handleOpen({
+                                customer,
+                                loadCustomers,
+                              })
+                            }
                             className="text-green-600 hover:text-green-800"
                             title="電話番号管理"
                           >
@@ -226,15 +237,31 @@ export default function CustomersPage() {
           <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl">
             <div className="p-6">
               <CustomerPhoneManager
-                customerId={PhoneManagerModalReturn.open?.customer?.id || 0}
-                customerName={PhoneManagerModalReturn.open?.customer?.companyName || ''}
+                phoneNumbers={PhoneManagerModalReturn.open?.customer?.phones || []}
+                onPhoneNumbersChange={async phones => {
+                  PhoneManagerModalReturn.setopen({
+                    ...PhoneManagerModalReturn.open,
+                    customer: {...PhoneManagerModalReturn.open?.customer, phones},
+                  })
+                }}
               />
-              <div className="mt-6 flex justify-end">
+              <div className="mt-6 flex justify-end gap-8">
                 <button
                   onClick={PhoneManagerModalReturn.handleClose}
                   className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
                 >
                   閉じる
+                </button>
+                <button
+                  onClick={async () => {
+                    const {id, phones} = PhoneManagerModalReturn.open?.customer || {}
+                    await updateCustomerPhoneList(id, phones)
+                    await loadCustomers()
+                    PhoneManagerModalReturn.handleClose()
+                  }}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-gray-700"
+                >
+                  保存する
                 </button>
               </div>
             </div>
@@ -331,7 +358,7 @@ const CustomerModal = ({customer, onUpdate, onClose}: {onUpdate: () => void; cus
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">担当者名*</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">氏名*</label>
         <input
           type="text"
           name="contactName"
@@ -339,17 +366,6 @@ const CustomerModal = ({customer, onUpdate, onClose}: {onUpdate: () => void; cus
           onChange={handleInputChange}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">メールアドレス</label>
-        <input
-          type="email"
-          name="email"
-          value={formData.email || ''}
-          onChange={handleInputChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 

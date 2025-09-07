@@ -240,19 +240,16 @@ model SbmReservationChangeHistory {
 }
 
 model SbmDeliveryTeam {
-  id          Int     @id @default(autoincrement())
-  name        String  @db.VarChar(100)
-  driverName  String  @db.VarChar(100)
-  vehicleInfo String? @db.VarChar(200)
-  capacity    Int // 配達可能数
-  isActive    Boolean @default(true)
+  id   Int      @id @default(autoincrement())
+  name String   @db.VarChar(100)
+  date DateTime
 
   // タイムスタンプ
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // リレーション
-  deliveryAssignments SbmDeliveryAssignment[]
+  SbmDeliveryAssignment SbmDeliveryAssignment[]
 }
 
 model SbmDeliveryAssignment {

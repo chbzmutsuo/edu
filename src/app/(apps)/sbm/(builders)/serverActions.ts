@@ -1,6 +1,5 @@
 'use server'
 
-
 import {
   Customer,
   Product,
@@ -14,6 +13,7 @@ import {
 import {RFM_SCORE_CRITERIA} from '../(constants)'
 import prisma from 'src/lib/prisma'
 import {SbmDeliveryTeam} from '@prisma/client'
+import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 
 // データ取得アクション
 export async function getAllCustomers(): Promise<Customer[]> {
@@ -165,57 +165,100 @@ export async function getCustomerByPhone(phoneNumber: string): Promise<Customer 
   }
 }
 
-// 顧客情報をUPSERT（電話番号をキーとして）
+// 顧客情報をUPSERT
 export async function createOrUpdateCustomer(
-  customerData: Partial<Customer>
+  customerData: Partial<Customer>,
+  phoneData?: PhoneNumberTemp[]
 ): Promise<{success: boolean; customer?: Customer; error?: string}> {
   try {
-    const customer = await prisma.sbmCustomer.upsert({
-      where: {
-        id: customerData.id || 0,
-      },
-      update: {
-        companyName: customerData.companyName || '',
-        contactName: customerData.contactName || '',
-        postalCode: customerData.postalCode || '',
-        prefecture: customerData.prefecture || '',
-        city: customerData.city || '',
-        street: customerData.street || '',
-        building: customerData.building || '',
-        email: customerData.email || '',
-        availablePoints: customerData.availablePoints || 0,
-        notes: customerData.notes || '',
-      },
-      create: {
-        companyName: customerData.companyName || '',
-        contactName: customerData.contactName || '',
-        postalCode: customerData.postalCode || '',
-        prefecture: customerData.prefecture || '',
-        city: customerData.city || '',
-        street: customerData.street || '',
-        building: customerData.building || '',
-        email: customerData.email || '',
-        availablePoints: customerData.availablePoints || 0,
-        notes: customerData.notes || '',
-      },
+    // トランザクション内で処理
+    const result = await prisma.$transaction(async tx => {
+      let customer
+
+      // sbmCustomerIdが指定されている場合は更新のみ
+      if (customerData.id) {
+        customer = await tx.sbmCustomer.update({
+          where: {id: customerData.id},
+          data: {
+            companyName: customerData.companyName || '',
+            contactName: customerData.contactName || '',
+            postalCode: customerData.postalCode || '',
+            prefecture: customerData.prefecture || '',
+            city: customerData.city || '',
+            street: customerData.street || '',
+            building: customerData.building || '',
+            email: customerData.email || '',
+            availablePoints: customerData.availablePoints || 0,
+            notes: customerData.notes || '',
+          },
+          include: {
+            SbmCustomerPhone: true,
+          },
+        })
+      } else {
+        // 新規顧客作成
+        customer = await tx.sbmCustomer.create({
+          data: {
+            companyName: customerData.companyName || '',
+            contactName: customerData.contactName || '',
+            postalCode: customerData.postalCode || '',
+            prefecture: customerData.prefecture || '',
+            city: customerData.city || '',
+            street: customerData.street || '',
+            building: customerData.building || '',
+            email: customerData.email || '',
+            availablePoints: customerData.availablePoints || 0,
+            notes: customerData.notes || '',
+          },
+          include: {
+            SbmCustomerPhone: true,
+          },
+        })
+      }
+
+      // 電話番号が指定されている場合、顧客の電話番号を追加
+      if (phoneData) {
+        console.log(phoneData) //logs
+        await updateCustomerPhoneList(
+          customer.id,
+          phoneData.map(p => ({label: p.label, phoneNumber: p.phoneNumber}))
+        )
+      }
+
+      // 最新の顧客情報を取得（電話番号含む）
+      const updatedCustomer = await tx.sbmCustomer.findUnique({
+        where: {id: customer.id},
+        include: {
+          SbmCustomerPhone: true,
+        },
+      })
+
+      return updatedCustomer
     })
 
     return {
       success: true,
       customer: {
-        id: customer.id,
-        companyName: customer.companyName,
-        contactName: customer.contactName || '',
-        postalCode: customer.postalCode || '',
-        prefecture: customer.prefecture || '',
-        city: customer.city || '',
-        street: customer.street || '',
-        building: customer.building || '',
-        email: customer.email || '',
-        availablePoints: customer.availablePoints,
-        notes: customer.notes || '',
-        createdAt: customer.createdAt,
-        updatedAt: customer.updatedAt,
+        id: result!.id,
+        companyName: result!.companyName,
+        contactName: result!.contactName || '',
+        postalCode: result!.postalCode || '',
+        prefecture: result!.prefecture || '',
+        city: result!.city || '',
+        street: result!.street || '',
+        building: result!.building || '',
+        email: result!.email || '',
+        availablePoints: result!.availablePoints,
+        notes: result!.notes || '',
+        updatedAt: result!.updatedAt,
+        phones: result!.SbmCustomerPhone.map(phone => ({
+          id: phone.id,
+          sbmCustomerId: phone.sbmCustomerId,
+          label: phone.label,
+          phoneNumber: phone.phoneNumber,
+          createdAt: phone.createdAt,
+          updatedAt: phone.updatedAt,
+        })),
       },
     }
   } catch (error) {
@@ -358,6 +401,28 @@ export async function createCustomerPhone(
     return {success: false, error: '電話番号の追加に失敗しました'}
   }
 }
+export async function updateCustomerPhoneList(
+  customerId: number,
+  phones: PhoneNumberTemp[]
+): Promise<{success: boolean; error?: string}> {
+  try {
+    await prisma.sbmCustomerPhone.deleteMany({
+      where: {sbmCustomerId: customerId},
+    })
+    await prisma.sbmCustomerPhone.createMany({
+      data: phones.map(phone => ({
+        sbmCustomerId: customerId,
+        label: phone.label,
+        phoneNumber: phone.phoneNumber,
+      })),
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('電話番号更新エラー:', error)
+    return {success: false, error: '電話番号の更新に失敗しました'}
+  }
+}
 
 export async function updateCustomerPhone(
   id: number,
@@ -459,7 +524,7 @@ export async function getAllUsers(): Promise<User[]> {
   ]
 }
 
-export async function getAllTeams(): Promise<SbmDeliveryTeam[]> {
+export async function getAllTeams(): Promise<Partial<SbmDeliveryTeam>[]> {
   const teams = await prisma.sbmDeliveryTeam.findMany({
     orderBy: {name: 'asc'},
   })
@@ -467,10 +532,7 @@ export async function getAllTeams(): Promise<SbmDeliveryTeam[]> {
   return teams.map(t => ({
     id: t.id,
     name: t.name,
-    driverName: t.driverName,
-    vehicleInfo: t.vehicleInfo || '',
-    capacity: t.capacity,
-    isActive: t.isActive,
+    date: t.date,
     createdAt: t.createdAt,
     updatedAt: t.updatedAt,
   }))
@@ -547,6 +609,11 @@ export async function getReservations(filter: ReservationFilter = {}) {
   const reservations = await prisma.sbmReservation.findMany({
     where,
     include: {
+      SbmCustomer: {
+        include: {
+          SbmCustomerPhone: true,
+        },
+      },
       SbmReservationItem: true,
       SbmReservationTask: true,
       SbmReservationChangeHistory: {
@@ -580,6 +647,14 @@ export async function getReservations(filter: ReservationFilter = {}) {
     notes: r.notes || '',
     deliveryCompleted: r.deliveryCompleted,
     recoveryCompleted: r.recoveryCompleted,
+
+    phones: r.SbmCustomer.SbmCustomerPhone.map(phone => ({
+      id: phone.id,
+      sbmCustomerId: phone.sbmCustomerId,
+      phoneNumber: phone.phoneNumber,
+      label: phone.label,
+    })),
+
     items: r.SbmReservationItem.map(item => ({
       id: item.id,
       sbmReservationId: item.sbmReservationId,
