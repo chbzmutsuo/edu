@@ -53,8 +53,6 @@ export const ReservationModal = ({
   const [matchedCustomers, setMatchedCustomers] = useState<CustomerSearchResult[]>([])
   const [isCustomerLinked, setIsCustomerLinked] = useState(false)
 
-  console.log(reservation) //logs
-
   const [formData, setFormData] = useState<any>(() => {
     if (reservation) {
       return {
@@ -317,6 +315,11 @@ export const ReservationModal = ({
       return
     }
 
+    if (phoneNumberTempList.length === 0) {
+      alert('電話番号は必須です')
+      return
+    }
+
     // 顧客情報更新確認
     if (!reservation) {
       CustomerUpdateModalReturn.handleOpen()
@@ -342,31 +345,11 @@ export const ReservationModal = ({
           building: formData.building,
         }
 
-        // 顧客情報と電話番号を保存
-        // 最初の電話番号をメインとして使用
-        const mainPhoneData =
-          phoneNumberTempList.length > 0
-            ? {
-                phoneNumber: phoneNumberTempList[0].phoneNumber,
-                label: phoneNumberTempList[0].label,
-              }
-            : undefined
-
         const result = await createOrUpdateCustomer(customerData, phoneNumberTempList)
 
         if (result.success && result.customer) {
           // 返却された顧客IDを設定
           formData.sbmCustomerId = result.customer.id
-
-          // 追加の電話番号があれば保存（最初の1件以外）
-          // 注: 実際の実装では複数電話番号の一括保存APIを作成するべき
-          // for (let i = 1; i < phoneNumberTempList.length; i++) {
-          //   await createCustomerPhone({
-          //     sbmCustomerId: result.customer.id,
-          //     phoneNumber: phoneNumberTempList[i].phoneNumber,
-          //     label: phoneNumberTempList[i].label
-          //   })
-          // }
         }
       }
 
@@ -379,6 +362,7 @@ export const ReservationModal = ({
         items: formData.selectedItems,
         sbmCustomerId: formData.sbmCustomerId,
         userId: session?.id,
+        phones: phoneNumberTempList,
       }
 
       handleSave(saveData)

@@ -218,7 +218,6 @@ export async function createOrUpdateCustomer(
 
       // 電話番号が指定されている場合、顧客の電話番号を追加
       if (phoneData) {
-        console.log(phoneData) //logs
         await updateCustomerPhoneList(
           customer.id,
           phoneData.map(p => ({label: p.label, phoneNumber: p.phoneNumber}))
@@ -357,19 +356,31 @@ export async function mergeCustomers(parentId: number, childId: number): Promise
         data: {sbmCustomerId: parentId},
       })
 
-      // 2. 子顧客の電話番号データを親顧客に移行
-      await tx.sbmCustomerPhone.updateMany({
+      // 2. 子顧客の電話番号データを親顧客に移行（重複を除外）
+      // 親顧客の電話番号一覧を取得
+      const parentPhones = await tx.sbmCustomerPhone.findMany({
+        where: {sbmCustomerId: parentId},
+        select: {phoneNumber: true},
+      })
+      const parentPhoneNumbers = parentPhones.map(p => p.phoneNumber)
+
+      // 子顧客の電話番号一覧を取得
+      const childPhones = await tx.sbmCustomerPhone.findMany({
         where: {sbmCustomerId: childId},
-        data: {sbmCustomerId: parentId},
       })
 
-      // 3. 子顧客のRFM分析データを親顧客に移行
-      await tx.sbmRfmAnalysis.updateMany({
-        where: {sbmCustomerId: childId},
-        data: {sbmCustomerId: parentId},
-      })
+      // 重複しない電話番号のみ親顧客に移行
+      for (const phone of childPhones) {
+        if (!parentPhoneNumbers.includes(phone.phoneNumber)) {
+          await tx.sbmCustomerPhone.update({
+            where: {id: phone.id},
+            data: {sbmCustomerId: parentId},
+          })
+        }
+        // 重複する場合は何もしない（統合しない）
+      }
 
-      // 4. 子顧客を削除
+      // 3. 子顧客を削除
       await tx.sbmCustomer.delete({
         where: {id: childId},
       })
@@ -864,143 +875,120 @@ export async function deleteProduct(id: number) {
   }
 }
 
-// 予約管理アクション
-export async function createReservation(
-  reservationData: Omit<Reservation, 'id' | 'tasks' | 'changeHistory' | 'createdAt' | 'updatedAt'>
-) {
+// 予約管理アクション - 統合版 upsertReservation
+export async function upsertReservation(reservationData: Partial<Reservation & {phones: PhoneNumberTemp[]}>) {
   try {
-    const newReservation = await prisma.sbmReservation.create({
-      data: {
-        sbmCustomerId: reservationData.sbmCustomerId || 0,
-        customerName: reservationData.customerName || '',
-        contactName: reservationData.contactName || '',
-        phoneNumber: reservationData.phoneNumber || '',
-        postalCode: reservationData.postalCode || '',
-        prefecture: reservationData.prefecture || '',
-        city: reservationData.city || '',
-        street: reservationData.street || '',
-        building: reservationData.building || '',
-        deliveryDate: reservationData.deliveryDate || '',
-        pickupLocation: reservationData.pickupLocation || '',
-        purpose: reservationData.purpose || '',
-        paymentMethod: reservationData.paymentMethod || '',
-        orderChannel: reservationData.orderChannel || '',
-        totalAmount: reservationData.totalAmount || 0,
-        pointsUsed: reservationData.pointsUsed || 0,
-        finalAmount: reservationData.finalAmount || 0,
-        orderStaff: reservationData.orderStaff || '',
-        userId: reservationData.userId || 0,
-        notes: reservationData.notes || '',
-        deliveryCompleted: reservationData.deliveryCompleted || false,
-        recoveryCompleted: reservationData.recoveryCompleted || false,
-        SbmReservationItem: {
-          create:
-            reservationData.items?.map(item => ({
-              sbmProductId: item.sbmProductId || 0,
-              productName: item.productName || '',
-              quantity: item.quantity || 0,
-              unitPrice: item.unitPrice || 0,
-              totalPrice: item.totalPrice || 0,
-            })) || [],
+    // IDが存在する場合は更新、存在しない場合は新規作成
+    const isUpdate = reservationData.id !== undefined && reservationData.id !== null
+    let currentReservation: any = null
+
+    // 更新の場合は現在の予約情報を取得
+    if (isUpdate) {
+      const foundReservation = await prisma.sbmReservation.findUnique({
+        where: {id: reservationData.id},
+        include: {SbmReservationItem: true},
+      })
+
+      if (!foundReservation) {
+        return {success: false, error: '予約が見つかりません'}
+      }
+
+      currentReservation = foundReservation
+
+      // 既存の商品明細を削除
+      await prisma.sbmReservationItem.deleteMany({
+        where: {sbmReservationId: reservationData.id},
+      })
+    }
+
+    // 共通のデータ構造
+    const commonData = {
+      sbmCustomerId: reservationData.sbmCustomerId || 0,
+      customerName: reservationData.customerName || '',
+      contactName: reservationData.contactName || '',
+      phoneNumber: reservationData.phoneNumber || '',
+      postalCode: reservationData.postalCode || '',
+      prefecture: reservationData.prefecture || '',
+      city: reservationData.city || '',
+      street: reservationData.street || '',
+      building: reservationData.building || '',
+      deliveryDate: reservationData.deliveryDate || new Date(),
+      pickupLocation: reservationData.pickupLocation || '',
+      purpose: reservationData.purpose || '',
+      paymentMethod: reservationData.paymentMethod || '',
+      orderChannel: reservationData.orderChannel || '',
+      totalAmount: reservationData.totalAmount || 0,
+      pointsUsed: reservationData.pointsUsed || 0,
+      finalAmount: reservationData.finalAmount || 0,
+      orderStaff: reservationData.orderStaff || '',
+      userId: reservationData.userId || 0,
+      notes: reservationData.notes || null,
+      deliveryCompleted: reservationData.deliveryCompleted || false,
+      recoveryCompleted: reservationData.recoveryCompleted || false,
+      // 商品明細を作成
+      SbmReservationItem: {
+        create:
+          reservationData.items?.map(item => ({
+            sbmProductId: item.sbmProductId || 0,
+            productName: item.productName || '',
+            quantity: item.quantity || 0,
+            unitPrice: item.unitPrice || 0,
+            totalPrice: item.totalPrice || 0,
+          })) || [],
+      },
+      // 変更履歴を作成
+      SbmReservationChangeHistory: {
+        create: {
+          changedBy: reservationData.orderStaff || 'system',
+          changeType: isUpdate ? 'update' : 'create',
+          oldValues: isUpdate ? (currentReservation as any) : undefined,
+          newValues: reservationData as any,
         },
+      },
+    }
+
+    let result
+
+    if (isUpdate) {
+      // 更新処理
+      result = await prisma.sbmReservation.update({
+        where: {id: reservationData.id},
+        data: commonData,
+        include: {
+          SbmReservationItem: true,
+          SbmReservationTask: true,
+          SbmReservationChangeHistory: true,
+        },
+      })
+    } else {
+      // 新規作成処理
+      // タスクは新規作成時のみ追加
+      const createData = {
+        ...commonData,
         SbmReservationTask: {
           create: [
             {taskType: 'delivery', isCompleted: false},
             {taskType: 'recovery', isCompleted: false},
           ],
         },
-        SbmReservationChangeHistory: {
-          create: {
-            changedBy: reservationData.orderStaff || 'system',
-            changeType: 'create',
-            newValues: reservationData as any,
-          },
+      }
+
+      result = await prisma.sbmReservation.create({
+        data: createData,
+        include: {
+          SbmReservationItem: true,
+          SbmReservationTask: true,
+          SbmReservationChangeHistory: true,
         },
-      },
-      include: {
-        SbmReservationItem: true,
-        SbmReservationTask: true,
-        SbmReservationChangeHistory: true,
-      },
-    })
-
-    return {success: true, data: newReservation}
-  } catch (error) {
-    console.error('予約作成エラー:', error.message)
-    return {success: false, error: '予約の作成に失敗しました'}
-  }
-}
-
-export async function updateReservation(id: number, reservationData: Partial<Reservation>) {
-  try {
-    const currentReservation = await prisma.sbmReservation.findUnique({
-      where: {id},
-      include: {SbmReservationItem: true},
-    })
-
-    if (!currentReservation) {
-      return {success: false, error: '予約が見つかりません'}
+      })
     }
 
-    // 既存の商品明細を削除
-    await prisma.sbmReservationItem.deleteMany({
-      where: {sbmReservationId: id},
-    })
+    await updateCustomerPhoneList(result.sbmCustomerId, reservationData.phones || [])
 
-    const updatedReservation = await prisma.sbmReservation.update({
-      where: {id},
-      data: {
-        customerName: reservationData.customerName,
-        contactName: reservationData.contactName,
-        phoneNumber: reservationData.phoneNumber,
-        postalCode: reservationData.postalCode,
-        prefecture: reservationData.prefecture,
-        city: reservationData.city,
-        street: reservationData.street,
-        building: reservationData.building,
-        deliveryDate: reservationData.deliveryDate,
-        pickupLocation: reservationData.pickupLocation,
-        purpose: reservationData.purpose,
-        paymentMethod: reservationData.paymentMethod,
-        orderChannel: reservationData.orderChannel,
-        totalAmount: reservationData.totalAmount,
-        pointsUsed: reservationData.pointsUsed,
-        finalAmount: reservationData.finalAmount,
-        orderStaff: reservationData.orderStaff,
-        notes: reservationData.notes || null,
-        deliveryCompleted: reservationData.deliveryCompleted,
-        recoveryCompleted: reservationData.recoveryCompleted,
-        // 新しい商品明細を作成
-        SbmReservationItem: {
-          create:
-            reservationData.items?.map(item => ({
-              sbmProductId: item.sbmProductId || 0,
-              productName: item.productName || '',
-              quantity: item.quantity || 0,
-              unitPrice: item.unitPrice || 0,
-              totalPrice: item.totalPrice || 0,
-            })) || [],
-        },
-        SbmReservationChangeHistory: {
-          create: {
-            changedBy: reservationData.orderStaff || 'system',
-            changeType: 'update',
-            oldValues: currentReservation as any,
-            newValues: reservationData as any,
-          },
-        },
-      },
-      include: {
-        SbmReservationItem: true,
-        SbmReservationTask: true,
-        SbmReservationChangeHistory: true,
-      },
-    })
-
-    return {success: true, data: updatedReservation}
+    return {success: true, data: result}
   } catch (error) {
-    console.error('予約更新エラー:', error)
-    return {success: false, error: '予約の更新に失敗しました'}
+    console.error('予約保存エラー:', error)
+    return {success: false, error: '予約の保存に失敗しました'}
   }
 }
 

@@ -188,8 +188,9 @@ export const PAGES: any = {
         label: '管理',
         ROOT: [rootPath],
         children: [
-          {tabId: 'customers', label: '顧客マスタ', ROOT: [rootPath]},
           {tabId: 'products', label: '商品マスタ', ROOT: [rootPath]},
+          {tabId: 'customers', label: '顧客マスタ', ROOT: [rootPath]},
+          {tabId: 'customer-merge', label: '顧客統合', ROOT: [rootPath]},
           {tabId: 'users', label: 'ユーザーマスタ', ROOT: [rootPath]},
           {tabId: 'seed', label: 'データ管理・シード', ROOT: [rootPath]},
         ],

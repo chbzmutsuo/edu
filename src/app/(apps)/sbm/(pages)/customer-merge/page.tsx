@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, Users, ArrowRight, AlertTriangle, CheckCircle, X} from 'lucide-react'
+import {Search, Users, AlertTriangle, CheckCircle, X, ArrowLeft} from 'lucide-react'
 import {getAllCustomers, mergeCustomers} from '../../(builders)/serverActions'
 import {Customer} from '../../types'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -156,7 +156,7 @@ export default function CustomerMergePage() {
           {/* 統合方向 */}
           <div className="flex items-center justify-center">
             <div className="text-center">
-              <ArrowRight size={48} className="text-gray-400 mx-auto mb-2" />
+              <ArrowLeft size={48} className="text-gray-400 mx-auto mb-2" />
               <p className="text-sm text-gray-600">統合</p>
             </div>
           </div>
@@ -298,7 +298,7 @@ export default function CustomerMergePage() {
 
                     {/* 矢印 */}
                     <div className="text-center">
-                      <ArrowRight size={24} className="text-gray-400 mx-auto" />
+                      <ArrowLeft size={24} className="text-gray-400 mx-auto" />
                     </div>
 
                     {/* 統合元 */}
@@ -345,4 +345,3 @@ export default function CustomerMergePage() {
     </div>
   )
 }
-

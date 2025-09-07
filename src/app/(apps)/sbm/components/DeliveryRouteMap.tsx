@@ -3,7 +3,7 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react'
 import {Loader2, Clock, AlertTriangle, CheckCircle, XCircle} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {Reservation, DeliveryRouteStop} from '../types'
+import {Reservation} from '../types'
 
 // Google Maps APIのタイプ定義
 declare global {

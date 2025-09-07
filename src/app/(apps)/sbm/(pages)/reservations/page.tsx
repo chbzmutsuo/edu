@@ -8,7 +8,6 @@ import {
   Edit,
   CheckSquare,
   Square,
-  Phone,
   MapPin,
   Map,
   ShoppingCart,
@@ -18,33 +17,29 @@ import {
   DollarSign,
   Settings,
 } from 'lucide-react'
-import {formatPhoneNumber, handlePhoneNumberInput} from '../../utils/phoneUtils'
+import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 import {
   getReservations,
   getAllCustomers,
   getVisibleProducts,
-  createReservation,
-  updateReservation,
+  upsertReservation,
   deleteReservation,
-  createOrUpdateCustomer,
 } from '../../(builders)/serverActions'
-import {Reservation, Customer, Product, ReservationFilter, ReservationItem} from '../../types'
+import {Reservation, Customer, Product, ReservationFilter} from '../../types'
 import {
   ORDER_CHANNEL_OPTIONS,
   PURPOSE_OPTIONS,
   PAYMENT_METHOD_OPTIONS,
   PICKUP_LOCATION_OPTIONS,
-  DEFAULT_RESERVATION_STATE,
 } from '../../(constants)'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {cn} from '@cm/shadcn/lib/utils'
 import ReservationMapModal from '../../components/ReservationMapModal'
 import {ReservationModal} from '@app/(apps)/sbm/(pages)/reservations/ReservationModal'
+import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 
 export default function ReservationPage() {
   const [reservations, setReservations] = useState<Reservation[]>([])
@@ -65,7 +60,6 @@ export default function ReservationPage() {
   })
 
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
-  const [showColumnSettings, setShowColumnSettings] = useState(false)
 
   // 地図モーダル関連
   const [showMapModal, setShowMapModal] = useState(false)
@@ -88,30 +82,6 @@ export default function ReservationPage() {
     notes: true,
     timestamps: true,
   })
-
-  const columnLabels = {
-    deliveryDate: '納品日時',
-    customerInfo: '顧客情報',
-    contact: '連絡先',
-    address: '配送先',
-    pickupLocation: '受取方法',
-    purpose: '用途',
-    paymentMethod: '支払方法',
-    orderChannel: '注文経路',
-    productDetails: '商品詳細',
-    priceDetails: '金額詳細',
-    staff: '担当者',
-    progress: '進捗',
-    notes: '備考',
-    timestamps: '登録・更新',
-  }
-
-  const toggleColumnVisibility = (column: keyof typeof columnVisibility) => {
-    setColumnVisibility(prev => ({
-      ...prev,
-      [column]: !prev[column],
-    }))
-  }
 
   const EditReservationModalReturn = useModal()
   const DeleteReservationModalReturn = useModal()
@@ -237,13 +207,16 @@ export default function ReservationPage() {
     })
   }
 
-  const handleSave = async (reservationData: Partial<Reservation>) => {
+  const handleSave = async (reservationData: Partial<Reservation & {phones: PhoneNumberTemp[]}>) => {
     try {
+      // 既存の予約を編集する場合はIDを設定
       if (EditReservationModalReturn.open?.reservation) {
-        await updateReservation(reservationData)
-      } else {
-        await createReservation(reservationData as any)
+        reservationData.id = EditReservationModalReturn.open.reservation.id
       }
+
+      // 統合されたupsertReservation関数を使用
+      await upsertReservation(reservationData)
+
       await loadReservations()
       EditReservationModalReturn.handleClose()
     } catch (error) {

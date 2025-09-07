@@ -20,7 +20,6 @@ model SbmCustomer {
 
   // リレーション
   SbmReservation   SbmReservation[]
-  SbmRfmAnalysis   SbmRfmAnalysis[]
   SbmCustomerPhone SbmCustomerPhone[]
 }
 
@@ -272,24 +271,4 @@ model SbmDeliveryAssignment {
   SbmDeliveryTeam SbmDeliveryTeam @relation(fields: [sbmDeliveryTeamId], references: [id], onDelete: Restrict)
   SbmReservation  SbmReservation  @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
   User            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
-}
-
-model SbmRfmAnalysis {
-  id            Int      @id @default(autoincrement())
-  sbmCustomerId Int
-  analysisDate  DateTime @default(now())
-  recency       Int // 最新購入からの日数
-  frequency     Int // 購入回数
-  monetary      Int // 累計購入金額（円）
-  rScore        Int // Recency Score (1-5)
-  fScore        Int // Frequency Score (1-5)
-  mScore        Int // Monetary Score (1-5)
-  totalScore    Int // 合計スコア
-  rank          String   @db.VarChar(50) // 'VIP', '優良', '安定', '一般', '離反懸念'
-
-  // タイムスタンプ
-  createdAt DateTime @default(now())
-
-  // リレーション
-  SbmCustomer SbmCustomer @relation(fields: [sbmCustomerId], references: [id], onDelete: Cascade)
 }

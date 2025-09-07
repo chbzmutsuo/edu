@@ -2,7 +2,7 @@
 
 import React, {useState} from 'react'
 import {Phone, Plus, X} from 'lucide-react'
-import {CustomerPhone, PhoneLabel} from '../types'
+import { PhoneLabel} from '../types'
 import {formatPhoneNumber, handlePhoneNumberInput} from '../utils/phoneUtils'
 
 const PHONE_LABELS: PhoneLabel[] = ['自宅', '携帯', '職場', 'FAX', 'その他']

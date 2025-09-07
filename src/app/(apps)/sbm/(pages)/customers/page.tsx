@@ -7,7 +7,6 @@ import {
   createCustomer,
   updateCustomer,
   deleteCustomer,
-  updateCustomerPhone,
   updateCustomerPhoneList,
 } from '../../(builders)/serverActions'
 import {Customer} from '../../types'
@@ -17,7 +16,6 @@ import {Padding} from '@cm/components/styles/common-components/common-components
 import CustomerPhoneManager from '../../components/CustomerPhoneManager'
 import PostalCodeInput from '../../components/PostalCodeInput'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
-import {Button} from '@cm/components/styles/common-components/Button'
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
