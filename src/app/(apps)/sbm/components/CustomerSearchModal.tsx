@@ -3,12 +3,12 @@
 import React, {useState, useEffect} from 'react'
 import {Search, Phone, User, X, Loader2} from 'lucide-react'
 import {searchCustomersByPhone} from '../(builders)/serverActions'
-import {CustomerSearchResult, Customer} from '../types'
+
 import {formatPhoneNumber} from '../utils/phoneUtils'
 
 type CustomerSearchModalProps = {
   onClose: () => void
-  onSelectCustomer: (customer: Customer) => void
+  onSelectCustomer: (customer: CustomerType) => void
   initialPhone?: string
   isOpen?: boolean // useModalとの互換性のために残す
 }
@@ -19,7 +19,7 @@ type CustomerSearchModalProps = {
  */
 const CustomerSearchModal: React.FC<CustomerSearchModalProps> = ({onClose, onSelectCustomer, initialPhone = ''}) => {
   const [searchPhone, setSearchPhone] = useState(initialPhone)
-  const [searchResults, setSearchResults] = useState<CustomerSearchResult[]>([])
+  const [searchResults, setSearchResults] = useState<CustomerSearchResultType[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
 
@@ -55,7 +55,7 @@ const CustomerSearchModal: React.FC<CustomerSearchModalProps> = ({onClose, onSel
   }
 
   // 顧客選択
-  const handleSelectCustomer = (customer: Customer) => {
+  const handleSelectCustomer = (customer: CustomerType) => {
     onSelectCustomer(customer)
     onClose()
   }

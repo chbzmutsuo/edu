@@ -9,7 +9,7 @@ import {
   deleteCustomer,
   updateCustomerPhoneList,
 } from '../../(builders)/serverActions'
-import {Customer} from '../../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
@@ -18,7 +18,7 @@ import PostalCodeInput from '../../components/PostalCodeInput'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 export default function CustomersPage() {
-  const [customers, setCustomers] = useState<Customer[]>([])
+  const [customers, setCustomers] = useState<CustomerType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
 
@@ -53,7 +53,11 @@ export default function CustomersPage() {
     return (
       customer.companyName?.toLowerCase().includes(keyword) ||
       customer.contactName?.toLowerCase().includes(keyword) ||
-      customer.phoneNumber?.toLowerCase().includes(keyword) ||
+      customer.phones
+        ?.map(phone => phone.phoneNumber)
+        .join(', ')
+        ?.toLowerCase()
+        .includes(keyword) ||
       customer.email?.toLowerCase().includes(keyword)
     )
   })
@@ -282,11 +286,19 @@ export default function CustomersPage() {
 }
 
 // 顧客フォームモーダル
-const CustomerModal = ({customer, onUpdate, onClose}: {onUpdate: () => void; customer: Customer | null; onClose: () => void}) => {
-  const [formData, setFormData] = useState<Partial<Customer>>({
+const CustomerModal = ({
+  customer,
+  onUpdate,
+  onClose,
+}: {
+  onUpdate: () => void
+  customer: CustomerType | null
+  onClose: () => void
+}) => {
+  const [formData, setFormData] = useState<Partial<CustomerType>>({
     companyName: customer?.companyName || '',
     contactName: customer?.contactName || '',
-    phoneNumber: customer?.phoneNumber || '',
+    phones: customer?.phones || [],
     email: customer?.email || '',
     prefecture: customer?.prefecture || '',
     city: customer?.city || '',
@@ -327,7 +339,7 @@ const CustomerModal = ({customer, onUpdate, onClose}: {onUpdate: () => void; cus
           alert(result.error || '更新に失敗しました')
         }
       } else {
-        const result = await createCustomer(customerData as Omit<Customer, 'id' | 'createdAt' | 'updatedAt'>)
+        const result = await createCustomer(customerData as Omit<CustomerType, 'id' | 'createdAt' | 'updatedAt'>)
 
         if (result.success) {
           await onUpdate()

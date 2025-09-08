@@ -3,12 +3,12 @@
 import React, {useState, useEffect} from 'react'
 import {BarChart2, Users, Calendar, TrendingUp} from 'lucide-react'
 import {getDashboardStats} from '../../(builders)/serverActions'
-import {DashboardStats} from '../../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function DashboardPage() {
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
-  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [stats, setStats] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

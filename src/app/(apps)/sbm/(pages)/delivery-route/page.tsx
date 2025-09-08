@@ -12,7 +12,6 @@ import {
   sortGroupReservationsByDeliveryTime,
   generateGroupGoogleMapUrl,
 } from '../../(builders)/deliveryTeamActions'
-import {Reservation, DeliveryGroup} from '../../types'
 
 import useModal from '@cm/components/utils/modal/useModal'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
@@ -25,20 +24,23 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@sh
 import {Button} from '@shadcn/ui/button'
 import {Input} from '@shadcn/ui/input'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {Card} from '@cm/shadcn/ui/card'
+import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export default function DeliveryRoutePage() {
   const [date, setDate] = useState(formatDate(new Date()))
-  const [reservations, setReservations] = useState<Reservation[]>([])
-  const [deliveryGroups, setDeliveryGroups] = useState<DeliveryGroup[]>([])
-  const [unassignedReservations, setUnassignedReservations] = useState<Reservation[]>([])
+  const [reservations, setReservations] = useState<ReservationType[]>([])
+  const [deliveryGroups, setDeliveryGroups] = useState<DeliveryGroupType[]>([])
+  const [unassignedReservations, setUnassignedReservations] = useState<ReservationType[]>([])
+
   const [loading, setLoading] = useState(true)
   const [teamName, setTeamName] = useState('')
   const [selectedReservations, setSelectedReservations] = useState<number[]>([])
   const [movingReservation, setMovingReservation] = useState<{
     reservationId: number
     fromGroupId: number
-    reservation: Reservation
+    reservation: ReservationType
   } | null>(null)
   const [targetGroupId, setTargetGroupId] = useState<number | null>(null)
 
@@ -60,14 +62,14 @@ export default function DeliveryRoutePage() {
         startDate: date,
         endDate: date,
       })
-      setReservations(reservationData as Reservation[])
+      setReservations(reservationData as ReservationType[])
 
       // 配達グループを取得
       const groupData = await getDeliveryGroupsByDate(date)
-      setDeliveryGroups(groupData as DeliveryGroup[])
+      setDeliveryGroups(groupData as DeliveryGroupType[])
 
       // 未割り当ての予約を特定
-      updateUnassignedReservations(reservationData as Reservation[], groupData as DeliveryGroup[])
+      updateUnassignedReservations(reservationData as ReservationType[], groupData as DeliveryGroupType[])
     } catch (error) {
       console.error('データの取得に失敗しました:', error)
       toast.error('データの取得に失敗しました')
@@ -77,17 +79,17 @@ export default function DeliveryRoutePage() {
   }
 
   // 未割り当ての予約を特定する関数
-  const updateUnassignedReservations = (allReservations: Reservation[], groups: DeliveryGroup[]) => {
+  const updateUnassignedReservations = (allReservations: ReservationType[], groups: DeliveryGroupType[]) => {
     // すべての割り当て済み予約IDを取得
     const assignedIds = new Set<number>()
     groups.forEach(group => {
       group.groupReservations?.forEach(gr => {
-        assignedIds.add(gr.sbmReservationId)
+        assignedIds.add(gr.sbmReservationId || 0)
       })
     })
 
     // 割り当てられていない予約をフィルタリング
-    const unassigned = allReservations.filter(r => !assignedIds.has(r.id))
+    const unassigned = allReservations.filter(r => !assignedIds.has(r.id || 0))
     setUnassignedReservations(unassigned)
   }
 
@@ -105,14 +107,14 @@ export default function DeliveryRoutePage() {
         toast.success('チームを作成しました')
 
         // 新しいチームをリストに追加
-        setDeliveryGroups([...deliveryGroups, result.group])
+        setDeliveryGroups([...deliveryGroups, result.group as DeliveryGroupType])
         setTeamName('')
         TeamModalReturn.handleClose()
 
         // 選択された予約があれば割り当て
         if (selectedReservations.length > 0) {
           for (const reservationId of selectedReservations) {
-            await assignReservationToGroup(result.group.id, reservationId)
+            await assignReservationToGroup(result?.group?.id || 0, reservationId)
           }
 
           // データを再読み込み
@@ -234,7 +236,7 @@ export default function DeliveryRoutePage() {
     MoveModalReturn.handleOpen()
   }
 
-  const getReservationById = (id: number): Reservation | undefined => {
+  const getReservationById = (id: number): ReservationType | undefined => {
     return reservations.find(r => r.id === id)
   }
 
@@ -266,9 +268,9 @@ export default function DeliveryRoutePage() {
           </div>
         </div>
 
-        <R_Stack className={` items-stretch gap-10 flex-nowrap`}>
+        <C_Stack className={` `}>
           {/* 未割り当ての予約リスト */}
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <Card>
             <div className="p-4 border-b">
               <h2 className="text-lg font-semibold text-gray-900 flex items-center">
                 <Calendar className="mr-2" size={20} />
@@ -319,13 +321,13 @@ export default function DeliveryRoutePage() {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                           {deliveryGroups.length > 0 && (
-                            <Select onValueChange={value => handleAssignReservation(parseInt(value), reservation.id)}>
+                            <Select onValueChange={value => handleAssignReservation(parseInt(value), reservation.id || 0)}>
                               <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="チームを選択" />
                               </SelectTrigger>
                               <SelectContent className={`bg-white`}>
                                 {deliveryGroups.map(group => (
-                                  <SelectItem key={group.id} value={group.id.toString()}>
+                                  <SelectItem key={group.id} value={group.id?.toString() || ''}>
                                     {group.name}
                                   </SelectItem>
                                 ))}
@@ -347,26 +349,37 @@ export default function DeliveryRoutePage() {
                 </table>
               )}
             </div>
-          </div>
+          </Card>
           {/* 配達チームリスト */}
-          <R_Stack className="space-y-6 items-stretch">
+          <AutoGridContainer
+            {...{
+              className: 'gap-4 mx-auto',
+              maxCols: {
+                sm: 2,
+                // md: 2,
+                // lg: 2,
+                // xl: 2,
+                // '2xl': 2,
+              },
+            }}
+          >
             {deliveryGroups.length === 0 ? (
               <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
                 この日の配達チームはありません。新規チームを作成してください。
               </div>
             ) : (
               deliveryGroups.map(group => (
-                <div key={group.id} className="bg-white rounded-lg shadow overflow-hidden">
+                <Card key={group.id} className={`border-2 border-black w-[700px]`}>
                   <div className="p-4 border-b flex justify-between items-center">
                     <h2 className="text-lg font-semibold text-gray-900 flex items-center">
                       <Truck className="mr-2" size={20} />
                       {group.name} ({group.groupReservations?.length || 0}件)
                     </h2>
                     <div className="flex gap-2">
-                      <Button onClick={() => handleSortByDeliveryTime(group.id)} variant="outline" size="sm">
+                      <Button onClick={() => handleSortByDeliveryTime(group.id || 0)} variant="outline" size="sm">
                         <Clock className="mr-1" size={14} /> 納品時間順設定
                       </Button>
-                      <Button onClick={() => handleGenerateMapUrl(group.id)} variant="outline" size="sm">
+                      <Button onClick={() => handleGenerateMapUrl(group.id || 0)} variant="outline" size="sm">
                         <MapPin className="mr-1" size={14} /> 地図表示
                       </Button>
                     </div>
@@ -376,93 +389,6 @@ export default function DeliveryRoutePage() {
                   <div className="overflow-x-auto">
                     {group.groupReservations && group.groupReservations.length > 0 ? (
                       <>
-                        <table className="min-w-full divide-y divide-gray-200">
-                          <thead className="bg-gray-50">
-                            <tr>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                順番
-                              </th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                時間
-                              </th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                顧客情報
-                              </th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                住所
-                              </th>
-                              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                商品
-                              </th>
-                              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                操作
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody className="bg-white divide-y divide-gray-200">
-                            {group.groupReservations.map((gr, index) => {
-                              const reservation = getReservationById(gr.sbmReservationId)
-                              if (!reservation) return null
-
-                              return (
-                                <tr key={gr.id} className="hover:bg-gray-50">
-                                  <td className="px-4 py-3 whitespace-nowrap">
-                                    <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-medium">
-                                      {gr.deliveryOrder || index + 1}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">
-                                      {formatDate(reservation.deliveryDate, 'HH:mm')}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">{reservation.customerName}</div>
-                                    <div className="text-xs text-gray-500">
-                                      {formatPhoneNumber(reservation.phoneNumber || '')}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <div className="text-sm text-gray-900">
-                                      {reservation.prefecture}
-                                      {reservation.city}
-                                      {reservation.street}
-                                    </div>
-                                    {reservation.building && <div className="text-xs text-gray-500">{reservation.building}</div>}
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <div className="text-sm text-gray-900">
-                                      {reservation.items?.map((item, idx) => (
-                                        <div key={idx} className="text-sm">
-                                          {item.productName} x{item.quantity}
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
-                                    <Button
-                                      onClick={() => openMoveModal(reservation.id, group.id)}
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-blue-600 hover:text-blue-900"
-                                    >
-                                      移動
-                                    </Button>
-                                    <Button
-                                      onClick={() => MapModalReturn.handleOpen({reservationId: reservation.id})}
-                                      variant="ghost"
-                                      size="sm"
-                                      className="text-blue-600 hover:text-blue-900"
-                                    >
-                                      地図
-                                    </Button>
-                                  </td>
-                                </tr>
-                              )
-                            })}
-                          </tbody>
-                        </table>
-
                         {/* 配達順路間の所要時間表示 */}
                         <div className="mt-4 p-4 border-t">
                           <h4 className="text-sm font-semibold text-gray-700 mb-2">配達順路間の所要時間</h4>
@@ -470,8 +396,8 @@ export default function DeliveryRoutePage() {
                             <TravelTimeCalculator
                               reservations={
                                 group.groupReservations
-                                  .map(gr => getReservationById(gr.sbmReservationId))
-                                  .filter(Boolean) as Reservation[]
+                                  .map(gr => getReservationById(gr.sbmReservationId || 0))
+                                  .filter(Boolean) as ReservationType[]
                               }
                             />
                           ) : (
@@ -483,11 +409,11 @@ export default function DeliveryRoutePage() {
                       <div className="p-8 text-center text-gray-500">このチームに割り当てられた予約はありません</div>
                     )}
                   </div>
-                </div>
+                </Card>
               ))
             )}
-          </R_Stack>
-        </R_Stack>
+          </AutoGridContainer>
+        </C_Stack>
 
         {/* チーム作成モーダル */}
         <TeamModalReturn.Modal>
@@ -535,7 +461,7 @@ export default function DeliveryRoutePage() {
                     <label htmlFor="targetTeam" className="block text-sm font-medium text-gray-700">
                       移動先チーム
                     </label>
-                    <Select onValueChange={value => setTargetGroupId(parseInt(value))}>
+                    <Select onValueChange={value => setTargetGroupId(parseInt(value || '0'))}>
                       <SelectTrigger className="w-full mt-1">
                         <SelectValue placeholder="チームを選択" />
                       </SelectTrigger>
@@ -543,7 +469,7 @@ export default function DeliveryRoutePage() {
                         {deliveryGroups
                           .filter(group => group.id !== movingReservation.fromGroupId)
                           .map(group => (
-                            <SelectItem key={group.id} value={group.id.toString()}>
+                            <SelectItem key={group.id} value={group.id?.toString() || ''}>
                               {group.name}
                             </SelectItem>
                           ))}
@@ -581,8 +507,8 @@ export default function DeliveryRoutePage() {
                     deliveryGroups
                       .find(g => g.id === MapModalReturn.open?.groupId)
                       ?.groupReservations?.map(gr => {
-                        const reservation = getReservationById(gr.sbmReservationId)
-                        return reservation as Reservation
+                        const reservation = getReservationById(gr.sbmReservationId || 0)
+                        return reservation as ReservationType
                       })
                       .filter(Boolean) || []
                   }

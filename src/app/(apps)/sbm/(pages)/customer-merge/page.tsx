@@ -3,17 +3,17 @@
 import React, {useState, useEffect} from 'react'
 import {Search, Users, AlertTriangle, CheckCircle, X, ArrowLeft} from 'lucide-react'
 import {getAllCustomers, mergeCustomers} from '../../(builders)/serverActions'
-import {Customer} from '../../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 
 export default function CustomerMergePage() {
-  const [customers, setCustomers] = useState<Customer[]>([])
+  const [customers, setCustomers] = useState<CustomerType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
-  const [parentCustomer, setParentCustomer] = useState<Customer | null>(null)
-  const [childCustomer, setChildCustomer] = useState<Customer | null>(null)
+  const [parentCustomer, setParentCustomer] = useState<CustomerType | null>(null)
+  const [childCustomer, setChildCustomer] = useState<CustomerType | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
 
   const ConfirmMergeModalReturn = useModal()
@@ -39,7 +39,6 @@ export default function CustomerMergePage() {
     return (
       customer.companyName?.toLowerCase().includes(keyword) ||
       customer.contactName?.toLowerCase().includes(keyword) ||
-      customer.phoneNumber?.toLowerCase().includes(keyword) ||
       customer.email?.toLowerCase().includes(keyword)
     )
   })
@@ -136,7 +135,7 @@ export default function CustomerMergePage() {
                     <div>
                       <h3 className="font-semibold text-gray-900">{parentCustomer.companyName}</h3>
                       {parentCustomer.contactName && <p className="text-sm text-gray-600">担当: {parentCustomer.contactName}</p>}
-                      <p className="text-sm text-gray-600">{parentCustomer.phoneNumber}</p>
+
                       <p className="text-sm text-gray-600">
                         {parentCustomer.prefecture}
                         {parentCustomer.city}
@@ -177,7 +176,7 @@ export default function CustomerMergePage() {
                     <div>
                       <h3 className="font-semibold text-gray-900">{childCustomer.companyName}</h3>
                       {childCustomer.contactName && <p className="text-sm text-gray-600">担当: {childCustomer.contactName}</p>}
-                      <p className="text-sm text-gray-600">{childCustomer.phoneNumber}</p>
+
                       <p className="text-sm text-gray-600">
                         {childCustomer.prefecture}
                         {childCustomer.city}
@@ -242,7 +241,9 @@ export default function CustomerMergePage() {
                       <div className="font-medium text-gray-900">{customer.companyName}</div>
                     </td>
                     <td className="px-4 py-3 text-gray-600">{customer.contactName || '-'}</td>
-                    <td className="px-4 py-3 text-gray-600">{customer.phoneNumber || '-'}</td>
+                    <td className="px-4 py-3 text-gray-600">
+                      {customer.phones?.map(phone => phone.phoneNumber).join(', ') || '-'}
+                    </td>
                     <td className="px-4 py-3 text-gray-600">
                       {customer.prefecture}
                       {customer.city}
@@ -293,7 +294,6 @@ export default function CustomerMergePage() {
                     <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                       <h4 className="font-semibold text-green-800 mb-2">統合先（残る顧客）</h4>
                       <p className="text-sm font-medium">{parentCustomer?.companyName}</p>
-                      <p className="text-xs text-gray-600">{parentCustomer?.phoneNumber}</p>
                     </div>
 
                     {/* 矢印 */}
@@ -305,7 +305,6 @@ export default function CustomerMergePage() {
                     <div className="bg-red-50 border border-red-200 rounded-lg p-3">
                       <h4 className="font-semibold text-red-800 mb-2">統合元（削除される顧客）</h4>
                       <p className="text-sm font-medium">{childCustomer?.companyName}</p>
-                      <p className="text-xs text-gray-600">{childCustomer?.phoneNumber}</p>
                     </div>
                   </div>
                 </div>

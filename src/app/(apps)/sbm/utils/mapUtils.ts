@@ -1,8 +1,6 @@
 'use client'
 
-import {DeliveryRouteStop} from '../types'
-
-export function generateGoogleMapsUrl(stops: DeliveryRouteStop[]): string {
+export function generateGoogleMapsUrl(stops: DeliveryRouteStopType[]): string {
   if (stops.length < 2) return ''
 
   const origin = `${stops[0].lat},${stops[0].lng}`

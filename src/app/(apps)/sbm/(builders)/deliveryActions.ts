@@ -1,7 +1,7 @@
 'use server'
 
 import prisma from 'src/lib/prisma'
-import {DeliveryGroup, Reservation} from '../types'
+
 import {revalidatePath} from 'next/cache'
 
 // 配達グループの取得（日付指定）
@@ -35,7 +35,7 @@ export async function getDeliveryGroups(date: Date) {
 }
 
 // 配達グループの作成
-export async function createDeliveryGroup(group: DeliveryGroup) {
+export async function createDeliveryGroup(group: DeliveryGroupType) {
   try {
     const newGroup = await prisma.sbmDeliveryGroup.create({
       data: {
@@ -57,7 +57,7 @@ export async function createDeliveryGroup(group: DeliveryGroup) {
 }
 
 // 配達グループの更新
-export async function updateDeliveryGroup(group: DeliveryGroup) {
+export async function updateDeliveryGroup(group: DeliveryGroupType) {
   if (!group.id) throw new Error('グループIDが必要です')
 
   try {
@@ -172,13 +172,13 @@ export async function getUnassignedDeliveries(date: Date) {
 }
 
 // グループに予約を割り当て
-export async function assignReservationsToGroup(reservations: Reservation[], groupId: number) {
+export async function assignReservationsToGroup(reservations: ReservationType[], groupId: number) {
   try {
     // 一括で予約を割り当て
     await prisma.sbmDeliveryGroupReservation.createMany({
       data: reservations.map(reservation => ({
         sbmDeliveryGroupId: groupId,
-        sbmReservationId: reservation.id!,
+        sbmReservationId: reservation.id || 0,
       })),
     })
 

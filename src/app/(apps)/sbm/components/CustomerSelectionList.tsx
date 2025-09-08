@@ -2,12 +2,12 @@
 
 import React from 'react'
 import {User, Phone} from 'lucide-react'
-import {Customer, CustomerSearchResult} from '../types'
+
 import {formatPhoneNumber} from '../utils/phoneUtils'
 
 type CustomerSelectionListProps = {
-  customers: CustomerSearchResult[]
-  onSelectCustomer: (customer: Customer) => void
+  customers: CustomerSearchResultType[]
+  onSelectCustomer: (customer: CustomerType) => void
   onCancel: () => void
 }
 
@@ -73,4 +73,3 @@ const CustomerSelectionList: React.FC<CustomerSelectionListProps> = ({customers,
 }
 
 export default CustomerSelectionList
-

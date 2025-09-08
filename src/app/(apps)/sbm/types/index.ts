@@ -1,35 +1,16 @@
-import {SbmCustomer} from '@prisma/client'
-
 // 顧客電話番号管理
-export type CustomerPhone = {
+// export
+type CustomerPhoneType = {
   id: number
   sbmCustomerId: number
-  label: string // '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
+  label: PhoneLabelType // '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
   phoneNumber: string
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
-// 基本エンティティ型定義（Prismaスキーマに準拠）
-export type Customer = Partial<{
-  id: number
-  companyName: string
-  contactName?: string
-  phoneNumber?: string // メイン電話番号（オプション）
-  postalCode?: string
-  prefecture?: string
-  city?: string
-  street?: string
-  building?: string
-  email?: string
-  availablePoints: number
-  notes?: string
-  createdAt: Date
-  updatedAt: Date
-  phones?: CustomerPhone[] // 電話番号リスト
-}>
-
-export type Product = Partial<{
+// export
+type ProductType = Partial<{
   id: number
   name: string
   description?: string
@@ -37,13 +18,14 @@ export type Product = Partial<{
   currentCost: number
   category: string
   isActive: boolean
-  m
+
   createdAt: Date
   updatedAt: Date
-  priceHistory?: ProductPriceHistory[]
+  priceHistory?: ProductPriceHistoryType[]
 }>
 
-export type ProductPriceHistory = Partial<{
+// export
+type ProductPriceHistoryType = Partial<{
   id: number
   productId: string
   price: number
@@ -52,18 +34,8 @@ export type ProductPriceHistory = Partial<{
   createdAt: Date
 }>
 
-export type User = Partial<{
-  id: number
-  username: string
-  name: string
-  email: string
-  role: 'admin' | 'manager' | 'staff'
-  isActive: boolean
-  createdAt: Date
-  updatedAt: Date
-}>
-
-export type Reservation = Partial<{
+// export
+type ReservationType = Partial<{
   id: number
   sbmCustomerId: number
   customerName: string
@@ -75,10 +47,10 @@ export type Reservation = Partial<{
   street?: string
   building?: string
   deliveryDate: Date
-  pickupLocation: PickupLocation
-  purpose: Purpose
-  paymentMethod: PaymentMethod
-  orderChannel: OrderChannel
+  pickupLocation: PickupLocationType
+  purpose: PurposeType
+  paymentMethod: PaymentMethodType
+  orderChannel: OrderChannelType
   totalAmount: number
   pointsUsed: number
   finalAmount: number
@@ -89,12 +61,15 @@ export type Reservation = Partial<{
   recoveryCompleted: boolean
   createdAt: Date
   updatedAt: Date
-  items?: ReservationItem[]
-  tasks?: ReservationTask[]
-  changeHistory?: ReservationChangeHistory[]
+  items?: ReservationItemType[]
+  tasks?: ReservationTaskType[]
+  phones?: CustomerPhoneType[]
+
+  changeHistory?: ReservationChangeHistoryType[]
 }>
 
-export type ReservationItem = Partial<{
+// export
+type ReservationItemType = Partial<{
   id: string
   sbmReservationId: number
   sbmProductId: number
@@ -106,7 +81,8 @@ export type ReservationItem = Partial<{
   createdAt: Date
 }>
 
-export type ReservationTask = Partial<{
+// export
+type ReservationTaskType = Partial<{
   id: number
   sbmReservationId: number
   taskType: 'delivery' | 'recovery'
@@ -117,7 +93,8 @@ export type ReservationTask = Partial<{
   updatedAt: Date
 }>
 
-export type ReservationChangeHistory = Partial<{
+// export
+type ReservationChangeHistoryType = Partial<{
   id: string
   sbmReservationId: number
   changedBy: string
@@ -129,7 +106,8 @@ export type ReservationChangeHistory = Partial<{
 }>
 
 // 配達グループ（日付ベース、ユーザー1人に紐付け）
-export type DeliveryGroup = Partial<{
+// export
+type DeliveryGroupType = Partial<{
   id: number
   name: string
   deliveryDate: Date
@@ -140,15 +118,17 @@ export type DeliveryGroup = Partial<{
   completedReservations: number
   estimatedDuration?: number
   actualDuration?: number
-  optimizedRoute?: DeliveryRouteStop[]
+  optimizedRoute?: DeliveryRouteStopType[]
   routeUrl?: string
   notes?: string
   createdAt: Date
   updatedAt: Date
+  groupReservations?: DeliveryGroupReservationType[]
 }>
 
 // 配達ルートの停止地点
-export type DeliveryRouteStop = Partial<{
+// export
+type DeliveryRouteStopType = Partial<{
   id: string
   sbmDeliveryGroupId: number
   sbmReservationId: number
@@ -166,7 +146,8 @@ export type DeliveryRouteStop = Partial<{
 }>
 
 // 配達グループと予約の紐付け
-export type DeliveryGroupReservation = Partial<{
+// export
+type DeliveryGroupReservationType = Partial<{
   id: number
   sbmDeliveryGroupId: number
   sbmReservationId: number
@@ -177,31 +158,21 @@ export type DeliveryGroupReservation = Partial<{
   createdAt: Date
 }>
 
-export type RFMAnalysis = Partial<{
-  id: number
-  sbmCustomerId: number
-  analysisDate: Date
-  recency: number
-  frequency: number
-  monetary: number
-  rScore: number
-  fScore: number
-  mScore: number
-  totalScore: number
-  rank: string
-  createdAt: Date
-  SbmCustomer: SbmCustomer
-}>
-
 // 列挙型
-export type OrderChannel = '電話' | 'FAX' | 'メール' | 'Web' | '営業' | 'その他'
-export type Purpose = '会議' | '研修' | '接待' | 'イベント' | '懇親会' | 'その他'
-export type PaymentMethod = '現金' | '銀行振込' | '請求書' | 'クレジットカード'
-export type PickupLocation = '配達' | '店舗受取'
-export type PhoneLabel = '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
+// export
+type OrderChannelType = '電話' | 'FAX' | 'メール' | 'Web' | '営業' | 'その他'
+// export
+type PurposeType = '会議' | '研修' | '接待' | 'イベント' | '懇親会' | 'その他'
+// export
+type PaymentMethodType = '現金' | '銀行振込' | '請求書' | 'クレジットカード'
+// export
+type PickupLocationType = '配達' | '店舗受取'
+// export
+type PhoneLabelType = '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
 
 // フィルター・検索用型
-export type ReservationFilter = {
+// export
+type ReservationFilterType = {
   startDate?: string
   endDate?: string
   keyword?: string
@@ -209,42 +180,73 @@ export type ReservationFilter = {
   staffName?: string
   customerName?: string
   companyName?: string
-  pickupLocation?: PickupLocation
-  orderChannel?: OrderChannel
-  purpose?: Purpose
-  paymentMethod?: PaymentMethod
+  pickupLocation?: PickupLocationType
+  orderChannel?: OrderChannelType
+  purpose?: PurposeType
+  paymentMethod?: PaymentMethodType
   deliveryCompleted?: boolean
   recoveryCompleted?: boolean
 }
 
-// 電話番号検索結果
-export type CustomerSearchResult = {
-  customer: Customer
-  matchedPhones: CustomerPhone[]
-}
-
-// RFM分析用型
-export type RFMCustomer = {
-  customerId: number
-  customerName: string
-  recency: number
-  frequency: number
-  monetary: number
-  rScore: number
-  fScore: number
-  mScore: number
-  totalScore: number
-  rank: 'VIP' | '優良' | '安定' | '一般' | '離反懸念'
-  lastOrderDate: Date
-}
-
 // ダッシュボード集計用型
-export type DashboardStats = {
+// export
+type DashboardStatsType = {
   totalSales: number
   totalCost: number
   profit: number
   orderCount: number
   avgOrderValue: number
-  salesByPurpose: {purpose: Purpose; count: number; amount: number}[]
+  salesByPurpose: {purpose: PurposeType; count: number; amount: number}[]
   salesByProduct: {productName: string; count: number; amount: number}[]
+}
+
+// SBM アプリケーションの型定義
+
+// 顧客関連の型
+interface CustomerType {
+  id: number
+  companyName: string
+  contactName: string
+  postalCode: string
+  prefecture: string
+  city: string
+  street: string
+  building: string
+  email: string
+  availablePoints: number
+  notes: string
+  createdAt?: Date
+  updatedAt?: Date
+  phones?: CustomerPhoneType[]
+}
+
+// export
+type CustomerSearchResultType = {
+  customer: CustomerType
+  matchedPhones: CustomerPhoneType[]
+}
+
+// export
+type DeliveryTeamType = {
+  id: number
+  name: string
+  date: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+// export
+type DeliveryAssignmentType = {
+  id: number
+  sbmDeliveryTeamId: number
+  sbmReservationId: number
+  assignedBy: string
+  userId?: number
+  deliveryDate: Date
+  estimatedDuration?: number
+  actualDuration?: number
+  route?: any
+  status: string
+  createdAt: Date
+  updatedAt: Date
 }

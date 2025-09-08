@@ -3,11 +3,11 @@
 import React, {useState, useEffect} from 'react'
 import {BarChart3, TrendingUp, Users, Target, Calendar} from 'lucide-react'
 import {getRFMAnalysis} from '../(builders)/serverActions'
-import {RFMAnalysis} from '../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function RFMPage() {
-  const [rfmData, setRfmData] = useState<RFMAnalysis[]>([])
+  const [rfmData, setRfmData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedSegment, setSelectedSegment] = useState('')
   const [dateRange, setDateRange] = useState({
@@ -254,29 +254,32 @@ export default function RFMPage() {
             <h2 className="text-lg font-semibold text-gray-900">セグメント別サマリー</h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-            {Object.entries(segmentStats).map(([segment, stats]) => (
-              <div key={segment} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getSegmentColor(segment)}`}>{segment}</span>
-                  <span className="text-lg font-bold text-gray-900">{stats.count}人</span>
+            {Object.entries(segmentStats).map((props: [string, any]) => {
+              const [segment, stats] = props
+              return (
+                <div key={segment} className="border rounded-lg p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`px-3 py-1 text-sm font-semibold rounded-full ${getSegmentColor(segment)}`}>{segment}</span>
+                    <span className="text-lg font-bold text-gray-900">{stats.count}人</span>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600">
+                    <div className="flex justify-between">
+                      <span>平均購入額:</span>
+                      <span className="font-semibold">¥{stats.avgValue.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>新しさスコア:</span>
+                      <span className="font-semibold">{stats.avgRecency}/5</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>頻度スコア:</span>
+                      <span className="font-semibold">{stats.avgFrequency}/5</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">{getSegmentDescription(segment)}</p>
                 </div>
-                <div className="space-y-2 text-sm text-gray-600">
-                  <div className="flex justify-between">
-                    <span>平均購入額:</span>
-                    <span className="font-semibold">¥{stats.avgValue.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>新しさスコア:</span>
-                    <span className="font-semibold">{stats.avgRecency}/5</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>頻度スコア:</span>
-                    <span className="font-semibold">{stats.avgFrequency}/5</span>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 mt-3">{getSegmentDescription(segment)}</p>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
 

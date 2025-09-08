@@ -1,13 +1,11 @@
-import {OrderChannel, Purpose, PaymentMethod, PickupLocation} from '../types'
-
 // 選択肢定数
-export const ORDER_CHANNEL_OPTIONS: OrderChannel[] = ['電話', 'FAX', 'メール', 'Web', '営業', 'その他']
+export const ORDER_CHANNEL_OPTIONS: OrderChannelType[] = ['電話', 'FAX', 'メール', 'Web', '営業', 'その他']
 
-export const PURPOSE_OPTIONS: Purpose[] = ['会議', '研修', '接待', 'イベント', '懇親会', 'その他']
+export const PURPOSE_OPTIONS: PurposeType[] = ['会議', '研修', '接待', 'イベント', '懇親会', 'その他']
 
-export const PAYMENT_METHOD_OPTIONS: PaymentMethod[] = ['現金', '銀行振込', '請求書', 'クレジットカード']
+export const PAYMENT_METHOD_OPTIONS: PaymentMethodType[] = ['現金', '銀行振込', '請求書', 'クレジットカード']
 
-export const PICKUP_LOCATION_OPTIONS: PickupLocation[] = ['配達', '店舗受取']
+export const PICKUP_LOCATION_OPTIONS: PickupLocationType[] = ['配達', '店舗受取']
 
 // デフォルト値
 export const DEFAULT_RESERVATION_STATE = {
@@ -17,10 +15,10 @@ export const DEFAULT_RESERVATION_STATE = {
   phoneNumber: '',
   deliveryAddress: '',
   deliveryDate: new Date(),
-  orderChannel: '電話' as OrderChannel,
-  purpose: '会議' as Purpose,
-  paymentMethod: '現金' as PaymentMethod,
-  pickupLocation: '配達' as PickupLocation,
+  orderChannel: '電話' as OrderChannelType,
+  purpose: '会議' as PurposeType,
+  paymentMethod: '現金' as PaymentMethodType,
+  pickupLocation: '配達' as PickupLocationType,
   pointsUsed: 0,
   orderStaff: '',
   notes: '',

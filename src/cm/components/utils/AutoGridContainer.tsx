@@ -74,7 +74,7 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
       className={cn(
         //
 
-        childCount > 2 ? generateGridClasses() : '',
+        childCount >= 2 ? generateGridClasses() : '',
         className
       )}
     >

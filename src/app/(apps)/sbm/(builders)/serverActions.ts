@@ -1,22 +1,12 @@
 'use server'
 
-import {
-  Customer,
-  Product,
-  User,
-  Reservation,
-  ReservationFilter,
-  DashboardStats,
-  CustomerPhone,
-  CustomerSearchResult,
-} from '../types'
 import {RFM_SCORE_CRITERIA} from '../(constants)'
 import prisma from 'src/lib/prisma'
-import {SbmDeliveryTeam} from '@prisma/client'
+
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 
 // データ取得アクション
-export async function getAllCustomers(): Promise<Customer[]> {
+export async function getAllCustomers(): Promise<CustomerType[]> {
   const customers = await prisma.sbmCustomer.findMany({
     include: {
       SbmCustomerPhone: true,
@@ -38,13 +28,21 @@ export async function getAllCustomers(): Promise<Customer[]> {
     notes: c.notes || '',
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
-    phones: c.SbmCustomerPhone,
+
+    phones: c.SbmCustomerPhone.map(phone => ({
+      id: phone.id,
+      sbmCustomerId: phone.sbmCustomerId,
+      label: phone.label as PhoneLabelType,
+      phoneNumber: phone.phoneNumber,
+      createdAt: phone.createdAt,
+      updatedAt: phone.updatedAt,
+    })),
   }))
 }
 
 // 電話番号で顧客を検索
 // 電話番号による顧客検索（部分一致）
-export async function searchCustomersByPhone(phoneNumber: string): Promise<CustomerSearchResult[]> {
+export async function searchCustomersByPhone(phoneNumber: string): Promise<CustomerSearchResultType[]> {
   try {
     if (!phoneNumber || phoneNumber.length < 3) {
       return []
@@ -76,7 +74,7 @@ export async function searchCustomersByPhone(phoneNumber: string): Promise<Custo
 
     return uniqueCustomers.map(customer => {
       // マッチした電話番号を特定
-      const matchedPhones: CustomerPhone[] = []
+      const matchedPhones: CustomerPhoneType[] = []
 
       // メイン電話番号フィールドは削除済み
 
@@ -85,7 +83,7 @@ export async function searchCustomersByPhone(phoneNumber: string): Promise<Custo
         matchedPhones.push({
           id: phone.id,
           sbmCustomerId: phone.sbmCustomerId,
-          label: phone.label,
+          label: phone.label as PhoneLabelType,
           phoneNumber: phone.phoneNumber,
           createdAt: phone.createdAt,
           updatedAt: phone.updatedAt,
@@ -110,7 +108,7 @@ export async function searchCustomersByPhone(phoneNumber: string): Promise<Custo
           phones: customer.SbmCustomerPhone.map(phone => ({
             id: phone.id,
             sbmCustomerId: phone.sbmCustomerId,
-            label: phone.label,
+            label: phone.label as PhoneLabelType,
             phoneNumber: phone.phoneNumber,
             createdAt: phone.createdAt,
             updatedAt: phone.updatedAt,
@@ -126,7 +124,7 @@ export async function searchCustomersByPhone(phoneNumber: string): Promise<Custo
 }
 
 // 従来の関数は互換性のため残す（deprecated）
-export async function getCustomerByPhone(phoneNumber: string): Promise<Customer | null> {
+export async function getCustomerByPhone(phoneNumber: string): Promise<CustomerType | null> {
   const customer = await prisma.sbmCustomer.findFirst({
     where: {
       SbmCustomerPhone: {
@@ -157,7 +155,7 @@ export async function getCustomerByPhone(phoneNumber: string): Promise<Customer 
     phones: customer.SbmCustomerPhone.map(phone => ({
       id: phone.id,
       sbmCustomerId: phone.sbmCustomerId,
-      label: phone.label,
+      label: phone.label as PhoneLabelType,
       phoneNumber: phone.phoneNumber,
       createdAt: phone.createdAt,
       updatedAt: phone.updatedAt,
@@ -167,9 +165,9 @@ export async function getCustomerByPhone(phoneNumber: string): Promise<Customer 
 
 // 顧客情報をUPSERT
 export async function createOrUpdateCustomer(
-  customerData: Partial<Customer>,
+  customerData: Partial<CustomerType>,
   phoneData?: PhoneNumberTemp[]
-): Promise<{success: boolean; customer?: Customer; error?: string}> {
+): Promise<{success: boolean; customer?: CustomerType; error?: string}> {
   try {
     // トランザクション内で処理
     const result = await prisma.$transaction(async tx => {
@@ -253,7 +251,7 @@ export async function createOrUpdateCustomer(
         phones: result!.SbmCustomerPhone.map(phone => ({
           id: phone.id,
           sbmCustomerId: phone.sbmCustomerId,
-          label: phone.label,
+          label: phone.label as PhoneLabelType,
           phoneNumber: phone.phoneNumber,
           createdAt: phone.createdAt,
           updatedAt: phone.updatedAt,
@@ -266,7 +264,7 @@ export async function createOrUpdateCustomer(
   }
 }
 
-export async function getAllProducts(): Promise<Product[]> {
+export async function getAllProducts(): Promise<ProductType[]> {
   const products = await prisma.sbmProduct.findMany({
     include: {
       SbmProductPriceHistory: {
@@ -298,7 +296,7 @@ export async function getAllProducts(): Promise<Product[]> {
 }
 
 // 予約登録時用：表示可能な商品のみ取得
-export async function getVisibleProducts(): Promise<Product[]> {
+export async function getVisibleProducts(): Promise<ProductType[]> {
   const products = await prisma.sbmProduct.findMany({
     where: {isActive: true},
     include: {
@@ -395,7 +393,7 @@ export async function mergeCustomers(parentId: number, childId: number): Promise
 
 // 電話番号管理アクション
 export async function createCustomerPhone(
-  customerPhoneData: Omit<CustomerPhone, 'id' | 'createdAt' | 'updatedAt'>
+  customerPhoneData: Omit<CustomerPhoneType, 'id' | 'createdAt' | 'updatedAt'>
 ): Promise<{success: boolean; error?: string}> {
   try {
     await prisma.sbmCustomerPhone.create({
@@ -437,7 +435,7 @@ export async function updateCustomerPhoneList(
 
 export async function updateCustomerPhone(
   id: number,
-  customerPhoneData: Partial<CustomerPhone>
+  customerPhoneData: Partial<CustomerPhoneType>
 ): Promise<{success: boolean; error?: string}> {
   try {
     await prisma.sbmCustomerPhone.update({
@@ -469,7 +467,7 @@ export async function deleteCustomerPhone(id: number): Promise<{success: boolean
 }
 
 // 顧客の電話番号一覧を取得
-export async function getCustomerPhones(customerId: number): Promise<CustomerPhone[]> {
+export async function getCustomerPhones(customerId: number): Promise<CustomerPhoneType[]> {
   try {
     const phones = await prisma.sbmCustomerPhone.findMany({
       where: {sbmCustomerId: customerId},
@@ -478,7 +476,7 @@ export async function getCustomerPhones(customerId: number): Promise<CustomerPho
     return phones.map(phone => ({
       id: phone.id,
       sbmCustomerId: phone.sbmCustomerId,
-      label: phone.label,
+      label: phone.label as PhoneLabelType,
       phoneNumber: phone.phoneNumber,
       createdAt: phone.createdAt,
       updatedAt: phone.updatedAt,
@@ -489,53 +487,7 @@ export async function getCustomerPhones(customerId: number): Promise<CustomerPho
   }
 }
 
-export async function getAllUsers(): Promise<User[]> {
-  // 注意: Userモデルが存在しない場合は、ダミーデータを返す
-  // 実際のUserモデルがある場合は、以下のコメントアウトを解除
-  /*
-  const users = await prisma.user.findMany({
-    where: {isActive: true},
-    orderBy: {name: 'asc'},
-  })
-
-  return users.map(u => ({
-    id: u.id,
-    username: u.username,
-    name: u.name,
-    email: u.email,
-    role: u.role as 'admin' | 'manager' | 'staff',
-    isActive: u.isActive,
-
-    updatedAt: u.updatedAt,
-  }))
-  */
-
-  // 暫定的にダミーデータを返す
-  return [
-    {
-      id: 1,
-      username: 'admin',
-      name: '管理者',
-      email: 'admin@sbm.local',
-      role: 'admin' as const,
-      isActive: true,
-
-      updatedAt: new Date(),
-    },
-    {
-      id: 2,
-      username: 'staff1',
-      name: 'スタッフ1',
-      email: 'staff1@sbm.local',
-      role: 'staff' as const,
-      isActive: true,
-
-      updatedAt: new Date(),
-    },
-  ]
-}
-
-export async function getAllTeams(): Promise<Partial<SbmDeliveryTeam>[]> {
+export async function getAllTeams(): Promise<Partial<DeliveryTeamType>[]> {
   const teams = await prisma.sbmDeliveryTeam.findMany({
     orderBy: {name: 'asc'},
   })
@@ -549,7 +501,7 @@ export async function getAllTeams(): Promise<Partial<SbmDeliveryTeam>[]> {
   }))
 }
 
-export async function getReservations(filter: ReservationFilter = {}) {
+export async function getReservations(filter: ReservationFilterType = {}) {
   const where: any = {}
 
   // 日付範囲フィルター
@@ -701,7 +653,7 @@ export async function getReservations(filter: ReservationFilter = {}) {
 }
 
 // 顧客管理アクション
-export async function createCustomer(customerData: Omit<Customer, 'id' | 'createdAt' | 'updatedAt'>) {
+export async function createCustomer(customerData: Omit<CustomerType, 'id' | 'createdAt' | 'updatedAt'>) {
   try {
     const newCustomer = await prisma.sbmCustomer.create({
       data: {
@@ -726,7 +678,7 @@ export async function createCustomer(customerData: Omit<Customer, 'id' | 'create
   }
 }
 
-export async function updateCustomer(id: number, customerData: Partial<Customer>) {
+export async function updateCustomer(id: number, customerData: Partial<CustomerType>) {
   try {
     const updatedCustomer = await prisma.sbmCustomer.update({
       where: {id},
@@ -774,7 +726,7 @@ export async function deleteCustomer(id: number) {
 }
 
 // 商品管理アクション
-export async function createProduct(productData: Omit<Product, 'id' | 'priceHistory' | 'createdAt' | 'updatedAt'>) {
+export async function createProduct(productData: Omit<ProductType, 'id' | 'priceHistory' | 'createdAt' | 'updatedAt'>) {
   try {
     const newProduct = await prisma.sbmProduct.create({
       data: {
@@ -809,7 +761,7 @@ export async function createProduct(productData: Omit<Product, 'id' | 'priceHist
   }
 }
 
-export async function updateProduct(id: number, productData: Partial<Product>) {
+export async function updateProduct(id: number, productData: Partial<ProductType>) {
   try {
     const currentProduct = await prisma.sbmProduct.findUnique({where: {id}})
     if (!currentProduct) {
@@ -876,7 +828,7 @@ export async function deleteProduct(id: number) {
 }
 
 // 予約管理アクション - 統合版 upsertReservation
-export async function upsertReservation(reservationData: Partial<Reservation & {phones: PhoneNumberTemp[]}>) {
+export async function upsertReservation(reservationData: Partial<ReservationType & {phones: PhoneNumberTemp[]}>) {
   try {
     // IDが存在する場合は更新、存在しない場合は新規作成
     const isUpdate = reservationData.id !== undefined && reservationData.id !== null
@@ -1006,7 +958,7 @@ export async function deleteReservation(id: number) {
 }
 
 // ダッシュボード統計
-export async function getDashboardStats(date: string): Promise<DashboardStats> {
+export async function getDashboardStats(date: string): Promise<DashboardStatsType> {
   const targetDate = new Date(date)
   const startOfDay = new Date(targetDate)
   startOfDay.setHours(0, 0, 0, 0)
@@ -1183,7 +1135,7 @@ export async function lookupAddressByPostalCode(postalCode: string) {
   }
 }
 
-export async function lookupCustomerByPhone(phoneNumber: string): Promise<Customer | null> {
+export async function lookupCustomerByPhone(phoneNumber: string): Promise<CustomerType | null> {
   const cleanPhoneNumber = phoneNumber.replace(/-/g, '')
 
   const customer = await prisma.sbmCustomer.findFirst({

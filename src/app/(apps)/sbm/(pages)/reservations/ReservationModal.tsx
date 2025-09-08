@@ -5,7 +5,7 @@ import {Phone, ShoppingCart} from 'lucide-react'
 import {handlePhoneNumberInput} from '../../utils/phoneUtils'
 
 import {createOrUpdateCustomer, searchCustomersByPhone, getCustomerPhones} from '../../(builders)/serverActions'
-import {Reservation, Customer, Product, ReservationItem, CustomerSearchResult, PhoneLabel} from '../../types'
+
 import {
   ORDER_CHANNEL_OPTIONS,
   PURPOSE_OPTIONS,
@@ -28,7 +28,7 @@ import CustomerSelectionList from '../../components/CustomerSelectionList'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 // 電話番号ラベル
-const PHONE_LABELS: PhoneLabel[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
+const PHONE_LABELS: PhoneLabelType[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
 
 // 予約フォームモーダル
 export const ReservationModal = ({
@@ -38,19 +38,19 @@ export const ReservationModal = ({
   handleSave,
   onClose,
 }: {
-  reservation: (Reservation & {phones: PhoneNumberTemp[]}) | null
-  customers: Customer[]
-  products: Product[]
-  handleSave: (data: Partial<Reservation>) => void
+  reservation: (ReservationType & {phones: PhoneNumberTemp[]}) | null
+  customers: CustomerType[]
+  products: ProductType[]
+  handleSave: (data: Partial<ReservationType>) => void
   onClose: () => void
 }) => {
   const {session} = useGlobal()
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [phoneLabel, setPhoneLabel] = useState<PhoneLabel>('携帯')
+  const [phoneLabel, setPhoneLabel] = useState<PhoneLabelType>('携帯')
   const phoneLabels = PHONE_LABELS
   const [phoneNumberTempList, setPhoneNumberTempList] = useState<PhoneNumberTemp[]>(reservation?.phones || [])
-  const [matchedCustomer, setMatchedCustomer] = useState<Customer | null>(null)
-  const [matchedCustomers, setMatchedCustomers] = useState<CustomerSearchResult[]>([])
+  const [matchedCustomer, setMatchedCustomer] = useState<CustomerType | null>(null)
+  const [matchedCustomers, setMatchedCustomers] = useState<CustomerSearchResultType[]>([])
   const [isCustomerLinked, setIsCustomerLinked] = useState(false)
 
   const [formData, setFormData] = useState<any>(() => {
@@ -95,7 +95,7 @@ export const ReservationModal = ({
       const phoneList: PhoneNumberTemp[] = phones.map(phone => ({
         id: phone.id,
         phoneNumber: phone.phoneNumber,
-        label: phone.label as PhoneLabel,
+        label: phone.label as PhoneLabelType,
       }))
       setPhoneNumberTempList(phoneList)
     }
@@ -109,7 +109,7 @@ export const ReservationModal = ({
   }
 
   // 顧客リストから選択
-  const handleSelectCustomerFromList = async (customer: Customer) => {
+  const handleSelectCustomerFromList = async (customer: CustomerType) => {
     setMatchedCustomer(customer)
     CustomerSelectionModalReturn.handleClose()
 
@@ -132,7 +132,7 @@ export const ReservationModal = ({
       const phoneList: PhoneNumberTemp[] = phones.map(phone => ({
         id: phone.id,
         phoneNumber: phone.phoneNumber,
-        label: phone.label as PhoneLabel,
+        label: phone.label as PhoneLabelType,
       }))
       setPhoneNumberTempList(phoneList)
     }
@@ -147,20 +147,20 @@ export const ReservationModal = ({
   }
 
   // 商品を選択リストに追加
-  const addProductToOrder = (product: Product) => {
-    const existingItem = formData.selectedItems.find((item: ReservationItem) => item.sbmProductId === product.id)
+  const addProductToOrder = (product: ProductType) => {
+    const existingItem = formData.selectedItems.find((item: ReservationItemType) => item.sbmProductId === product.id)
 
     if (existingItem) {
       setFormData((prev: any) => ({
         ...prev,
-        selectedItems: prev.selectedItems.map((item: ReservationItem) =>
+        selectedItems: prev.selectedItems.map((item: ReservationItemType) =>
           item.sbmProductId === product.id
             ? {...item, quantity: (item.quantity || 0) + 1, totalPrice: ((item.quantity || 0) + 1) * (item.unitPrice || 0)}
             : item
         ),
       }))
     } else {
-      const newItem: ReservationItem = {
+      const newItem = {
         sbmProductId: product.id!,
         productName: product.name!,
         quantity: 1,
@@ -168,6 +168,7 @@ export const ReservationModal = ({
         unitCost: product.currentCost!,
         totalPrice: product.currentPrice!,
       }
+
       setFormData((prev: any) => ({
         ...prev,
         selectedItems: [...prev.selectedItems, newItem],
@@ -185,7 +186,7 @@ export const ReservationModal = ({
 
     setFormData((prev: any) => ({
       ...prev,
-      selectedItems: prev.selectedItems.map((item: ReservationItem) =>
+      selectedItems: prev.selectedItems.map((item: ReservationItemType) =>
         item.sbmProductId === productId ? {...item, quantity, totalPrice: quantity * (item.unitPrice || 0)} : item
       ),
     }))
@@ -196,7 +197,7 @@ export const ReservationModal = ({
   const removeItemFromOrder = (productId: number) => {
     setFormData((prev: any) => ({
       ...prev,
-      selectedItems: prev.selectedItems.filter((item: ReservationItem) => item.sbmProductId !== productId),
+      selectedItems: prev.selectedItems.filter((item: ReservationItemType) => item.sbmProductId !== productId),
     }))
     calculateTotals()
   }
@@ -205,7 +206,7 @@ export const ReservationModal = ({
   const calculateTotals = () => {
     setTimeout(() => {
       setFormData((prev: any) => {
-        const totalAmount = prev.selectedItems.reduce((sum: number, item: ReservationItem) => sum + (item.totalPrice || 0), 0)
+        const totalAmount = prev.selectedItems.reduce((sum: number, item: ReservationItemType) => sum + (item.totalPrice || 0), 0)
         const pointsUsed = Math.min(prev.pointsUsed || 0, totalAmount)
         const finalAmount = totalAmount - pointsUsed
 
@@ -334,7 +335,7 @@ export const ReservationModal = ({
       // 顧客情報の処理
       if (CustomerUpdateModalReturn.open || !reservation) {
         // 顧客データ作成
-        const customerData: Partial<Customer> = {
+        const customerData: Partial<CustomerType> = {
           id: formData.sbmCustomerId, // sbmCustomerIdがある場合は更新
           companyName: formData.customerName,
           contactName: formData.contactName,
@@ -412,7 +413,7 @@ export const ReservationModal = ({
                   />
                   <select
                     value={phoneLabel}
-                    onChange={e => setPhoneLabel(e.target.value as PhoneLabel)}
+                    onChange={e => setPhoneLabel(e.target.value as PhoneLabelType)}
                     className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {phoneLabels.map(label => (
@@ -653,7 +654,7 @@ export const ReservationModal = ({
                       </tr>
                     </thead>
                     <tbody>
-                      {formData.selectedItems.map((item: ReservationItem, index: number) => (
+                      {formData.selectedItems.map((item: ReservationItemType, index: number) => (
                         <tr key={index} className="border-b">
                           <td className="px-3 py-2">
                             <span className="font-medium">{item.productName}</span>

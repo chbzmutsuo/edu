@@ -2,10 +2,11 @@
 
 import React, {useState, useEffect} from 'react'
 import {Clock, AlertTriangle, CheckCircle, XCircle, Loader2} from 'lucide-react'
-import {Reservation} from '../types'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {cn} from '@cm/shadcn/lib/utils'
 
 type TravelTimeCalculatorProps = {
-  reservations: Reservation[]
+  reservations: ReservationType[]
 }
 
 /**
@@ -17,7 +18,7 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
   const [timeValidation, setTimeValidation] = useState<{[key: string]: 'ok' | 'warning' | 'error'}>({})
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [sortedReservations, setSortedReservations] = useState<Reservation[]>([])
+  const [sortedReservations, setSortedReservations] = useState<ReservationType[]>([])
 
   // 予約を時間でソート
   useEffect(() => {
@@ -46,14 +47,14 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
       const validation: {[key: string]: 'ok' | 'warning' | 'error'} = {}
 
       // 予約から住所文字列を取得
-      const getAddressString = (reservation: Reservation): string => {
+      const getAddressString = (reservation: ReservationType): string => {
         // 郵便番号があれば先頭に追加
         const postalCode = reservation.postalCode ? `${reservation.postalCode} ` : ''
         return `${postalCode}${reservation.prefecture}${reservation.city}${reservation.street}`
       }
 
       // 隣接する予約間の所要時間を計算
-      const calculateTimeBetween = async (fromReservation: Reservation, toReservation: Reservation) => {
+      const calculateTimeBetween = async (fromReservation: ReservationType, toReservation: ReservationType) => {
         try {
           const fromAddress = getAddressString(fromReservation)
           const toAddress = getAddressString(toReservation)
@@ -79,8 +80,8 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
           const travelTimeSeconds = data.duration.value || 0
 
           // 予約時間の差（秒）
-          const fromTime = new Date(fromReservation.deliveryDate).getTime()
-          const toTime = new Date(toReservation.deliveryDate).getTime()
+          const fromTime = new Date(fromReservation.deliveryDate || '').getTime()
+          const toTime = new Date(toReservation.deliveryDate || '').getTime()
           const timeDiffSeconds = (toTime - fromTime) / 1000
 
           // 時間差と所要時間を比較して適切性を判定
@@ -207,11 +208,11 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">順番</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">納品時間</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">顧客</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">所要予測時間</th>
-            <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">判定</th>
+            <th className="px-1.5 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">順番</th>
+            <th className="px-1.5 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">納品時間</th>
+            <th className="px-1.5 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">顧客</th>
+            <th className="px-1.5 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">注文詳細</th>
+            <th className="px-1.5 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">判定</th>
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
@@ -222,45 +223,54 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
             const travelTime = nextReservation ? travelTimes[key] : null
             const validation = nextReservation ? timeValidation[key] : null
 
+            const previousValidation = index > 0 ? timeValidation[`${sortedReservations[index - 1].id}-${reservation.id}`] : null
             // 2行で1セットとして表示（予約情報行と移動時間行）
             return (
               <React.Fragment key={reservation.id}>
                 {/* 予約情報行 */}
-                <tr className="hover:bg-gray-50">
-                  <td className="px-3 py-2 whitespace-nowrap">
+                <tr className={cn(getRowClassName(previousValidation), ' border-b-gray-500 border-b-2')}>
+                  <td className="px-1.5 py-1 whitespace-nowrap">
                     <div className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-medium">
                       {index + 1}
                     </div>
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap">
+                  <td className="px-1.5 py-1 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">
-                      {new Date(reservation.deliveryDate).toLocaleTimeString('ja-JP', {
+                      {new Date(reservation.deliveryDate || '').toLocaleTimeString('ja-JP', {
                         hour: '2-digit',
                         minute: '2-digit',
                       })}
                     </div>
                   </td>
-                  <td className="px-3 py-2">
-                    <div className="text-sm font-medium text-gray-900">{reservation.customerName}</div>
+                  <td className="px-1.5 py-1">
+                    <R_Stack className="text-sm font-medium text-gray-900">
+                      <div>{reservation.customerName}</div>
+                      <div>{reservation.contactName}</div>
+                    </R_Stack>
                     <div className="text-xs text-gray-500">
                       {reservation.prefecture}
                       {reservation.city}
                       {reservation.street}
                     </div>
                   </td>
-                  <td className="px-3 py-2"></td>
-                  <td className="px-3 py-2"></td>
+                  <td className="px-1.5 py-1" colSpan={2}>
+                    <div className="text-sm font-medium text-gray-900">
+                      {reservation.items?.map((item, index) => (
+                        <div key={index} className="text-sm">
+                          {item.productName} x{item.quantity}
+                        </div>
+                      ))}
+                    </div>
+                  </td>
                 </tr>
 
                 {/* 移動時間行（最後の予約以外に表示） */}
                 {nextReservation && (
-                  <tr className={getRowClassName(validation)}>
-                    <td className="px-3 py-2"></td>
-                    <td className="px-3 py-2"></td>
-                    <td className="px-3 py-2 text-right">
-                      <div className="text-xs text-gray-500">次の配達先まで →</div>
-                    </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                  <tr className={cn(getRowClassName(validation), 'hover:bg-gray-50  ')}>
+                    <td className="px-1.5 py-1"></td>
+                    <td className="px-1.5 py-1"></td>
+                    <td className="px-1.5 py-1 text-right"></td>
+                    <td className="px-1.5 py-1 whitespace-nowrap">
                       {travelTime || travelTime === 0 ? (
                         <div className="flex items-center">
                           <Clock size={16} className="mr-1 text-gray-400" />
@@ -270,7 +280,7 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
                         <span className="text-xs text-gray-500">計算中...</span>
                       )}
                     </td>
-                    <td className="px-3 py-2">
+                    <td className="px-1.5 py-1">
                       {validation && (
                         <div className="flex items-center">
                           {getValidationIcon(validation)}

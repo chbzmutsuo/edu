@@ -1,14 +1,13 @@
 'use server'
 
 import prisma from 'src/lib/prisma'
-import {DeliveryTeam, DeliveryGroup} from '../types'
 
 // 配達チーム関連のサーバーアクション
 
 /**
  * 特定日付の配達チームを取得
  */
-export async function getDeliveryTeamsByDate(date: string): Promise<DeliveryTeam[]> {
+export async function getDeliveryTeamsByDate(date: string): Promise<DeliveryTeamType[]> {
   try {
     const startDate = new Date(date)
     startDate.setHours(0, 0, 0, 0)
@@ -39,8 +38,8 @@ export async function getDeliveryTeamsByDate(date: string): Promise<DeliveryTeam
  * 新しい配達チームを作成
  */
 export async function createDeliveryTeam(
-  teamData: Omit<DeliveryTeam, 'id' | 'createdAt' | 'updatedAt'>
-): Promise<{success: boolean; team?: DeliveryTeam; error?: string}> {
+  teamData: Omit<DeliveryTeamType, 'id' | 'createdAt' | 'updatedAt'>
+): Promise<{success: boolean; team?: DeliveryTeamType; error?: string}> {
   try {
     const newTeam = await prisma.sbmDeliveryTeam.create({
       data: {
@@ -231,8 +230,7 @@ export const createDeliveryGroup = async (
   date: Date,
   userId: number,
   userName: string
-): Promise<{success: boolean; group?: DeliveryGroup; error?: string}> => {
-  console.log(name, date, userId, userName) //logs
+): Promise<{success: boolean; group?: DeliveryGroupType; error?: string}> => {
   try {
     const newGroup = await prisma.sbmDeliveryGroup.create({
       data: {
@@ -246,7 +244,7 @@ export const createDeliveryGroup = async (
 
     return {
       success: true,
-      group: newGroup as unknown as DeliveryGroup,
+      group: newGroup as unknown as DeliveryGroupType,
     }
   } catch (error) {
     console.error('配達グループ作成エラー:', error)
@@ -483,7 +481,7 @@ export async function sortGroupReservationsByDeliveryTime(groupId: number): Prom
 /**
  * 配達グループの特定日付のグループを取得
  */
-export async function getDeliveryGroupsByDate(date: string): Promise<DeliveryGroup[]> {
+export async function getDeliveryGroupsByDate(date: string): Promise<DeliveryGroupType[]> {
   try {
     const startDate = new Date(date)
     startDate.setHours(0, 0, 0, 0)
@@ -513,7 +511,7 @@ export async function getDeliveryGroupsByDate(date: string): Promise<DeliveryGro
       },
     })
 
-    return groups as unknown as DeliveryGroup[]
+    return groups as unknown as DeliveryGroupType[]
   } catch (error) {
     console.error('配達グループ取得エラー:', error)
     return []

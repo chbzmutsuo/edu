@@ -2,18 +2,18 @@
 
 import React, {useState, useEffect} from 'react'
 import {AlertTriangle, Clock, MapPin, Package, Plus, Search} from 'lucide-react'
-import {Reservation, DeliveryGroup} from '../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getUnassignedDeliveries} from '@app/(apps)/sbm/(builders)/deliveryActions'
 
 interface UnassignedDeliveriesProps {
   selectedDate: Date
-  selectedGroup: DeliveryGroup | null
-  onAssignToGroup: (reservations: Reservation[], groupId: number) => void
+  selectedGroup: DeliveryGroupType | null
+  onAssignToGroup: (reservations: ReservationType[], groupId: number) => void
 }
 
 export const UnassignedDeliveries: React.FC<UnassignedDeliveriesProps> = ({selectedDate, selectedGroup, onAssignToGroup}) => {
-  const [unassignedReservations, setUnassignedReservations] = useState<Reservation[]>([])
+  const [unassignedReservations, setUnassignedReservations] = useState<ReservationType[]>([])
   const [selectedReservations, setSelectedReservations] = useState<Set<number>>(new Set())
   const [searchKeyword, setSearchKeyword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -26,7 +26,7 @@ export const UnassignedDeliveries: React.FC<UnassignedDeliveriesProps> = ({selec
     setIsLoading(true)
     try {
       const unassigned = await getUnassignedDeliveries(selectedDate)
-      setUnassignedReservations(unassigned as unknown as Reservation[])
+      setUnassignedReservations(unassigned as unknown as ReservationType[])
     } catch (error) {
       console.error('未割り当て配達の取得に失敗:', error)
     } finally {
@@ -73,7 +73,7 @@ export const UnassignedDeliveries: React.FC<UnassignedDeliveriesProps> = ({selec
     setSelectedReservations(new Set())
   }
 
-  const getFullAddress = (reservation: Reservation) => {
+  const getFullAddress = (reservation: ReservationType) => {
     return `${reservation.prefecture}${reservation.city}${reservation.street}${reservation.building || ''}`
   }
 

@@ -3,11 +3,11 @@
 import React, {useState, useEffect} from 'react'
 import {Printer, FileText, Search, CheckSquare, Square} from 'lucide-react'
 import {getReservations} from '../../(builders)/serverActions'
-import {Reservation} from '../../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 export default function InvoicesPage() {
-  const [reservations, setReservations] = useState<Reservation[]>([])
+  const [reservations, setReservations] = useState<ReservationType[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
   const [endDate, setEndDate] = useState(formatDate(new Date()))
@@ -25,7 +25,7 @@ export default function InvoicesPage() {
         startDate: selectedDate,
         endDate: endDate,
       })
-      setReservations(data as Reservation[])
+      setReservations(data as ReservationType[])
     } catch (error) {
       console.error('予約データの取得に失敗しました:', error)
     } finally {
@@ -91,7 +91,7 @@ export default function InvoicesPage() {
     generateInvoices(filteredReservations)
   }
 
-  const generateInvoices = (reservationsData: Reservation[]) => {
+  const generateInvoices = (reservationsData: ReservationType[]) => {
     // 印刷設定の確認メッセージ
     const confirmPrint = window.confirm(
       '印刷設定の確認：\n\n' +
@@ -121,7 +121,7 @@ export default function InvoicesPage() {
     }
   }
 
-  const generateInvoiceHTML = (reservationsData: Reservation[]) => {
+  const generateInvoiceHTML = (reservationsData: ReservationType[]) => {
     const invoicesHTML = reservationsData
       .map(
         reservation => `

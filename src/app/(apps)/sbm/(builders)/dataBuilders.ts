@@ -1,6 +1,6 @@
 // 'use server'
 
-// import {Customer, Product, User, Reservation, DeliveryTeam} from '../types'
+// import {Customer, Product, User, Reservation, DeliveryTeam} from '../types/index'
 
 // // モックデータ生成関数（開発用）
 // export const generateMockData = () => {

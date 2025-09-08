@@ -1,22 +1,7 @@
 'use client'
 
 import React, {useState, useEffect, useMemo} from 'react'
-import {
-  Search,
-  PlusCircle,
-  Trash2,
-  Edit,
-  CheckSquare,
-  Square,
-  MapPin,
-  Map,
-  ShoppingCart,
-  TrendingUp,
-  Users,
-  Package,
-  DollarSign,
-  Settings,
-} from 'lucide-react'
+import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 import {
@@ -26,28 +11,23 @@ import {
   upsertReservation,
   deleteReservation,
 } from '../../(builders)/serverActions'
-import {Reservation, Customer, Product, ReservationFilter} from '../../types'
-import {
-  ORDER_CHANNEL_OPTIONS,
-  PURPOSE_OPTIONS,
-  PAYMENT_METHOD_OPTIONS,
-  PICKUP_LOCATION_OPTIONS,
-} from '../../(constants)'
+
+import {ORDER_CHANNEL_OPTIONS, PURPOSE_OPTIONS, PAYMENT_METHOD_OPTIONS, PICKUP_LOCATION_OPTIONS} from '../../(constants)'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {cn} from '@cm/shadcn/lib/utils'
-import ReservationMapModal from '../../components/ReservationMapModal'
+
 import {ReservationModal} from '@app/(apps)/sbm/(pages)/reservations/ReservationModal'
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 
 export default function ReservationPage() {
-  const [reservations, setReservations] = useState<Reservation[]>([])
-  const [customers, setCustomers] = useState<Customer[]>([])
-  const [products, setProducts] = useState<Product[]>([])
+  const [reservations, setReservations] = useState<ReservationType[]>([])
+  const [customers, setCustomers] = useState<CustomerType[]>([])
+  const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
 
-  const [filters, setFilters] = useState<ReservationFilter>({
+  const [filters, setFilters] = useState<ReservationFilterType>({
     startDate: formatDate(new Date()),
     endDate: formatDate(new Date()),
     keyword: '',
@@ -63,7 +43,7 @@ export default function ReservationPage() {
 
   // 地図モーダル関連
   const [showMapModal, setShowMapModal] = useState(false)
-  const [selectedReservationForMap, setSelectedReservationForMap] = useState<Reservation | null>(null)
+  const [selectedReservationForMap, setSelectedReservationForMap] = useState<ReservationType | null>(null)
 
   // 列表示設定
   const [columnVisibility, setColumnVisibility] = useState({
@@ -179,7 +159,7 @@ export default function ReservationPage() {
   const loadReservations = async () => {
     try {
       const data = await getReservations(filters)
-      setReservations(data as Reservation[])
+      setReservations(data as ReservationType[])
     } catch (error) {
       console.error('予約データの読み込みに失敗しました:', error)
     }
@@ -207,7 +187,7 @@ export default function ReservationPage() {
     })
   }
 
-  const handleSave = async (reservationData: Partial<Reservation & {phones: PhoneNumberTemp[]}>) => {
+  const handleSave = async (reservationData: Partial<ReservationType & {phones: PhoneNumberTemp[]}>) => {
     try {
       // 既存の予約を編集する場合はIDを設定
       if (EditReservationModalReturn.open?.reservation) {
@@ -237,7 +217,7 @@ export default function ReservationPage() {
   }
 
   // 地図関連の処理
-  const handleShowSingleMap = (reservation: Reservation) => {
+  const handleShowSingleMap = (reservation: ReservationType) => {
     setSelectedReservationForMap(reservation)
     setShowMapModal(true)
   }
@@ -590,14 +570,6 @@ export default function ReservationPage() {
                   <td>
                     <div className="flex items-center space-x-2">
                       <button
-                        onClick={() => handleShowSingleMap(reservation)}
-                        className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded"
-                        title="地図表示"
-                        disabled={!reservation.prefecture || !reservation.city}
-                      >
-                        <MapPin size={16} />
-                      </button>
-                      <button
                         onClick={() => EditReservationModalReturn.handleOpen({reservation})}
                         className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
                         title="編集"
@@ -648,14 +620,6 @@ export default function ReservationPage() {
           />
         </Padding>
       </DeleteReservationModalReturn.Modal>
-
-      {/* 地図モーダル */}
-      <ReservationMapModal
-        reservations={reservations}
-        isOpen={showMapModal}
-        onClose={handleCloseMap}
-        selectedReservation={selectedReservationForMap}
-      />
     </div>
   )
 }
@@ -687,188 +651,3 @@ const ConfirmModal = ({
     </div>
   </div>
 )
-
-const Statistics = ({statistics}: {statistics: any}) => {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      基本統計
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <TrendingUp className="h-8 w-8 text-blue-600" />
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">総予約数</dt>
-              <dd className="text-lg font-medium text-gray-900">{statistics.totalReservations}件</dd>
-            </dl>
-          </div>
-        </div>
-        <div className="mt-4 text-sm text-gray-600">
-          <div>
-            配達完了: {statistics.deliveryCompleted}件 ({statistics.deliveryRate}%)
-          </div>
-          <div>
-            回収完了: {statistics.recoveryCompleted}件 ({statistics.recoveryRate}%)
-          </div>
-        </div>
-      </div>
-      {/* 顧客・商品統計 */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <Users className="h-8 w-8 text-green-600" />
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">ユニーク顧客</dt>
-              <dd className="text-lg font-medium text-gray-900">{statistics.uniqueCustomers}社</dd>
-            </dl>
-          </div>
-        </div>
-        <div className="mt-4 text-sm text-gray-600">
-          <div className="flex items-center">
-            <Package className="h-4 w-4 mr-1" />
-            総商品数: {statistics.totalItems}個
-          </div>
-        </div>
-      </div>
-      {/* 金額統計 */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center">
-          <div className="flex-shrink-0">
-            <DollarSign className="h-8 w-8 text-yellow-600" />
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">総売上</dt>
-              <dd className="text-lg font-medium text-gray-900">¥{statistics.totalFinalAmount.toLocaleString()}</dd>
-            </dl>
-          </div>
-        </div>
-        <div className="mt-4 text-sm text-gray-600">
-          <div>平均単価: ¥{statistics.averageOrderValue.toLocaleString()}</div>
-          <div>ポイント使用: ¥{statistics.totalPointsUsed.toLocaleString()}</div>
-        </div>
-      </div>
-      {/* カテゴリー別統計 */}
-      <div className="bg-white p-6 rounded-lg shadow">
-        <div className="flex items-center mb-4">
-          <div className="flex-shrink-0">
-            <ShoppingCart className="h-8 w-8 text-purple-600" />
-          </div>
-          <div className="ml-5 w-0 flex-1">
-            <dl>
-              <dt className="text-sm font-medium text-gray-500 truncate">分類別</dt>
-            </dl>
-          </div>
-        </div>
-        <div className="space-y-2 text-sm text-gray-600">
-          <div>
-            <div className="font-medium text-gray-700 mb-1">受取方法</div>
-            {Object.entries(statistics.pickupStats).map(([key, value]: [string, number]) => (
-              <div key={key} className="flex justify-between">
-                <span>{key}:</span>
-                <span>{value}件</span>
-              </div>
-            ))}
-          </div>
-          <div className="border-t pt-2">
-            <div className="font-medium text-gray-700 mb-1">用途</div>
-            {Object.entries(statistics.purposeStats)
-              .slice(0, 3)
-              .map(([key, value]: [string, number]) => (
-                <div key={key} className="flex justify-between">
-                  <span>{key}:</span>
-                  <span>{value}件</span>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const TableConfig = ({
-  showAdvancedFilters,
-  setShowAdvancedFilters,
-  showColumnSettings,
-  setShowColumnSettings,
-  columnVisibility,
-  toggleColumnVisibility,
-  columnLabels,
-}: {
-  showAdvancedFilters: boolean
-  setShowAdvancedFilters: (show: boolean) => void
-  showColumnSettings: boolean
-  setShowColumnSettings: (show: boolean) => void
-  columnVisibility: any
-  toggleColumnVisibility: (key: string) => void
-  columnLabels: any
-}) => {
-  return (
-    <div className="flex items-center justify-between border-t pt-4">
-      <div className="flex items-center space-x-4">
-        <button
-          type="button"
-          onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-          className="flex items-center text-sm text-blue-600 hover:text-blue-800"
-        >
-          <span>{showAdvancedFilters ? '詳細フィルターを隠す' : '詳細フィルターを表示'}</span>
-          <svg
-            className={`ml-1 h-4 w-4 transform transition-transform ${showAdvancedFilters ? 'rotate-180' : ''}`}
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        {/* 列設定ボタン */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setShowColumnSettings(!showColumnSettings)}
-            className="flex items-center text-sm text-purple-600 hover:text-purple-800"
-          >
-            <Settings size={16} className="mr-1" />
-            <span>表示設定</span>
-          </button>
-
-          {/* 列設定ドロップダウン */}
-          {showColumnSettings && (
-            <div className="absolute top-full left-0 mt-1 w-64 bg-white rounded-md shadow-lg border border-gray-200 z-10">
-              <div className="p-3">
-                <div className="text-sm font-medium text-gray-700 mb-3">表示する列を選択</div>
-                <div className="grid grid-cols-2 gap-2">
-                  {Object.entries(columnLabels).map(([key, label]) => (
-                    <label key={key} className="flex items-center text-sm">
-                      <input
-                        type="checkbox"
-                        checked={columnVisibility[key as keyof typeof columnVisibility]}
-                        onChange={() => toggleColumnVisibility(key as string)}
-                        className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <span className="truncate">{label as string}</span>
-                    </label>
-                  ))}
-                </div>
-                <div className="mt-3 pt-3 border-t">
-                  <button
-                    type="button"
-                    onClick={() => setShowColumnSettings(false)}
-                    className="w-full text-sm text-center text-gray-600 hover:text-gray-800"
-                  >
-                    閉じる
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}

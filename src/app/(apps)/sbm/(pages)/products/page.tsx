@@ -3,14 +3,14 @@
 import React, {useState, useEffect} from 'react'
 import {Search, PlusCircle, Edit, Trash2, X, Package, History} from 'lucide-react'
 import {getAllProducts, createProduct, updateProduct, deleteProduct} from '../../(builders)/serverActions'
-import {Product} from '../../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import {cn} from '@cm/shadcn/lib/utils'
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
@@ -61,7 +61,7 @@ export default function ProductsPage() {
   const DeleteProductModalReturn = useModal()
   const PriceHistoryModalReturn = useModal()
 
-  const handleSave = async (productData: Partial<Product>) => {
+  const handleSave = async (productData: Partial<ProductType>) => {
     try {
       const editingProduct = EditProductModalReturn?.open?.product
 
@@ -74,7 +74,7 @@ export default function ProductsPage() {
           alert(result.error || '更新に失敗しました')
         }
       } else {
-        const result = await createProduct(productData as Omit<Product, 'id' | 'priceHistory' | 'createdAt' | 'updatedAt'>)
+        const result = await createProduct(productData as Omit<ProductType, 'id' | 'priceHistory' | 'createdAt' | 'updatedAt'>)
         if (result.success) {
           await loadProducts()
           EditProductModalReturn.handleClose()
@@ -354,11 +354,11 @@ const ProductModal = ({
   onSave,
   onClose,
 }: {
-  product: Product | null
-  onSave: (productData: Partial<Product>) => void
+  product: ProductType | null
+  onSave: (productData: Partial<ProductType>) => void
   onClose: () => void
 }) => {
-  const [formData, setFormData] = useState<Partial<Product>>({
+  const [formData, setFormData] = useState<Partial<ProductType>>({
     name: product?.name || '',
     description: product?.description || '',
     currentPrice: product?.currentPrice || 0,
@@ -513,7 +513,7 @@ const ProductModal = ({
 }
 
 // 価格履歴モーダル
-const PriceHistoryModal = ({product, onClose}: {product: Product | null; onClose: () => void}) => {
+const PriceHistoryModal = ({product, onClose}: {product: ProductType | null; onClose: () => void}) => {
   if (!product) return null
 
   return (

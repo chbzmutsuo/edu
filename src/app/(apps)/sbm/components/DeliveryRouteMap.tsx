@@ -3,7 +3,6 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react'
 import {Loader2, Clock, AlertTriangle, CheckCircle, XCircle} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {Reservation} from '../types'
 
 // Google Maps APIのタイプ定義
 declare global {
@@ -14,7 +13,7 @@ declare global {
 }
 
 type DeliveryRouteMapProps = {
-  reservations: Reservation[]
+  reservations: ReservationType[]
   teamId?: number
   optimizeRoute?: boolean
 }
@@ -27,7 +26,7 @@ const DeliveryRouteMap: React.FC<DeliveryRouteMapProps> = ({reservations, teamId
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [routeData, setRouteData] = useState<any>(null)
-  const [sortedReservations, setSortedReservations] = useState<Reservation[]>([])
+  const [sortedReservations, setSortedReservations] = useState<ReservationType[]>([])
   const [travelTimes, setTravelTimes] = useState<{[key: string]: number}>({})
   const [timeValidation, setTimeValidation] = useState<{[key: string]: 'ok' | 'warning' | 'error'}>({})
 
@@ -108,7 +107,7 @@ const DeliveryRouteMap: React.FC<DeliveryRouteMapProps> = ({reservations, teamId
       const geocodePromises = sortedReservations.map((reservation, index) => {
         const address = `${reservation.prefecture}${reservation.city}${reservation.street}`
 
-        return new Promise<{reservation: Reservation; position: any}>((resolve, reject) => {
+        return new Promise<{reservation: ReservationType; position: any}>((resolve, reject) => {
           geocoder.geocode({address}, (results: any, status: any) => {
             if (status === 'OK' && results[0]) {
               const position = results[0].geometry.location

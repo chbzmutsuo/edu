@@ -17,7 +17,7 @@ import {
 import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 import DashboardPage from './dashboard/page'
 import ReservationPage from './reservations/page'
-import SeedPage from './seed/page'
+
 import DeliveryRoutePage from './delivery-route/page'
 
 // メインアプリケーション
@@ -43,7 +43,7 @@ export default function SBMApp() {
         <div className="max-w-7xl mx-auto">
           {currentView === 'dashboard' && <DashboardPage />}
           {currentView === 'reservations' && <ReservationPage />}
-          {currentView === 'seed' && <SeedPage />}
+
           {currentView === 'delivery_route' && <DeliveryRoutePage />}
           {currentView === 'rfm' && <div>RFM分析（実装予定）</div>}
           {currentView === 'invoices' && <div>伝票印刷（実装予定）</div>}

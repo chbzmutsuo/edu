@@ -2,12 +2,11 @@
 
 import React from 'react'
 import {AlertCircle, Link, UserPlus, Users} from 'lucide-react'
-import {Customer, CustomerSearchResult} from '../types'
 
 type CustomerLinkNotificationProps = {
   isLinked: boolean
-  matchedCustomer?: Customer | null
-  matchedCustomers?: CustomerSearchResult[]
+  matchedCustomer?: CustomerType | null
+  matchedCustomers?: CustomerSearchResultType[]
   onLinkCustomer: () => void
   onShowCustomerList: () => void
   onCancelLink: () => void

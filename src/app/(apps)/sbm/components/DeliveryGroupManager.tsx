@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect} from 'react'
 import {Plus, Edit3, Trash2, Users, Calendar, Clock, MapPin, CheckCircle, AlertCircle, Route, ExternalLink} from 'lucide-react'
-import {DeliveryGroup} from '../types'
+
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {
   getDeliveryGroups,
@@ -15,8 +15,8 @@ import useModal, {useModalReturn} from '@cm/components/utils/modal/useModal'
 interface DeliveryGroupManagerProps {
   selectedDate: Date
   onDateChange: (date: Date) => void
-  onGroupSelect: (group: DeliveryGroup | null) => void
-  selectedGroup: DeliveryGroup | null
+  onGroupSelect: (group: DeliveryGroupType | null) => void
+  selectedGroup: DeliveryGroupType | null
 }
 
 export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
@@ -25,7 +25,7 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
   onGroupSelect,
   selectedGroup,
 }) => {
-  const [groups, setGroups] = useState<DeliveryGroup[]>([])
+  const [groups, setGroups] = useState<DeliveryGroupType[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   // 選択日の配達グループを取得
@@ -37,7 +37,7 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
     setIsLoading(true)
     try {
       const groups = await getDeliveryGroups(selectedDate)
-      setGroups(groups as unknown as DeliveryGroup[])
+      setGroups(groups as unknown as DeliveryGroupType[])
     } catch (error) {
       console.error('配達グループの取得に失敗:', error)
     } finally {
@@ -57,7 +57,7 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
     })
   }
 
-  const handleEditGroup = (group: DeliveryGroup) => {
+  const handleEditGroup = (group: DeliveryGroupType) => {
     GrpupCreateModalReturn.handleOpen({group})
   }
 
@@ -76,7 +76,7 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
     }
   }
 
-  const getStatusColor = (status: DeliveryGroup['status']) => {
+  const getStatusColor = (status: DeliveryGroupType['status']) => {
     switch (status) {
       case 'planning':
         return 'bg-yellow-100 text-yellow-800'
@@ -91,7 +91,7 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
     }
   }
 
-  const getStatusText = (status: DeliveryGroup['status']) => {
+  const getStatusText = (status: DeliveryGroupType['status']) => {
     switch (status) {
       case 'planning':
         return '計画中'
@@ -106,7 +106,7 @@ export const DeliveryGroupManager: React.FC<DeliveryGroupManagerProps> = ({
     }
   }
 
-  const getStatusIcon = (status: DeliveryGroup['status']) => {
+  const getStatusIcon = (status: DeliveryGroupType['status']) => {
     switch (status) {
       case 'planning':
         return <Edit3 size={16} />
@@ -286,7 +286,7 @@ interface DeliveryGroupModalProps {
   GrpupCreateModalReturn: useModalReturn
 
   deliveryDate: Date
-  onSave: (group: DeliveryGroup) => void
+  onSave: (group: DeliveryGroupType) => void
   onClose: () => void
 }
 
@@ -318,7 +318,7 @@ const DeliveryGroupModal: React.FC<DeliveryGroupModalProps> = ({
 
     if (!selectedUser) return alert('担当者を選択してください')
 
-    const groupData: DeliveryGroup = {
+    const groupData: DeliveryGroupType = {
       ...group,
       name: formData.name,
       deliveryDate,
