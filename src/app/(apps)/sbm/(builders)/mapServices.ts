@@ -28,7 +28,7 @@ interface DirectionsResult {
 }
 
 export async function geocodeAddress(address: string): Promise<GeocodingResult> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   if (!apiKey) throw new Error('Google Maps API key is not configured')
 
   const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -52,7 +52,7 @@ export async function geocodeAddress(address: string): Promise<GeocodingResult> 
 }
 
 export async function optimizeRoute(stops: DeliveryRouteStop[]): Promise<DeliveryRouteStop[]> {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY
+  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   if (!apiKey) throw new Error('Google Maps API key is not configured')
 
   // 全ての住所をジオコーディング
