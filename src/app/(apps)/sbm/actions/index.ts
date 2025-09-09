@@ -1,8 +1,10 @@
 'use server'
+
 import {RFM_SCORE_CRITERIA} from '../(constants)'
 import prisma from 'src/lib/prisma'
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
+import {SbmReservation} from '@prisma/client'
 
 export async function getAllTeams(): Promise<Partial<DeliveryTeamType>[]> {
   const teams = await prisma.sbmDeliveryTeam.findMany({
@@ -1134,7 +1136,10 @@ export async function upsertReservation(reservationData: Partial<ReservationType
     if (isUpdate) {
       const foundReservation = await prisma.sbmReservation.findUnique({
         where: {id: reservationData.id},
-        include: {SbmReservationItem: true},
+        include: {
+          SbmReservationItem: true,
+          SbmReservationChangeHistory: true,
+        },
       })
 
       if (!foundReservation) {
@@ -1149,8 +1154,7 @@ export async function upsertReservation(reservationData: Partial<ReservationType
       })
     }
 
-    // 共通のデータ構造
-    const commonData = {
+    const newDataCore = {
       sbmCustomerId: reservationData.sbmCustomerId || 0,
       customerName: reservationData.customerName || '',
       contactName: reservationData.contactName || '',
@@ -1174,23 +1178,58 @@ export async function upsertReservation(reservationData: Partial<ReservationType
       deliveryCompleted: reservationData.deliveryCompleted || false,
       recoveryCompleted: reservationData.recoveryCompleted || false,
       // 商品明細を作成
-      SbmReservationItem: {
-        create:
-          reservationData.items?.map(item => ({
+    }
+
+    const SbmReservationItem =
+      reservationData.items?.map(item => ({
+        sbmProductId: item.sbmProductId || 0,
+        productName: item.productName || '',
+        quantity: item.quantity || 0,
+        unitPrice: item.unitPrice || 0,
+        totalPrice: item.totalPrice || 0,
+      })) || []
+
+    const {newData, oldData} = await (async () => {
+      const newData: changeHistoryObject = {
+        ...(newDataCore as ReservationType),
+        items: SbmReservationItem as ReservationItemType[],
+      }
+
+      const oldDataCoreFromDb = await prisma.sbmReservation.findUnique({
+        where: {id: reservationData.id ?? 0},
+        include: {SbmReservationItem: true},
+      })
+
+      const oldData: changeHistoryObject = {
+        ...(oldDataCoreFromDb as ReservationType),
+        items:
+          oldDataCoreFromDb?.SbmReservationItem.map(item => ({
+            id: item.id,
+            sbmReservationId: item.sbmReservationId,
             sbmProductId: item.sbmProductId || 0,
             productName: item.productName || '',
             quantity: item.quantity || 0,
             unitPrice: item.unitPrice || 0,
             totalPrice: item.totalPrice || 0,
+            createdAt: item.createdAt,
           })) || [],
+      }
+      return {newData, oldData}
+    })()
+
+    // 共通のデータ構造
+    const commonData = {
+      ...newDataCore,
+      SbmReservationItem: {
+        create: SbmReservationItem,
       },
       // 変更履歴を作成
       SbmReservationChangeHistory: {
         create: {
           changedBy: reservationData.orderStaff || 'system',
           changeType: isUpdate ? 'update' : 'create',
-          oldValues: isUpdate ? (currentReservation as any) : undefined,
-          newValues: reservationData as any,
+          oldValues: isUpdate ? oldData : undefined,
+          newValues: newData,
         },
       },
     }

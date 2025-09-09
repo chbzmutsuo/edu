@@ -177,9 +177,17 @@ export const PAGES: any = {
 
     const loginPaths = [
       {tabId: 'dashboard', label: 'ダッシュボード', ROOT: [rootPath]},
-      {tabId: 'reservations', label: '予約管理', ROOT: [rootPath]},
+      {
+        tabId: '',
+        label: '予約',
+        ROOT: [rootPath],
+        children: [
+          {tabId: 'reservations', label: '予約管理'},
+          {tabId: 'history', label: '予約履歴'},
+          {tabId: 'delivery-route', label: '配達ルート管理'},
+        ],
+      },
 
-      {tabId: 'delivery-route', label: '配達ルート管理', ROOT: [rootPath]},
       {tabId: 'invoices', label: '伝票印刷', ROOT: [rootPath]},
       {tabId: 'rfm', label: 'RFM分析', ROOT: [rootPath]},
 

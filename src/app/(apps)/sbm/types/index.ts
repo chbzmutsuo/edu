@@ -1,3 +1,7 @@
+type changeHistoryObject = ReservationType & {
+  items: ReservationItemType[]
+}
+
 // 顧客電話番号管理
 // export
 type CustomerPhoneType = {

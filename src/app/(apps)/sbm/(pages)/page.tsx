@@ -13,6 +13,7 @@ import {
   ChevronDown,
   Users2,
   Database,
+  Clock,
 } from 'lucide-react'
 import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 import DashboardPage from './dashboard/page'
@@ -49,6 +50,7 @@ export default function SBMApp() {
           {currentView === 'invoices' && <div>伝票印刷（実装予定）</div>}
           {currentView === 'customers' && <div>顧客マスタ（実装予定）</div>}
           {currentView === 'products' && <div>商品マスタ（実装予定）</div>}
+          {currentView === 'history' && React.createElement(React.lazy(() => import('./history/page')))}
           {currentView === 'users' && <div>ユーザーマスタ（実装予定）</div>}
         </div>
       </main>
@@ -83,6 +85,7 @@ const Header = ({
     {name: 'products', label: '商品マスタ', icon: <Package size={20} />},
     {name: 'users', label: 'ユーザーマスタ', icon: <Users2 size={20} />},
     {name: 'seed', label: 'データ管理', icon: <Database size={20} />},
+    {name: 'history', label: '変更履歴', icon: <Clock size={20} />},
   ]
 
   const NavLink = ({item}: {item: {name: string; label: string; icon: React.ReactNode}}) => (

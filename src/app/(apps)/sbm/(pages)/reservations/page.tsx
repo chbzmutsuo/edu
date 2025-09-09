@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect, useMemo} from 'react'
-import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map} from 'lucide-react'
+import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map, Clock} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 import {getReservations, getAllCustomers, getVisibleProducts, upsertReservation, deleteReservation} from '../../actions'
@@ -14,6 +14,7 @@ import {cn} from '@cm/shadcn/lib/utils'
 
 import {ReservationModal} from '@app/(apps)/sbm/(pages)/reservations/ReservationModal'
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
+import {ReservationHistoryViewer} from '@app/(apps)/sbm/components/ReservationHistoryViewer'
 
 export default function ReservationPage() {
   const [reservations, setReservations] = useState<ReservationType[]>([])
@@ -59,6 +60,7 @@ export default function ReservationPage() {
 
   const EditReservationModalReturn = useModal()
   const DeleteReservationModalReturn = useModal()
+  const ReservationHistoryModalReturn = useModal()
 
   // 統計情報を計算
   const statistics = useMemo(() => {
@@ -210,20 +212,9 @@ export default function ReservationPage() {
     }
   }
 
-  // 地図関連の処理
-  const handleShowSingleMap = (reservation: ReservationType) => {
-    setSelectedReservationForMap(reservation)
-    setShowMapModal(true)
-  }
-
   const handleShowMultipleMap = () => {
     setSelectedReservationForMap(null)
     setShowMapModal(true)
-  }
-
-  const handleCloseMap = () => {
-    setShowMapModal(false)
-    setSelectedReservationForMap(null)
   }
 
   if (loading) {
@@ -565,17 +556,24 @@ export default function ReservationPage() {
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => EditReservationModalReturn.handleOpen({reservation})}
-                        className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded"
+                        className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded h-5"
                         title="編集"
                       >
-                        <Edit size={16} />
+                        <Edit size={20} />
+                      </button>
+                      <button
+                        onClick={() => ReservationHistoryModalReturn.handleOpen({reservation})}
+                        className="p-1 text-green-600 hover:text-green-800 hover:bg-red-50 rounded h-5"
+                        title="削除"
+                      >
+                        <Clock size={20} />
                       </button>
                       <button
                         onClick={() => DeleteReservationModalReturn.handleOpen({reservation})}
-                        className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                        className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded h-5"
                         title="削除"
                       >
-                        <Trash2 size={16} />
+                        <Trash2 size={20} />
                       </button>
                     </div>
                   </td>
@@ -602,6 +600,15 @@ export default function ReservationPage() {
           onClose={EditReservationModalReturn.handleClose}
         />
       </EditReservationModalReturn.Modal>
+
+      {/* 予約履歴モーダル */}
+      <ReservationHistoryModalReturn.Modal>
+        <ReservationHistoryViewer reservationId={ReservationHistoryModalReturn.open?.reservation?.id} />
+        {/* <ReservationHistoryModal
+            reservation={ReservationHistoryModalReturn.open?.reservation}
+          />
+            onClose={() => ReservationHistoryModalReturn.handleClose()} */}
+      </ReservationHistoryModalReturn.Modal>
 
       {/* 削除確認モーダル */}
       <DeleteReservationModalReturn.Modal>
