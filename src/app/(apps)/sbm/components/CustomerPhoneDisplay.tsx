@@ -3,7 +3,7 @@
 import React, {useState, useEffect} from 'react'
 import {Phone, Plus} from 'lucide-react'
 
-import {getCustomerPhones, createCustomerPhone} from '../(builders)/serverActions'
+import {getCustomerPhones, createCustomerPhone} from '../actions'
 import {formatPhoneNumber, handlePhoneNumberInput} from '../utils/phoneUtils'
 
 export const PHONE_LABELS: PhoneLabelType[] = ['自宅', '携帯', '職場', 'FAX', 'その他']

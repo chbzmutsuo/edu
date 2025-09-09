@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect} from 'react'
 import {Printer, FileText, Search, CheckSquare, Square} from 'lucide-react'
-import {getReservations} from '../../(builders)/serverActions'
+import {getReservations} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 

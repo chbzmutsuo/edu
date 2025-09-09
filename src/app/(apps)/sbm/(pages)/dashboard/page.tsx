@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect} from 'react'
 import {BarChart2, Users, Calendar, TrendingUp} from 'lucide-react'
-import {getDashboardStats} from '../../(builders)/serverActions'
+import {getDashboardStats} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 

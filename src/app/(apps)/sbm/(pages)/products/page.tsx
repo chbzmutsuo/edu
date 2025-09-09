@@ -1,23 +1,30 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, PlusCircle, Edit, Trash2, X, Package, History} from 'lucide-react'
-import {getAllProducts, createProduct, updateProduct, deleteProduct} from '../../(builders)/serverActions'
+import {Search, PlusCircle, Edit, Trash2, Package, History, Eye, EyeOff} from 'lucide-react'
+import {
+  getAllProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  createPriceHistory,
+  updatePriceHistory,
+  deletePriceHistory,
+} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import {cn} from '@cm/shadcn/lib/utils'
+import {DeleteConfirmModal} from '@app/(apps)/sbm/(pages)/products/ConfirmModal'
+import {PriceHistoryModal} from '@app/(apps)/sbm/(pages)/products/PriceHistoryModal'
+import {ProductCl} from '@app/(apps)/sbm/(pages)/products/ProductCl'
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
   const [searchKeyword, setSearchKeyword] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
-  // const [isModalOpen, setIsModalOpen] = useState(false)
-  // const [editingProduct, setEditingProduct] = useState<Product | null>(null)
-  // const [deletingId, setDeletingId] = useState<number | null>(null)
-  // const [showPriceHistory, setShowPriceHistory] = useState<number | null>(null)
 
   useEffect(() => {
     loadProducts()
@@ -61,7 +68,7 @@ export default function ProductsPage() {
   const DeleteProductModalReturn = useModal()
   const PriceHistoryModalReturn = useModal()
 
-  const handleSave = async (productData: Partial<ProductType>) => {
+  const handleSave = async (productData: Partial<ProductType> & {currentPrice: number; currentCost: number}) => {
     try {
       const editingProduct = EditProductModalReturn?.open?.product
 
@@ -74,7 +81,10 @@ export default function ProductsPage() {
           alert(result.error || '更新に失敗しました')
         }
       } else {
-        const result = await createProduct(productData as Omit<ProductType, 'id' | 'priceHistory' | 'createdAt' | 'updatedAt'>)
+        const result = await createProduct(productData, {
+          price: productData.currentPrice || 0,
+          cost: productData.currentCost || 0,
+        })
         if (result.success) {
           await loadProducts()
           EditProductModalReturn.handleClose()
@@ -109,24 +119,43 @@ export default function ProductsPage() {
     }
   }
 
-  // // 表示/非表示切り替え
-  // const toggleVisibility = async (product: Product) => {
-  //   if (!product.id) return
+  // 表示/非表示切り替え
+  const toggleVisibility = async (product: ProductType) => {
+    if (!product.id) return
 
-  //   try {
-  //     const result = await updateProduct(Number(product.id), {
-  //       isActive: !product.isActive,
-  //     })
-  //     if (result.success) {
-  //       await loadProducts()
-  //     } else {
-  //       alert(result.error || '更新に失敗しました')
-  //     }
-  //   } catch (error) {
-  //     console.error('表示切り替えエラー:', error)
-  //     alert('更新中にエラーが発生しました')
-  //   }
-  // }
+    try {
+      const result = await updateProduct(Number(product.id), {
+        isActive: !product.isActive,
+      })
+      if (result.success) {
+        await loadProducts()
+      } else {
+        alert(result.error || '更新に失敗しました')
+      }
+    } catch (error) {
+      console.error('表示切り替えエラー:', error)
+      alert('更新中にエラーが発生しました')
+    }
+  }
+
+  // 価格履歴の保存
+
+  // 価格履歴の削除
+  const handlePriceHistoryDelete = async (priceHistoryId: number) => {
+    if (confirm('この価格履歴を削除してもよろしいですか？')) {
+      try {
+        const result = await deletePriceHistory(priceHistoryId)
+        if (result.success) {
+          await loadProducts()
+        } else {
+          alert(result.error || '削除に失敗しました')
+        }
+      } catch (error) {
+        console.error('価格履歴削除エラー:', error)
+        alert('削除中にエラーが発生しました')
+      }
+    }
+  }
 
   if (loading) {
     return (
@@ -213,10 +242,11 @@ export default function ProductsPage() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {filteredProducts.map(product => {
-                  const profitRate =
-                    product.currentPrice && product.currentCost
-                      ? ((product.currentPrice - product.currentCost) / product.currentPrice) * 100
-                      : 0
+                  const productCl = new ProductCl(product)
+
+                  const currentPrice = productCl.currentPrice
+                  const currentCost = productCl.currentCost
+                  const profitRate = currentPrice && currentCost ? ((currentPrice - currentCost) / currentPrice) * 100 : 0
 
                   const isHidden = !product.isActive
 
@@ -236,9 +266,9 @@ export default function ProductsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap font-semibold text-gray-900">
-                        ¥{product.currentPrice?.toLocaleString()}
+                        ¥{currentPrice?.toLocaleString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">¥{product.currentCost?.toLocaleString()}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-600">¥{currentCost?.toLocaleString()}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`font-semibold ${profitRate >= 30 ? 'text-green-600' : profitRate >= 20 ? 'text-yellow-600' : 'text-red-600'}`}
@@ -262,7 +292,7 @@ export default function ProductsPage() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center space-x-2">
-                          {/* <button
+                          <button
                             onClick={() => toggleVisibility(product)}
                             className={`${
                               product.isActive ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400 hover:text-gray-600'
@@ -270,7 +300,7 @@ export default function ProductsPage() {
                             title={product.isActive ? '非表示にする' : '表示する'}
                           >
                             {product.isActive ? <Eye size={16} /> : <EyeOff size={16} />}
-                          </button> */}
+                          </button>
                           <button
                             onClick={() => PriceHistoryModalReturn.handleOpen({product})}
                             className="text-green-600 hover:text-green-800"
@@ -323,12 +353,14 @@ export default function ProductsPage() {
         </Padding>
       </EditProductModalReturn.Modal>
 
-      {/* 価格履歴モーダル */}
+      {/* 統合された価格履歴モーダル */}
       <PriceHistoryModalReturn.Modal>
         <Padding>
           <PriceHistoryModal
+            loadProducts={loadProducts}
             product={PriceHistoryModalReturn?.open?.product}
             onClose={() => PriceHistoryModalReturn.handleClose()}
+            onDelete={handlePriceHistoryDelete}
           />
         </Padding>
       </PriceHistoryModalReturn.Modal>
@@ -336,7 +368,7 @@ export default function ProductsPage() {
       {/* 削除確認モーダル */}
       <DeleteProductModalReturn.Modal>
         <Padding>
-          <ConfirmModal
+          <DeleteConfirmModal
             title="商品削除確認"
             message="この商品を削除してもよろしいですか？この操作は元に戻せません。"
             onConfirm={handleDelete}
@@ -355,14 +387,22 @@ const ProductModal = ({
   onClose,
 }: {
   product: ProductType | null
-  onSave: (productData: Partial<ProductType>) => void
+  onSave: (productData: Partial<ProductType>, priceData: {price: number; cost: number}) => void
   onClose: () => void
 }) => {
-  const [formData, setFormData] = useState<Partial<ProductType>>({
+  // UTC当日0時を取得する関数
+
+  type FormData = Partial<ProductType> & {
+    currentPrice: number
+    currentCost: number
+  }
+
+  const [formData, setFormData] = useState<FormData>({
     name: product?.name || '',
     description: product?.description || '',
-    currentPrice: product?.currentPrice || 0,
-    currentCost: product?.currentCost || 0,
+    sbmProductId: product?.sbmProductId || 0,
+    currentCost: 0,
+    currentPrice: 0,
     category: product?.category || '',
     isActive: product?.isActive ?? true,
   })
@@ -390,7 +430,10 @@ const ProductModal = ({
       }
     }
 
-    onSave(formData)
+    onSave(formData, {
+      price: formData.currentPrice || 0,
+      cost: formData.currentCost || 0,
+    })
   }
 
   const profitRate =
@@ -458,7 +501,7 @@ const ProductModal = ({
         </div>
       </div>
 
-      {formData.currentPrice && formData.currentCost && (
+      {!!formData.currentPrice && !!formData.currentCost && (
         <div className="bg-gray-50 p-3 rounded-md">
           <span className="text-sm text-gray-600">利益率: </span>
           <span
@@ -471,17 +514,6 @@ const ProductModal = ({
           </span>
         </div>
       )}
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">商品説明</label>
-        <textarea
-          name="description"
-          value={formData.description || ''}
-          onChange={handleInputChange}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
 
       <div className="space-y-3">
         <div className="flex items-center">
@@ -511,91 +543,3 @@ const ProductModal = ({
     </form>
   )
 }
-
-// 価格履歴モーダル
-const PriceHistoryModal = ({product, onClose}: {product: ProductType | null; onClose: () => void}) => {
-  if (!product) return null
-
-  return (
-    <div className="inline-block w-full max-w-2xl p-6 my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">価格履歴 - {product.name}</h2>
-        <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-          <X size={24} />
-        </button>
-      </div>
-
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">適用日</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">販売価格</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">原価</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">利益率</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {product.priceHistory && product.priceHistory.length > 0 ? (
-              product.priceHistory.map((history, index) => {
-                const profitRate = ((history.price! - history.cost!) / history.price!) * 100
-                return (
-                  <tr key={history.id || index}>
-                    <td className="px-4 py-3 text-sm text-gray-900">{formatDate(history.effectiveDate!)}</td>
-                    <td className="px-4 py-3 text-sm font-semibold text-gray-900">¥{history.price?.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">¥{history.cost?.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-sm">
-                      <span
-                        className={`font-semibold ${profitRate >= 30 ? 'text-green-600' : profitRate >= 20 ? 'text-yellow-600' : 'text-red-600'}`}
-                      >
-                        {profitRate.toFixed(1)}%
-                      </span>
-                    </td>
-                  </tr>
-                )
-              })
-            ) : (
-              <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                  価格履歴がありません
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="mt-6 flex justify-end">
-        <button onClick={onClose} className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors">
-          閉じる
-        </button>
-      </div>
-    </div>
-  )
-}
-
-// 確認モーダル
-const ConfirmModal = ({
-  title,
-  message,
-  onConfirm,
-  onClose,
-}: {
-  title: string
-  message: string
-  onConfirm: () => void
-  onClose: () => void
-}) => (
-  <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-    <h3 className="text-lg font-medium text-gray-900 mb-4">{title}</h3>
-    <p className="text-gray-600 mb-6">{message}</p>
-    <div className="flex justify-end space-x-3">
-      <button onClick={onClose} className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors">
-        キャンセル
-      </button>
-      <button onClick={onConfirm} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
-        削除
-      </button>
-    </div>
-  </div>
-)

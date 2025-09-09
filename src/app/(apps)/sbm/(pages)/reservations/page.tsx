@@ -4,13 +4,7 @@ import React, {useState, useEffect, useMemo} from 'react'
 import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
-import {
-  getReservations,
-  getAllCustomers,
-  getVisibleProducts,
-  upsertReservation,
-  deleteReservation,
-} from '../../(builders)/serverActions'
+import {getReservations, getAllCustomers, getVisibleProducts, upsertReservation, deleteReservation} from '../../actions'
 
 import {ORDER_CHANNEL_OPTIONS, PURPOSE_OPTIONS, PAYMENT_METHOD_OPTIONS, PICKUP_LOCATION_OPTIONS} from '../../(constants)'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -422,7 +416,7 @@ export default function ReservationPage() {
                 {columnVisibility.paymentMethod && <th className="px-3 py-3 min-w-[100px]">支払方法</th>}
                 {columnVisibility.orderChannel && <th className="px-3 py-3 min-w-[80px]">注文経路</th>}
                 {columnVisibility.productDetails && <th className="px-3 py-3 min-w-[200px]">商品詳細</th>}
-                {columnVisibility.priceDetails && <th className="px-3 py-3 min-w-[120px]">金額詳細</th>}
+                {columnVisibility.priceDetails && <th className="px-3 py-3 min-w-[140px]">金額詳細</th>}
                 {columnVisibility.staff && <th className="px-3 py-3 min-w-[80px]">担当者</th>}
                 {columnVisibility.progress && <th className="px-3 py-3 min-w-[80px]">進捗</th>}
                 {columnVisibility.notes && <th className="px-3 py-3 min-w-[150px]">備考</th>}
@@ -495,16 +489,16 @@ export default function ReservationPage() {
 
                   {/* 商品詳細 */}
                   <td>
-                    <div className="text-sm ">
+                    <div className="text-sm leading-4">
                       {reservation.items?.map((item, index) => (
-                        <R_Stack key={index} className="mb-1 flex-nowrap justify-between">
+                        <div key={index} className="mb-1 flex-nowrap justify-between">
                           <div className="font-medium text-gray-900 ">
                             ・{item.productName} x{item.quantity}
                           </div>
-                          {/* <div className="text-gray-500 text-xs ml-4 ">
+                          <div className="text-gray-500 text-xs ml-4 ">
                             ¥{item.unitPrice?.toLocaleString()} × {item.quantity} = ¥{item.totalPrice?.toLocaleString()}
-                          </div> */}
-                        </R_Stack>
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </td>
@@ -514,7 +508,7 @@ export default function ReservationPage() {
                     <div className="text-sm">
                       <div className="font-semibold text-gray-900">合計: ¥{reservation.totalAmount?.toLocaleString()}</div>
                       {(reservation.pointsUsed || 0) > 0 && (
-                        <div className="text-red-600">ポイント: -¥{reservation.pointsUsed?.toLocaleString()}</div>
+                        <div className="text-red-600">P: -¥{reservation.pointsUsed?.toLocaleString()}</div>
                       )}
                       <div className="font-semibold text-blue-600">支払: ¥{reservation.finalAmount?.toLocaleString()}</div>
                     </div>

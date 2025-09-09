@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect} from 'react'
 import {Search, Phone, User, X, Loader2} from 'lucide-react'
-import {searchCustomersByPhone} from '../(builders)/serverActions'
+import {searchCustomersByPhone} from '../actions'
 
 import {formatPhoneNumber} from '../utils/phoneUtils'
 

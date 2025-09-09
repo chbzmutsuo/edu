@@ -2,7 +2,7 @@
 
 import React, {useState, useEffect} from 'react'
 import {BarChart3, TrendingUp, Users, Target, Calendar} from 'lucide-react'
-import {getRFMAnalysis} from '../(builders)/serverActions'
+import {getRFMAnalysis} from '../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 

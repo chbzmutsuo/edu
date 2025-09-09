@@ -14,20 +14,19 @@ type ProductType = Partial<{
   id: number
   name: string
   description?: string
-  currentPrice: number
-  currentCost: number
+  sbmProductId: number
   category: string
   isActive: boolean
 
   createdAt: Date
   updatedAt: Date
-  priceHistory?: ProductPriceHistoryType[]
+  SbmProductPriceHistory: ProductPriceHistoryType[]
 }>
 
 // export
 type ProductPriceHistoryType = Partial<{
   id: number
-  productId: string
+  sbmProductId: number
   price: number
   cost: number
   effectiveDate: Date

@@ -4,7 +4,7 @@ import React, {useState} from 'react'
 import {Phone, ShoppingCart} from 'lucide-react'
 import {handlePhoneNumberInput} from '../../utils/phoneUtils'
 
-import {createOrUpdateCustomer, searchCustomersByPhone, getCustomerPhones} from '../../(builders)/serverActions'
+import {createOrUpdateCustomer, searchCustomersByPhone, getCustomerPhones, getProductPriceAtDate} from '../../actions'
 
 import {
   ORDER_CHANNEL_OPTIONS,
@@ -26,6 +26,7 @@ import CustomerLinkNotification from '../../components/CustomerLinkNotification'
 import CustomerSelectionList from '../../components/CustomerSelectionList'
 
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {ProductCl} from '@app/(apps)/sbm/(pages)/products/ProductCl'
 
 // 電話番号ラベル
 const PHONE_LABELS: PhoneLabelType[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
@@ -147,15 +148,38 @@ export const ReservationModal = ({
   }
 
   // 商品を選択リストに追加
-  const addProductToOrder = (product: ProductType) => {
+  const addProductToOrder = async (product: ProductType) => {
+    const productCl = new ProductCl(product)
     const existingItem = formData.selectedItems.find((item: ReservationItemType) => item.sbmProductId === product.id)
+
+    // 配達日時を取得
+    const deliveryDateTime = new Date(`${formData.deliveryDate}T${formData.deliveryTime || '12:00'}`)
+
+    // 適用日以降の最新価格を取得
+    let effectivePrice = productCl.currentPrice!
+    let effectiveCost = productCl.currentCost!
+
+    if (product.id) {
+      const priceAtDate = await getProductPriceAtDate(product.id, deliveryDateTime)
+      if (priceAtDate !== null) {
+        effectivePrice = priceAtDate
+        // 原価については価格履歴から取得するか、現在の原価を使用
+        // 価格履歴に原価も含まれている場合は、それを使用する
+        const SbmProductPriceHistory = product.SbmProductPriceHistory?.find(
+          h => h.effectiveDate && new Date(h.effectiveDate) <= deliveryDateTime
+        )
+        if (SbmProductPriceHistory?.cost) {
+          effectiveCost = SbmProductPriceHistory.cost
+        }
+      }
+    }
 
     if (existingItem) {
       setFormData((prev: any) => ({
         ...prev,
         selectedItems: prev.selectedItems.map((item: ReservationItemType) =>
           item.sbmProductId === product.id
-            ? {...item, quantity: (item.quantity || 0) + 1, totalPrice: ((item.quantity || 0) + 1) * (item.unitPrice || 0)}
+            ? {...item, quantity: (item.quantity || 0) + 1, totalPrice: ((item.quantity || 0) + 1) * effectivePrice}
             : item
         ),
       }))
@@ -164,9 +188,9 @@ export const ReservationModal = ({
         sbmProductId: product.id!,
         productName: product.name!,
         quantity: 1,
-        unitPrice: product.currentPrice!,
-        unitCost: product.currentCost!,
-        totalPrice: product.currentPrice!,
+        unitPrice: effectivePrice,
+        unitCost: effectiveCost,
+        totalPrice: effectivePrice,
       }
 
       setFormData((prev: any) => ({
@@ -178,26 +202,26 @@ export const ReservationModal = ({
   }
 
   // 商品数量を更新
-  const updateItemQuantity = (productId: number, quantity: number) => {
+  const updateItemQuantity = (sbmProductId: number, quantity: number) => {
     if (quantity <= 0) {
-      removeItemFromOrder(productId)
+      removeItemFromOrder(sbmProductId)
       return
     }
 
     setFormData((prev: any) => ({
       ...prev,
       selectedItems: prev.selectedItems.map((item: ReservationItemType) =>
-        item.sbmProductId === productId ? {...item, quantity, totalPrice: quantity * (item.unitPrice || 0)} : item
+        item.sbmProductId === sbmProductId ? {...item, quantity, totalPrice: quantity * (item.unitPrice || 0)} : item
       ),
     }))
     calculateTotals()
   }
 
   // 商品を注文から削除
-  const removeItemFromOrder = (productId: number) => {
+  const removeItemFromOrder = (sbmProductId: number) => {
     setFormData((prev: any) => ({
       ...prev,
-      selectedItems: prev.selectedItems.filter((item: ReservationItemType) => item.sbmProductId !== productId),
+      selectedItems: prev.selectedItems.filter((item: ReservationItemType) => item.sbmProductId !== sbmProductId),
     }))
     calculateTotals()
   }
@@ -229,6 +253,44 @@ export const ReservationModal = ({
     if (name === 'pointsUsed') {
       calculateTotals()
     }
+
+    // 配達日時が変更された場合は、既存商品の価格を再計算
+    if (name === 'deliveryDate' || name === 'deliveryTime') {
+      recalculateItemPrices()
+    }
+  }
+
+  // 既存商品の価格を再計算
+  const recalculateItemPrices = async () => {
+    if (!formData.selectedItems || formData.selectedItems.length === 0) return
+
+    const deliveryDateTime = new Date(`${formData.deliveryDate}T${formData.deliveryTime || '12:00'}`)
+
+    const updatedItems = await Promise.all(
+      formData.selectedItems.map(async (item: ReservationItemType) => {
+        if (!item.sbmProductId) return item
+
+        // 適用日以降の最新価格を取得
+        const priceAtDate = await getProductPriceAtDate(item.sbmProductId, deliveryDateTime)
+
+        if (priceAtDate !== null) {
+          return {
+            ...item,
+            unitPrice: priceAtDate,
+            totalPrice: (item.quantity || 0) * priceAtDate,
+          }
+        }
+
+        return item
+      })
+    )
+
+    setFormData((prev: any) => ({
+      ...prev,
+      selectedItems: updatedItems,
+    }))
+
+    calculateTotals()
   }
 
   // 電話番号入力時の処理
@@ -632,7 +694,7 @@ export const ReservationModal = ({
                   .filter(p => p.isActive)
                   .map(product => (
                     <option key={product.id} value={product.id}>
-                      {product.name} (¥{product.currentPrice?.toLocaleString()})
+                      {product.name} (¥{new ProductCl(product).currentPrice?.toLocaleString()})
                     </option>
                   ))}
               </select>

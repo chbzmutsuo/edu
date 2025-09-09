@@ -41,13 +41,12 @@ model SbmCustomerPhone {
 }
 
 model SbmProduct {
-  id           Int     @id @default(autoincrement())
-  name         String  @db.VarChar(200)
-  description  String? @db.Text
-  currentPrice Int // 現在価格（円）
-  currentCost  Int // 現在原価（円）
-  category     String  @db.VarChar(100)
-  isActive     Boolean @default(true)
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(200)
+  description String? @db.Text
+
+  category String  @db.VarChar(100)
+  isActive Boolean @default(true)
 
   // タイムスタンプ
   createdAt DateTime @default(now())
@@ -59,8 +58,8 @@ model SbmProduct {
 }
 
 model SbmProductPriceHistory {
-  id            Int      @id @default(autoincrement())
-  productId     String
+  id Int @id @default(autoincrement())
+
   price         Int // 価格（円）
   cost          Int // 原価（円）
   effectiveDate DateTime

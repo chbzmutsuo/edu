@@ -3,7 +3,7 @@
 import React, {useState, useEffect} from 'react'
 import {Truck, Calendar, Plus, Clock, MapPin} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {getReservations} from '../../(builders)/serverActions'
+import {getReservations} from '../../actions'
 import {
   getDeliveryGroupsByDate,
   createDeliveryGroup,

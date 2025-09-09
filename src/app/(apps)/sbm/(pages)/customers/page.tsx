@@ -2,13 +2,7 @@
 
 import React, {useState, useEffect} from 'react'
 import {Search, PlusCircle, Edit, Trash2, Users, Phone} from 'lucide-react'
-import {
-  getAllCustomers,
-  createCustomer,
-  updateCustomer,
-  deleteCustomer,
-  updateCustomerPhoneList,
-} from '../../(builders)/serverActions'
+import {getAllCustomers, createCustomer, updateCustomer, deleteCustomer, updateCustomerPhoneList} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'

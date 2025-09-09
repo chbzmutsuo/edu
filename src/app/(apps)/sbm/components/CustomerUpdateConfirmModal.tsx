@@ -21,7 +21,7 @@ const CustomerUpdateConfirmModal: React.FC<CustomerUpdateConfirmModalProps> = ({
           <h3 className="text-lg font-semibold text-gray-900">顧客情報の更新</h3>
         </div>
         <p className="text-gray-600 mb-6">
-          入力された顧客情報をマスタに登録（更新）しますか？
+          予約データを作成しますか？
           <br />
           <small className="text-gray-500">今後同じ電話番号で検索できるようになります。</small>
         </p>
