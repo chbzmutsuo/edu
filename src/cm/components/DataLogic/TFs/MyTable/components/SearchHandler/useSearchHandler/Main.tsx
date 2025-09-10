@@ -40,6 +40,7 @@ export const Main = ({
             <div>
               <SearchBasicForm
                 {...{
+                  alignMode: `console`,
                   className: `max-h-[60vh]  overflow-auto relative p-2`,
                   onSubmit: data => {
                     confirmSearch({

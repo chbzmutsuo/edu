@@ -2,6 +2,9 @@
 :root {
   color: oklch(0.32 0 0);
   --color-border-gray: oklch(0.8 0.032 261.325);
+  --color-secondary-main: oklch(0.65 0.05 250);
+  --color-secondary-light: oklch(0.9 0.03 250);
+  --color-destructive: oklch(0.55 0.25 30);
   --color-background: oklch(1 0 0);
   --color-primary-main: #407eb9;
   --color-primary-light: #ebf5fb;
@@ -40,6 +43,7 @@
 @theme {
   --color-border-gray: var(--color-border-gray);
   --color-background: var(--color-background);
+  --color-destructive: var(--color-destructive);
   --color-primary-main: var(--color-primary-main);
   --color-primary-light: var(--color-primary-light);
   --color-primary-text: var(--color-primary-text);

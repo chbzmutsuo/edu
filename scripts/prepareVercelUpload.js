@@ -104,17 +104,10 @@ const ProPlanVercelJson = {
       path: '/sohken/api/cron/refreshGoogleCalendar',
       schedule: '0 */3 * * *',
     },
-    {
-      path: '/aquapot/api/cron/createInventoryByMonth',
-      schedule: '0 14 * * *',
-    },
+
     {
       path: '/stock/api/cron/4_dailyBatchAll',
       schedule: '0 22 * * *',
-    },
-    {
-      path: '/aquapot/api/cron/createAqCustomerSubscriptionSaleRecord',
-      schedule: '15 15 * * *',
     },
   ],
   build: {

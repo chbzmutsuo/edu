@@ -186,9 +186,9 @@ const TravelTimeCalculator: React.FC<TravelTimeCalculatorProps> = ({reservations
     }
   }
 
-  if (sortedReservations.length < 2) {
-    return <div className="text-sm text-gray-500 p-4">所要時間を計算するには2件以上の予約が必要です</div>
-  }
+  // if (sortedReservations.length < 2) {
+  //   return <div className="text-sm text-gray-500 p-4">所要時間を計算するには2件以上の予約が必要です</div>
+  // }
 
   if (loading) {
     return (

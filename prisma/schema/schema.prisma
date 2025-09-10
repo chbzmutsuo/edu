@@ -117,8 +117,9 @@ model User {
   SbmDeliveryAssignment SbmDeliveryAssignment[]
 
   // トレーニングアプリ リレーション
-  ExerciseMaster ExerciseMaster[]
-  WorkoutLog     WorkoutLog[]
+  ExerciseMaster              ExerciseMaster[]
+  WorkoutLog                  WorkoutLog[]
+  SbmReservationChangeHistory SbmReservationChangeHistory[]
 }
 
 model ReleaseNotes {

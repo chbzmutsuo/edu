@@ -1,20 +1,22 @@
 'use client'
 
 import React, {useState, useEffect, useMemo} from 'react'
-import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map, Clock} from 'lucide-react'
+import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map, Clock, Ban} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 import {getReservations, getAllCustomers, getVisibleProducts, upsertReservation, deleteReservation} from '../../actions'
+import {cancelReservation} from '../../actions/cancel-reservation'
 
 import {ORDER_CHANNEL_OPTIONS, PURPOSE_OPTIONS, PAYMENT_METHOD_OPTIONS, PICKUP_LOCATION_OPTIONS} from '../../(constants)'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
-import {Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Padding} from '@cm/components/styles/common-components/common-components'
 import {cn} from '@cm/shadcn/lib/utils'
 
 import {ReservationModal} from '@app/(apps)/sbm/(pages)/reservations/ReservationModal'
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 import {ReservationHistoryViewer} from '@app/(apps)/sbm/components/ReservationHistoryViewer'
+import {CancelReservationModal} from '@app/(apps)/sbm/components/CancelReservationModal'
 
 export default function ReservationPage() {
   const [reservations, setReservations] = useState<ReservationType[]>([])
@@ -61,6 +63,7 @@ export default function ReservationPage() {
   const EditReservationModalReturn = useModal()
   const DeleteReservationModalReturn = useModal()
   const ReservationHistoryModalReturn = useModal()
+  const CancelReservationModalReturn = useModal()
 
   // 統計情報を計算
   const statistics = useMemo(() => {
@@ -208,6 +211,24 @@ export default function ReservationPage() {
         DeleteReservationModalReturn.handleClose()
       } catch (error) {
         console.error('削除に失敗しました:', error)
+      }
+    }
+  }
+
+  // 予約取り消し処理
+  const handleCancelReservation = async (reason: string, userId) => {
+    if (CancelReservationModalReturn.open?.reservation) {
+      try {
+        const result = await cancelReservation(Number(CancelReservationModalReturn.open.reservation.id), reason, userId)
+
+        if (result.success) {
+          await loadReservations()
+          CancelReservationModalReturn.handleClose()
+        } else {
+          console.error('予約取り消しエラー:', result.error)
+        }
+      } catch (error) {
+        console.error('予約取り消し処理に失敗しました:', error)
       }
     }
   }
@@ -563,10 +584,18 @@ export default function ReservationPage() {
                       </button>
                       <button
                         onClick={() => ReservationHistoryModalReturn.handleOpen({reservation})}
-                        className="p-1 text-green-600 hover:text-green-800 hover:bg-red-50 rounded h-5"
-                        title="削除"
+                        className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded h-5"
+                        title="履歴"
                       >
                         <Clock size={20} />
+                      </button>
+                      <button
+                        onClick={() => CancelReservationModalReturn.handleOpen({reservation})}
+                        className="p-1 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded h-5"
+                        title="取り消し"
+                        disabled={reservation.isCanceled === true}
+                      >
+                        <Ban size={20} className={reservation.isCanceled === true ? 'opacity-30' : ''} />
                       </button>
                       <button
                         onClick={() => DeleteReservationModalReturn.handleOpen({reservation})}
@@ -621,6 +650,15 @@ export default function ReservationPage() {
           />
         </Padding>
       </DeleteReservationModalReturn.Modal>
+
+      {/* 取り消し確認モーダル */}
+      <CancelReservationModalReturn.Modal>
+        <CancelReservationModal
+          reservation={CancelReservationModalReturn.open?.reservation}
+          onCancel={() => CancelReservationModalReturn.handleClose()}
+          onConfirm={handleCancelReservation}
+        />
+      </CancelReservationModalReturn.Modal>
     </div>
   )
 }

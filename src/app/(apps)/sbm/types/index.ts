@@ -62,6 +62,11 @@ type ReservationType = Partial<{
   notes?: string
   deliveryCompleted: boolean
   recoveryCompleted: boolean
+  // キャンセル関連情報
+  isCanceled: boolean
+  canceledAt?: Date
+
+  cancelReason?: string
   createdAt: Date
   updatedAt: Date
   items?: ReservationItemType[]
@@ -100,8 +105,8 @@ type ReservationTaskType = Partial<{
 type ReservationChangeHistoryType = Partial<{
   id: string
   sbmReservationId: number
-  changedBy: string
-  changeType: 'create' | 'update' | 'delete'
+
+  changeType: 'create' | 'update' | 'delete' | 'cancel' | 'restore'
   changedFields?: Record<string, any>
   oldValues?: Record<string, any>
   newValues?: Record<string, any>

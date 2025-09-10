@@ -256,6 +256,48 @@ export const createDeliveryGroup = async (
 }
 
 /**
+ * 複数の配達グループを一括作成
+ */
+export const createMultipleDeliveryGroups = async (
+  count: number,
+  date: Date,
+  userId: number,
+  userName: string
+): Promise<{success: boolean; groups?: DeliveryGroupType[]; error?: string}> => {
+  try {
+    const groups: DeliveryGroupType[] = []
+
+    // トランザクションで複数のグループを作成
+    await prisma.$transaction(async tx => {
+      for (let i = 1; i <= count; i++) {
+        const newGroup = await tx.sbmDeliveryGroup.create({
+          data: {
+            name: `チーム${i}`,
+            deliveryDate: date,
+            userId,
+            userName,
+            status: 'planning',
+          },
+        })
+
+        groups.push(newGroup as unknown as DeliveryGroupType)
+      }
+    })
+
+    return {
+      success: true,
+      groups,
+    }
+  } catch (error) {
+    console.error('複数配達グループ作成エラー:', error)
+    return {
+      success: false,
+      error: '配達グループの一括作成に失敗しました',
+    }
+  }
+}
+
+/**
  * 予約を配達グループに割り当て
  */
 export async function assignReservationToGroup(
@@ -335,6 +377,100 @@ export async function assignReservationToGroup(
     return {
       success: false,
       error: '予約の割り当てに失敗しました',
+    }
+  }
+}
+
+/**
+ * 複数の予約を一括で配達グループに割り当て
+ */
+export async function assignMultipleReservationsToGroup(
+  groupId: number,
+  reservationIds: number[]
+): Promise<{success: boolean; error?: string}> {
+  try {
+    if (reservationIds.length === 0) {
+      return {
+        success: false,
+        error: '割り当てる予約がありません',
+      }
+    }
+
+    // トランザクションで処理
+    await prisma.$transaction(async tx => {
+      // グループ内の最大配達順序を取得
+      const maxOrder = await tx.sbmDeliveryGroupReservation.aggregate({
+        where: {
+          sbmDeliveryGroupId: groupId,
+        },
+        _max: {
+          deliveryOrder: true,
+        },
+      })
+
+      let nextOrder = (maxOrder._max.deliveryOrder || 0) + 1
+
+      // 各予約を処理
+      for (const reservationId of reservationIds) {
+        // 他のグループへの割り当てを確認
+        const otherAssignment = await tx.sbmDeliveryGroupReservation.findFirst({
+          where: {
+            sbmReservationId: reservationId,
+          },
+        })
+
+        // 他のグループに割り当てられていれば削除
+        if (otherAssignment) {
+          await tx.sbmDeliveryGroupReservation.delete({
+            where: {
+              id: otherAssignment.id,
+            },
+          })
+
+          // 元のグループの予約数を減らす
+          if (otherAssignment.sbmDeliveryGroupId !== groupId) {
+            await tx.sbmDeliveryGroup.update({
+              where: {id: otherAssignment.sbmDeliveryGroupId},
+              data: {
+                totalReservations: {
+                  decrement: 1,
+                },
+              },
+            })
+          } else {
+            // 同じグループ内での再割り当ての場合はスキップ
+            continue
+          }
+        }
+
+        // 新しいグループに割り当て
+        await tx.sbmDeliveryGroupReservation.create({
+          data: {
+            sbmDeliveryGroupId: groupId,
+            sbmReservationId: reservationId,
+            deliveryOrder: nextOrder++,
+            isCompleted: false,
+          },
+        })
+      }
+
+      // グループの予約数を更新
+      await tx.sbmDeliveryGroup.update({
+        where: {id: groupId},
+        data: {
+          totalReservations: {
+            increment: reservationIds.length,
+          },
+        },
+      })
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('複数予約割り当てエラー:', error)
+    return {
+      success: false,
+      error: '予約の一括割り当てに失敗しました',
     }
   }
 }
@@ -474,6 +610,190 @@ export async function sortGroupReservationsByDeliveryTime(groupId: number): Prom
     return {
       success: false,
       error: '予約の並べ替えに失敗しました',
+    }
+  }
+}
+
+/**
+ * グループ内の予約の順序を変更
+ */
+export async function changeReservationOrder(
+  groupId: number,
+  reservationId: number,
+  newOrder: number
+): Promise<{success: boolean; error?: string}> {
+  try {
+    // グループに割り当てられた予約を取得
+    const groupReservations = await prisma.sbmDeliveryGroupReservation.findMany({
+      where: {sbmDeliveryGroupId: groupId},
+      orderBy: {deliveryOrder: 'asc'},
+    })
+
+    if (groupReservations.length === 0) {
+      return {
+        success: false,
+        error: 'このグループに割り当てられた予約がありません',
+      }
+    }
+
+    // 対象の予約を見つける
+    const targetReservation = groupReservations.find(gr => gr.sbmReservationId === reservationId)
+    if (!targetReservation) {
+      return {
+        success: false,
+        error: '指定された予約がこのグループに見つかりません',
+      }
+    }
+
+    // 新しい順序が範囲内かチェック
+    const maxOrder = groupReservations.length
+    if (newOrder < 1 || newOrder > maxOrder) {
+      return {
+        success: false,
+        error: `順序は1から${maxOrder}の間で指定してください`,
+      }
+    }
+
+    // 現在の順序
+    const currentOrder = targetReservation.deliveryOrder ?? 0
+
+    // 同じ順序なら何もしない
+    if (currentOrder === newOrder) {
+      return {success: true}
+    }
+
+    // トランザクションで順序を更新
+    await prisma.$transaction(async tx => {
+      if (newOrder > currentOrder) {
+        // 下に移動する場合、間の予約を上に移動
+        await tx.sbmDeliveryGroupReservation.updateMany({
+          where: {
+            sbmDeliveryGroupId: groupId,
+            deliveryOrder: {
+              gt: currentOrder,
+              lte: newOrder,
+            },
+          },
+          data: {
+            deliveryOrder: {decrement: 1},
+          },
+        })
+      } else {
+        // 上に移動する場合、間の予約を下に移動
+        await tx.sbmDeliveryGroupReservation.updateMany({
+          where: {
+            sbmDeliveryGroupId: groupId,
+            deliveryOrder: {
+              gte: newOrder,
+              lt: currentOrder,
+            },
+          },
+          data: {
+            deliveryOrder: {increment: 1},
+          },
+        })
+      }
+
+      // 対象の予約を新しい順序に更新
+      await tx.sbmDeliveryGroupReservation.update({
+        where: {id: targetReservation.id},
+        data: {deliveryOrder: newOrder},
+      })
+    })
+
+    return {success: true}
+  } catch (error) {
+    console.error('予約順序変更エラー:', error)
+    return {
+      success: false,
+      error: '予約の順序変更に失敗しました',
+    }
+  }
+}
+
+/**
+ * グループ内の予約を1つ上に移動
+ */
+export async function moveReservationUp(groupId: number, reservationId: number): Promise<{success: boolean; error?: string}> {
+  try {
+    // 予約の現在の順序を取得
+    const currentReservation = await prisma.sbmDeliveryGroupReservation.findFirst({
+      where: {
+        sbmDeliveryGroupId: groupId,
+        sbmReservationId: reservationId,
+      },
+    })
+
+    if (!currentReservation) {
+      return {
+        success: false,
+        error: '指定された予約がこのグループに見つかりません',
+      }
+    }
+
+    const currentOrder = currentReservation.deliveryOrder ?? 0
+
+    // 既に最上部なら何もしない
+    if (currentOrder <= 1) {
+      return {
+        success: true,
+        error: 'この予約は既に最上部にあります',
+      }
+    }
+
+    // 1つ上の順序に変更
+    return await changeReservationOrder(groupId, reservationId, currentOrder - 1)
+  } catch (error) {
+    console.error('予約上移動エラー:', error)
+    return {
+      success: false,
+      error: '予約の移動に失敗しました',
+    }
+  }
+}
+
+/**
+ * グループ内の予約を1つ下に移動
+ */
+export async function moveReservationDown(groupId: number, reservationId: number): Promise<{success: boolean; error?: string}> {
+  try {
+    // 予約の現在の順序を取得
+    const currentReservation = await prisma.sbmDeliveryGroupReservation.findFirst({
+      where: {
+        sbmDeliveryGroupId: groupId,
+        sbmReservationId: reservationId,
+      },
+    })
+
+    if (!currentReservation) {
+      return {
+        success: false,
+        error: '指定された予約がこのグループに見つかりません',
+      }
+    }
+
+    // グループ内の予約数を取得
+    const count = await prisma.sbmDeliveryGroupReservation.count({
+      where: {sbmDeliveryGroupId: groupId},
+    })
+
+    const currentOrder = currentReservation.deliveryOrder ?? 0
+
+    // 既に最下部なら何もしない
+    if (currentOrder >= count) {
+      return {
+        success: true,
+        error: 'この予約は既に最下部にあります',
+      }
+    }
+
+    // 1つ下の順序に変更
+    return await changeReservationOrder(groupId, reservationId, currentOrder + 1)
+  } catch (error) {
+    console.error('予約下移動エラー:', error)
+    return {
+      success: false,
+      error: '予約の移動に失敗しました',
     }
   }
 }

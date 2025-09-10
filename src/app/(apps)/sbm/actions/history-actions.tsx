@@ -6,7 +6,7 @@ export type HistoryFilterType = {
   startDate?: string
   endDate?: string
   changeType?: string
-  changedBy?: string
+
   keyword?: string
 }
 
@@ -32,14 +32,6 @@ export const getReservationHistories = async (filter: HistoryFilterType = {}) =>
     where.changeType = filter.changeType
   }
 
-  // 変更者フィルター
-  if (filter.changedBy) {
-    where.changedBy = {
-      contains: filter.changedBy,
-      mode: 'insensitive',
-    }
-  }
-
   // キーワード検索
   if (filter.keyword) {
     const keyword = filter.keyword
@@ -51,7 +43,6 @@ export const getReservationHistories = async (filter: HistoryFilterType = {}) =>
     } else {
       // キーワードで検索（JSONフィールド内も検索）
       where.OR = [
-        {changedBy: {contains: keyword, mode: 'insensitive'}},
         {oldValues: {path: ['customerName'], string_contains: keyword}},
         {newValues: {path: ['customerName'], string_contains: keyword}},
         {oldValues: {path: ['items'], array_contains: [{productName: {contains: keyword}}]}},
@@ -91,8 +82,9 @@ export const getReservationHistories = async (filter: HistoryFilterType = {}) =>
     return histories.map(h => ({
       id: h.id,
       sbmReservationId: h.sbmReservationId,
+      userId: h.userId,
       customerName: reservationMap.get(h.sbmReservationId)?.customerName || '',
-      changedBy: h.changedBy,
+
       changeType: h.changeType,
       changedFields: h.changedFields,
       oldValues: h.oldValues,
@@ -119,8 +111,9 @@ export const getReservationHistoryById = async (reservationId: number) => {
 
     return histories.map(h => ({
       id: h.id,
+      userId: h.userId,
       sbmReservationId: h.sbmReservationId,
-      changedBy: h.changedBy,
+
       changeType: h.changeType,
       changedFields: h.changedFields,
       oldValues: h.oldValues,
@@ -130,68 +123,5 @@ export const getReservationHistoryById = async (reservationId: number) => {
   } catch (error) {
     console.error('変更履歴取得エラー:', error)
     return []
-  }
-}
-
-// 変更履歴の統計情報を取得する関数
-export const getHistoryStatistics = async (period: 'day' | 'week' | 'month' = 'week') => {
-  try {
-    // 期間の開始日を計算
-    const now = new Date()
-    const startDate = new Date()
-
-    switch (period) {
-      case 'day':
-        startDate.setDate(now.getDate() - 1)
-        break
-      case 'week':
-        startDate.setDate(now.getDate() - 7)
-        break
-      case 'month':
-        startDate.setMonth(now.getMonth() - 1)
-        break
-    }
-
-    // 変更タイプごとの集計
-    const changeTypeCounts = await prisma.$queryRaw`
-      SELECT
-        "changeType",
-        COUNT(*) as count
-      FROM
-        "SbmReservationChangeHistory"
-      WHERE
-        "changedAt" >= ${startDate}
-      GROUP BY
-        "changeType"
-    `
-
-    // 変更者ごとの集計
-    const userChangeCounts = await prisma.$queryRaw`
-      SELECT
-        "changedBy",
-        COUNT(*) as count
-      FROM
-        "SbmReservationChangeHistory"
-      WHERE
-        "changedAt" >= ${startDate}
-      GROUP BY
-        "changedBy"
-      ORDER BY
-        count DESC
-      LIMIT 5
-    `
-
-    return {
-      period,
-      changeTypeCounts,
-      userChangeCounts,
-    }
-  } catch (error) {
-    console.error('変更履歴統計取得エラー:', error)
-    return {
-      period,
-      changeTypeCounts: [],
-      userChangeCounts: [],
-    }
   }
 }

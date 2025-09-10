@@ -14,7 +14,7 @@ import {Card} from '@cm/shadcn/ui/card'
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {cn} from '@shadcn/lib/utils'
 
-import {controlOffset, getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
+import {controlOffset, getStyleProps, getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
@@ -153,18 +153,18 @@ const BasicForm = (props: BasicFormType) => {
       <div>
         <FormProvider {...ReactHookForm}>
           <form {...{ref: formRef, id: formId, onSubmit}}>
-            <AutoGridContainer className={`items-stretch gap-4 `} maxCols={{xl: 2}}>
+            <AutoGridContainer
+              maxCols={{xl: 2}}
+              className={cn(
+                //
+                'gap-[40px] '
+              )}
+            >
               {transposedRowsForForm.map((columns, i) => {
                 return (
                   <Fragment key={i}>
                     <FormSection {...{columns, ControlOptions}}>
-                      <div
-                        className={cn(`grid grid-cols-1 md:grid-cols-2  `)}
-                        style={{
-                          rowGap: 30,
-                          columnGap: controlOffset,
-                        }}
-                      >
+                      <AutoGridContainer maxCols={{xl: 2}} className={`gap-[30px] gap-y-[60px]`}>
                         {columns.map((col: colType, formItemIndex) => {
                           const use2ColSpan = getUse2ColSpan(col)
                           const uniqueKey = `${i}-${formItemIndex}`
@@ -177,7 +177,7 @@ const BasicForm = (props: BasicFormType) => {
                           )
                         })}
                         {/* ボタン */}
-                      </div>
+                      </AutoGridContainer>
                     </FormSection>
                   </Fragment>
                 )
@@ -244,21 +244,6 @@ const BasicForm = (props: BasicFormType) => {
 }
 
 export default BasicForm
-
-// const useJustifyDirection = ({transposedRowsForForm, useGlobalProps}) => {
-//   const {width, SP} = useGlobalProps
-
-//   const [justifyDirection, setjustifyDirection] = useState(`justify-center`)
-//   const elems = document?.querySelectorAll(`.formSec`)
-//   useEffect(() => {
-//     if (elems.length > 0) {
-//       const justifyDirection = transposedRowsForForm.length === 1 || SP ? `justify-center` : `justify-start`
-//       setjustifyDirection(justifyDirection)
-//     }
-//   }, [width, transposedRowsForForm, elems, SP])
-
-//   return {justifyDirection}
-// }
 
 //カラム作成
 const makeFormsByColumnObj = (columns: any) => {

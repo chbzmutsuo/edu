@@ -7,8 +7,6 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-  createPriceHistory,
-  updatePriceHistory,
   deletePriceHistory,
 } from '../../actions'
 

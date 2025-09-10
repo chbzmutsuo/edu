@@ -4,7 +4,6 @@ import {RFM_SCORE_CRITERIA} from '../(constants)'
 import prisma from 'src/lib/prisma'
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
-import {SbmReservation} from '@prisma/client'
 
 export async function getAllTeams(): Promise<Partial<DeliveryTeamType>[]> {
   const teams = await prisma.sbmDeliveryTeam.findMany({
@@ -1112,8 +1111,9 @@ export const getReservations = async (filter: ReservationFilterType = {}) => {
     })),
     changeHistory: r.SbmReservationChangeHistory.map(ch => ({
       id: ch.id,
+      userId: ch.userId,
       sbmReservationId: ch.sbmReservationId,
-      changedBy: ch.changedBy,
+
       changeType: ch.changeType as 'create' | 'update' | 'delete',
       changedAt: ch.changedAt,
       changedFields: (ch.changedFields as Record<string, any>) || {},
@@ -1177,6 +1177,9 @@ export async function upsertReservation(reservationData: Partial<ReservationType
       notes: reservationData.notes || null,
       deliveryCompleted: reservationData.deliveryCompleted || false,
       recoveryCompleted: reservationData.recoveryCompleted || false,
+      isCanceled: reservationData.isCanceled || false,
+      canceledAt: reservationData.canceledAt || null,
+      cancelReason: reservationData.cancelReason || null,
       // 商品明細を作成
     }
 
@@ -1226,7 +1229,6 @@ export async function upsertReservation(reservationData: Partial<ReservationType
       // 変更履歴を作成
       SbmReservationChangeHistory: {
         create: {
-          changedBy: reservationData.orderStaff || 'system',
           changeType: isUpdate ? 'update' : 'create',
           oldValues: isUpdate ? oldData : undefined,
           newValues: newData,

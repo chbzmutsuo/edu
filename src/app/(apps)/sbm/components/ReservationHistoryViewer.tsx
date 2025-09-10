@@ -129,10 +129,6 @@ const HistoryItem: React.FC<HistoryItemProps> = ({history, isExpanded, toggleExp
         </div>
 
         <div className="flex items-center space-x-3">
-          <span className="text-sm text-gray-500 flex items-center">
-            <User className="h-3 w-3 mr-1" />
-            {history.changedBy}
-          </span>
           {isExpanded ? <ChevronUp className="h-4 w-4 text-gray-400" /> : <ChevronDown className="h-4 w-4 text-gray-400" />}
         </div>
       </div>
@@ -208,6 +204,7 @@ const HistoryItem: React.FC<HistoryItemProps> = ({history, isExpanded, toggleExp
 
 // 変更差分を抽出するロジック
 const extractChanges = (oldValues: Record<string, any>, newValues: Record<string, any>) => {
+  console.log(oldValues, newValues) //logs
   const changes: {label: string; oldValue: any; newValue: any}[] = []
   const allKeys = new Set([...Object.keys(oldValues), ...Object.keys(newValues)])
 
@@ -232,10 +229,14 @@ const extractChanges = (oldValues: Record<string, any>, newValues: Record<string
     phoneNumber: '電話番号',
     orderStaff: '受注担当者',
     items: '注文商品',
+    isCanceled: 'キャンセル',
+    canceledAt: 'キャンセル日時',
+    cancelReason: 'キャンセル理由',
   }
 
   // 特別な処理が必要なフィールド
   const specialFields = [
+    'reservationData',
     'items',
     'deliveryDate',
     'tasks',
@@ -245,11 +246,29 @@ const extractChanges = (oldValues: Record<string, any>, newValues: Record<string
     'SbmReservationItem',
     'userId',
     'phoneNumber',
+    'canceledAt',
+
+    'isCanceled',
+    'deliveryCompleted',
+    'recoveryCompleted',
   ]
 
   allKeys.forEach(key => {
     // 特別な処理が必要なフィールド
     if (specialFields.includes(key)) {
+      if (key === 'canceledAt') {
+        const oldDate = oldValues[key] ? new Date(oldValues[key]) : null
+        const newDate = newValues[key] ? new Date(newValues[key]) : null
+
+        if ((oldDate && newDate && oldDate.getTime() !== newDate.getTime()) || (!oldDate && newDate) || (oldDate && !newDate)) {
+          changes.push({
+            label: fieldLabels[key] || key,
+            oldValue: oldDate,
+            newValue: newDate,
+          })
+        }
+      }
+
       if (key === 'items') {
         // 商品リストの差分を処理
         const oldItems = oldValues[key] || []

@@ -3,7 +3,8 @@ import {LogForm} from '../../../(components)/Log/LogForm'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import {getExerciseMasters, getWorkoutlogListByDate} from '../../../server-actions/workout-log'
 
-export default async function NewLogPage({searchParams}: {searchParams: {[key: string]: string | string[] | undefined}}) {
+export default async function NewLogPage(props) {
+  const searchParams = await props.searchParams
   const {session} = await initServerComopnent({query: searchParams})
 
   if (!session) {

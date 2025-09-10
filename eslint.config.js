@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable no-undef */
 const eslint = require('@eslint/js')
 const tseslint = require('typescript-eslint')
@@ -8,10 +9,13 @@ const reactHooksPlugin = require('eslint-plugin-react-hooks')
 const simpleImportSort = require('eslint-plugin-simple-import-sort')
 
 module.exports = [
+  {
+    ignores: ['.next/**/*', 'public/**/*.js', 'scripts/**/*.js', 'node_modules/**/*'],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -55,6 +59,37 @@ module.exports = [
       'no-constant-binary-expression': 'off',
       'no-unused-private-class-members': 'off',
       '@typescript-eslint/no-unnecessary-type-constraint': 'off',
+    },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
+  },
+  {
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        process: 'readonly',
+        __dirname: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
+        navigator: 'readonly',
+        Promise: 'readonly',
+        Map: 'readonly',
+        Set: 'readonly',
+        console: 'readonly',
+      },
+    },
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'simple-import-sort': simpleImportSort,
+    },
+    rules: {
+      'no-unused-vars': 'warn',
     },
     settings: {
       react: {
