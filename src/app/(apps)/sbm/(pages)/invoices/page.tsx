@@ -7,28 +7,45 @@ import {getReservations} from '../../actions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
 import {Days} from '@cm/class/Days/Days'
+import {FilterSection, useFilterForm} from '@cm/components/utils/FilterSection'
 
 const today = getMidnight()
 export default function InvoicesPage() {
   const [reservations, setReservations] = useState<ReservationType[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState(formatDate(today))
-  const [endDate, setEndDate] = useState(formatDate(Days.day.add(today, 1)))
   const [selectedReservations, setSelectedReservations] = useState<Set<number>>(new Set())
-  const [searchKeyword, setSearchKeyword] = useState('')
+
+  // フィルターフォームの状態管理
+  const defaultFilters = {
+    date: formatDate(today),
+  }
+
+  const {
+    formValues: filterValues,
+    setFormValues: setFilterValues,
+    resetForm: resetFilterForm,
+    handleInputChange: handleFilterInputChange,
+  } = useFilterForm(defaultFilters)
+
+  // 現在適用されているフィルター
+  const [appliedFilters, setAppliedFilters] = useState(defaultFilters)
 
   useEffect(() => {
     loadReservations()
-  }, [selectedDate, endDate])
+  }, [appliedFilters])
 
   const loadReservations = async () => {
     setLoading(true)
 
     try {
+      // 単日指定
+      const selectedDate = new Date(appliedFilters.date)
+      const nextDay = Days.day.add(selectedDate, 1)
+
       const where = {
         deliveryDate: {
-          gte: toUtc(selectedDate),
-          lt: toUtc(endDate),
+          gte: toUtc(formatDate(selectedDate)),
+          lt: toUtc(formatDate(nextDay)),
         },
       }
 
@@ -42,26 +59,19 @@ export default function InvoicesPage() {
     }
   }
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedDate(e.target.value)
+  // フィルターを適用する
+  const applyFilters = () => {
+    setAppliedFilters({...filterValues})
   }
 
-  const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEndDate(e.target.value)
+  // フィルターをクリアする
+  const clearFilters = () => {
+    resetFilterForm()
+    setAppliedFilters(defaultFilters)
   }
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value)
-  }
-
-  const filteredReservations = reservations.filter(reservation => {
-    const keyword = searchKeyword.toLowerCase()
-    return (
-      reservation.customerName?.toLowerCase().includes(keyword) ||
-      reservation.contactName?.toLowerCase().includes(keyword) ||
-      reservation.orderStaff?.toLowerCase().includes(keyword)
-    )
-  })
+  // 日付フィルターのみなので追加のフィルタリングは不要
+  const filteredReservations = reservations
 
   const toggleReservationSelection = (sbmReservationId: number) => {
     const newSelected = new Set(selectedReservations)
@@ -356,7 +366,7 @@ export default function InvoicesPage() {
     const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'})
     const link = document.createElement('a')
     link.href = URL.createObjectURL(blob)
-    link.download = `配達伝票一覧_${selectedDate}_${endDate}.csv`
+    link.download = `配達伝票一覧_${appliedFilters.date}.csv`
     link.click()
   }
 
@@ -409,41 +419,20 @@ export default function InvoicesPage() {
         </div>
 
         {/* フィルター */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">開始日</label>
+        <FilterSection onApply={applyFilters} onClear={clearFilters} title="伝票検索">
+          <div className="flex justify-center">
+            <div className="w-64">
+              <label className="block text-xs font-medium text-gray-700 mb-1">日付</label>
               <input
                 type="date"
-                value={selectedDate}
-                onChange={handleDateChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                name="date"
+                value={filterValues.date}
+                onChange={handleFilterInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">終了日</label>
-              <input
-                type="date"
-                value={endDate}
-                onChange={handleEndDateChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">検索</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  value={searchKeyword}
-                  onChange={handleSearchChange}
-                  placeholder="顧客名、担当者、スタッフで検索..."
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
             </div>
           </div>
-        </div>
+        </FilterSection>
 
         {/* 予約一覧 */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">

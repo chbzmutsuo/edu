@@ -1,7 +1,7 @@
 'use client'
 
-import React, {useState, useEffect, useMemo} from 'react'
-import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map, Clock, Ban, RefreshCw} from 'lucide-react'
+import React, {useState, useEffect} from 'react'
+import {Search, PlusCircle, Edit, CheckSquare, Square, Clock, Ban, RefreshCw} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 import {getReservations, getAllCustomers, getVisibleProducts, upsertReservation, deleteReservation} from '../../actions'
@@ -10,8 +10,9 @@ import {restoreReservation} from '../../actions/restore-reservation'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
-import {Padding} from '@cm/components/styles/common-components/common-components'
+import {C_Stack, Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {cn} from '@cm/shadcn/lib/utils'
+import {FilterSection, useFilterForm} from '@cm/components/utils/FilterSection'
 
 import {ReservationModal} from '@app/(apps)/sbm/(pages)/reservations/ReservationModal'
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
@@ -25,8 +26,26 @@ export default function ReservationClient() {
   const [customers, setCustomers] = useState<CustomerType[]>([])
   const [products, setProducts] = useState<ProductType[]>([])
   const [loading, setLoading] = useState(true)
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
 
   const {addQuery, query} = useGlobal()
+
+  // フィルターフォームの状態管理
+  const defaultFilters = {
+    startDate: formatDate(new Date()),
+    endDate: formatDate(new Date()),
+    keyword: '', // 商品名、担当スタッフ、お客様名、会社名で検索
+    deliveryCompleted: '',
+    recoveryCompleted: '',
+    showCanceled: false,
+  }
+
+  const {
+    formValues: filterValues,
+    setFormValues: setFilterValues,
+    resetForm: resetFilterForm,
+    handleInputChange: handleFilterInputChange,
+  } = useFilterForm(defaultFilters)
 
   const EditReservationModalReturn = useModal()
   const DeleteReservationModalReturn = useModal()
@@ -36,6 +55,18 @@ export default function ReservationClient() {
 
   useEffect(() => {
     loadData()
+
+    // URLクエリパラメータがある場合はフォームの初期値として設定
+    if (Object.keys(query).length > 0) {
+      setFilterValues({
+        startDate: query.startDate || defaultFilters.startDate,
+        endDate: query.endDate || defaultFilters.endDate,
+        keyword: query.keyword || '',
+        deliveryCompleted: query.deliveryCompleted || '',
+        recoveryCompleted: query.recoveryCompleted || '',
+        showCanceled: query.showCanceled === 'true' || false,
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -106,17 +137,31 @@ export default function ReservationClient() {
     }
   }
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const {name, value, type} = e.target
+  // フィルターを適用する
+  const applyFilters = () => {
+    // フォームの値をURLクエリパラメータに変換
+    const queryParams = {...filterValues}
 
-    // チェックボックスの場合はチェック状態を、それ以外は値を設定
-    const newValue = type === 'checkbox' ? (e.target as HTMLInputElement).checked : value === '' ? undefined : value
-
-    // URLクエリパラメーターを更新
-    addQuery({
-      ...query,
-      [name]: newValue,
+    // 空の値は除外
+    Object.keys(queryParams).forEach(key => {
+      if (queryParams[key] === '' || queryParams[key] === undefined) {
+        delete queryParams[key]
+      }
     })
+
+    // URLクエリパラメータを更新
+    addQuery(queryParams)
+  }
+
+  // フィルターをクリアする
+  const clearFilters = () => {
+    resetFilterForm()
+    addQuery({}) // URLクエリパラメータをクリア
+  }
+
+  // 詳細フィルターの表示/非表示を切り替える
+  const toggleAdvancedFilters = () => {
+    setShowAdvancedFilters(!showAdvancedFilters)
   }
 
   const handleSave = async (reservationData: Partial<ReservationType & {phones: PhoneNumberTemp[]}>) => {
@@ -209,45 +254,91 @@ export default function ReservationClient() {
       </div>
 
       {/* フィルター */}
-      <div className="bg-white p-4 rounded-lg shadow">
-        {/* 基本フィルター */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">開始日</label>
-            <input
-              type="date"
-              name="startDate"
-              value={query.startDate}
-              onChange={handleFilterChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">終了日</label>
-            <input
-              type="date"
-              name="endDate"
-              value={query.endDate}
-              onChange={handleFilterChange}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">キーワード検索</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+      <FilterSection onApply={applyFilters} onClear={clearFilters} title="予約検索">
+        <C_Stack className={`gap-4`}>
+          <R_Stack className={` flex-nowrap`}>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">開始日</label>
               <input
-                type="text"
-                name="keyword"
-                placeholder="顧客名、担当者名、備考で検索..."
-                value={query.keyword || ''}
-                onChange={handleFilterChange}
-                className="w-full pl-10 border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="date"
+                name="startDate"
+                value={filterValues.startDate}
+                onChange={handleFilterInputChange}
+                className="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
-          </div>
-        </div>
-      </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">終了日</label>
+              <input
+                type="date"
+                name="endDate"
+                value={filterValues.endDate}
+                onChange={handleFilterInputChange}
+                className="w-full border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className={`w-[300px]`}>
+              <label className="block text-xs font-medium text-gray-700 mb-1">キーワード検索</label>
+              <div className="relative">
+                <Search className="absolute left-2 top-1.5 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  name="keyword"
+                  placeholder="商品名、担当者、顧客名、会社名"
+                  value={filterValues.keyword}
+                  onChange={handleFilterInputChange}
+                  className="w-full pl-8 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+          </R_Stack>
+
+          <R_Stack>
+            <div className="flex items-center">
+              <label className="block text-xs font-medium text-gray-700 mr-2">受け渡し状態:</label>
+              <select
+                name="deliveryCompleted"
+                value={filterValues.deliveryCompleted}
+                onChange={handleFilterInputChange}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="">すべて</option>
+                <option value="true">完了</option>
+                <option value="false">未完了</option>
+              </select>
+            </div>
+
+            <div className="flex items-center">
+              <label className="block text-xs font-medium text-gray-700 mr-2">回収状態:</label>
+              <select
+                name="recoveryCompleted"
+                value={filterValues.recoveryCompleted}
+                onChange={handleFilterInputChange}
+                className="border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="">すべて</option>
+                <option value="true">完了</option>
+                <option value="false">未完了</option>
+              </select>
+            </div>
+
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="showCanceled"
+                name="showCanceled"
+                checked={filterValues.showCanceled}
+                onChange={handleFilterInputChange}
+                className="h-3 w-3 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label htmlFor="showCanceled" className="ml-1 block text-xs text-gray-700">
+                取り消し済み予約を表示
+              </label>
+            </div>
+          </R_Stack>
+        </C_Stack>
+      </FilterSection>
 
       {/* 予約一覧 */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
@@ -384,8 +475,7 @@ export default function ReservationClient() {
                     <td>
                       <div className="flex flex-col space-y-1">
                         <div className="flex items-center space-x-1">
-                          {reservation.deliveryCompleted ||
-                          reservation.tasks?.some(task => task.taskType === 'delivery' && task.isCompleted) ? (
+                          {reservation.deliveryCompleted ? (
                             <CheckSquare size={16} className="text-green-500" />
                           ) : (
                             <Square size={16} className="text-gray-300" />
@@ -393,8 +483,7 @@ export default function ReservationClient() {
                           <span className="text-xs text-gray-600">配達</span>
                         </div>
                         <div className="flex items-center space-x-1">
-                          {reservation.recoveryCompleted ||
-                          reservation.tasks?.some(task => task.taskType === 'recovery' && task.isCompleted) ? (
+                          {reservation.recoveryCompleted ? (
                             <CheckSquare size={16} className="text-green-500" />
                           ) : (
                             <Square size={16} className="text-gray-300" />

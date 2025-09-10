@@ -133,6 +133,7 @@ export default async function Page({searchParams}) {
 - **関数定義順**: ファイル内では **C (Create) → R (Read) → U (Update) → D (Delete)** の順で関数を定義する。
 - **データ取得 (`Read`)**:
   - 検索、フィルタ、ソート条件はURLクエリパラメータ (`query`) を基にする。
+  - 検索欄を作成するとき、onChangeで検索を実行せず、「確定」ボタンによって検索が実行されるようにして
   - 関数は引数として `where`, `orderBy`, `take`, `skip` などを受け取れるように設計する。
   - 原則として`include`を使い関連データをまとめて取得する。パフォーマンスが問題になるページでのみ`select`でカラムを絞る。
 - **データ更新 (`Create`/`Update`)**:

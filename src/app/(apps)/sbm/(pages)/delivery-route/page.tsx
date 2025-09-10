@@ -3,6 +3,8 @@
 import React, {useState, useEffect} from 'react'
 import {Truck, Calendar, Plus, Clock, MapPin} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
+import {FilterSection, useFilterForm} from '@cm/components/utils/FilterSection'
 import {getReservations} from '../../actions'
 import {
   getDeliveryGroupsByDate,
@@ -32,9 +34,9 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import {Card} from '@cm/shadcn/ui/card'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 export default function DeliveryRoutePage() {
-  const [date, setDate] = useState(formatDate(new Date()))
   const [reservations, setReservations] = useState<ReservationType[]>([])
   const [deliveryGroups, setDeliveryGroups] = useState<DeliveryGroupType[]>([])
   const [unassignedReservations, setUnassignedReservations] = useState<ReservationType[]>([])
@@ -48,6 +50,21 @@ export default function DeliveryRoutePage() {
     reservation: ReservationType
   } | null>(null)
   const [targetGroupId, setTargetGroupId] = useState<number | null>(null)
+
+  // フィルターフォームの状態管理
+  const defaultFilters = {
+    date: formatDate(new Date()),
+  }
+
+  const {
+    formValues: filterValues,
+    setFormValues: setFilterValues,
+    resetForm: resetFilterForm,
+    handleInputChange: handleFilterInputChange,
+  } = useFilterForm(defaultFilters)
+
+  // 現在適用されているフィルター
+  const [appliedFilters, setAppliedFilters] = useState(defaultFilters)
 
   // 新規追加のステート
   const [teamCount, setTeamCount] = useState<number>(1) // チーム一括作成用
@@ -70,20 +87,25 @@ export default function DeliveryRoutePage() {
 
   useEffect(() => {
     loadData()
-  }, [date])
+  }, [appliedFilters])
 
   const loadData = async () => {
     setLoading(true)
     try {
       // 予約データを取得
+      const selectedDate = new Date(appliedFilters.date)
+      const nextDay = Days.day.add(selectedDate, 1)
+
       const reservationData = await getReservations({
-        startDate: date,
-        endDate: date,
+        deliveryDate: {
+          gte: toUtc(formatDate(selectedDate)),
+          lt: toUtc(formatDate(nextDay)),
+        },
       })
       setReservations(reservationData as ReservationType[])
 
       // 配達グループを取得
-      const groupData = await getDeliveryGroupsByDate(date)
+      const groupData = await getDeliveryGroupsByDate(appliedFilters.date)
       setDeliveryGroups(groupData as DeliveryGroupType[])
 
       // 未割り当ての予約を特定
@@ -119,7 +141,7 @@ export default function DeliveryRoutePage() {
 
     try {
       // チーム作成処理
-      const result = await createDeliveryGroup(teamName, new Date(date), session?.id || 0, session?.name || '不明')
+      const result = await createDeliveryGroup(teamName, new Date(appliedFilters.date), session?.id || 0, session?.name || '不明')
 
       if (result.success && result.group) {
         toast.success('チームを作成しました')
@@ -156,7 +178,12 @@ export default function DeliveryRoutePage() {
 
     try {
       // 複数チーム作成処理
-      const result = await createMultipleDeliveryGroups(teamCount, new Date(date), session?.id || 0, session?.name || '不明')
+      const result = await createMultipleDeliveryGroups(
+        teamCount,
+        new Date(appliedFilters.date),
+        session?.id || 0,
+        session?.name || '不明'
+      )
 
       if (result.success && result.groups) {
         toast.success(`${teamCount}チームを作成しました`)
@@ -173,24 +200,6 @@ export default function DeliveryRoutePage() {
     } catch (error) {
       console.error('チーム一括作成エラー:', error)
       toast.error('チームの一括作成に失敗しました')
-    }
-  }
-
-  const handleAssignReservation = async (groupId: number, reservationId: number) => {
-    try {
-      const result = await assignReservationToGroup(groupId, reservationId)
-
-      if (result.success) {
-        toast.success('予約をチームに割り当てました')
-
-        // データを再読み込み
-        loadData()
-      } else {
-        toast.error(result.error || '予約の割り当てに失敗しました')
-      }
-    } catch (error) {
-      console.error('予約割り当てエラー:', error)
-      toast.error('予約の割り当てに失敗しました')
     }
   }
 
@@ -417,31 +426,6 @@ export default function DeliveryRoutePage() {
     }
   }
 
-  const toggleReservationSelection = (id: number) => {
-    setSelectedReservations(prev => (prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]))
-  }
-
-  // 予約を特定のチームに移動するためのモーダルを開く
-  const openMoveModal = (reservationId: number, fromGroupId: number) => {
-    // 予約情報を取得
-    const group = deliveryGroups.find(g => g.id === fromGroupId)
-    const groupReservation = group?.groupReservations?.find(gr => gr.sbmReservationId === reservationId)
-    const reservation = reservations.find(r => r.id === reservationId)
-
-    if (!reservation) {
-      toast.error('予約情報が見つかりません')
-      return
-    }
-
-    setMovingReservation({
-      reservationId,
-      fromGroupId,
-      reservation,
-    })
-
-    MoveModalReturn.handleOpen()
-  }
-
   const getReservationById = (id: number): ReservationType | undefined => {
     return reservations.find(r => r.id === id)
   }
@@ -462,12 +446,6 @@ export default function DeliveryRoutePage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-3xl font-bold text-gray-900 mb-4 sm:mb-0">配達ルート管理</h1>
           <div className="flex flex-wrap gap-2">
-            <input
-              type="date"
-              value={date}
-              onChange={e => setDate(e.target.value)}
-              className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
             <Button onClick={() => TeamModalReturn.handleOpen()} className="bg-blue-600 hover:bg-blue-700">
               <Plus className="mr-1" size={16} /> 新規チーム作成
             </Button>
@@ -476,6 +454,29 @@ export default function DeliveryRoutePage() {
             </Button>
           </div>
         </div>
+
+        {/* フィルター */}
+        <FilterSection
+          onApply={() => setAppliedFilters({...filterValues})}
+          onClear={() => {
+            resetFilterForm()
+            setAppliedFilters(defaultFilters)
+          }}
+          title="配達日検索"
+        >
+          <div className="flex justify-center">
+            <div className="w-64">
+              <label className="block text-xs font-medium text-gray-700 mb-1">配達日</label>
+              <input
+                type="date"
+                name="date"
+                value={filterValues.date}
+                onChange={handleFilterInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
+              />
+            </div>
+          </div>
+        </FilterSection>
 
         <C_Stack className={` `}>
           {/* 未割り当ての予約リスト */}
@@ -881,6 +882,7 @@ export default function DeliveryRoutePage() {
                   <p className="text-xs text-gray-500">※移動した予約は移動先チームの最後尾に配置されます</p>
                 </div>
               )}
+
               <div className="flex justify-end gap-2 mt-6">
                 <Button variant="outline" onClick={MoveModalReturn.handleClose}>
                   キャンセル

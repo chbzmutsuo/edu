@@ -95,9 +95,8 @@ export default function CustomerMergePage() {
               <div className="mt-2 text-sm text-yellow-700">
                 <ul className="list-disc list-inside space-y-1">
                   <li>統合後、子顧客（統合元）のデータは完全に削除されます</li>
-                  <li>子顧客の予約データ、電話番号データは親顧客（統合先）に移行されます</li>
+                  <li>子顧客の予約データ</li>
                   <li>この操作は元に戻すことができません</li>
-                  <li>統合前に必要なデータのバックアップを取ることをお勧めします</li>
                 </ul>
               </div>
             </div>

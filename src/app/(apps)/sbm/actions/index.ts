@@ -983,7 +983,6 @@ export const getReservations = async where => {
         },
       },
       SbmReservationItem: true,
-      SbmReservationTask: true,
       SbmReservationChangeHistory: {
         orderBy: {changedAt: 'desc'},
         take: 10,
@@ -1035,16 +1034,7 @@ export const getReservations = async where => {
       unitPrice: item.unitPrice,
       totalPrice: item.totalPrice,
     })),
-    tasks: r.SbmReservationTask.map(task => ({
-      id: task.id,
-      sbmReservationId: task.sbmReservationId,
-      taskType: task.taskType as 'delivery' | 'recovery',
-      isCompleted: task.isCompleted,
-      completedAt: task.completedAt,
-      notes: task.notes || '',
-      createdAt: task.createdAt,
-      updatedAt: task.updatedAt,
-    })),
+
     changeHistory: r.SbmReservationChangeHistory.map(ch => ({
       id: ch.id,
       userId: ch.userId,
@@ -1181,7 +1171,7 @@ export async function upsertReservation(reservationData: Partial<ReservationType
         data: commonData,
         include: {
           SbmReservationItem: true,
-          SbmReservationTask: true,
+
           SbmReservationChangeHistory: true,
         },
       })
@@ -1190,19 +1180,13 @@ export async function upsertReservation(reservationData: Partial<ReservationType
       // タスクは新規作成時のみ追加
       const createData = {
         ...commonData,
-        SbmReservationTask: {
-          create: [
-            {taskType: 'delivery', isCompleted: false},
-            {taskType: 'recovery', isCompleted: false},
-          ],
-        },
       }
 
       result = await prisma.sbmReservation.create({
         data: createData,
         include: {
           SbmReservationItem: true,
-          SbmReservationTask: true,
+
           SbmReservationChangeHistory: true,
         },
       })

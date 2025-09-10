@@ -184,10 +184,10 @@ model SbmReservation {
   updatedAt DateTime @updatedAt
 
   // リレーション
-  SbmCustomer                 SbmCustomer                   @relation(fields: [sbmCustomerId], references: [id], onDelete: Restrict)
-  User                        User?                         @relation(fields: [userId], references: [id], onDelete: SetNull)
-  SbmReservationItem          SbmReservationItem[]
-  SbmReservationTask          SbmReservationTask[]
+  SbmCustomer        SbmCustomer          @relation(fields: [sbmCustomerId], references: [id], onDelete: Restrict)
+  User               User?                @relation(fields: [userId], references: [id], onDelete: SetNull)
+  SbmReservationItem SbmReservationItem[]
+
   SbmReservationChangeHistory SbmReservationChangeHistory[]
   SbmDeliveryAssignment       SbmDeliveryAssignment[]
 }
@@ -207,22 +207,6 @@ model SbmReservationItem {
   // リレーション
   SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
   SbmProduct     SbmProduct     @relation(fields: [sbmProductId], references: [id], onDelete: Restrict)
-}
-
-model SbmReservationTask {
-  id               Int       @id @default(autoincrement())
-  sbmReservationId Int
-  taskType         String    @db.VarChar(50) // 'delivery', 'recovery'
-  isCompleted      Boolean   @default(false)
-  completedAt      DateTime?
-  notes            String?   @db.Text
-
-  // タイムスタンプ
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // リレーション
-  SbmReservation SbmReservation @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
 }
 
 model SbmReservationChangeHistory {

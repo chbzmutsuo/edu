@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Search, PlusCircle, Edit, Trash2, Package, History, Eye, EyeOff} from 'lucide-react'
+import {PlusCircle, Edit, Trash2, Package, History, Eye, EyeOff} from 'lucide-react'
 import {getAllProducts, createProduct, updateProduct, deleteProduct, deletePriceHistory} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -14,12 +14,13 @@ import {ProductCl} from '@app/(apps)/sbm/(pages)/products/ProductCl'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function ProductsClient() {
-  const [products, setProducts] = useState<ProductType[]>([])
-  const [loading, setLoading] = useState(true)
-  
   // useGlobalを使用してクエリパラメーターを管理
   const {query, addQuery} = useGlobal()
-  
+  const [products, setProducts] = useState<ProductType[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // 商品マスタは全件表示（フィルタ不要）
+
   useEffect(() => {
     loadProducts()
   }, [])
@@ -36,25 +37,10 @@ export default function ProductsClient() {
     }
   }
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    addQuery({searchKeyword: e.target.value})
-  }
+  // 商品マスタはフィルタ不要
 
-  const handleCategoryFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    addQuery({categoryFilter: e.target.value})
-  }
-
-  const filteredProducts = products.filter(product => {
-    const keyword = query.searchKeyword?.toLowerCase() || ''
-    const matchesKeyword =
-      product.name?.toLowerCase().includes(keyword) ||
-      product.description?.toLowerCase().includes(keyword) ||
-      product.category?.toLowerCase().includes(keyword)
-
-    const matchesCategory = !query.categoryFilter || product.category === query.categoryFilter
-
-    return matchesKeyword && matchesCategory
-  })
+  // 全件表示
+  const filteredProducts = products
 
   const categories = Array.from(new Set(products.map(p => p.category).filter(Boolean)))
 
@@ -178,39 +164,7 @@ export default function ProductsClient() {
           </button>
         </div>
 
-        {/* 検索・フィルター */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">検索</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  value={query.searchKeyword || ''}
-                  onChange={handleSearchChange}
-                  placeholder="商品名、説明、カテゴリで検索..."
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
-              <select
-                value={query.categoryFilter || ''}
-                onChange={handleCategoryFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">すべてのカテゴリ</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
+        {/* 商品マスタはフィルタ不要 */}
 
         {/* 商品一覧 */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">

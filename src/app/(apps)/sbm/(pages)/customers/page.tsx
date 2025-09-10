@@ -5,6 +5,7 @@ import {Search, PlusCircle, Edit, Trash2, Users, Phone} from 'lucide-react'
 import {getAllCustomers, createCustomer, updateCustomer, deleteCustomer, updateCustomerPhoneList} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {FilterSection, useFilterForm} from '@cm/components/utils/FilterSection'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import CustomerPhoneManager from '../../components/CustomerPhoneManager'
@@ -13,14 +14,28 @@ import {formatPhoneNumber} from '../../utils/phoneUtils'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function CustomersPage() {
+  const {query, addQuery} = useGlobal()
   const [customers, setCustomers] = useState<CustomerType[]>([])
   const [loading, setLoading] = useState(true)
-  // URLクエリパラメーターを使用してフィルターを管理
+
+  // フィルターフォームの状態管理
   const defaultFilters = {
-    searchKeyword: '',
+    searchKeyword: query.searchKeyword || '',
   }
 
-  const {query, addQuery} = useGlobal()
+  // ページネーション
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 50
+
+  const {
+    formValues: filterValues,
+    setFormValues: setFilterValues,
+    resetForm: resetFilterForm,
+    handleInputChange: handleFilterInputChange,
+  } = useFilterForm(defaultFilters)
+
+  // 現在適用されているフィルター
+  const [appliedFilters, setAppliedFilters] = useState(defaultFilters)
 
   const DeleteCustomerModalReturn = useModal()
 
@@ -28,7 +43,7 @@ export default function CustomersPage() {
 
   useEffect(() => {
     loadCustomers()
-  }, [])
+  }, [appliedFilters])
 
   const loadCustomers = async () => {
     setLoading(true)
@@ -42,8 +57,17 @@ export default function CustomersPage() {
     }
   }
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    addQuery({searchKeyword: e.target.value})
+  // フィルターを適用する
+  const applyFilters = () => {
+    setAppliedFilters({...filterValues})
+    addQuery({searchKeyword: filterValues.searchKeyword})
+  }
+
+  // フィルターをクリアする
+  const clearFilters = () => {
+    resetFilterForm()
+    setAppliedFilters(defaultFilters)
+    addQuery({searchKeyword: ''})
   }
 
   const EditCustomerModalReturn = useModal()
@@ -58,9 +82,16 @@ export default function CustomersPage() {
         .join(', ')
         ?.toLowerCase()
         .includes(keyword) ||
-      customer.email?.toLowerCase().includes(keyword)
+      customer.email?.toLowerCase().includes(keyword) ||
+      `${customer.prefecture || ''}${customer.city || ''}${customer.street || ''}${customer.building || ''}`
+        .toLowerCase()
+        .includes(keyword)
     )
   })
+
+  // ページネーション用
+  const pageCount = Math.ceil(filteredCustomers.length / itemsPerPage)
+  const paginatedCustomers = filteredCustomers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
 
   const handleDelete = async () => {
     if (!DeleteCustomerModalReturn.open?.customer) return
@@ -111,23 +142,24 @@ export default function CustomersPage() {
         </div>
 
         {/* 検索フィルター */}
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <FilterSection onApply={applyFilters} onClear={clearFilters} title="顧客検索">
           <div className="flex flex-col md:flex-row md:items-center md:space-x-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">検索</label>
+              <label className="block text-xs font-medium text-gray-700 mb-1">検索</label>
               <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-2 top-1.5 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  value={query.searchKeyword || ''}
-                  onChange={handleSearchChange}
-                  placeholder="会社名、氏名、電話番号、で検索..."
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  name="searchKeyword"
+                  value={filterValues.searchKeyword || ''}
+                  onChange={handleFilterInputChange}
+                  placeholder="会社名、氏名、電話番号、住所で検索..."
+                  className="w-full pl-8 pr-3 py-1 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500 text-sm"
                 />
               </div>
             </div>
           </div>
-        </div>
+        </FilterSection>
 
         {/* 顧客一覧 */}
         <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
@@ -150,7 +182,7 @@ export default function CustomersPage() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredCustomers.map(customer => {
+                {paginatedCustomers.map(customer => {
                   return (
                     <tr key={customer.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -219,6 +251,59 @@ export default function CustomersPage() {
               <p className="text-gray-500">
                 {query.searchKeyword ? '検索条件に一致する顧客が見つかりません' : '顧客データがありません'}
               </p>
+            </div>
+          )}
+
+          {/* ページネーション */}
+          {pageCount > 1 && (
+            <div className="px-6 py-4 border-t flex justify-center">
+              <div className="flex space-x-1">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50"
+                >
+                  前へ
+                </button>
+
+                {Array.from({length: Math.min(5, pageCount)}, (_, i) => {
+                  // 現在のページを中心に表示するページ番号を計算
+                  let pageNum
+                  if (pageCount <= 5) {
+                    // 5ページ以下の場合はすべて表示
+                    pageNum = i + 1
+                  } else if (currentPage <= 3) {
+                    // 現在のページが先頭付近の場合
+                    pageNum = i + 1
+                  } else if (currentPage >= pageCount - 2) {
+                    // 現在のページが末尾付近の場合
+                    pageNum = pageCount - 4 + i
+                  } else {
+                    // それ以外の場合は現在のページを中心に表示
+                    pageNum = currentPage - 2 + i
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 py-1 rounded text-sm ${
+                        currentPage === pageNum ? 'bg-blue-600 text-white' : 'border border-gray-300 hover:bg-gray-100'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                })}
+
+                <button
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, pageCount))}
+                  disabled={currentPage === pageCount}
+                  className="px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50"
+                >
+                  次へ
+                </button>
+              </div>
             </div>
           )}
         </div>

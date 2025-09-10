@@ -70,7 +70,6 @@ type ReservationType = Partial<{
   createdAt: Date
   updatedAt: Date
   items?: ReservationItemType[]
-  tasks?: ReservationTaskType[]
   phones?: CustomerPhoneType[]
 
   changeHistory?: ReservationChangeHistoryType[]
@@ -87,18 +86,6 @@ type ReservationItemType = Partial<{
   unitCost: number
   totalPrice: number
   createdAt: Date
-}>
-
-// export
-type ReservationTaskType = Partial<{
-  id: number
-  sbmReservationId: number
-  taskType: 'delivery' | 'recovery'
-  isCompleted: boolean
-  completedAt?: Date
-  notes?: string
-  createdAt: Date
-  updatedAt: Date
 }>
 
 // export
