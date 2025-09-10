@@ -1,11 +1,12 @@
 'use client'
 
 import React, {useState, useEffect, useMemo} from 'react'
-import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map, Clock, Ban} from 'lucide-react'
+import {Search, PlusCircle, Trash2, Edit, CheckSquare, Square, Map, Clock, Ban, RefreshCw} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
 import {getReservations, getAllCustomers, getVisibleProducts, upsertReservation, deleteReservation} from '../../actions'
 import {cancelReservation} from '../../actions/cancel-reservation'
+import {restoreReservation} from '../../actions/restore-reservation'
 
 import {ORDER_CHANNEL_OPTIONS, PURPOSE_OPTIONS, PAYMENT_METHOD_OPTIONS, PICKUP_LOCATION_OPTIONS} from '../../(constants)'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -17,6 +18,7 @@ import {ReservationModal} from '@app/(apps)/sbm/(pages)/reservations/Reservation
 import {PhoneNumberTemp} from '@app/(apps)/sbm/components/CustomerPhoneManager'
 import {ReservationHistoryViewer} from '@app/(apps)/sbm/components/ReservationHistoryViewer'
 import {CancelReservationModal} from '@app/(apps)/sbm/components/CancelReservationModal'
+import {RestoreReservationModal} from '@app/(apps)/sbm/components/RestoreReservationModal'
 
 export default function ReservationPage() {
   const [reservations, setReservations] = useState<ReservationType[]>([])
@@ -64,6 +66,7 @@ export default function ReservationPage() {
   const DeleteReservationModalReturn = useModal()
   const ReservationHistoryModalReturn = useModal()
   const CancelReservationModalReturn = useModal()
+  const RestoreReservationModalReturn = useModal()
 
   // 統計情報を計算
   const statistics = useMemo(() => {
@@ -229,6 +232,24 @@ export default function ReservationPage() {
         }
       } catch (error) {
         console.error('予約取り消し処理に失敗しました:', error)
+      }
+    }
+  }
+
+  // 予約復元処理
+  const handleRestoreReservation = async userId => {
+    if (RestoreReservationModalReturn.open?.reservation) {
+      try {
+        const result = await restoreReservation(Number(RestoreReservationModalReturn.open.reservation.id), userId)
+
+        if (result.success) {
+          await loadReservations()
+          RestoreReservationModalReturn.handleClose()
+        } else {
+          console.error('予約復元エラー:', result.error)
+        }
+      } catch (error) {
+        console.error('予約復元処理に失敗しました:', error)
       }
     }
   }
@@ -437,177 +458,191 @@ export default function ReservationPage() {
               </tr>
             </thead>
             <tbody>
-              {reservations.map(reservation => (
-                <tr key={reservation.id} className="bg-white border-b hover:bg-gray-50">
-                  {/* 納品日時 */}
-                  <td>
-                    <div className="text-sm">
-                      <div className="font-medium text-gray-900">{formatDate(reservation.deliveryDate, 'MM/DD')}</div>
-                      <div className="text-gray-500">{formatDate(reservation.deliveryDate, 'HH:mm')}</div>
-                    </div>
-                  </td>
+              {reservations.map(reservation => {
+                return (
+                  <tr
+                    key={reservation.id}
+                    className={`border-b hover:bg-gray-50 ${reservation.isCanceled ? 'bg-gray-400 text-gray-500 opacity-50' : 'bg-white'}`}
+                  >
+                    {/* 納品日時 */}
+                    <td>
+                      <div className="text-sm">
+                        <div className={`font-medium ${reservation.isCanceled ? 'text-gray-500 line-through' : 'text-gray-900'}`}>
+                          {formatDate(reservation.deliveryDate, 'MM/DD')}
+                        </div>
+                        <div className="text-gray-500">{formatDate(reservation.deliveryDate, 'HH:mm')}</div>
+                      </div>
+                    </td>
 
-                  {/* 顧客情報 */}
-                  <td>
-                    <div className="text-sm">
-                      <div className="font-medium text-gray-900">{reservation.customerName}</div>
-                      {reservation.contactName && <div className="text-gray-500">担当: {reservation.contactName}</div>}
-                    </div>
-                  </td>
+                    {/* 顧客情報 */}
+                    <td>
+                      <div className="text-sm">
+                        <div className={`font-medium ${reservation.isCanceled ? 'text-gray-500' : 'text-gray-900'}`}>
+                          {reservation.customerName}
+                          {reservation.isCanceled && ' (取消済)'}
+                        </div>
+                        {reservation.contactName && <div className="text-gray-500">担当: {reservation.contactName}</div>}
+                      </div>
+                    </td>
 
-                  {/* 配送先 */}
-                  <td>
-                    <div className="text-sm text-gray-900">
-                      <div>
-                        {reservation.postalCode && <div>〒{reservation.postalCode}</div>}
+                    {/* 配送先 */}
+                    <td>
+                      <div className="text-sm text-gray-900">
                         <div>
-                          {reservation.prefecture}
-                          {reservation.city}
-                          {reservation.street}
-                        </div>
-                        {reservation.building && <div className="text-gray-500">{reservation.building}</div>}
-                      </div>
-                      <div className=" text-gray-700 text-xs">{formatPhoneNumber(reservation.phoneNumber || '')}</div>
-                    </div>
-                  </td>
-
-                  {/* 受取方法 */}
-                  <td>
-                    <span
-                      className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                        reservation.pickupLocation === '配達' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                      }`}
-                    >
-                      {reservation.pickupLocation}
-                    </span>
-                  </td>
-
-                  {/* 用途 */}
-                  <td>
-                    <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">{reservation.purpose}</span>
-                  </td>
-
-                  {/* 支払方法 */}
-                  <td>
-                    <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
-                      {reservation.paymentMethod}
-                    </span>
-                  </td>
-
-                  {/* 注文経路 */}
-                  <td>
-                    <span className="px-2 py-1 text-xs bg-teal-100 text-teal-800 rounded-full">{reservation.orderChannel}</span>
-                  </td>
-
-                  {/* 商品詳細 */}
-                  <td>
-                    <div className="text-sm leading-4">
-                      {reservation.items?.map((item, index) => (
-                        <div key={index} className="mb-1 flex-nowrap justify-between">
-                          <div className="font-medium text-gray-900 ">
-                            ・{item.productName} x{item.quantity}
+                          {reservation.postalCode && <div>〒{reservation.postalCode}</div>}
+                          <div>
+                            {reservation.prefecture}
+                            {reservation.city}
+                            {reservation.street}
                           </div>
-                          <div className="text-gray-500 text-xs ml-4 ">
-                            ¥{item.unitPrice?.toLocaleString()} × {item.quantity} = ¥{item.totalPrice?.toLocaleString()}
+                          {reservation.building && <div className="text-gray-500">{reservation.building}</div>}
+                        </div>
+                        <div className=" text-gray-700 text-xs">{formatPhoneNumber(reservation.phoneNumber || '')}</div>
+                      </div>
+                    </td>
+
+                    {/* 受取方法 */}
+                    <td>
+                      <span
+                        className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                          reservation.pickupLocation === '配達' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
+                        }`}
+                      >
+                        {reservation.pickupLocation}
+                      </span>
+                    </td>
+
+                    {/* 用途 */}
+                    <td>
+                      <span className="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">{reservation.purpose}</span>
+                    </td>
+
+                    {/* 支払方法 */}
+                    <td>
+                      <span className="px-2 py-1 text-xs bg-orange-100 text-orange-800 rounded-full">
+                        {reservation.paymentMethod}
+                      </span>
+                    </td>
+
+                    {/* 注文経路 */}
+                    <td>
+                      <span className="px-2 py-1 text-xs bg-teal-100 text-teal-800 rounded-full">{reservation.orderChannel}</span>
+                    </td>
+
+                    {/* 商品詳細 */}
+                    <td>
+                      <div className="text-sm leading-4">
+                        {reservation.items?.map((item, index) => (
+                          <div key={index} className="mb-1 flex-nowrap justify-between">
+                            <div className="font-medium text-gray-900 ">
+                              ・{item.productName} x{item.quantity}
+                            </div>
+                            <div className="text-gray-500 text-xs ml-4 ">
+                              ¥{item.unitPrice?.toLocaleString()} × {item.quantity} = ¥{item.totalPrice?.toLocaleString()}
+                            </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
-                  </td>
-
-                  {/* 金額詳細 */}
-                  <td>
-                    <div className="text-sm">
-                      <div className="font-semibold text-gray-900">合計: ¥{reservation.totalAmount?.toLocaleString()}</div>
-                      {(reservation.pointsUsed || 0) > 0 && (
-                        <div className="text-red-600">P: -¥{reservation.pointsUsed?.toLocaleString()}</div>
-                      )}
-                      <div className="font-semibold text-blue-600">支払: ¥{reservation.finalAmount?.toLocaleString()}</div>
-                    </div>
-                  </td>
-
-                  {/* 担当者 */}
-                  <td className="px-3 py-4 text-sm text-gray-900">{reservation.orderStaff}</td>
-
-                  {/* 進捗 */}
-                  <td>
-                    <div className="flex flex-col space-y-1">
-                      <div className="flex items-center space-x-1">
-                        {reservation.deliveryCompleted ||
-                        reservation.tasks?.some(task => task.taskType === 'delivery' && task.isCompleted) ? (
-                          <CheckSquare size={16} className="text-green-500" />
-                        ) : (
-                          <Square size={16} className="text-gray-300" />
-                        )}
-                        <span className="text-xs text-gray-600">配達</span>
+                        ))}
                       </div>
-                      <div className="flex items-center space-x-1">
-                        {reservation.recoveryCompleted ||
-                        reservation.tasks?.some(task => task.taskType === 'recovery' && task.isCompleted) ? (
-                          <CheckSquare size={16} className="text-green-500" />
-                        ) : (
-                          <Square size={16} className="text-gray-300" />
+                    </td>
+
+                    {/* 金額詳細 */}
+                    <td>
+                      <div className="text-sm">
+                        <div className="font-semibold text-gray-900">合計: ¥{reservation.totalAmount?.toLocaleString()}</div>
+                        {(reservation.pointsUsed || 0) > 0 && (
+                          <div className="text-red-600">P: -¥{reservation.pointsUsed?.toLocaleString()}</div>
                         )}
-                        <span className="text-xs text-gray-600">回収</span>
+                        <div className="font-semibold text-blue-600">支払: ¥{reservation.finalAmount?.toLocaleString()}</div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* 備考 */}
-                  <td>
-                    <div className="text-sm text-gray-600 max-w-xs">
-                      {reservation.notes && (
-                        <div className="truncate" title={reservation.notes}>
-                          {reservation.notes}
+                    {/* 担当者 */}
+                    <td className="px-3 py-4 text-sm text-gray-900">{reservation.orderStaff}</td>
+
+                    {/* 進捗 */}
+                    <td>
+                      <div className="flex flex-col space-y-1">
+                        <div className="flex items-center space-x-1">
+                          {reservation.deliveryCompleted ||
+                          reservation.tasks?.some(task => task.taskType === 'delivery' && task.isCompleted) ? (
+                            <CheckSquare size={16} className="text-green-500" />
+                          ) : (
+                            <Square size={16} className="text-gray-300" />
+                          )}
+                          <span className="text-xs text-gray-600">配達</span>
                         </div>
-                      )}
-                    </div>
-                  </td>
+                        <div className="flex items-center space-x-1">
+                          {reservation.recoveryCompleted ||
+                          reservation.tasks?.some(task => task.taskType === 'recovery' && task.isCompleted) ? (
+                            <CheckSquare size={16} className="text-green-500" />
+                          ) : (
+                            <Square size={16} className="text-gray-300" />
+                          )}
+                          <span className="text-xs text-gray-600">回収</span>
+                        </div>
+                      </div>
+                    </td>
 
-                  {/* 登録・更新 */}
-                  <td>
-                    <div className="text-xs text-gray-500">
-                      <div>登録: {formatDate(reservation.createdAt, 'MM/dd HH:mm')}</div>
-                      <div>更新: {formatDate(reservation.updatedAt, 'MM/dd HH:mm')}</div>
-                    </div>
-                  </td>
+                    {/* 備考 */}
+                    <td>
+                      <div className="text-sm text-gray-600 max-w-xs">
+                        {reservation.notes && (
+                          <div className="truncate" title={reservation.notes}>
+                            {reservation.notes}
+                          </div>
+                        )}
+                      </div>
+                    </td>
 
-                  {/* 操作 */}
-                  <td>
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => EditReservationModalReturn.handleOpen({reservation})}
-                        className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded h-5"
-                        title="編集"
-                      >
-                        <Edit size={20} />
-                      </button>
-                      <button
-                        onClick={() => ReservationHistoryModalReturn.handleOpen({reservation})}
-                        className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded h-5"
-                        title="履歴"
-                      >
-                        <Clock size={20} />
-                      </button>
-                      <button
-                        onClick={() => CancelReservationModalReturn.handleOpen({reservation})}
-                        className="p-1 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded h-5"
-                        title="取り消し"
-                        disabled={reservation.isCanceled === true}
-                      >
-                        <Ban size={20} className={reservation.isCanceled === true ? 'opacity-30' : ''} />
-                      </button>
-                      <button
-                        onClick={() => DeleteReservationModalReturn.handleOpen({reservation})}
-                        className="p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded h-5"
-                        title="削除"
-                      >
-                        <Trash2 size={20} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    {/* 登録・更新 */}
+                    <td>
+                      <div className="text-xs text-gray-500">
+                        <div>登録: {formatDate(reservation.createdAt, 'MM/dd HH:mm')}</div>
+                        <div>更新: {formatDate(reservation.updatedAt, 'MM/dd HH:mm')}</div>
+                      </div>
+                    </td>
+
+                    {/* 操作 */}
+                    <td>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          disabled={reservation.isCanceled}
+                          onClick={() => EditReservationModalReturn.handleOpen({reservation})}
+                          className="p-1 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded h-5"
+                          title="編集"
+                        >
+                          <Edit size={20} />
+                        </button>
+                        <button
+                          disabled={reservation.isCanceled}
+                          onClick={() => ReservationHistoryModalReturn.handleOpen({reservation})}
+                          className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded h-5"
+                          title="履歴"
+                        >
+                          <Clock size={20} />
+                        </button>
+                        {reservation.isCanceled === true ? (
+                          <button
+                            onClick={() => RestoreReservationModalReturn.handleOpen({reservation})}
+                            className="p-1 text-green-600 hover:text-green-800 hover:bg-green-50 rounded h-5"
+                            title="復元"
+                          >
+                            <RefreshCw size={20} />
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => CancelReservationModalReturn.handleOpen({reservation})}
+                            className="p-1 text-orange-600 hover:text-orange-800 hover:bg-orange-50 rounded h-5"
+                            title="取り消し"
+                          >
+                            <Ban size={20} />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -659,6 +694,15 @@ export default function ReservationPage() {
           onConfirm={handleCancelReservation}
         />
       </CancelReservationModalReturn.Modal>
+
+      {/* 復元確認モーダル */}
+      <RestoreReservationModalReturn.Modal>
+        <RestoreReservationModal
+          reservation={RestoreReservationModalReturn.open?.reservation}
+          onCancel={() => RestoreReservationModalReturn.handleClose()}
+          onConfirm={handleRestoreReservation}
+        />
+      </RestoreReservationModalReturn.Modal>
     </div>
   )
 }

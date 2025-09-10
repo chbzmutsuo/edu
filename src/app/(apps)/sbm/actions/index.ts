@@ -1082,6 +1082,9 @@ export const getReservations = async (filter: ReservationFilterType = {}) => {
     notes: r.notes || '',
     deliveryCompleted: r.deliveryCompleted,
     recoveryCompleted: r.recoveryCompleted,
+    isCanceled: r.isCanceled,
+    canceledAt: r.canceledAt,
+    cancelReason: r.cancelReason,
 
     phones: r.SbmCustomer.SbmCustomerPhone.map(phone => ({
       id: phone.id,

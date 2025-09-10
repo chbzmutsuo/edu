@@ -5,6 +5,7 @@ import {Clock, ChevronDown, ChevronUp, User} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {cn} from '@cm/shadcn/lib/utils'
 import {getReservationHistoryById} from '../actions/history-actions'
+import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 
 type ReservationHistoryViewerProps = {
   reservationId: number
@@ -15,12 +16,15 @@ type HistoryItemProps = {
   history: ReservationChangeHistoryType
   isExpanded: boolean
   toggleExpand: () => void
+  users: any
 }
 
 export const ReservationHistoryViewer: React.FC<ReservationHistoryViewerProps> = ({reservationId, className}) => {
   const [histories, setHistories] = useState<ReservationChangeHistoryType[]>([])
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const {data: users = []} = useDoStandardPrisma('user', 'findMany', {})
 
   useEffect(() => {
     loadHistories()
@@ -80,6 +84,7 @@ export const ReservationHistoryViewer: React.FC<ReservationHistoryViewerProps> =
             history={history}
             isExpanded={expandedId === history.id}
             toggleExpand={() => toggleExpand(history.id as string)}
+            users={users}
           />
         ))}
       </div>
@@ -87,10 +92,10 @@ export const ReservationHistoryViewer: React.FC<ReservationHistoryViewerProps> =
   )
 }
 
-const HistoryItem: React.FC<HistoryItemProps> = ({history, isExpanded, toggleExpand}) => {
+const HistoryItem: React.FC<HistoryItemProps> = ({history, isExpanded, toggleExpand, users}) => {
   // 変更内容の差分を抽出
 
-  const changes = extractChanges(history.oldValues || {}, history.newValues || {})
+  const changes = extractChanges(history.oldValues || {}, history.newValues || {}, users)
 
   // 変更タイプに応じたスタイルとラベル
   const getChangeTypeStyle = () => {
@@ -135,6 +140,10 @@ const HistoryItem: React.FC<HistoryItemProps> = ({history, isExpanded, toggleExp
 
       {isExpanded && changes.length > 0 && (
         <div className="mt-4">
+          <div className="mb-2 flex items-center text-xs text-gray-500">
+            <span className="font-medium mr-1">変更者:</span>
+            <span className="text-gray-700">{users.find(user => user.id === history.newValues?.['userId'])?.name || '不明'}</span>
+          </div>
           {/* 変更タイプに応じた表示 */}
           {history.changeType === 'create' ? (
             <div className="bg-green-50 border border-green-100 rounded-md p-4">
@@ -203,8 +212,7 @@ const HistoryItem: React.FC<HistoryItemProps> = ({history, isExpanded, toggleExp
 }
 
 // 変更差分を抽出するロジック
-const extractChanges = (oldValues: Record<string, any>, newValues: Record<string, any>) => {
-  console.log(oldValues, newValues) //logs
+const extractChanges = (oldValues: Record<string, any>, newValues: Record<string, any>, users) => {
   const changes: {label: string; oldValue: any; newValue: any}[] = []
   const allKeys = new Set([...Object.keys(oldValues), ...Object.keys(newValues)])
 
@@ -236,16 +244,19 @@ const extractChanges = (oldValues: Record<string, any>, newValues: Record<string
 
   // 特別な処理が必要なフィールド
   const specialFields = [
-    'reservationData',
-    'items',
-    'deliveryDate',
-    'tasks',
+    'id',
     'createdAt',
     'updatedAt',
-    'id',
     'SbmReservationItem',
+
+    'reservationData',
+    'deliveryDate',
+    'items',
+
     'userId',
+
     'phoneNumber',
+
     'canceledAt',
 
     'isCanceled',
