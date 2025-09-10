@@ -183,7 +183,6 @@ export const PAGES: any = {
         ROOT: [rootPath],
         children: [
           {tabId: 'reservations', label: '予約管理'},
-          {tabId: 'history', label: '予約履歴'},
           {tabId: 'delivery-route', label: '配達ルート管理'},
         ],
       },

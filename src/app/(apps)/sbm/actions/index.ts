@@ -973,74 +973,7 @@ export const getVisibleProducts = async (): Promise<ProductType[]> => {
 }
 
 // =====================予約関係=================
-export const getReservations = async (filter: ReservationFilterType = {}) => {
-  const where: any = {}
-
-  // 日付範囲フィルター
-  if (filter.startDate || filter.endDate) {
-    where.deliveryDate = {}
-    if (filter.startDate) {
-      where.deliveryDate.gte = new Date(filter.startDate)
-    }
-    if (filter.endDate) {
-      const endDate = new Date(filter.endDate)
-      endDate.setHours(23, 59, 59, 999)
-      where.deliveryDate.lte = endDate
-    }
-  }
-
-  // キーワード検索
-  if (filter.keyword) {
-    where.OR = [
-      {customerName: {contains: filter.keyword, mode: 'insensitive'}},
-      {orderStaff: {contains: filter.keyword, mode: 'insensitive'}},
-      {notes: {contains: filter.keyword, mode: 'insensitive'}},
-    ]
-  }
-
-  // 詳細フィルター
-  if (filter.customerName) {
-    where.customerName = {contains: filter.customerName, mode: 'insensitive'}
-  }
-
-  if (filter.staffName) {
-    where.orderStaff = {contains: filter.staffName, mode: 'insensitive'}
-  }
-
-  if (filter.productName) {
-    where.SbmReservationItem = {
-      some: {
-        productName: {contains: filter.productName, mode: 'insensitive'},
-      },
-    }
-  }
-
-  // カテゴリー別フィルター
-  if (filter.pickupLocation) {
-    where.pickupLocation = filter.pickupLocation
-  }
-
-  if (filter.purpose) {
-    where.purpose = filter.purpose
-  }
-
-  if (filter.paymentMethod) {
-    where.paymentMethod = filter.paymentMethod
-  }
-
-  if (filter.orderChannel) {
-    where.orderChannel = filter.orderChannel
-  }
-
-  // 完了状況フィルター
-  if (filter.deliveryCompleted !== undefined) {
-    where.deliveryCompleted = filter.deliveryCompleted
-  }
-
-  if (filter.recoveryCompleted !== undefined) {
-    where.recoveryCompleted = filter.recoveryCompleted
-  }
-
+export const getReservations = async where => {
   const reservations = await prisma.sbmReservation.findMany({
     where,
     include: {

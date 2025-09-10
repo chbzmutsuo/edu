@@ -17,7 +17,7 @@ import {
 } from 'lucide-react'
 import {useIsMobile} from '@cm/shadcn/hooks/use-mobile'
 import DashboardPage from './dashboard/page'
-import ReservationPage from './reservations/page'
+import ReservationPage from './reservations/ReservationClient'
 
 import DeliveryRoutePage from './delivery-route/page'
 

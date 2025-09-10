@@ -10,11 +10,17 @@ import {Padding} from '@cm/components/styles/common-components/common-components
 import CustomerPhoneManager from '../../components/CustomerPhoneManager'
 import PostalCodeInput from '../../components/PostalCodeInput'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<CustomerType[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchKeyword, setSearchKeyword] = useState('')
+  // URLクエリパラメーターを使用してフィルターを管理
+  const defaultFilters = {
+    searchKeyword: '',
+  }
+
+  const {query, addQuery} = useGlobal()
 
   const DeleteCustomerModalReturn = useModal()
 
@@ -37,13 +43,13 @@ export default function CustomersPage() {
   }
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value)
+    addQuery({searchKeyword: e.target.value})
   }
 
   const EditCustomerModalReturn = useModal()
 
   const filteredCustomers = customers.filter(customer => {
-    const keyword = searchKeyword.toLowerCase()
+    const keyword = query.searchKeyword?.toLowerCase() || ''
     return (
       customer.companyName?.toLowerCase().includes(keyword) ||
       customer.contactName?.toLowerCase().includes(keyword) ||
@@ -113,7 +119,7 @@ export default function CustomersPage() {
                 <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
                 <input
                   type="text"
-                  value={searchKeyword}
+                  value={query.searchKeyword || ''}
                   onChange={handleSearchChange}
                   placeholder="会社名、氏名、電話番号、で検索..."
                   className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -211,7 +217,7 @@ export default function CustomersPage() {
             <div className="text-center py-8">
               <Users className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <p className="text-gray-500">
-                {searchKeyword ? '検索条件に一致する顧客が見つかりません' : '顧客データがありません'}
+                {query.searchKeyword ? '検索条件に一致する顧客が見つかりません' : '顧客データがありません'}
               </p>
             </div>
           )}

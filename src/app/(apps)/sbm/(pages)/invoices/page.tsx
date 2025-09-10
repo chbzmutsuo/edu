@@ -5,12 +5,15 @@ import {Printer, FileText, Search, CheckSquare, Square} from 'lucide-react'
 import {getReservations} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {Days} from '@cm/class/Days/Days'
 
+const today = getMidnight()
 export default function InvoicesPage() {
   const [reservations, setReservations] = useState<ReservationType[]>([])
   const [loading, setLoading] = useState(true)
-  const [selectedDate, setSelectedDate] = useState(formatDate(new Date()))
-  const [endDate, setEndDate] = useState(formatDate(new Date()))
+  const [selectedDate, setSelectedDate] = useState(formatDate(today))
+  const [endDate, setEndDate] = useState(formatDate(Days.day.add(today, 1)))
   const [selectedReservations, setSelectedReservations] = useState<Set<number>>(new Set())
   const [searchKeyword, setSearchKeyword] = useState('')
 
@@ -20,11 +23,17 @@ export default function InvoicesPage() {
 
   const loadReservations = async () => {
     setLoading(true)
+
     try {
-      const data = await getReservations({
-        startDate: selectedDate,
-        endDate: endDate,
-      })
+      const where = {
+        deliveryDate: {
+          gte: toUtc(selectedDate),
+          lt: toUtc(endDate),
+        },
+      }
+
+      const data = await getReservations(where)
+
       setReservations(data as ReservationType[])
     } catch (error) {
       console.error('予約データの取得に失敗しました:', error)

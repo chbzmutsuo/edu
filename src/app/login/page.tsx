@@ -5,6 +5,7 @@ import Redirector from 'src/cm/components/utils/Redirector'
 import PlaceHolder from 'src/cm/components/utils/loader/PlaceHolder'
 import LoginForm from './LoginForm'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import useModal from '@cm/components/utils/modal/useModal'
 const AdminLogin = props => {
   const {session, query} = useGlobal()
 
@@ -21,6 +22,8 @@ const AdminLogin = props => {
   if (doRedirect && session?.id) {
     return <Redirector redirectPath={`/${redirectRoot}`} />
   }
+
+  const UserEditModalReturn = useModal<{userId: number}>()
 
   return (
     <Absolute className={`w-full p-4`}>

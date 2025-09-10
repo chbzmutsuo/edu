@@ -194,6 +194,7 @@ type ReservationFilterType = {
   paymentMethod?: PaymentMethodType
   deliveryCompleted?: boolean
   recoveryCompleted?: boolean
+  showCanceled?: boolean // 取り消し済み予約を表示するかどうか
 }
 
 // ダッシュボード集計用型
