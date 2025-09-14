@@ -1,6 +1,6 @@
 'use client'
 
-import {useRouter, useSearchParams} from 'next/navigation'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 interface Customer {
   id: number
@@ -13,19 +13,14 @@ interface CustomerSelectorProps {
 }
 
 export default function CustomerSelector({customers, currentCustomerId}: CustomerSelectorProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
+  const {addQuery} = useGlobal()
 
   const handleCustomerChange = (customerId: string) => {
-    const params = new URLSearchParams(searchParams.toString())
-
     if (customerId) {
-      params.set('customerId', customerId)
+      addQuery({customerId})
     } else {
-      params.delete('customerId')
+      addQuery({customerId: undefined})
     }
-
-    router.push(`?${params.toString()}`)
   }
 
   return (
@@ -38,7 +33,7 @@ export default function CustomerSelector({customers, currentCustomerId}: Custome
           value={currentCustomerId || ''}
           onChange={e => handleCustomerChange(e.target.value)}
         >
-          <option value="">全顧客</option>
+          <option value="">-- 顧客を選択してください --</option>
           {customers.map(customer => (
             <option key={customer.id} value={customer.id}>
               {customer.name}

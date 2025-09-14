@@ -49,21 +49,23 @@ export const getInvoiceData = async ({
   tbmBaseId,
   customerId,
 }: {
-  whereQuery
+  whereQuery: {gte: Date; lte: Date}
   tbmBaseId: number
-  customerId?: number
+  customerId: number // 必須に変更
 }) => {
   // 営業所情報取得
   const tbmBase = await prisma.tbmBase.findFirst({
     where: {id: tbmBaseId},
   })
 
-  // 顧客情報取得
-  const customer = customerId
-    ? await prisma.tbmCustomer.findFirst({
-        where: {id: customerId},
-      })
-    : null
+  // 顧客情報取得（必須）
+  const customer = await prisma.tbmCustomer.findFirst({
+    where: {id: customerId},
+  })
+
+  if (!customer) {
+    throw new Error('指定された顧客が見つかりません')
+  }
 
   // 運行スケジュールデータ取得（承認済みのみ）
   const driveScheduleList = await DriveScheduleCl.getDriveScheduleList({
@@ -71,10 +73,14 @@ export const getInvoiceData = async ({
     tbmBaseId,
   })
 
-  // 顧客でフィルタリング（指定がある場合）
-  const filteredSchedules = customerId
-    ? driveScheduleList.filter(schedule => schedule.TbmRouteGroup.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id === customerId)
-    : driveScheduleList
+  // 指定された顧客の便のみをフィルタリング
+  const filteredSchedules = driveScheduleList.filter(
+    schedule => schedule.TbmRouteGroup.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id === customerId
+  )
+
+  if (filteredSchedules.length === 0) {
+    throw new Error('指定された顧客の運行データが見つかりません')
+  }
 
   // 便区分ごとにグループ化
   const schedulesByCategory = filteredSchedules.reduce(
@@ -90,7 +96,7 @@ export const getInvoiceData = async ({
   )
 
   // 便区分ごとの集計
-  const summaryByCategory: CategorySummary[] = Object.entries(schedulesByCategory).map(props => {
+  const summaryByCategory: CategorySummary[] = Object.entries(schedulesByCategory).map((props: [string, DriveScheduleData[]]) => {
     const [categoryCode, schedules] = props
     const category = TBM_CODE.ROUTE.KBN[categoryCode]?.label || '不明'
     const totalTrips = schedules.length
@@ -180,8 +186,8 @@ export const getInvoiceData = async ({
       bankInfo: '振込銀行 福岡銀行 田主丸支店\n（普通）９００８３\n登録番号 T2290020049699',
     },
     customerInfo: {
-      name: customer?.name || '顧客名未設定',
-      address: customer?.address,
+      name: customer.name,
+      address: customer.address ?? undefined,
     },
     invoiceDetails: {
       yearMonth: whereQuery.gte,
