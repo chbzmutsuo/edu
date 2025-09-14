@@ -184,6 +184,7 @@ export const PAGES: any = {
         children: [
           {tabId: 'reservations', label: '予約管理'},
           {tabId: 'delivery-route', label: '配達ルート管理'},
+          {tabId: 'ingredients/usage', label: '材料使用量計算'},
         ],
       },
 
@@ -195,6 +196,7 @@ export const PAGES: any = {
         label: '管理',
         ROOT: [rootPath],
         children: [
+          {tabId: 'ingredients', label: '材料マスタ', ROOT: [rootPath]},
           {tabId: 'products', label: '商品マスタ', ROOT: [rootPath]},
           {tabId: 'customers', label: '顧客マスタ', ROOT: [rootPath]},
           {tabId: 'customer-merge', label: '顧客統合', ROOT: [rootPath]},

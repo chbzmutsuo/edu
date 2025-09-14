@@ -55,6 +55,7 @@ model SbmProduct {
   // リレーション
   SbmProductPriceHistory SbmProductPriceHistory[]
   SbmReservationItem     SbmReservationItem[]
+  SbmProductIngredient   SbmProductIngredient[] // 追加: 材料との関連
 }
 
 model SbmProductPriceHistory {
@@ -261,4 +262,40 @@ model SbmDeliveryAssignment {
   SbmDeliveryTeam SbmDeliveryTeam @relation(fields: [sbmDeliveryTeamId], references: [id], onDelete: Restrict)
   SbmReservation  SbmReservation  @relation(fields: [sbmReservationId], references: [id], onDelete: Cascade)
   User            User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// 材料マスター
+model SbmIngredient {
+  id          Int     @id @default(autoincrement())
+  name        String  @db.VarChar(200)
+  description String? @db.Text
+  unit        String  @db.VarChar(50) // 単位（個、g、ml など）
+
+  // タイムスタンプ
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  SbmProductIngredient SbmProductIngredient[]
+
+  @@map("sbm_ingredients")
+}
+
+// 商品と材料の関連
+model SbmProductIngredient {
+  id              Int   @id @default(autoincrement())
+  sbmProductId    Int
+  sbmIngredientId Int
+  quantity        Float // 必要数量
+
+  // タイムスタンプ
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  SbmProduct    SbmProduct    @relation(fields: [sbmProductId], references: [id], onDelete: Cascade)
+  SbmIngredient SbmIngredient @relation(fields: [sbmIngredientId], references: [id], onDelete: Restrict)
+
+  @@unique([sbmProductId, sbmIngredientId]) // 同じ商品に同じ材料は一度だけ
+  @@map("sbm_product_ingredients")
 }

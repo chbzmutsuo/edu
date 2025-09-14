@@ -42,6 +42,7 @@ export const tbm_PAGES = (props: PageGetterType) => {
       children: [
         {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
         {tabId: 'monthly-schedule', label: <IconLetter {...{Icon: Calendar}}>月間予定</IconLetter>},
+        {tabId: 'kintai', label: <IconLetter {...{Icon: Calendar}}>勤怠管理</IconLetter>},
       ],
       exclusiveTo: login,
       ROOT: [rootPath, 'driver'],

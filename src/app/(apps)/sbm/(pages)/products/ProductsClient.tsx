@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {PlusCircle, Edit, Trash2, Package, History, Eye, EyeOff} from 'lucide-react'
+import {PlusCircle, Edit, Trash2, Package, History, Eye, EyeOff, Layers} from 'lucide-react'
 import {getAllProducts, createProduct, updateProduct, deleteProduct, deletePriceHistory} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
@@ -10,8 +10,10 @@ import {Padding} from '@cm/components/styles/common-components/common-components
 import {cn} from '@cm/shadcn/lib/utils'
 import {DeleteConfirmModal} from '@app/(apps)/sbm/(pages)/products/ConfirmModal'
 import {PriceHistoryModal} from '@app/(apps)/sbm/(pages)/products/PriceHistoryModal'
+import {IngredientModal} from '@app/(apps)/sbm/(pages)/products/IngredientModal'
 import {ProductCl} from '@app/(apps)/sbm/(pages)/products/ProductCl'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {ProductType} from '../../types'
 
 export default function ProductsClient() {
   // useGlobalを使用してクエリパラメーターを管理
@@ -47,6 +49,7 @@ export default function ProductsClient() {
   const EditProductModalReturn = useModal()
   const DeleteProductModalReturn = useModal()
   const PriceHistoryModalReturn = useModal()
+  const IngredientModalReturn = useModal()
 
   const handleSave = async (productData: Partial<ProductType> & {currentPrice: number; currentCost: number}) => {
     try {
@@ -255,6 +258,13 @@ export default function ProductsClient() {
                             <History size={16} />
                           </button>
                           <button
+                            onClick={() => IngredientModalReturn.handleOpen({product})}
+                            className="text-blue-600 hover:text-blue-800"
+                            title="材料管理"
+                          >
+                            <Layers size={16} />
+                          </button>
+                          <button
                             onClick={() => EditProductModalReturn.handleOpen({product})}
                             className="text-blue-600 hover:text-blue-800"
                             title="編集"
@@ -324,6 +334,17 @@ export default function ProductsClient() {
           />
         </Padding>
       </DeleteProductModalReturn.Modal>
+
+      {/* 材料管理モーダル */}
+      <IngredientModalReturn.Modal>
+        <Padding>
+          <IngredientModal
+            productId={IngredientModalReturn?.open?.product?.id || 0}
+            onClose={IngredientModalReturn.handleClose}
+            onUpdate={loadProducts}
+          />
+        </Padding>
+      </IngredientModalReturn.Modal>
     </div>
   )
 }
@@ -346,7 +367,7 @@ const ProductModal = ({
   const [formData, setFormData] = useState<FormData>({
     name: product?.name || '',
     description: product?.description || '',
-    sbmProductId: product?.sbmProductId || 0,
+    // sbmProductId: product?.sbmProductId || 0,
     currentCost: 0,
     currentPrice: 0,
     category: product?.category || '',

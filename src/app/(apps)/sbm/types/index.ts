@@ -1,229 +1,105 @@
-type changeHistoryObject = ReservationType & {
-  items: ReservationItemType[]
-}
-
-// 顧客電話番号管理
-// export
-type CustomerPhoneType = {
-  id: number
-  sbmCustomerId: number
-  label: PhoneLabelType // '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
-  phoneNumber: string
-  createdAt?: Date
-  updatedAt?: Date
-}
-
-// export
-type ProductType = Partial<{
+export type ProductType = {
   id: number
   name: string
-  description?: string
-  sbmProductId: number
+  description: string | null
   category: string
   isActive: boolean
-
   createdAt: Date
   updatedAt: Date
-  SbmProductPriceHistory: ProductPriceHistoryType[]
-}>
+  currentPrice?: number
+  currentCost?: number
+}
 
-// export
-type ProductPriceHistoryType = Partial<{
+export type ProductPriceHistoryType = {
   id: number
-  sbmProductId: number
   price: number
   cost: number
   effectiveDate: Date
   createdAt: Date
-}>
+  sbmProductId: number
+}
 
-// export
-type ReservationType = Partial<{
+export type CustomerType = {
+  id: number
+  companyName: string
+  contactName: string | null
+  postalCode: string | null
+  prefecture: string | null
+  city: string | null
+  street: string | null
+  building: string | null
+  email: string | null
+  availablePoints: number
+  notes: string | null
+  createdAt: Date
+  updatedAt: Date
+  phones: CustomerPhoneType[]
+}
+
+export type CustomerPhoneType = {
+  id: number
+  sbmCustomerId: number
+  label: string
+  phoneNumber: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type ReservationType = {
   id: number
   sbmCustomerId: number
   customerName: string
-  contactName?: string
+  contactName: string | null
   phoneNumber: string
-  postalCode?: string
-  prefecture?: string
-  city?: string
-  street?: string
-  building?: string
+  postalCode: string | null
+  prefecture: string | null
+  city: string | null
+  street: string | null
+  building: string | null
   deliveryDate: Date
-  pickupLocation: PickupLocationType
-  purpose: PurposeType
-  paymentMethod: PaymentMethodType
-  orderChannel: OrderChannelType
+  pickupLocation: string
+  purpose: string
+  paymentMethod: string
+  orderChannel: string
   totalAmount: number
   pointsUsed: number
   finalAmount: number
   orderStaff: string
-  userId?: number
-  notes?: string
-  deliveryCompleted: boolean
-  recoveryCompleted: boolean
-  // キャンセル関連情報
-  isCanceled: boolean
-  canceledAt?: Date
-
-  cancelReason?: string
+  userId: number | null
+  notes: string | null
   createdAt: Date
   updatedAt: Date
-  items?: ReservationItemType[]
-  phones?: CustomerPhoneType[]
+  deliveryCompleted: boolean
+  recoveryCompleted: boolean
+  items: ReservationItemType[]
+  isCanceled: boolean
+  canceledAt: Date | null
+  cancelReason: string | null
+}
 
-  changeHistory?: ReservationChangeHistoryType[]
-}>
-
-// export
-type ReservationItemType = Partial<{
+export type ReservationItemType = {
   id: string
   sbmReservationId: number
   sbmProductId: number
   productName: string
   quantity: number
   unitPrice: number
-  unitCost: number
   totalPrice: number
   createdAt: Date
-}>
+}
 
-// export
-type ReservationChangeHistoryType = Partial<{
+export type ReservationChangeHistoryType = {
   id: string
   sbmReservationId: number
-
-  changeType: 'create' | 'update' | 'delete' | 'cancel' | 'restore'
-  changedFields?: Record<string, any>
-  oldValues?: Record<string, any>
-  newValues?: Record<string, any>
+  changeType: string
+  changedFields: any | null
+  oldValues: any | null
+  newValues: any | null
   changedAt: Date
-}>
-
-// 配達グループ（日付ベース、ユーザー1人に紐付け）
-// export
-type DeliveryGroupType = Partial<{
-  id: number
-  name: string
-  deliveryDate: Date
-  userId: number
-  userName: string
-  status: 'planning' | 'route_generated' | 'in_progress' | 'completed'
-  totalReservations: number
-  completedReservations: number
-  estimatedDuration?: number
-  actualDuration?: number
-  optimizedRoute?: DeliveryRouteStopType[]
-  routeUrl?: string
-  notes?: string
-  createdAt: Date
-  updatedAt: Date
-  groupReservations?: DeliveryGroupReservationType[]
-}>
-
-// 配達ルートの停止地点
-// export
-type DeliveryRouteStopType = Partial<{
-  id: string
-  sbmDeliveryGroupId: number
-  sbmReservationId: number
-  customerName: string
-  address: string
-  lat?: number
-  lng?: number
-  estimatedArrival?: Date
-  actualArrival?: Date
-  deliveryOrder: number
-  deliveryCompleted: boolean
-  recoveryCompleted: boolean
-  estimatedDuration: number
-  notes?: string
-}>
-
-// 配達グループと予約の紐付け
-// export
-type DeliveryGroupReservationType = Partial<{
-  id: number
-  sbmDeliveryGroupId: number
-  sbmReservationId: number
-  deliveryOrder?: number
-  isCompleted: boolean
-  completedAt?: Date
-  notes?: string
-  createdAt: Date
-}>
-
-// 列挙型
-// export
-type OrderChannelType = '電話' | 'FAX' | 'メール' | 'Web' | '営業' | 'その他'
-// export
-type PurposeType = '会議' | '研修' | '接待' | 'イベント' | '懇親会' | 'その他'
-// export
-type PaymentMethodType = '現金' | '銀行振込' | '請求書' | 'クレジットカード'
-// export
-type PickupLocationType = '配達' | '店舗受取'
-// export
-type PhoneLabelType = '自宅' | '携帯' | '職場' | 'FAX' | 'その他'
-
-// フィルター・検索用型
-// export
-type ReservationFilterType = {
-  startDate?: string
-  endDate?: string
-  keyword?: string
-  productName?: string
-  staffName?: string
-  customerName?: string
-  companyName?: string
-  pickupLocation?: PickupLocationType
-  orderChannel?: OrderChannelType
-  purpose?: PurposeType
-  paymentMethod?: PaymentMethodType
-  deliveryCompleted?: boolean
-  recoveryCompleted?: boolean
-  showCanceled?: boolean // 取り消し済み予約を表示するかどうか
+  userId: number | null
 }
 
-// ダッシュボード集計用型
-// export
-type DashboardStatsType = {
-  totalSales: number
-  totalCost: number
-  profit: number
-  orderCount: number
-  avgOrderValue: number
-  salesByPurpose: {purpose: PurposeType; count: number; amount: number}[]
-  salesByProduct: {productName: string; count: number; amount: number}[]
-}
-
-// SBM アプリケーションの型定義
-
-// 顧客関連の型
-interface CustomerType {
-  id: number
-  companyName: string
-  contactName: string
-  postalCode: string
-  prefecture: string
-  city: string
-  street: string
-  building: string
-  email: string
-  availablePoints: number
-  notes: string
-  createdAt?: Date
-  updatedAt?: Date
-  phones?: CustomerPhoneType[]
-}
-
-// export
-type CustomerSearchResultType = {
-  customer: CustomerType
-  matchedPhones: CustomerPhoneType[]
-}
-
-// export
-type DeliveryTeamType = {
+export type DeliveryTeamType = {
   id: number
   name: string
   date: Date
@@ -231,18 +107,96 @@ type DeliveryTeamType = {
   updatedAt: Date
 }
 
-// export
-type DeliveryAssignmentType = {
+export type DeliveryAssignmentType = {
   id: number
   sbmDeliveryTeamId: number
   sbmReservationId: number
   assignedBy: string
-  userId?: number
+  userId: number | null
   deliveryDate: Date
-  estimatedDuration?: number
-  actualDuration?: number
-  route?: any
+  estimatedDuration: number | null
+  actualDuration: number | null
+  route: any | null
   status: string
   createdAt: Date
   updatedAt: Date
+  reservation?: ReservationType
+}
+
+export type DeliveryGroupType = {
+  id: number
+  name: string
+  deliveryDate: Date
+  userId: number
+  userName: string
+  status: string
+  totalReservations: number
+  completedReservations: number
+  estimatedDuration: number | null
+  actualDuration: number | null
+  routeUrl: string | null
+  notes: string | null
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type DeliveryRouteStopType = {
+  id: string
+  sbmDeliveryGroupId: number
+  sbmReservationId: number
+  customerName: string
+  address: string
+  lat: number | null
+  lng: number | null
+  estimatedArrival: Date | null
+  actualArrival: Date | null
+  deliveryOrder: number
+  deliveryCompleted: boolean
+  recoveryCompleted: boolean
+  estimatedDuration: number
+  notes: string | null
+  createdAt: Date
+  updatedAt: Date
+  reservation?: ReservationType
+}
+
+export type DeliveryGroupReservationType = {
+  id: number
+  sbmDeliveryGroupId: number
+  sbmReservationId: number
+  deliveryOrder: number | null
+  isCompleted: boolean
+  completedAt: Date | null
+  notes: string | null
+  createdAt: Date
+  reservation?: ReservationType
+}
+
+// 材料マスター型定義
+export type IngredientType = {
+  id: number
+  name: string
+  description: string | null
+  unit: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+// 商品材料関連型定義
+export type ProductIngredientType = {
+  id: number
+  sbmProductId: number
+  sbmIngredientId: number
+  quantity: number
+  createdAt: Date
+  updatedAt: Date
+  ingredient: IngredientType | null
+}
+
+// 材料使用量計算結果型定義
+export type IngredientUsageType = {
+  id: number
+  name: string
+  unit: string
+  totalQuantity: number
 }

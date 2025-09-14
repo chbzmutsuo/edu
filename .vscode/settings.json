@@ -111,10 +111,10 @@
     "**/kickswrap/**": true,
     "**/migrations/**": true,
     "**/page/**": true,
+    "**/sbm/**": true,
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
-    "**/tbm/**": true,
     "**/tmp/**": true,
     "**/training/**": true
   },
@@ -135,10 +135,10 @@
     "kickswrap",
     "migrations",
     "page",
+    "sbm",
     "shinsei",
     "sohken",
     "stock",
-    "tbm",
     "tmp",
     "training"
   ],

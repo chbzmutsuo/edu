@@ -3,7 +3,7 @@ import {Days} from '@cm/class/Days/Days'
 import {Time} from '@cm/class/Time'
 
 export class UseWorkStatusCl {
-  private userWorkStatus: any
+  private userWorkStatus: UserWorkStatusItem
   private _calculated: boolean = false
 
   // 計算結果のキャッシュ
@@ -18,7 +18,7 @@ export class UseWorkStatusCl {
   private _shinyaZangyo: number = 0
   private _kyujitsuShukkin: number = 0
 
-  constructor(userWorkStatus: any) {
+  constructor(userWorkStatus: UserWorkStatusItem) {
     this.userWorkStatus = userWorkStatus
   }
 
@@ -31,10 +31,14 @@ export class UseWorkStatusCl {
     monthDates: Date[]
   ) {
     const dailyResults = monthDates.map(date => {
+      const isFirstDate = date.getDate() === 1
       const userWorkStatus = userWorkStatusData.find(item => {
         return item.userId === selectedUserId && Days.validate.isSameDate(new Date(item.date), date)
       })
-      return new UseWorkStatusCl(userWorkStatus)
+
+      if (userWorkStatus) {
+        return new UseWorkStatusCl(userWorkStatus)
+      }
     })
 
     // 月間合計値
@@ -61,7 +65,7 @@ export class UseWorkStatusCl {
     let paidLeave = 0 // 有給休暇
 
     dailyResults.forEach(dailyStatus => {
-      if (dailyStatus.hasWorkData()) {
+      if (dailyStatus && dailyStatus.hasWorkData()) {
         const workStatus = dailyStatus.getWorkStatus()
 
         // 各時間の合計
@@ -75,6 +79,7 @@ export class UseWorkStatusCl {
         monthlyTotals.jikangai1 += dailyStatus.getJikangai1()
         monthlyTotals.shinyaTime += dailyStatus.getShinyaTime()
         monthlyTotals.shinyaZangyo += dailyStatus.getShinyaZangyo()
+
         monthlyTotals.kyujitsuShukkin += dailyStatus.getKyujitsuShukkin()
 
         // サマリー集計
@@ -147,9 +152,11 @@ export class UseWorkStatusCl {
    */
   static formatMinutesToTime(minutes: number): string {
     if (minutes === 0) return '0:00'
-    const hours = Math.floor(minutes / 60)
-    const mins = minutes % 60
-    return `${hours}:${mins.toString().padStart(2, '0')}`
+    const sign = minutes < 0 ? '-' : ''
+    const absMinutes = Math.abs(minutes)
+    const hours = Math.floor(absMinutes / 60)
+    const mins = absMinutes % 60
+    return `${sign}${hours}:${mins.toString().padStart(2, '0')}`
   }
 
   /**
@@ -164,6 +171,8 @@ export class UseWorkStatusCl {
         ['kyukeiMins', 'shinyaKyukeiMins', 'kyusokuMins'].map(key => [key, Time.str.strToMins(this.userWorkStatus?.[key] ?? '')])
       )
 
+      // if(this.userWorkStatus)
+
       this._kyukeiMins = timeFields.kyukeiMins
       this._shinyaKyukeiMins = timeFields.shinyaKyukeiMins
       this._kyusokuMins = timeFields.kyusokuMins
@@ -173,11 +182,12 @@ export class UseWorkStatusCl {
       const workingMinutes = startTime && endTime ? Time.str.calcMinDiff(startTime, endTime) : 0
 
       this._kosokuMins = workingMinutes - this._kyusokuMins
-      this._rodoMins = workingMinutes - this._kyukeiMins
+      this._rodoMins = workingMinutes - this._kyukeiMins - this._kyusokuMins
     }
 
     // 各種計算
     this._shoteinai = this.calculateShoteinai()
+
     this._jikangai1 = this.calculateJikangai1()
     this._shinyaTime = this.calculateShinyaTime()
     this._shinyaZangyo = this._shinyaTime - this._shinyaKyukeiMins
@@ -256,6 +266,7 @@ export class UseWorkStatusCl {
    */
   getShinyaZangyo(): number {
     this.calculate()
+
     return this._shinyaZangyo
   }
 
@@ -339,7 +350,9 @@ export class UseWorkStatusCl {
     const workStatus = this.getWorkStatus()
     const startTime = this.getStartTime()
 
-    if (!workStatus || workStatus === '02' || workStatus === '03' || workStatus === '05' || !startTime) {
+    const diasbled = !workStatus || workStatus === '02' || workStatus === '03' || workStatus === '05' || !startTime
+
+    if (diasbled) {
       return 0
     }
 

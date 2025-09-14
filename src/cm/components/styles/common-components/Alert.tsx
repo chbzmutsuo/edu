@@ -22,7 +22,7 @@ export const alertColorVariants: Record<colorVariants, string> = {
   blue: 'bg-blue-50 !border-blue-500 text-blue-main',
   green: 'bg-green-50 !border-green-500 text-green-main',
   orange: 'bg-orange-50 !border-orange-500 text-orange-600',
-  yellow: 'bg-yellow-50 !border-yellow-500 text-yellow-main',
+  yellow: 'bg-yellow-50/60 !border-yellow-500 text-yellow-700',
   sub: 'bg-sub-light !border-sub-main text-sub-main',
   primary: 'bg-primary-light !border-primary-main text-primary-main',
   transparent: 'bg-transparent !border-transparent text-transparent',

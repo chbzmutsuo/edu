@@ -50,7 +50,8 @@ const InlineEditField: React.FC<InlineEditFieldProps> = ({
 
   const handleSave = useCallback(
     async (e?: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = e?.target?.value || currentValue
+      const newValue = e?.target?.value
+
       if (isLoading) return
 
       // 既存のタイムアウトをクリア

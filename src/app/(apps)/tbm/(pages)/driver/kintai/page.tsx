@@ -6,7 +6,7 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {getUserWorkStatusForMonth} from '@app/(apps)/tbm/(server-actions)/userWorkStatusActions'
+import {getUserWorkStatusForMonth, UserWorkStatusItem} from '@app/(apps)/tbm/(server-actions)/userWorkStatusActions'
 import {getMidnight} from '@cm/class/Days/date-utils/calculations'
 import InlineEditField from './components/InlineEditField'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
@@ -18,18 +18,20 @@ import {UseWorkStatusCl} from '@app/(apps)/tbm/(class)/UseWorkStatusCl'
 import {Days} from '@cm/class/Days/Days'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import {HREF} from '@cm/lib/methods/urls'
+import {Alert} from '@cm/components/styles/common-components/Alert'
+import {isDev} from '@cm/lib/methods/common'
 
 export default function AttendancePage() {
   const {query, session} = useGlobal()
 
   const {
-    data: User,
+    data,
     isLoading,
     mutate: fetchData,
     error,
   } = useSWR(JSON.stringify([query.g_userId, query.month]), async () => {
     const tbmBaseId = session.scopes?.getTbmScopes?.()?.tbmBaseId
-    const selectedUserId = query.g_userId ? parseInt(query.g_userId) : undefined
+    const selectedUserId = session.scopes?.getTbmScopes?.()?.userId
     const theDate = getCurrentMonth()
     return await getUserWorkStatusForMonth({
       tbmBaseId,
@@ -38,7 +40,10 @@ export default function AttendancePage() {
     })
   })
 
+  const User = data as Awaited<ReturnType<typeof getUserWorkStatusForMonth>>
+
   const {UserWorkStatus = [], TbmRefuelHistory = [], OdometerInput = []} = User ?? {}
+
   const selectedUserId = query.g_userId ? parseInt(query.g_userId) : undefined
 
   // 現在の月を取得（クエリパラメータから、または現在の日付から）
@@ -96,7 +101,7 @@ export default function AttendancePage() {
                   {label: '所定内', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shoteinai)},
                   {label: '時間外1', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai1)},
                   {label: '時間外2', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.jikangai2)},
-                  {label: '深夜', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaTime)},
+                  {label: '深夜', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.shinyaZangyo)},
                   {label: '休日勤務', cellValue: UseWorkStatusCl.formatMinutesToTime(monthlyTotals.kyujitsuShukkin)},
                   {label: '月間距離', cellValue: '-'},
                   {label: '給油量', cellValue: '-'},
@@ -113,7 +118,7 @@ export default function AttendancePage() {
 
   const DailyRecordsTable = useMemo(() => {
     if (!selectedUserId) {
-      return <div>ユーザーを選択してください</div>
+      return <Alert color="yellow">ユーザーを選択してください</Alert>
     }
     // 各ユーザーの各日付のレコードを作成
     const records = daysInMonth.map(date => {
@@ -135,7 +140,7 @@ export default function AttendancePage() {
         return acc
       }, 0)
 
-      const useWorkStatusCl = new UseWorkStatusCl(userWorkStatus)
+      const useWorkStatusCl = new UseWorkStatusCl(userWorkStatus as UserWorkStatusItem)
 
       const {
         kosokuMins,
@@ -156,6 +161,7 @@ export default function AttendancePage() {
 
       return {
         csvTableRow: [
+          isDev && {label: 'id', cellValue: <T_LINK href={driveInputPageHref}>{userWorkStatus?.id}</T_LINK>},
           {label: '日付', cellValue: <T_LINK href={driveInputPageHref}>{dateStr}</T_LINK>},
           {
             label: '勤怠',
@@ -178,16 +184,15 @@ export default function AttendancePage() {
           },
           {
             label: '車番',
-            cellValue: (
-              <InlineEditField
-                value={userWorkStatus?.remark || ''}
-                userId={selectedUserId}
-                date={date}
-                fieldName="vehicleNumber"
-                placeholder="車番入力"
-                onUpdate={fetchData}
-              />
-            ),
+            cellValue: '',
+            // <InlineEditField
+            //   value={userWorkStatus?.remark || ''}
+            //   userId={selectedUserId}
+            //   date={date}
+            //   fieldName="vehicleNumber"
+            //   placeholder="車番入力"
+            //   onUpdate={fetchData}
+            // />
           },
           {
             label: '出社時間',
@@ -294,7 +299,9 @@ export default function AttendancePage() {
             cellValue: '',
             style: {minWidth: 240},
           }, // TODO: 別データソースから取得
-        ].map(d => ({...d, style: {minWidth: 80, ...d.style}})),
+        ]
+          .filter(Boolean)
+          .map((d: any) => ({...d, style: {minWidth: 80, ...d.style}})),
       }
     })
 
@@ -351,7 +358,7 @@ export default function AttendancePage() {
               <NewDateSwitcher
                 {...{
                   monthOnly: true,
-                  additionalCols: [{label: 'ユーザー', id: 'g_userId', forSelect: {}}],
+                  additionalCols: [{label: '', id: 'g_userId', forSelect: {}}],
                 }}
               />
             </div>
