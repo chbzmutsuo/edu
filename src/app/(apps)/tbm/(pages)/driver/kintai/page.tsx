@@ -20,6 +20,7 @@ import {T_LINK} from '@cm/components/styles/common-components/links'
 import {HREF} from '@cm/lib/methods/urls'
 import {Alert} from '@cm/components/styles/common-components/Alert'
 import {isDev} from '@cm/lib/methods/common'
+import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 export default function AttendancePage() {
   const {query, session} = useGlobal()
@@ -42,7 +43,7 @@ export default function AttendancePage() {
 
   const User = data as Awaited<ReturnType<typeof getUserWorkStatusForMonth>>
 
-  const {UserWorkStatus = [], TbmRefuelHistory = [], OdometerInput = []} = User ?? {}
+  const {UserWorkStatus = [], TbmRefuelHistory = [], OdometerInput = [], TbmDriveSchedule = []} = User ?? {}
 
   const selectedUserId = query.g_userId ? parseInt(query.g_userId) : undefined
 
@@ -126,6 +127,7 @@ export default function AttendancePage() {
         return item.userId === selectedUserId && Days.validate.isSameDate(new Date(item.date), date)
       })
 
+      // 走行距離の計算 - そのドライバーがその日に走行した距離をOdometerInputから算出
       const odometerInput = OdometerInput.filter(item => {
         return item.userId === selectedUserId && Days.validate.isSameDate(item.date, date)
       }).reduce((acc, item) => {
@@ -133,12 +135,29 @@ export default function AttendancePage() {
         return acc
       }, 0)
 
+      // 給油量の計算 - そのドライバーがその日に実施した給油合計をTbmRefuelHistoryから計算
       const tbmRefuelHistory = TbmRefuelHistory.filter(item => {
         return item.userId === selectedUserId && Days.validate.isSameDate(item.date, date)
       }).reduce((acc, item) => {
         acc += item.amount
         return acc
       }, 0)
+
+      // 車番の取得 - そのドライバーがその日に走った車両をカンマ区切りで出力
+      const vehicleNumbers = TbmDriveSchedule.filter(
+        item => item.userId === selectedUserId && Days.validate.isSameDate(item.date, date) && item.TbmVehicle
+      )
+        .map(item => item.TbmVehicle?.vehicleNumber)
+        .filter((value, index, self) => value && self.indexOf(value) === index) // 重複排除
+        .join('\n')
+
+      // 運行内容の取得 - その人の、当日のTbmDriveScheduleの内容をカンマ区切りで出力
+      const driveContents = TbmDriveSchedule.filter(
+        item => item.userId === selectedUserId && Days.validate.isSameDate(item.date, date)
+      )
+        .map(item => `${item.TbmRouteGroup?.name}【${item.TbmRouteGroup?.routeName}】`)
+        .filter(Boolean)
+        .join('\n')
 
       const useWorkStatusCl = new UseWorkStatusCl(userWorkStatus as UserWorkStatusItem)
 
@@ -184,15 +203,12 @@ export default function AttendancePage() {
           },
           {
             label: '車番',
-            cellValue: '',
-            // <InlineEditField
-            //   value={userWorkStatus?.remark || ''}
-            //   userId={selectedUserId}
-            //   date={date}
-            //   fieldName="vehicleNumber"
-            //   placeholder="車番入力"
-            //   onUpdate={fetchData}
-            // />
+            cellValue: (
+              <small>
+                <MarkDownDisplay>{vehicleNumbers || ''}</MarkDownDisplay>
+              </small>
+            ),
+            style: {minWidth: 120},
           },
           {
             label: '出社時間',
@@ -296,9 +312,13 @@ export default function AttendancePage() {
           },
           {
             label: '運行内容',
-            cellValue: '',
+            cellValue: (
+              <small>
+                <MarkDownDisplay>{driveContents || ''}</MarkDownDisplay>
+              </small>
+            ),
             style: {minWidth: 240},
-          }, // TODO: 別データソースから取得
+          },
         ]
           .filter(Boolean)
           .map((d: any) => ({...d, style: {minWidth: 80, ...d.style}})),

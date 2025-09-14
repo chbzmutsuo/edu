@@ -38,6 +38,13 @@ export async function getUserWorkStatusForMonth(params: {tbmBaseId: number; user
       UserWorkStatus: {where: {date: dateWhere}},
       OdometerInput: {where: {date: dateWhere}},
       TbmRefuelHistory: {where: {date: dateWhere}},
+      TbmDriveSchedule: {
+        where: {date: dateWhere},
+        include: {
+          TbmRouteGroup: true,
+          TbmVehicle: true,
+        },
+      },
     },
   })
 

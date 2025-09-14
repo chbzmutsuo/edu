@@ -28,7 +28,6 @@ export default async function Page(props) {
       }).WithWrapper({
         className: `text-sm max-w-[95vw] max-h-[80vh] t-paper`,
       })}
-      {/* <NempiKanriCC {...{vehicleList, fuelByCarWithVehicle, lastRefuelHistoryByCar}} /> */}
     </FitMargin>
   )
 }

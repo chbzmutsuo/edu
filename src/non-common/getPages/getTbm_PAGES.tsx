@@ -42,7 +42,6 @@ export const tbm_PAGES = (props: PageGetterType) => {
       children: [
         {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
         {tabId: 'monthly-schedule', label: <IconLetter {...{Icon: Calendar}}>月間予定</IconLetter>},
-        {tabId: 'kintai', label: <IconLetter {...{Icon: Calendar}}>勤怠管理</IconLetter>},
       ],
       exclusiveTo: login,
       ROOT: [rootPath, 'driver'],
@@ -59,7 +58,8 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'eigyosho', label: <IconLetter {...{Icon: JapaneseYenIcon}}>営業所別売上</IconLetter>},
         {tabId: 'simpleDriveHistory', label: <IconLetter {...{Icon: FileText}}>簡易走行記録（PDF）</IconLetter>},
         {tabId: 'kyuyo', label: <IconLetter {...{Icon: JapaneseYenIcon}}>給与</IconLetter>},
-        {tabId: 'attendance', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
+        {tabId: 'driver/kintai', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
+        {tabId: 'seikyu', label: <IconLetter {...{Icon: ListIcon}}>請求書発行</IconLetter>},
       ],
       exclusiveTo: login,
     },
