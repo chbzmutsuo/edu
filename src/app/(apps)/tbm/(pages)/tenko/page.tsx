@@ -1,8 +1,8 @@
 'use client'
 
 import TenkoPaperHeader from '@app/(apps)/tbm/(pages)/tenko/TenkoPaperHeader'
-
 import TenkoPaperBody from '@app/(apps)/tbm/(pages)/tenko/TenkoPaperBody'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 import {Button} from '@cm/components/styles/common-components/Button'
@@ -21,7 +21,7 @@ export default function TenkoPage(props) {
 
   const prinfFunc = useReactToPrint({
     contentRef: printRef,
-    pageStyle: '@page { size: A4 landscape; }',
+    pageStyle: '@page { size: A3 landscape; margin: 10mm; }', // A3横サイズに変更
     suppressErrors: true,
   })
 
@@ -39,20 +39,24 @@ export default function TenkoPage(props) {
     TbmRouteGroup: TbmRouteGroup
   })[] = data
 
+  // 出発時刻順にソート（24時間超え対応）
   const OrderByPickUpTime = drives.sort((a, b) => {
-    const aPickUpTime = a.TbmRouteGroup.pickupTime
-    const bPickUpTime = b.TbmRouteGroup.pickupTime
+    // まずドライバーの社員コード順
+    const userCodeCompare = (a.User?.code || '').localeCompare(b.User?.code || '')
+    if (userCodeCompare !== 0) return userCodeCompare
 
-    if (!aPickUpTime || !bPickUpTime) {
-      return 0
-    }
-    return aPickUpTime.localeCompare(bPickUpTime)
+    // 同じドライバーの場合は出発時刻順
+    return TimeHandler.compareTimeStrings(
+      a.TbmRouteGroup.departureTime || a.TbmRouteGroup.pickupTime,
+      b.TbmRouteGroup.departureTime || b.TbmRouteGroup.pickupTime
+    )
   })
 
+  // A3横サイズに対応したレイアウト
   const wrapperStyle = {
-    width: 1700,
-    minWidth: 1700,
-    maxWidth: 1700,
+    width: 2000, // A3横幅に合わせて拡大
+    minWidth: 2000,
+    maxWidth: 2000,
     margin: 'auto',
     padding: 10,
   }

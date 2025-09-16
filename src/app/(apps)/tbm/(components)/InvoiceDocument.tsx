@@ -13,13 +13,13 @@ export const InvoiceDocument = forwardRef<HTMLDivElement, InvoiceDocumentProps>(
   const {yearMonth, totalAmount, taxAmount, grandTotal, summaryByCategory, detailsByCategory} = invoiceDetails
 
   return (
-    <div ref={ref} className="bg-white text-black">
+    <div ref={ref} className="bg-white text-black print-target">
       {/* 1ページ目: 請求書サマリー */}
       <div className="w-[210mm] min-h-[297mm] mx-auto p-8 page-break-after-always">
         {/* ヘッダー */}
         <div className="flex justify-between items-start mb-8">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-center mb-6">請　求　書</h1>
+            <h1 className="text-3xl font-bold text-center mb-6">請求書</h1>
             <div className="text-right text-sm mb-4">
               <div>{formatDate(new Date(), 'YYYY年MM月DD日')}</div>
             </div>

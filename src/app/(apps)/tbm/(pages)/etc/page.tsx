@@ -1,10 +1,8 @@
 'use client'
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {C_Stack, FitMargin, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {Card} from '@cm/shadcn/ui/card'
 import {Button} from '@cm/components/styles/common-components/Button'
-import useModal from '@cm/components/utils/modal/useModal'
-import DriveScheduleSelectModal from '@app/(apps)/tbm/(components)/EtcScheduleLink/DriveScheduleSelectModal'
 
 // カスタムフック
 import {useEtcData} from './hooks/useEtcData'
@@ -19,6 +17,7 @@ import {Fields} from '@cm/class/Fields/Fields'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {isDev} from '@cm/lib/methods/common'
 import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
+import {EtcScheduleLinkModal} from './components/EtcScheduleLinkModal'
 
 export default function EtcCsvImportPage() {
   const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
@@ -84,9 +83,14 @@ export default function EtcCsvImportPage() {
   })
 
   // モーダル管理
-  const LinkModalReturn = useModal<{etcMeisaiId: number; scheduleId: number | null}>()
+  const [modalData, setModalData] = useState<{etcMeisaiId: number; scheduleId: number | null} | null>(null)
 
   const isLoading = dataLoading || groupingLoading
+
+  // 紐付け処理
+  const handleLinkSchedule = (etcMeisaiId: number, scheduleId: number | null) => {
+    setModalData({etcMeisaiId, scheduleId})
+  }
 
   return (
     <FitMargin className={`p-2`}>
@@ -134,12 +138,7 @@ export default function EtcCsvImportPage() {
                   selectedRows={selectedRows}
                   toggleRowSelection={toggleRowSelection}
                   ungroupRecords={ungroupRecords}
-                  onLinkSchedule={(etcMeisaiId, scheduleId) => {
-                    LinkModalReturn.handleOpen({
-                      etcMeisaiId,
-                      scheduleId: scheduleId || 0,
-                    })
-                  }}
+                  onLinkSchedule={handleLinkSchedule}
                 />
               </>
             ) : (
@@ -150,21 +149,19 @@ export default function EtcCsvImportPage() {
       </C_Stack>
 
       {/* 運行データ紐付けモーダル */}
-      <LinkModalReturn.Modal>
-        <DriveScheduleSelectModal
-          vehicleId={latestFormData.tbmVehicleId || 0}
-          month={latestFormData.month || new Date()}
-          handleClose={LinkModalReturn.handleClose}
-          etcMeisaiId={LinkModalReturn?.open?.etcMeisaiId}
-          currentScheduleId={LinkModalReturn?.open?.scheduleId}
-          onLinkUpdated={() => {
-            // 紐付け更新後にデータを再読み込み
+      {modalData && (
+        <EtcScheduleLinkModal
+          etcMeisaiId={modalData.etcMeisaiId}
+          scheduleId={modalData.scheduleId}
+          onClose={() => setModalData(null)}
+          onUpdate={() => {
+            // データを再読み込み
             if (latestFormData?.tbmVehicleId && latestFormData?.month) {
               loadEtcRawData(latestFormData.tbmVehicleId, latestFormData.month)
             }
           }}
         />
-      </LinkModalReturn.Modal>
+      )}
     </FitMargin>
   )
 }

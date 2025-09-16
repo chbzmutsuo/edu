@@ -13,13 +13,14 @@ import {
   UserWithWorkStatus,
   TbmRouteGroupWithCalendar,
 } from '../types/haisha-page-types'
+import TbmRouteCl from '@app/(apps)/tbm/(class)/TbmRouteCl'
 
 // 固定列のスタイル定数
 const STICKY_COLUMN_STYLE = {
   left: 0,
   position: 'sticky' as const,
   zIndex: 31,
-  background: '#d8d8d8',
+  background: '#F3F3F3',
   borderRight: '2px solid #c8c8c8',
   boxShadow: '2px 0 4px rgba(0,0,0,0.1)',
 }
@@ -102,22 +103,39 @@ export const TableRowBuilder = {
           return acc + (scheduleByDateAndRoute[date]?.[String(route.id)]?.length ?? 0)
         }, 0)
 
+        const RouteCl = new TbmRouteCl(route)
+        const customer = RouteCl.Customer
+        const timeRange = RouteCl.timeRange
+
         return {
           csvTableRow: [
             // ルート情報（固定列）
             {
               label: '便',
               cellValue: (
-                <R_Stack className={`gap-0.5`}>
-                  <span>{i + 1}. </span>
-
-                  <span>
+                <div>
+                  <R_Stack className={`gap-0.5`}>
+                    <span>{i + 1}.</span>
                     <strong>{route.name}</strong>
-                    <span className="text-xs text-gray-500">({scheduledCount})</span>
-                    <br />
-                    <small>{routeName}</small>
-                  </span>
-                </R_Stack>
+                  </R_Stack>
+
+                  <div className="text-xs text-gray-700 text-end w-full">
+                    <span>{route.code}</span>
+                    <span>{route.serviceNumber}</span>
+                    <span>{routeName}</span>
+                  </div>
+                  <div className="text-xs text-gray-700 text-end w-full">
+                    <R_Stack className={` justify-end`}>
+                      <div>{timeRange}</div>
+                      <div>({scheduledCount})</div>
+                    </R_Stack>
+                  </div>
+                  <div className="text-[10px] text-gray-400 text-end w-full">
+                    <R_Stack className={` justify-end`}>
+                      <div>{customer?.name}</div>
+                    </R_Stack>
+                  </div>
+                </div>
               ),
               style: {
                 ...STICKY_COLUMN_STYLE,

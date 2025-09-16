@@ -2,6 +2,7 @@
 
 import {arr__insertItemAtIndex} from '@cm/class/ArrHandler/array-utils/data-operations'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
@@ -20,19 +21,21 @@ const Stack = props => {
 
 const TableWrapperClass = cn(
   'max-h-none',
-  `text-center border  rounded-none w-full`,
-  `[&_th]:!text-[11px] `,
-  `[&_td]:!text-[11px]`,
+  `text-center border rounded-none w-full`,
+  `[&_th]:!text-[9px]`, // フォントサイズを小さく（A3対応）
+  `[&_td]:!text-[9px]`, // フォントサイズを小さく（A3対応）
   `[&_th]:!bg-inherit`,
   `[&_th]:!border`,
-  `[&_td]:!px-4 `,
+  `[&_td]:!px-2`, // パディングを小さく
+  `[&_td]:!py-1`, // 縦パディングを追加
   `[&_td]:!border`,
   `[&_td]:!align-middle`,
-  `[&_td]:!p-0`
+  `[&_td]:!leading-tight` // 行間を詰める
 )
 
 export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
-  const minRowCount = Math.max(OrderByPickUpTime.length, 40)
+  // A3横サイズで24-25名分を表示
+  const minRowCount = Math.max(OrderByPickUpTime.length, 25)
 
   return (
     <div
@@ -47,18 +50,19 @@ export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
         headers: [
           {
             csvTableRow: [
-              {cellValue: `従業員`, colSpan: 3},
+              {cellValue: `従業員`, colSpan: 4}, // 車番と運転者名を分離するため1列追加
               {cellValue: `乗務前点呼`, colSpan: 8},
               {cellValue: `中間点呼`, colSpan: 7},
               {cellValue: `乗務後点呼`, colSpan: 8},
-              {cellValue: `備考`, colSpan: 1, rowSpan: 3, style: {width: 320}},
+              {cellValue: `備考`, colSpan: 1, rowSpan: 3, style: {width: 200}}, // 備考欄をコンパクトに
             ],
           },
           {
             csvTableRow: [
               //
               {cellValue: `勤怠`, rowSpan: 2},
-              {cellValue: `車両`, rowSpan: 2},
+              {cellValue: `運転者名`, rowSpan: 2},
+              {cellValue: `車番`, rowSpan: 2}, // 車番を別列に分離
               {cellValue: `出発時刻`, rowSpan: 2},
 
               ...getTenkoHeaders(`乗務前点呼`),
@@ -81,34 +85,43 @@ export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
             const data = OrderByPickUpTime[i]
             const {User, TbmVehicle, TbmRouteGroup, date} = data ?? {}
 
-            const theDate = date + ` ` + TbmRouteGroup?.pickupTime
-            if (date) {
-              console.log(new Date(theDate))
+            // 車番の下4桁を取得（ひらがななし）
+            const getVehicleNumber = (vehicleNumber: string | undefined) => {
+              if (!vehicleNumber) return ''
+              // 数字のみを抽出して下4桁を取得
+              const numbers = vehicleNumber.replace(/\D/g, '')
+              return numbers.slice(-4)
             }
+
+            // 出発時刻の表示（24時間超え対応）
+            const getDepartureTimeDisplay = () => {
+              if (!date || !TbmRouteGroup?.departureTime) return null
+              return (
+                <>
+                  <div>{formatDate(date, `M/D(ddd)`)}</div>
+                  <div>{TimeHandler.formatTimeString(TbmRouteGroup.departureTime, 'display')}</div>
+                </>
+              )
+            }
+
             return {
               csvTableRow: [
                 //
-                {label: `勤怠`, cellValue: `勤怠`},
+                {label: `勤怠`, cellValue: `勤怠`, style: {width: 40}},
                 {
-                  label: `氏名`,
-                  cellValue: (
-                    <Stack className={` items-start p-1`}>
-                      <div>{User?.name}</div>
-                      <small>{TbmVehicle?.vehicleNumber}</small>
-                    </Stack>
-                  ),
-                  width: 100,
+                  label: `運転者名`,
+                  cellValue: User?.name || '',
+                  style: {width: 80},
                 },
-
+                {
+                  label: `車番`,
+                  cellValue: getVehicleNumber(TbmVehicle?.vehicleNumber),
+                  style: {width: 50},
+                },
                 {
                   label: `出発時刻`,
-                  cellValue: date && (
-                    <>
-                      <div>{formatDate(date, `M/D(ddd)`)}</div>
-                      <div>{TbmRouteGroup?.pickupTime}</div>
-                    </>
-                  ),
-                  width: 50,
+                  cellValue: getDepartureTimeDisplay(),
+                  style: {width: 60},
                 },
 
                 //乗務前点呼
@@ -120,8 +133,8 @@ export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
                 // 乗務後点呼
                 ...getTenkoBody(`乗務後点呼`),
 
-                // 備考
-                {label: `備考`, cellValue: ``},
+                // 備考（コンパクト）
+                {label: `備考`, cellValue: ``, style: {width: 100}},
               ],
             }
           }),

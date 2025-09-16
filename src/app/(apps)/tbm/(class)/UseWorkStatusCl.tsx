@@ -1,6 +1,6 @@
 import {UserWorkStatusItem} from '@app/(apps)/tbm/(server-actions)/userWorkStatusActions'
 import {Days} from '@cm/class/Days/Days'
-import {Time} from '@cm/class/Time'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 export class UseWorkStatusCl {
   private userWorkStatus: UserWorkStatusItem
@@ -168,7 +168,10 @@ export class UseWorkStatusCl {
     if (this.userWorkStatus) {
       // 時間フィールドの変換
       const timeFields = Object.fromEntries(
-        ['kyukeiMins', 'shinyaKyukeiMins', 'kyusokuMins'].map(key => [key, Time.str.strToMins(this.userWorkStatus?.[key] ?? '')])
+        ['kyukeiMins', 'shinyaKyukeiMins', 'kyusokuMins'].map(key => [
+          key,
+          TimeHandler.timeStringToMinutes(this.userWorkStatus?.[key] ?? ''),
+        ])
       )
 
       // if(this.userWorkStatus)
@@ -179,7 +182,7 @@ export class UseWorkStatusCl {
 
       const startTime = this.getStartTime()
       const endTime = this.getEndTime()
-      const workingMinutes = startTime && endTime ? Time.str.calcMinDiff(startTime, endTime) : 0
+      const workingMinutes = startTime && endTime ? TimeHandler.calcTimeDifferenceInMinutes(startTime, endTime) : 0
 
       this._kosokuMins = workingMinutes - this._kyusokuMins
       this._rodoMins = workingMinutes - this._kyukeiMins - this._kyusokuMins
@@ -395,8 +398,8 @@ export class UseWorkStatusCl {
       return 0
     }
 
-    const startMins = Time.str.strToMins(startTime)
-    const endMins = Time.str.strToMins(endTime)
+    const startMins = TimeHandler.timeStringToMinutes(startTime)
+    const endMins = TimeHandler.timeStringToMinutes(endTime)
 
     // 終了時間が開始時間より早い場合は翌日とみなす
     const adjustedEndMins = endMins <= startMins ? endMins + 24 * 60 : endMins

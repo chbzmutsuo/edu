@@ -20,9 +20,23 @@ export default function HaishaTableSwitcher() {
           ],
         },
       },
+      {
+        id: `sortBy`,
+        label: `並び順`,
+        forSelect: {
+          optionsOrOptionFetcher: [
+            {name: '出発時間順', label: '出発時間順', value: 'departureTime'},
+            {name: '便コード順', label: '便コード順', value: 'routeCode'},
+            {name: '荷主コード順', label: '荷主コード順', value: 'customerCode'},
+          ],
+        },
+      },
     ]).transposeColumns(),
 
-    formData: {mode: query.mode ?? 'DRIVER'},
+    formData: {
+      mode: query.mode ?? 'DRIVER',
+      sortBy: query.sortBy ?? 'departureTime',
+    },
   })
 
   return (

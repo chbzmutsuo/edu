@@ -13,6 +13,7 @@ export default async function Page(props) {
   const {session, scopes} = await initServerComopnent({query})
   const {tbmBaseId} = scopes.getTbmScopes()
   const {redirectPath, whereQuery} = await dateSwitcherTemplate({query})
+
   if (redirectPath) return <Redirector {...{redirectPath}} />
 
   // 顧客IDをクエリパラメータから取得（必須）

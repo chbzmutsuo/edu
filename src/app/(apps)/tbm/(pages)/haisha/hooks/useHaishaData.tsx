@@ -9,7 +9,9 @@ import {
   UseHaishaDataReturn,
   HaishaListData,
   TbmDriveScheduleWithDuplicated,
+  HaishaSortBy,
 } from '../types/haisha-page-types'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 export function useHaishaData({
   tbmBaseId,
@@ -21,17 +23,19 @@ export function useHaishaData({
   const [listDataState, setListDataState] = useState<HaishaListData | null>(null)
   const [maxRecord, setMaxRecord] = useState(0)
   const {LocalLoader, toggleLocalLoading} = useLocalLoading()
+  const {query} = useGlobal()
 
   const fetchData = useCallback(async () => {
     toggleLocalLoading(async () => {
       await showSpendTime(async () => {
         const takeSkip = {take: itemsPerPage, skip: (currentPage - 1) * itemsPerPage}
-        const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip})
+        const sortBy = (query.sortBy as HaishaSortBy) ?? 'departureTime'
+        const data = await getListData({tbmBaseId, whereQuery, mode, takeSkip, sortBy})
         setMaxRecord(data.maxCount)
         setListDataState(data)
       })
     })
-  }, [tbmBaseId, whereQuery, mode, currentPage, itemsPerPage])
+  }, [tbmBaseId, whereQuery, mode, currentPage, itemsPerPage, query.sortBy])
 
   useEffect(() => {
     fetchData()

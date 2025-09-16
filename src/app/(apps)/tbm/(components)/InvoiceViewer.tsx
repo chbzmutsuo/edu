@@ -88,17 +88,17 @@ export default function InvoiceViewer({invoiceData}: InvoiceViewerProps) {
       </div>
 
       {/* プレビュー */}
-      <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+      <div className="border border-gray-300 rounded-lg overflow-hidden shadow-lg ">
         <InvoiceDocument ref={componentRef} invoiceData={invoiceData} />
       </div>
 
-      <style jsx>{`
+      {/* <style jsx>{`
         @media print {
           .no-print {
             display: none !important;
           }
         }
-      `}</style>
+      `}</style> */}
     </div>
   )
 }

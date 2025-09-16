@@ -17,6 +17,9 @@ import {CSSProperties} from 'react'
 /** 配車テーブルのモード */
 export type HaishaTableMode = 'ROUTE' | 'DRIVER'
 
+/** ソート方法 */
+export type HaishaSortBy = 'departureTime' | 'routeCode' | 'customerCode'
+
 /** 日付範囲クエリ */
 export interface DateRangeQuery {
   gte?: Date
@@ -89,6 +92,7 @@ export interface GetListDataParams {
   whereQuery: DateRangeQuery
   mode: HaishaTableMode
   takeSkip: PaginationConfig
+  sortBy?: HaishaSortBy
 }
 
 // ============================================================================

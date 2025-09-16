@@ -181,6 +181,11 @@ model TbmRouteGroup {
   name      String
   routeName String?
 
+  serviceNumber    String? // 服務番号
+  departureTime    String? // 出発時刻（4桁文字列: HHMM）
+  finalArrivalTime String? // 最終到着時刻（4桁文字列: HHMM）
+  allowDuplicate   Boolean @default(false) // 重複許可
+
   pickupTime  String? //接車時間
   vehicleType String? //車z種
 
@@ -367,6 +372,7 @@ model TbmDriveSchedule {
   sortOrder Float     @default(0)
 
   date                DateTime
+  remark              String? // 配車カード備考
   O_postalHighwayFee  Int? //高速(郵便)
   Q_generalHighwayFee Int? //高速（一般）
 

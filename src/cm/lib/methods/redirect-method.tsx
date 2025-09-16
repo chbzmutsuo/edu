@@ -33,7 +33,7 @@ export const redirectToDefaultQuery = async (props: {query: anyObject; defaultQu
 export type whereQueryType =
   | {
       gte?: Date | undefined
-      lt?: Date | undefined
+      lte?: Date | undefined
     }
   | undefined
 
@@ -62,7 +62,7 @@ export const getWhereQuery = async (props: getWhereQueryType) => {
 
   let whereQuery: whereQueryType = {
     gte: query[fromKey] ? toUtc(query[fromKey]) : undefined,
-    lt: query[toKey] ? toUtc(query[toKey]) : undefined,
+    lte: query[toKey] ? toUtc(query[toKey]) : undefined,
   }
 
   if (whereQueryConverter) {
@@ -80,7 +80,7 @@ export const dateSwitcherTemplate = async (props: {query; firstDayOfMonth?: Date
   const {redirectPath} = await getWhereQuery({query, defaultQuery: defaultWhere})
   let whereQuery: {
     gte?: Date | undefined
-    lt?: Date | undefined
+    // lt?: Date | undefined
     lte?: Date | undefined
   } = {}
 
@@ -90,12 +90,12 @@ export const dateSwitcherTemplate = async (props: {query; firstDayOfMonth?: Date
   if (FROM && TO) {
     whereQuery = {gte: FROM, lte: TO}
   } else if (FROM && TO === undefined) {
-    whereQuery = {gte: FROM, lt: Days.day.add(FROM, 1)}
+    whereQuery = {gte: FROM, lte: Days.day.add(FROM, 1)}
   } else if (query.month) {
     const MONTH = toUtc(query.month)
 
     const {firstDayOfMonth, lastDayOfMonth} = Days.month.getMonthDatum(MONTH)
-    whereQuery = {gte: firstDayOfMonth, lt: lastDayOfMonth}
+    whereQuery = {gte: firstDayOfMonth, lte: lastDayOfMonth}
   }
 
   return {whereQuery, redirectPath}

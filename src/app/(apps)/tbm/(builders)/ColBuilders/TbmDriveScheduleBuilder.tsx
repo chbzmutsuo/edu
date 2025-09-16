@@ -77,6 +77,14 @@ export const TbmDriveScheduleBuilder = (props: columnGetterType) => {
         // disabled: tbmRouteGroupId,
       },
     },
+    {
+      id: 'remark',
+      label: '備考',
+      type: 'textarea',
+      form: {
+        style: {minWidth: 300, minHeight: 60},
+      },
+    },
   ])
     .customAttributes(({col}) => {
       return {...col, form: {...col.form, style: {minWidth: 240}}, search: {}}

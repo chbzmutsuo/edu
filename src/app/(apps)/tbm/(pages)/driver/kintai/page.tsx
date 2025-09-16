@@ -13,7 +13,7 @@ import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTabl
 import useSWR from 'swr'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {Code} from '@cm/class/Code'
-import {Time} from '@cm/class/Time'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {UseWorkStatusCl} from '@app/(apps)/tbm/(class)/UseWorkStatusCl'
 import {Days} from '@cm/class/Days/Days'
 import {T_LINK} from '@cm/components/styles/common-components/links'
@@ -242,11 +242,11 @@ export default function AttendancePage() {
           {label: '給油量', cellValue: tbmRefuelHistory}, // TODO: 別データソースから取得
           {
             label: '拘束時間',
-            cellValue: kosokuMins ? Time.int.minsToStr(kosokuMins) : '',
+            cellValue: kosokuMins ? TimeHandler.minutesToTimeString(kosokuMins) : '',
           },
           {
             label: '労働時間',
-            cellValue: rodoMins ? Time.int.minsToStr(rodoMins) : '',
+            cellValue: rodoMins ? TimeHandler.minutesToTimeString(rodoMins) : '',
           },
           {
             label: '休憩時間',
@@ -292,23 +292,23 @@ export default function AttendancePage() {
           },
           {
             label: '所定内',
-            cellValue: shoteinai ? Time.int.minsToStr(shoteinai) : '',
+            cellValue: shoteinai ? TimeHandler.minutesToTimeString(shoteinai) : '',
           },
           {
             label: '時間外1',
-            cellValue: jikangai1 ? Time.int.minsToStr(jikangai1) : '',
+            cellValue: jikangai1 ? TimeHandler.minutesToTimeString(jikangai1) : '',
           },
           {
             label: '深夜時間',
-            cellValue: shinyaTime ? Time.int.minsToStr(shinyaTime) : '',
+            cellValue: shinyaTime ? TimeHandler.minutesToTimeString(shinyaTime) : '',
           },
           {
             label: '深夜残業',
-            cellValue: shinyaZangyo ? Time.int.minsToStr(shinyaZangyo) : '',
+            cellValue: shinyaZangyo ? TimeHandler.minutesToTimeString(shinyaZangyo) : '',
           },
           {
             label: '休日出勤',
-            cellValue: kyujitsuShukkin ? Time.int.minsToStr(kyujitsuShukkin) : '',
+            cellValue: kyujitsuShukkin ? TimeHandler.minutesToTimeString(kyujitsuShukkin) : '',
           },
           {
             label: '運行内容',

@@ -1,6 +1,7 @@
 'use client'
 import {tbmMonthlyConfigForRouteGroupBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/tbmMonthlyConfigForRouteGroupBuilder'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 import {defaultRegister} from '@cm/class/builders/ColBuilderVariables'
 import {Fields} from '@cm/class/Fields/Fields'
@@ -9,6 +10,19 @@ import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {useEffect, useState} from 'react'
 import {toast} from 'react-toastify'
+
+const timeVlidator = (value: string) => {
+  if (value) {
+    const {isValid, error} = TimeHandler.validateTimeString(value)
+    return error ?? undefined
+  }
+}
+const timeFormatter = (value: string) => {
+  if (value) {
+    return TimeHandler.formatTimeString(value, 'display')
+  }
+  return ''
+}
 
 export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
   const {yearMonth, showMonthConfig = false, tbmBaseId} = props.ColBuilderExtraProps ?? {}
@@ -24,6 +38,14 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         label: 'CD',
         form: {defaultValue: null},
         td: {style: {...regularStyle, minWidth: 60}},
+        search: {},
+      },
+      {
+        id: 'serviceNumber',
+        label: '服務番号',
+        form: {defaultValue: null},
+        td: {style: {...regularStyle, minWidth: 60}},
+        search: {},
       },
 
       {
@@ -60,6 +82,40 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
       },
     ]).buildFormGroup({groupName: '便設定①'}).plain,
     ...new Fields([
+      {
+        id: 'departureTime',
+        label: '出発時刻',
+        type: 'text',
+        td: {style: {...regularStyle, minWidth: 80}},
+        inputProps: {
+          placeholder: '0800',
+          minLength: 4,
+          maxLength: 4,
+        },
+        form: {register: {validate: timeVlidator}},
+        format: timeFormatter,
+      },
+      {
+        id: 'finalArrivalTime',
+        label: '最終到着',
+        type: 'text',
+        td: {style: {...regularStyle, minWidth: 100}},
+        inputProps: {
+          placeholder: '1200',
+          minLength: 4,
+          maxLength: 4,
+        },
+        form: {register: {validate: timeVlidator}},
+        format: timeFormatter,
+      },
+      {
+        id: 'allowDuplicate',
+        label: '重複許可',
+        type: 'boolean',
+        td: {style: {...regularStyle, minWidth: 80}},
+        form: {defaultValue: false},
+        format: val => (val ? '○' : ''),
+      },
       {
         id: 'vehicleType',
         label: '車種',

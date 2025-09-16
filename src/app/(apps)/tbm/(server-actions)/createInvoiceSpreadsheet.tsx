@@ -189,11 +189,11 @@ async function createCategorySheets(spreadsheetId: string, invoiceData: InvoiceD
     // 明細データ（A8から開始 - 画像の明細表部分）
     const detailRows = details.map(detail => [
       detail.routeName, // A列: 路線名
-      detail.trips, // B列: 回数
-      detail.unitPrice, // C列: 単価
-      detail.amount, // D列: 運賃
-      detail.tollFee, // E列: 通行料
-      detail.amount + detail.tollFee, // F列: 合計
+      detail.trips.toString(), // B列: 回数
+      detail.unitPrice.toString(), // C列: 単価
+      detail.amount.toString(), // D列: 運賃
+      detail.tollFee.toString(), // E列: 通行料
+      (detail.amount + detail.tollFee).toString(), // F列: 合計
     ])
 
     if (detailRows.length > 0) {
@@ -212,7 +212,9 @@ async function createCategorySheets(spreadsheetId: string, invoiceData: InvoiceD
 
     headerUpdates.push({
       range: `${sheetName}!A${subtotalRow}:F${subtotalRow}`,
-      values: [['小計', totalTrips, '', totalAmount, totalTollFee, grandTotalForCategory]],
+      values: [
+        ['小計', totalTrips.toString(), '', totalAmount.toString(), totalTollFee.toString(), grandTotalForCategory.toString()],
+      ],
     })
 
     // 一括更新実行

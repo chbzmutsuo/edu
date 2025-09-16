@@ -50,16 +50,7 @@ export default function EigyoshoSetteiClient({days, currentMonth, tbmBase, where
               label: <div>便設定【月別】</div>,
               component: (
                 <C_Stack>
-                  <Button
-                    {...{
-                      onClick: async () => {
-                        await autoCreateMonthConfig({toggleLoad, currentMonth, tbmBaseId: tbmBase?.id})
-                      },
-                    }}
-                  >
-                    前月データ引き継ぎ
-                  </Button>
-                  <RouteDisplay {...{theMonth, tbmBase, whereQuery}} />
+                  <RouteDisplay {...{tbmBase, whereQuery, toggleLoad, currentMonth}} />
                 </C_Stack>
               ),
             },

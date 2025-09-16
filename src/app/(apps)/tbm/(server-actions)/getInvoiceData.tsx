@@ -3,6 +3,7 @@
 import prisma from 'src/lib/prisma'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {DriveScheduleCl, DriveScheduleData} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
+import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 
 export type InvoiceData = {
   companyInfo: {
@@ -74,9 +75,19 @@ export const getInvoiceData = async ({
   })
 
   // 指定された顧客の便のみをフィルタリング
-  const filteredSchedules = driveScheduleList.filter(
-    schedule => schedule.TbmRouteGroup.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id === customerId
-  )
+  // 月末日跨ぎ運行の請求月判定も含める
+  const filteredSchedules = driveScheduleList.filter(schedule => {
+    // 顧客IDの一致チェック
+    const matchesCustomer = schedule.TbmRouteGroup.Mid_TbmRouteGroup_TbmCustomer?.TbmCustomer?.id === customerId
+    if (!matchesCustomer) return false
+
+    // 請求月の判定（月末日跨ぎ運行対応）
+    const billingMonth = BillingHandler.getBillingMonth(schedule.date, schedule.TbmRouteGroup.departureTime)
+
+    // 指定された月と請求月が一致するかチェック
+    const targetMonth = new Date(whereQuery.gte.getFullYear(), whereQuery.gte.getMonth(), 1)
+    return billingMonth.getTime() === targetMonth.getTime()
+  })
 
   if (filteredSchedules.length === 0) {
     throw new Error('指定された顧客の運行データが見つかりません')

@@ -14,6 +14,10 @@ export const TbmRouteGroupUpsertController = {
       seikyuKbn,
       tbmBaseId,
       code,
+      serviceNumber,
+      departureTime,
+      finalArrivalTime,
+      allowDuplicate,
 
       ...rest
     } = item.latestFormData
@@ -27,6 +31,10 @@ export const TbmRouteGroupUpsertController = {
       productName,
       vehicleType,
       seikyuKbn,
+      serviceNumber,
+      departureTime,
+      finalArrivalTime,
+      allowDuplicate: allowDuplicate ?? false,
     }
 
     const {Mid_TbmRouteGroup_TbmCustomer} = item.latestFormData

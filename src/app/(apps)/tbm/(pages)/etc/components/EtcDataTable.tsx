@@ -3,6 +3,7 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {NumHandler} from '@cm/class/NumHandler'
 import {cn} from '@cm/shadcn/lib/utils'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {Button} from '@cm/components/styles/common-components/Button'
 import {EtcRecord, TableRecord, GroupHeader} from '../types'
 
 interface EtcDataTableProps {
@@ -182,18 +183,28 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
                   <td className="font-bold">¥{NumHandler.WithUnit(groupHeader.fee, '円')}</td>
                   <td className="font-bold">¥{NumHandler.WithUnit(groupFee, '円')}</td>
                   <td>
-                    {groupHeader.tbmDriveScheduleId && groupHeader.TbmDriveSchedule ? (
-                      <div className="text-xs">
-                        <div className="bg-green-100 px-2 py-1 rounded mb-1">
-                          {formatDate(groupHeader.TbmDriveSchedule.date)} {groupHeader.TbmDriveSchedule.TbmRouteGroup?.name || ''}
+                    <R_Stack className="gap-2 items-center">
+                      {groupHeader.tbmDriveScheduleId && groupHeader.TbmDriveSchedule ? (
+                        <div className="text-xs">
+                          <div className="bg-green-100 px-2 py-1 rounded mb-1">
+                            {formatDate(groupHeader.TbmDriveSchedule.date)}{' '}
+                            {groupHeader.TbmDriveSchedule.TbmRouteGroup?.name || ''}
+                          </div>
+                          <div className="text-gray-600">
+                            担当: {groupHeader.TbmDriveSchedule.User?.name || '(ドライバー名なし)'}
+                          </div>
                         </div>
-                        <div className="text-gray-600">
-                          担当: {groupHeader.TbmDriveSchedule.User?.name || '(ドライバー名なし)'}
-                        </div>
-                      </div>
-                    ) : (
-                      <span className="text-xs text-red-500">未紐付け</span>
-                    )}
+                      ) : (
+                        <span className="text-xs text-red-500">未紐付け</span>
+                      )}
+                      <Button
+                        size="sm"
+                        color={groupHeader.TbmDriveSchedule ? 'blue' : 'green'}
+                        onClick={() => onLinkSchedule(groupHeader.meisaiId, groupHeader.tbmDriveScheduleId || null)}
+                      >
+                        {groupHeader.TbmDriveSchedule ? '変更' : '紐付け'}
+                      </Button>
+                    </R_Stack>
                   </td>
                 </tr>
               )

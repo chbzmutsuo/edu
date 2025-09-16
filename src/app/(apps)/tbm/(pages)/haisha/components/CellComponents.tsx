@@ -2,7 +2,7 @@
 import React from 'react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {R_Stack, C_Stack} from '@cm/components/styles/common-components/common-components'
-import {CarIcon, MapPinIcon, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
+import {CarIcon, MapPinIcon, Notebook, PlusCircleIcon, SquarePen, TruckIcon, UserIcon} from 'lucide-react'
 import Link from 'next/link'
 import {HREF} from '@cm/lib/methods/urls'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
@@ -22,6 +22,8 @@ import {
   StatusButtonsProps,
   UserWithWorkStatus,
 } from '../types/haisha-page-types'
+import {StrHandler} from '@cm/class/StrHandler'
+import {shorten} from '@cm/lib/methods/common'
 
 const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
 
@@ -129,7 +131,7 @@ export const StatusButtons = React.memo(({tbmDriveSchedule, fetchData}: StatusBu
 // スケジュール詳細カードコンポーネント
 export const ScheduleCard = React.memo(
   ({tbmDriveSchedule, user, date, setModalOpen, fetchData, query, tbmBase}: ScheduleCardProps) => {
-    const {TbmRouteGroup, TbmVehicle, User} = tbmDriveSchedule
+    const {TbmRouteGroup, TbmVehicle, User, remark} = tbmDriveSchedule
 
     // const foo = new vhi
 
@@ -156,6 +158,11 @@ export const ScheduleCard = React.memo(
             <UserIcon className={`h-3 text-blue-800 stroke-2 `} />
 
             {user?.name}
+          </section>
+          <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
+            <Notebook className={`h-3 text-blue-800 stroke-2 `} />
+
+            <div className={remark ? '' : 'text-gray-500 opacity-60'}>{shorten(remark || '特記なし', 15)}</div>
           </section>
 
           <R_Stack className="justify-between">

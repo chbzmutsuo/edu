@@ -17,7 +17,7 @@ export default async function Page(props) {
   const {redirectPath, whereQuery} = await dateSwitcherTemplate({
     query,
     defaultWhere: {
-      mode: 'DRIVER',
+      mode: 'ROUTE',
       from: firstDayOfMonth,
       to: lastDayOfMonth,
     },
