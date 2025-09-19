@@ -45,7 +45,10 @@ export const ChildCreator = React.memo((props: ChildCreatorProps) => {
     () => ({
       ...additional,
       payload: {...additional?.payload, [parentModelIdStr]: ParentData?.id},
-      where: {...additional?.where, [parentModelIdStr]: ParentData?.id},
+      where: {
+        [parentModelIdStr]: ParentData?.id,
+        ...additional?.where,
+      },
       orderBy,
     }),
     [additional, parentModelIdStr, ParentData?.id, orderBy]

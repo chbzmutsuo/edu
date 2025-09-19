@@ -82,7 +82,15 @@ export default function RouteDisplay({tbmBase, whereQuery, toggleLoad, currentMo
             models: {parent: `tbmBase`, children: `tbmRouteGroup`},
             additional: {
               where: {
-                tbmBaseId: tbmBase?.id,
+                tbmBaseId: undefined,
+                OR: [
+                  {tbmBaseId: tbmBase?.id}, // 所有している便
+                  {
+                    TbmRouteGroupShare: {
+                      some: {tbmBaseId: tbmBase?.id},
+                    },
+                  }, // 共有されている便
+                ],
               },
 
               include: {
@@ -95,6 +103,9 @@ export default function RouteDisplay({tbmBase, whereQuery, toggleLoad, currentMo
                 Mid_TbmRouteGroup_TbmCustomer: {include: {TbmCustomer: true}},
                 TbmMonthlyConfigForRouteGroup: {where: {yearMonth: whereQuery}},
                 TbmRouteGroupFee: {orderBy: {startDate: `desc`}, take: 1},
+                TbmRouteGroupShare: {
+                  include: {TbmBase: true},
+                },
               },
               orderBy: getOrderBy(),
             },

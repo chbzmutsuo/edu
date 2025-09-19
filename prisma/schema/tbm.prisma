@@ -15,6 +15,7 @@ model TbmBase {
   TbmCustomer         TbmCustomer[]
   TbmBase_MonthConfig TbmBase_MonthConfig[]
   TbmKeihi            TbmKeihi[]
+  TbmRouteGroupShare  TbmRouteGroupShare[]
 }
 
 model TbmRouteGroupCalendar {
@@ -193,6 +194,9 @@ model TbmRouteGroup {
 
   seikyuKbn String? @default("01")
 
+  // 便共有機能のためのフィールド
+  isShared Boolean @default(false) // この便が共有されているかどうか
+
   TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
   tbmBaseId Int
 
@@ -204,7 +208,8 @@ model TbmRouteGroup {
   Mid_TbmRouteGroup_TbmCustomer Mid_TbmRouteGroup_TbmCustomer?
   TbmRouteGroupCalendar         TbmRouteGroupCalendar[]
 
-  TbmRouteGroupFee TbmRouteGroupFee[]
+  TbmRouteGroupFee   TbmRouteGroupFee[]
+  TbmRouteGroupShare TbmRouteGroupShare[]
 
   @@unique([tbmBaseId, code], name: "unique_tbmBaseId_code")
 }
@@ -525,4 +530,25 @@ model KyuyoTableRecord {
   userId    Int
 
   @@unique([userId, yearMonth], name: "unique_userId_yearMonth")
+}
+
+// 便共有機能のためのテーブル
+model TbmRouteGroupShare {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now()) @updatedAt()
+  sortOrder Float     @default(0)
+
+  // 共有元の便
+  TbmRouteGroup   TbmRouteGroup @relation(fields: [tbmRouteGroupId], references: [id], onDelete: Cascade)
+  tbmRouteGroupId Int
+
+  // 共有先の営業所
+  TbmBase   TbmBase @relation(fields: [tbmBaseId], references: [id], onDelete: Cascade)
+  tbmBaseId Int
+
+  // 共有状態のフラグ（将来的に承認プロセスなどを追加する場合に使用）
+  isActive Boolean @default(true)
+
+  @@unique([tbmRouteGroupId, tbmBaseId], name: "unique_tbmRouteGroupId_tbmBaseId")
 }

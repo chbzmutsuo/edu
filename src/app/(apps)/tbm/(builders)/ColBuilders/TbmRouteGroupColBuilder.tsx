@@ -37,14 +37,14 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
         id: 'code',
         label: 'CD',
         form: {defaultValue: null},
-        td: {style: {...regularStyle, minWidth: 60}},
+        td: {style: {...regularStyle, minWidth: 75}},
         search: {},
       },
       {
         id: 'serviceNumber',
         label: '服務番号',
         form: {defaultValue: null},
-        td: {style: {...regularStyle, minWidth: 60}},
+        td: {style: {...regularStyle, minWidth: 75}},
         search: {},
       },
 
@@ -58,6 +58,30 @@ export const TbmRouteGroupColBuilder = (props: columnGetterType) => {
           disabled: tbmBaseId,
         },
         td: {style: {...regularStyle, minWidth: 120}},
+      },
+      {
+        id: `_shareBaseIds`,
+        label: `共有先営業所`,
+        td: {style: {...regularStyle, minWidth: 160}},
+        form: {hidden: true},
+
+        format: (val, routeGroup) => {
+          const shares = routeGroup.TbmRouteGroupShare || []
+          if (shares.length === 0) return ''
+
+          if (routeGroup.isShared) {
+            const shareCount = routeGroup.TbmRouteGroupShare?.length || 0
+            return (
+              <div className={`flex flex-col`}>
+                <div className="flex items-center">
+                  <div className="mr-2 h-3 w-3 rounded-full bg-yellow-400"></div>
+                  <span className="text-xs text-yellow-700">共有中({shareCount})</span>
+                </div>
+                <div className="text-xs">{shares.map(share => share.TbmBase?.name).join(', ')}</div>
+              </div>
+            )
+          }
+        },
       },
       {
         id: 'seikyuKbn',
