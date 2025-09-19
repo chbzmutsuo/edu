@@ -1,8 +1,7 @@
 'use client'
 
 import React, {useState} from 'react'
-import {Calculator, Download, Printer} from 'lucide-react'
-import {Button} from '@cm/shadcn/ui/button'
+import {Calculator} from 'lucide-react'
 import {FilterSection} from '@cm/components/utils/FilterSection'
 import {calculateIngredientsUsage} from '../../../actions/ingredientActions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'

@@ -393,8 +393,7 @@ model TbmDriveSchedule {
   tbmBaseId Int
 
   // 1対多の関係に変更
-  TbmEtcMeisai TbmEtcMeisai[]
-
+  TbmEtcMeisai          TbmEtcMeisai[]
   TbmDriveScheduleImage TbmDriveScheduleImage[]
 }
 
@@ -449,6 +448,10 @@ model EtcCsvRaw {
 
   // グルーピングフラグ
   isGrouped Boolean @default(false)
+
+  remark     String? // 備考
+  cardNumber String? // ETCカード番号
+  carType    String? // 車種
 
   // 関連
   TbmVehicle   TbmVehicle @relation(fields: [tbmVehicleId], references: [id], onDelete: Cascade)

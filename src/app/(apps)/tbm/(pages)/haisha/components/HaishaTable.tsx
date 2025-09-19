@@ -1,5 +1,5 @@
 'use client'
-import React, {useMemo} from 'react'
+import React, {useMemo, useCallback} from 'react'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import useHaishaTableEditorGMF from '@app/(apps)/tbm/(globalHooks)/useHaishaTableEditorGMF'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
@@ -10,7 +10,9 @@ import useDoStandardPrisma from '@cm/hooks/useDoStandardPrisma'
 import {useHaishaData} from '../hooks/useHaishaData'
 import {usePagination} from '../hooks/usePagination'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
-import {HaishaTableProps, HaishaTableMode} from '../types/haisha-page-types'
+import {HaishaTableProps, HaishaTableMode, ModalOpenParams} from '../types/haisha-page-types'
+import {BulkAssignmentModal} from './BulkAssignment/BulkAssignmentModal'
+import useModal from '@cm/components/utils/modal/useModal'
 
 export type haishaTableMode = HaishaTableMode
 
@@ -41,7 +43,31 @@ export default function HaishaTable({days, tbmBase, whereQuery}: HaishaTableProp
     },
   })
 
-  const setModalOpen = HK_HaishaTableEditorGMF.setGMF_OPEN as (props: any) => void
+  // 一括割り当てモーダル
+  // const bulkAssignmentModal = useBulkAssignmentModal({onComplete: fetchData})
+
+  const BulkAssignmentModalReturn = useModal()
+
+  // モーダルオープン処理
+  const setModalOpen = useCallback(
+    (props: ModalOpenParams) => {
+      // 一括割り当てモードの場合
+      if (props.isBulkAssignment && props.tbmRouteGroup && props.tbmBase) {
+        // 月の初日を取得
+        const firstDayOfMonth = whereQuery?.gte ?? new Date()
+
+        BulkAssignmentModalReturn.setopen({
+          tbmRouteGroup: props.tbmRouteGroup,
+          tbmBase: props.tbmBase,
+          month: firstDayOfMonth,
+        })
+      } else {
+        // 通常のモーダル
+        ;(HK_HaishaTableEditorGMF.setGMF_OPEN as (props: any) => void)(props)
+      }
+    },
+    [HK_HaishaTableEditorGMF.setGMF_OPEN, BulkAssignmentModalReturn.setopen, whereQuery]
+  )
 
   const {data: holidays = []} = useDoStandardPrisma(`calendar`, `findMany`, {
     where: {holidayType: `祝日`},
@@ -85,6 +111,18 @@ export default function HaishaTable({days, tbmBase, whereQuery}: HaishaTableProp
       <HaishaTableSwitcher />
       {HaishaTableMemo}
       <div className={` flex justify-around text-gray-500`}>{maxRecord}件のデータを表示</div>
+
+      {/* 一括割り当てモーダル */}
+      <BulkAssignmentModalReturn.Modal>
+        <BulkAssignmentModal
+          tbmRouteGroup={BulkAssignmentModalReturn?.open?.tbmRouteGroup}
+          tbmBase={BulkAssignmentModalReturn?.open?.tbmBase}
+          month={BulkAssignmentModalReturn?.open?.month}
+          onClose={BulkAssignmentModalReturn.handleClose}
+          onComplete={fetchData}
+        />
+      </BulkAssignmentModalReturn.Modal>
+
       {/* <PaginationControl
         currentPage={currentPage}
         itemsPerPage={itemsPerPage}

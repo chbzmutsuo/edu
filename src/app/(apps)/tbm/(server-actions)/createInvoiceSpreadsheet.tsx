@@ -1,7 +1,7 @@
 'use server'
 
 import {GoogleSheet_copy, GoogleSheet_Update, GoogleSheet_getSheetByNameOrCreate} from '@app/api/google/actions/sheetAPI'
-import {InvoiceData, CategorySummary, CategoryDetail} from './getInvoiceData'
+import {InvoiceData, CategoryDetail} from './getInvoiceData'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 
 // 設定値

@@ -14,6 +14,7 @@ import {
   TbmRouteGroupWithCalendar,
 } from '../types/haisha-page-types'
 import TbmRouteCl from '@app/(apps)/tbm/(class)/TbmRouteCl'
+import {CalendarIcon} from 'lucide-react'
 
 // 固定列のスタイル定数
 const STICKY_COLUMN_STYLE = {
@@ -114,9 +115,22 @@ export const TableRowBuilder = {
               label: '便',
               cellValue: (
                 <div>
-                  <R_Stack className={`gap-0.5`}>
-                    <span>{i + 1}.</span>
-                    <strong>{route.name}</strong>
+                  <R_Stack className={`  justify-between flex-nowrap`}>
+                    <R_Stack className={`gap-0.5`}>
+                      <span>{i + 1}.</span>
+                      <strong>{route.name}</strong>
+                    </R_Stack>
+
+                    <CalendarIcon
+                      className="text-xs text-blue-600 hover:underline h-5 onHover"
+                      onClick={() => {
+                        setModalOpen({
+                          tbmBase,
+                          tbmRouteGroup: route,
+                          isBulkAssignment: true,
+                        })
+                      }}
+                    />
                   </R_Stack>
 
                   <div className="text-xs text-gray-700 text-end w-full">

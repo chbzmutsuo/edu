@@ -18,6 +18,7 @@ import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {isDev} from '@cm/lib/methods/common'
 import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
 import {EtcScheduleLinkModal} from './components/EtcScheduleLinkModal'
+import {EtcImportForm} from '@app/(apps)/tbm/(pages)/etc/components/EtcImportForm'
 
 export default function EtcCsvImportPage() {
   const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
@@ -92,6 +93,19 @@ export default function EtcCsvImportPage() {
     setModalData({etcMeisaiId, scheduleId})
   }
 
+  // return <EtcImportForm isLoading={isLoading} onImport={importCsvData} onFormChange={loadEtcRawData} />
+
+  // <BasicForm
+  //             {...{
+  //               alignMode: 'col',
+  //               latestFormData,
+  //               onSubmit: importCsvData,
+  //             }}
+  //           >
+  //             <div className="mb-4">{/* CSVデータ入力フィールド */}</div>
+  //             <Button disabled={isLoading}>{isLoading ? 'インポート中...' : 'CSVデータをインポート'}</Button>
+  //           </BasicForm>
+
   return (
     <FitMargin className={`p-2`}>
       <C_Stack>
@@ -99,16 +113,7 @@ export default function EtcCsvImportPage() {
           {/* インポートフォーム */}
           <Card>
             <h2 className="text-xl font-bold mb-2">①データインポート</h2>
-            <BasicForm
-              {...{
-                alignMode: 'col',
-                latestFormData,
-                onSubmit: importCsvData,
-              }}
-            >
-              <div className="mb-4">{/* CSVデータ入力フィールド */}</div>
-              <Button disabled={isLoading}>{isLoading ? 'インポート中...' : 'CSVデータをインポート'}</Button>
-            </BasicForm>
+            <EtcImportForm isLoading={isLoading} importCsvData={importCsvData} onFormChange={loadEtcRawData} />
           </Card>
 
           {/* データ表示エリア */}

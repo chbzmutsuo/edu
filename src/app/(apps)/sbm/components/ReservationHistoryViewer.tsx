@@ -1,7 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
-import {Clock, ChevronDown, ChevronUp, User} from 'lucide-react'
+import {Clock, ChevronDown, ChevronUp} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {cn} from '@cm/shadcn/lib/utils'
 import {getReservationHistoryById} from '../actions/history-actions'

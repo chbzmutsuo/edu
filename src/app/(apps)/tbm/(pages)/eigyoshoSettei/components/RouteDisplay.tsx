@@ -11,7 +11,6 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import React from 'react'
 import {Fields} from '@cm/class/Fields/Fields'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
-import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {autoCreateMonthConfig} from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/autoCreateMonthConfig'
 

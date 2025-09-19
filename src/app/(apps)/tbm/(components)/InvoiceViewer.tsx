@@ -7,7 +7,6 @@ import {InvoiceData} from '@app/(apps)/tbm/(server-actions)/getInvoiceData'
 import {createInvoiceSpreadsheet} from '@app/(apps)/tbm/(server-actions)/createInvoiceSpreadsheet'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {toast} from 'react-toastify'
 
 interface InvoiceViewerProps {

@@ -22,7 +22,6 @@ import {
   StatusButtonsProps,
   UserWithWorkStatus,
 } from '../types/haisha-page-types'
-import {StrHandler} from '@cm/class/StrHandler'
 import {shorten} from '@cm/lib/methods/common'
 
 const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
@@ -151,13 +150,13 @@ export const ScheduleCard = React.memo(
           <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <CarIcon className={`h-3 text-blue-800 stroke-2 `} />
 
-            {new VehicleCl(TbmVehicle).shortName}
+            {TbmVehicle ? new VehicleCl(TbmVehicle).shortName : <span className={`text-red-500`}>未設定</span>}
           </section>
 
           <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <UserIcon className={`h-3 text-blue-800 stroke-2 `} />
 
-            {user?.name}
+            {user ? user?.name : <span className={`text-red-500`}>未設定</span>}
           </section>
           <section className={`row-stack flex-nowrap gap-0 leading-4 -ml-1.5`}>
             <Notebook className={`h-3 text-blue-800 stroke-2 `} />

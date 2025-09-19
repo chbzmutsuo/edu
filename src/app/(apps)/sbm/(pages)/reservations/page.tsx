@@ -1,5 +1,4 @@
 import ReservationClient from '@app/(apps)/sbm/(pages)/reservations/ReservationClient'
-import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import {dateSwitcherTemplate} from '@cm/lib/methods/redirect-method'
 import Redirector from '@cm/components/utils/Redirector'
 import React from 'react'

@@ -1,7 +1,6 @@
 import {prismaMethodType, PrismaModelNames} from '@cm/types/prisma-types'
 import {requestResultType} from '@cm/types/types'
 
-import {Approval} from '@prisma/client'
 
 type chainType = {
   [key in PrismaModelNames]?: {

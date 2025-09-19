@@ -3,7 +3,6 @@
 import prisma from 'src/lib/prisma'
 import {revalidatePath} from 'next/cache'
 import {IngredientType, ProductIngredientType} from '../types'
-import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 // 材料マスターの取得
 export const getAllIngredients = async () => {

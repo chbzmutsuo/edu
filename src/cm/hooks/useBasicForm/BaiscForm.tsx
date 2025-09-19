@@ -14,7 +14,7 @@ import {Card} from '@cm/shadcn/ui/card'
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {cn} from '@shadcn/lib/utils'
 
-import {controlOffset, getStyleProps, getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
+import { getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {

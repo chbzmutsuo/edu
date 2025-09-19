@@ -31,7 +31,21 @@ export const useEtcData = () => {
 
           try {
             // CSVの列構造: 利用開始日,利用開始時刻,利用終了日,利用終了時刻,利用ICなど,出口ICなど,元の料金,割引額,通行料金,車種,車両番号,ETCカード番号,備考
-            const [fromDate, fromTime, toDate, toTime, fromIc, toIc, originalFee, discount, toll, carType, vehicleNumber, cardNumber, remark] = columns
+            const [
+              fromDate,
+              fromTime,
+              toDate,
+              toTime,
+              fromIc,
+              toIc,
+              originalFee,
+              discount,
+              toll,
+              carType,
+              vehicleNumber,
+              cardNumber,
+              remark,
+            ] = columns
 
             // 日付のパース（例: '25/08/01' → '2025-08-01'）
             const parseJapaneseDate = (dateStr: string) => {
@@ -70,7 +84,7 @@ export const useEtcData = () => {
               fee: parsedToll || 0,
               isGrouped: false,
               tbmEtcMeisaiId: null,
-              groupIndex: null, // デフォルトはグルーピングなし
+              // groupIndex: null, // デフォルトはグルーピングなし
               remark: remark || '', // 備考欄
               cardNumber: cardNumber || '', // ETCカード番号
               carType: carType || '', // 車種

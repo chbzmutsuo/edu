@@ -2,12 +2,10 @@
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 import TbmUserDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmUserDetail'
 import TbmVehicleDetail from '@app/(apps)/tbm/(builders)/PageBuilders/detailPage/TbmVehicleDetail'
-import {autoCreateMonthConfig} from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/autoCreateMonthConfig'
 import RouteDisplay from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/RouteDisplay'
 
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 
-import {Button} from '@cm/components/styles/common-components/Button'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'

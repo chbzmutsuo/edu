@@ -171,6 +171,23 @@ export interface ModalOpenParams {
   user?: UserWithWorkStatus
   tbmRouteGroup?: TbmRouteGroupWithCalendar
   tbmDriveSchedule?: TbmDriveScheduleWithDuplicated
+  isBulkAssignment?: boolean
+}
+
+/** 一括割り当てモーダルのパラメータ */
+export interface BulkAssignmentModalProps {
+  tbmRouteGroup: TbmRouteGroupWithCalendar
+  tbmBase: TbmBase | null
+  month: Date
+  onClose: () => void
+  onComplete: () => void
+}
+
+/** 一括割り当てフォームデータ */
+export interface BulkAssignmentFormData {
+  userId: number | null
+  tbmVehicleId: number | null
+  selectedDates: Date[]
 }
 
 /** HaishaTableContentコンポーネントのプロパティ */

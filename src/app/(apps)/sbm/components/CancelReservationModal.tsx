@@ -6,7 +6,6 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import {Button} from '@cm/shadcn/ui/button'
 import Textarea from '@cm/shadcn/ui/Organisms/form/Textarea'
-import {useSession} from 'next-auth/react'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 type CancelReservationModalProps = {

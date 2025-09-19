@@ -10,6 +10,7 @@ export type htmlProps = {
   disabled?: boolean
 
   onClick?: any
+
   onKeyDown?: any
   onBlur?: any
   onMouseEnter?: any
