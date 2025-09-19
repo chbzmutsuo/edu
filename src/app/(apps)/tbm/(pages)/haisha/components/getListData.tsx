@@ -85,25 +85,34 @@ export const getListData = async (props: GetListDataParams): Promise<HaishaListD
         },
       },
     },
-    where: {
-      date: {gte: whereQuery.gte, lte: whereQuery.lt},
-    },
+    where: {date: {gte: whereQuery.gte, lte: whereQuery.lt}},
     orderBy: getOrderBy(),
   })
 
   // 重複検知：同じ日付で、同じ「便、車両、ドライバー」の組み合わせをチェック
-  // ただし、allowDuplicateがtrueの便は重複警告を表示しない
+  // 以下の条件をすべて満たす場合のみ重複警告を表示:
+  // 1. 自身の便が重複許可(allowDuplicate)でない
+  // 2. 同じ組み合わせの他の便が存在する
+  // 3. その他の便も重複許可でない
   let processedSchedules = rawTbmDriveSchedule.map(schedule => {
-    const duplicated =
-      !schedule.TbmRouteGroup.allowDuplicate &&
-      rawTbmDriveSchedule.some(
-        otherSchedule =>
-          otherSchedule.id !== schedule.id &&
-          otherSchedule.date.getTime() === schedule.date.getTime() &&
-          otherSchedule.tbmRouteGroupId === schedule.tbmRouteGroupId &&
-          otherSchedule.tbmVehicleId === schedule.tbmVehicleId &&
-          otherSchedule.userId === schedule.userId
-      )
+    // 自身が重複許可の場合は重複フラグを立てない
+    if (schedule.TbmRouteGroup.allowDuplicate) {
+      return {
+        ...schedule,
+        duplicated: false,
+      }
+    }
+
+    // 自身が重複許可でない場合、同じ組み合わせの便が他にあるかチェック
+    // かつ、その便も重複許可でない場合のみ重複フラグを立てる
+    const duplicated = rawTbmDriveSchedule.some(
+      otherSchedule =>
+        otherSchedule.id !== schedule.id &&
+        otherSchedule.date.getTime() === schedule.date.getTime() &&
+        otherSchedule.tbmRouteGroupId === schedule.tbmRouteGroupId &&
+        // 重複先の便が重複許可でない場合のみ重複とみなす
+        !otherSchedule.TbmRouteGroup.allowDuplicate
+    )
 
     return {
       ...schedule,

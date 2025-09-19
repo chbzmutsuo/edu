@@ -98,7 +98,7 @@ export default function IngredientsUsagePage() {
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-lg font-semibold text-gray-900">材料使用量一覧 ({ingredientsUsage.length}件)</h2>
 
-          {ingredientsUsage.length > 0 && (
+          {/* {ingredientsUsage.length > 0 && (
             <div className="flex space-x-2">
               <Button variant="outline" onClick={handleExportCSV}>
                 <Download size={16} className="mr-1" /> CSV出力
@@ -107,7 +107,7 @@ export default function IngredientsUsagePage() {
                 <Printer size={16} className="mr-1" /> 印刷
               </Button>
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="overflow-x-auto">

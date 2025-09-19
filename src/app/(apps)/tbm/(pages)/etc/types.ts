@@ -15,6 +15,9 @@ export interface EtcRecord {
   TbmEtcMeisai?: any
   isGroupDetail?: boolean
   groupIndex?: number
+  remark?: string
+  cardNumber?: string
+  carType?: string
 }
 
 export interface GroupHeader {
@@ -39,4 +42,9 @@ export interface FormData {
   tbmVehicleId: number
   month: Date
   csvData: string
+}
+
+export interface FileUploadFormData {
+  tbmVehicleId: number
+  month: Date
 }

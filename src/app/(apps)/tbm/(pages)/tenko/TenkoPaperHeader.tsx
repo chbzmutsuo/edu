@@ -74,15 +74,15 @@ export default function TenkoPaperHeader({date, tableStyle}) {
           <div>
             {CsvTable({
               records: [
-                {role: `運行管理者`, name: `XXXXX`, check: `印`},
-                {role: `運行管理補助者`, name: `XXXXX`, check: `印`},
-                {role: `運行管理補助者`, name: `XXXXX`, check: `印`},
+                {role: `運行管理者`, name: ``, check: `印`},
+                {role: `運行管理補助者`, name: ``, check: `印`},
+                {role: `運行管理補助者`, name: ``, check: `印`},
               ].map(data => {
                 return {
                   csvTableRow: [
                     //
                     {label: `職務`, cellValue: data.role},
-                    {label: `氏名`, cellValue: data.name},
+                    {label: `氏名`, cellValue: data.name, style: {width: 180}},
                     {label: `印鑑`, cellValue: data.check},
                   ],
                 }
@@ -117,7 +117,7 @@ export default function TenkoPaperHeader({date, tableStyle}) {
           <div className={` grid grid-cols-5`}>
             {sections.map((section, i) => (
               <Fragment key={i}>
-                <div className={` border [&_td]:p-1 p-1 w-full `}>
+                <div className={` border [&_td]:p-0.5  w-full `}>
                   <table className={` w-full `}>
                     <thead>
                       <tr>

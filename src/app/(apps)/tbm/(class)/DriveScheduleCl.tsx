@@ -90,7 +90,7 @@ export class DriveScheduleCl {
       gte: Date
       lte: Date
     }
-    tbmBaseId: number
+    tbmBaseId: number | undefined
   }) {
     const {tbmBaseId, whereQuery} = props
     const tbmDriveSchedule = await doStandardPrisma('tbmDriveSchedule', 'findMany', {

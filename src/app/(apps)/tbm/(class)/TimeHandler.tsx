@@ -1,3 +1,5 @@
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
+
 /**
  * 統合時間処理ユーティリティクラス
  * 24時間超え対応（25時、26時等）、基本的な時間計算、請求処理ロジック
@@ -225,22 +227,27 @@ export class BillingHandler {
    * @returns 請求対象月の年月
    */
   static getBillingMonth(operationDate: Date, departureTime: string | null | undefined): Date {
+    let result: Date
     const parsed = TimeHandler.parseTimeString(departureTime)
 
     if (!parsed) {
       // 出発時刻が不明な場合は運行日の月を使用
-      return new Date(operationDate.getFullYear(), operationDate.getMonth(), 1)
+      result = new Date(operationDate.getFullYear(), operationDate.getMonth(), 1)
+      return result
     }
 
     // 24:00以降（翌日扱い）の場合
     if (parsed.originalHour >= 24) {
       const billingDate = new Date(operationDate)
       billingDate.setDate(billingDate.getDate() + 1)
-      return new Date(billingDate.getFullYear(), billingDate.getMonth(), 1)
+
+      return billingDate
     }
 
     // 24:00未満の場合は運行日の月
-    return new Date(operationDate.getFullYear(), operationDate.getMonth(), 1)
+    result = new Date(operationDate.getFullYear(), operationDate.getMonth(), 1)
+
+    return result
   }
 
   /**

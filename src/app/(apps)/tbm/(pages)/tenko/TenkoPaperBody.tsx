@@ -23,11 +23,11 @@ const TableWrapperClass = cn(
   'max-h-none',
   `text-center border rounded-none w-full`,
   `[&_th]:!text-[9px]`, // フォントサイズを小さく（A3対応）
-  `[&_td]:!text-[9px]`, // フォントサイズを小さく（A3対応）
+  `[&_td]:!text-[8px]`, // フォントサイズを小さく（A3対応）
   `[&_th]:!bg-inherit`,
   `[&_th]:!border`,
   `[&_td]:!px-2`, // パディングを小さく
-  `[&_td]:!py-1`, // 縦パディングを追加
+  `[&_td]:!py-0`, // 縦パディングを追加
   `[&_td]:!border`,
   `[&_td]:!align-middle`,
   `[&_td]:!leading-tight` // 行間を詰める
@@ -38,13 +38,7 @@ export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
   const minRowCount = Math.max(OrderByPickUpTime.length, 25)
 
   return (
-    <div
-      style={tableStyle}
-      className={
-        cn()
-        //
-      }
-    >
+    <div style={tableStyle}>
       {CsvTable({
         useOriginalWrapperClass: true,
         headers: [
@@ -54,7 +48,7 @@ export default function TenkoPaperBody({OrderByPickUpTime, tableStyle}) {
               {cellValue: `乗務前点呼`, colSpan: 8},
               {cellValue: `中間点呼`, colSpan: 7},
               {cellValue: `乗務後点呼`, colSpan: 8},
-              {cellValue: `備考`, colSpan: 1, rowSpan: 3, style: {width: 200}}, // 備考欄をコンパクトに
+              {cellValue: `備考`, colSpan: 1, rowSpan: 3, style: {width: 320}}, // 備考欄をコンパクトに
             ],
           },
           {
@@ -188,7 +182,7 @@ const getTenkoBody = (sectionName: `乗務前点呼` | `中間点呼` | `乗務�
     sectionName === `乗務前点呼`
       ? [
           //
-          {cellValue: `有・無`, label: '①', style: {width: 40}},
+          {cellValue: `有・無`, label: '①', style: {width: 50}},
           {cellValue: ``, label: '②', style: {width: 30}},
           {cellValue: ``, label: '③', style: {width: 30}},
           {cellValue: ``, label: '④', style: {width: 30}},
@@ -201,7 +195,7 @@ const getTenkoBody = (sectionName: `乗務前点呼` | `中間点呼` | `乗務�
 
   let cols = [
     {
-      style: {width: 50},
+      style: {minWidth: 60},
       label: `点呼時刻`,
       cellValue: (
         <>
@@ -224,7 +218,7 @@ const getTenkoBody = (sectionName: `乗務前点呼` | `中間点呼` | `乗務�
       label: `点呼方法`,
       style: {width: 50},
       cellValue: (
-        <C_Stack className={`gap-0.5 py-0.5`}>
+        <C_Stack className={`gap-0 `}>
           <div>対面</div>
           <div>TEL</div>
           <div>

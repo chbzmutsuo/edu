@@ -21,7 +21,7 @@ export default function TenkoPage(props) {
 
   const prinfFunc = useReactToPrint({
     contentRef: printRef,
-    pageStyle: '@page { size: A3 landscape; margin: 10mm; }', // A3横サイズに変更
+    pageStyle: '@page {size:A3 landscape;margin: 10mm;}', // A3横サイズに変更
     suppressErrors: true,
   })
 
@@ -54,9 +54,9 @@ export default function TenkoPage(props) {
 
   // A3横サイズに対応したレイアウト
   const wrapperStyle = {
-    width: 2000, // A3横幅に合わせて拡大
-    minWidth: 2000,
-    maxWidth: 2000,
+    width: 1800, // A3横幅に合わせて拡大
+    minWidth: 1800,
+    maxWidth: 1800,
     margin: 'auto',
     padding: 10,
   }
@@ -70,28 +70,24 @@ export default function TenkoPage(props) {
 
   return (
     <div>
-      <Button onClick={() => prinfFunc()}>印刷</Button>
-
-      <div
-        className={cn(
-          //
-
-          ` w-fit mx-auto `
-        )}
-      >
-        <div style={wrapperStyle} ref={printRef}>
-          <C_Stack className={`mx-auto text-xs print-target mt-4 `}>
-            {/* ヘッダー */}
-
-            <>
-              <div>
-                <TenkoPaperHeader {...{date, tableStyle}} />
-              </div>
-              <div className={'[&_*]:border-gray-700 '}>
-                <TenkoPaperBody {...{OrderByPickUpTime, tableStyle}} />
-              </div>
-            </>
-          </C_Stack>
+      <div className={`p-2`}>
+        <Button color="red" onClick={() => prinfFunc()}>
+          印刷
+        </Button>
+        <div className={cn(` w-fit mx-auto `)}>
+          <div style={wrapperStyle} ref={printRef}>
+            <C_Stack className={`mx-auto text-xs print-target gap-0.5 p-1`}>
+              {/* ヘッダー */}
+              <>
+                <div>
+                  <TenkoPaperHeader {...{date, tableStyle}} />
+                </div>
+                <div className={'[&_*]:border-gray-700 '}>
+                  <TenkoPaperBody {...{OrderByPickUpTime, tableStyle}} />
+                </div>
+              </>
+            </C_Stack>
+          </div>
         </div>
       </div>
     </div>

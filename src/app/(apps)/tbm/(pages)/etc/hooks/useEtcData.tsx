@@ -23,52 +23,61 @@ export const useEtcData = () => {
       // CSVデータをパース
       const rows = csvData.trim().split('\n')
       const parsedData = rows
-        .map(row => {
-          const columns = row.split('\t')
+        .map((row, index) => {
+          if (index === 0) return null // ヘッダー行をスキップ
+
+          const columns = row.split(',')
           if (columns.length < 9) return null // 不正な行はスキップ
 
-          // 日付の処理（例: "3月1日" → 日付オブジェクト）
-          const parseJapaneseDate = (dateStr: string) => {
-            const yearMonth = new Date(month)
-            const year = yearMonth.getFullYear()
+          try {
+            // CSVの列構造: 利用開始日,利用開始時刻,利用終了日,利用終了時刻,利用ICなど,出口ICなど,元の料金,割引額,通行料金,車種,車両番号,ETCカード番号,備考
+            const [fromDate, fromTime, toDate, toTime, fromIc, toIc, originalFee, discount, toll, carType, vehicleNumber, cardNumber, remark] = columns
 
-            // 「3月1日」「YYYY/MM/DD」「YYYY-MM-DD」など複数フォーマットに対応
-            let match = dateStr.match(/(\d+)月(\d+)日/)
-            if (!match) {
-              // eslint-disable-next-line no-useless-escape
-              match = dateStr.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/)
-              if (match) {
-                // YYYY/MM/DDまたはYYYY-MM-DD
-                // match[1]: 年, match[2]: 月, match[3]: 日
-                return new Date(parseInt(match[1]), parseInt(match[2]) - 1, parseInt(match[3]))
-              }
+            // 日付のパース（例: '25/08/01' → '2025-08-01'）
+            const parseJapaneseDate = (dateStr: string) => {
+              if (!dateStr) return null
+              const [year, month, day] = dateStr.split('/')
+              if (!year || !month || !day) return null
+              return new Date(`20${year}-${month}-${day}`)
             }
-            if (!match) return null
 
-            const monthNum = parseInt(match[1]) - 1 // JavaScriptの月は0から始まる
-            const day = parseInt(match[2])
+            const parsedFromDate = parseJapaneseDate(fromDate)
+            const parsedToDate = parseJapaneseDate(toDate)
 
-            return new Date(year, monthNum, day)
-          }
+            if (!parsedFromDate || !parsedToDate) return null
 
-          const fromDate = parseJapaneseDate(columns[0])
-          const toDate = parseJapaneseDate(columns[2])
+            // 料金のパース
+            const parseFee = (feeStr: string) => {
+              if (!feeStr) return null
+              const cleaned = feeStr.replace(/[^\d-]/g, '')
+              return cleaned ? parseInt(cleaned, 10) : null
+            }
 
-          if (!fromDate || !toDate) return null
+            const parsedOriginalFee = parseFee(originalFee)
+            const parsedDiscount = parseFee(discount)
+            const parsedToll = parseFee(toll)
 
-          return {
-            fromDate,
-            fromTime: columns[1],
-            toDate,
-            toTime: columns[3],
-            fromIc: columns[4],
-            toIc: columns[5],
-            originalFee: columns[6] ? parseFloat(columns[6]) : null,
-            discountAmount: columns[7] ? parseFloat(columns[7]) : null,
-            fee: parseFloat(columns[8]) || 0,
-            // 通行料金までのデータのみ取得
-            tbmVehicleId: tbmVehicleId,
-            isGrouped: false, // デフォルトはグルーピングなし
+            return {
+              tbmVehicleId,
+              fromDate: parsedFromDate,
+              fromTime: fromTime || '',
+              toDate: parsedToDate,
+              toTime: toTime || '',
+              fromIc: fromIc || '',
+              toIc: toIc || '',
+              originalFee: parsedOriginalFee,
+              discountAmount: parsedDiscount,
+              fee: parsedToll || 0,
+              isGrouped: false,
+              tbmEtcMeisaiId: null,
+              groupIndex: null, // デフォルトはグルーピングなし
+              remark: remark || '', // 備考欄
+              cardNumber: cardNumber || '', // ETCカード番号
+              carType: carType || '', // 車種
+            }
+          } catch (e) {
+            console.error('行のパースに失敗しました:', e, columns)
+            return null
           }
         })
         .filter(Boolean)
@@ -110,8 +119,6 @@ export const useEtcData = () => {
 
   // EtcCsvRawデータをロードする関数
   const loadEtcRawData = async (vehicleId: number, month: Date) => {
-    if (!vehicleId || !month) return
-
     setIsLoading(true)
     try {
       const yearMonth = new Date(month)
@@ -144,11 +151,10 @@ export const useEtcData = () => {
         },
       })
 
-      if (result) {
-        setEtcRawData(result)
-      }
+      setEtcRawData(result || [])
     } catch (error) {
       console.error('データ取得中にエラーが発生しました:', error)
+      toastByResult({success: false, message: 'データ取得中にエラーが発生しました'})
     } finally {
       setIsLoading(false)
     }

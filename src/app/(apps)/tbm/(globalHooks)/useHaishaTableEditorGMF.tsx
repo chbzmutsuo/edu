@@ -81,7 +81,7 @@ const useHaishaTableEditorGMF = (props: {
             },
           }}
         >
-          <R_Stack className={`w-full justify-between gap-6`}>
+          <R_Stack className={`w-full justify-end gap-6`}>
             <Button
               color={`red`}
               type={`button`}

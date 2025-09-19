@@ -21,11 +21,7 @@ export default async function Page(props) {
 
   // 顧客一覧を取得（便設定経由で関連する顧客を取得）
   const customersFromRoutes = await prisma.mid_TbmRouteGroup_TbmCustomer.findMany({
-    where: {
-      TbmRouteGroup: {
-        tbmBaseId: tbmBaseId,
-      },
-    },
+    where: {},
     select: {
       TbmCustomer: {
         select: {

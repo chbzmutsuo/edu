@@ -8,6 +8,7 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
 import {Days} from '@cm/class/Days/Days'
 import {FilterSection, useFilterForm} from '@cm/components/utils/FilterSection'
+import {ReservationType} from '@app/(apps)/sbm/types'
 
 const today = getMidnight()
 export default function InvoicesPage() {
@@ -51,7 +52,7 @@ export default function InvoicesPage() {
 
       const data = await getReservations(where)
 
-      setReservations(data as ReservationType[])
+      setReservations(data as unknown as ReservationType[])
     } catch (error) {
       console.error('予約データの取得に失敗しました:', error)
     } finally {
@@ -496,33 +497,6 @@ export default function InvoicesPage() {
               <p className="text-gray-500">印刷対象の予約データがありません</p>
             </div>
           )}
-        </div>
-
-        {/* 印刷ガイド */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">📋 印刷ガイド</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
-            <div>
-              <h4 className="font-semibold mb-2">印刷設定推奨値</h4>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>用紙サイズ: A4</li>
-                <li>余白: 標準（またはカスタム）</li>
-                <li>カラー: モノクロ推奨</li>
-                <li>両面印刷: 無効</li>
-                <li className="text-red-600 font-medium">⚠️ ヘッダーとフッター: 無効にしてください</li>
-                <li className="text-sm text-gray-600 ml-4">（ページ数や日時が印刷されないようにします）</li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">伝票の使用方法</h4>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>配達時に顧客へ1部お渡し</li>
-                <li>配達完了時にサインを記入</li>
-                <li>回収完了時にサインを記入</li>
-                <li>控えを本部へ提出</li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </div>

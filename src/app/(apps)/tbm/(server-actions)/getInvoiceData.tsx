@@ -4,6 +4,9 @@ import prisma from 'src/lib/prisma'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {DriveScheduleCl, DriveScheduleData} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
+import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
+import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {Days} from '@cm/class/Days/Days'
 
 export type InvoiceData = {
   companyInfo: {
@@ -70,8 +73,11 @@ export const getInvoiceData = async ({
 
   // 運行スケジュールデータ取得（承認済みのみ）
   const driveScheduleList = await DriveScheduleCl.getDriveScheduleList({
-    whereQuery,
-    tbmBaseId,
+    whereQuery: {
+      ...whereQuery,
+      gte: Days.day.subtract(whereQuery.gte, 1),
+    },
+    tbmBaseId: undefined,
   })
 
   // 指定された顧客の便のみをフィルタリング
@@ -85,8 +91,10 @@ export const getInvoiceData = async ({
     const billingMonth = BillingHandler.getBillingMonth(schedule.date, schedule.TbmRouteGroup.departureTime)
 
     // 指定された月と請求月が一致するかチェック
-    const targetMonth = new Date(whereQuery.gte.getFullYear(), whereQuery.gte.getMonth(), 1)
-    return billingMonth.getTime() === targetMonth.getTime()
+
+    const targetMonth = toUtc(new Date(whereQuery.gte.getFullYear(), whereQuery.gte.getMonth() + 1, 1))
+
+    return formatDate(billingMonth, 'YYYYMM') === formatDate(targetMonth, 'YYYYMM')
   })
 
   if (filteredSchedules.length === 0) {
@@ -190,7 +198,7 @@ export const getInvoiceData = async ({
 
   const invoiceData: InvoiceData = {
     companyInfo: {
-      name: tbmBase?.name || '日本郵便輸送株式会社',
+      name: '西日本運送株式会社',
       address: '九州支社 御中',
       tel: '0943-72-2361',
       fax: '0943-72-4160',

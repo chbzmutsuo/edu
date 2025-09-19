@@ -182,9 +182,8 @@ const BasicForm = (props: BasicFormType) => {
                   </Fragment>
                 )
               })}
-
-              <ChildComponent />
             </AutoGridContainer>
+            <ChildComponent />
           </form>
         </FormProvider>
       </div>

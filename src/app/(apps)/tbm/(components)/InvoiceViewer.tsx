@@ -17,7 +17,7 @@ interface InvoiceViewerProps {
 export default function InvoiceViewer({invoiceData}: InvoiceViewerProps) {
   const componentRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
-  const {toastIfFailed} = useGlobal()
+  // const {toastIfFailed} = useGlobal()
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
