@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {Printer, FileText, CheckSquare, Square} from 'lucide-react'
 import {getReservations} from '../../actions'
 
@@ -8,7 +9,6 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {getMidnight, toUtc} from '@cm/class/Days/date-utils/calculations'
 import {Days} from '@cm/class/Days/Days'
 import {FilterSection, useFilterForm} from '@cm/components/utils/FilterSection'
-import {ReservationType} from '@app/(apps)/sbm/types'
 
 const today = getMidnight()
 export default function InvoicesPage() {

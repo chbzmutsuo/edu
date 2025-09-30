@@ -6,7 +6,7 @@ import {Phone, Plus} from 'lucide-react'
 import {getCustomerPhones, createCustomerPhone} from '../actions'
 import {formatPhoneNumber, handlePhoneNumberInput} from '../utils/phoneUtils'
 
-export const PHONE_LABELS: PhoneLabelType[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
+export const PHONE_LABELS: string[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
 
 type CustomerPhoneDisplayProps = {
   customerId?: number
@@ -23,7 +23,7 @@ const CustomerPhoneDisplay: React.FC<CustomerPhoneDisplayProps> = ({customerId, 
   const [phones, setPhones] = useState<CustomerPhoneType[]>([])
   const [loading, setLoading] = useState(false)
   const [newPhone, setNewPhone] = useState('')
-  const [phoneLabel, setPhoneLabel] = useState<PhoneLabelType>('携帯')
+  const [phoneLabel, setPhoneLabel] = useState<string>('携帯')
   const [showAddForm, setShowAddForm] = useState(false)
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const CustomerPhoneDisplay: React.FC<CustomerPhoneDisplayProps> = ({customerId, 
             />
             <select
               value={phoneLabel}
-              onChange={e => setPhoneLabel(e.target.value as PhoneLabelType)}
+              onChange={e => setPhoneLabel(e.target.value as string)}
               className="border border-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {PHONE_LABELS.map(label => (

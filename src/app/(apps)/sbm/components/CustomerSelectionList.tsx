@@ -6,7 +6,7 @@ import {User, Phone} from 'lucide-react'
 import {formatPhoneNumber} from '../utils/phoneUtils'
 
 type CustomerSelectionListProps = {
-  customers: CustomerSearchResultType[]
+  customers: any[]
   onSelectCustomer: (customer: CustomerType) => void
   onCancel: () => void
 }

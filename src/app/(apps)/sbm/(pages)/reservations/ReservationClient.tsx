@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {Search, PlusCircle, Edit, CheckSquare, Square, Clock, Ban, RefreshCw} from 'lucide-react'
 import {formatPhoneNumber} from '../../utils/phoneUtils'
 
@@ -77,7 +78,7 @@ export default function ReservationClient() {
     try {
       const [customersData, productsData] = await Promise.all([getAllCustomers(), getVisibleProducts()])
       setCustomers(customersData)
-      setProducts(productsData)
+      setProducts(productsData as ProductType[])
       await loadReservations()
     } catch (error) {
       console.error('データの読み込みに失敗しました:', error)

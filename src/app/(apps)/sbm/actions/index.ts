@@ -226,8 +226,8 @@ export async function lookupCustomerByPhone(phoneNumber: string): Promise<Custom
     email: customer.email || '',
     availablePoints: customer.availablePoints,
     notes: customer.notes || '',
-
     updatedAt: customer.updatedAt,
+    phones: [],
   }
 }
 
@@ -430,7 +430,7 @@ export const getAllCustomers = async (): Promise<CustomerType[]> => {
     phones: c.SbmCustomerPhone.map(phone => ({
       id: phone.id,
       sbmCustomerId: phone.sbmCustomerId,
-      label: phone.label as PhoneLabelType,
+      label: phone.label,
       phoneNumber: phone.phoneNumber,
       createdAt: phone.createdAt,
       updatedAt: phone.updatedAt,
@@ -440,7 +440,7 @@ export const getAllCustomers = async (): Promise<CustomerType[]> => {
 
 // 電話番号で顧客を検索
 // 電話番号による顧客検索（部分一致）
-export const searchCustomersByPhone = async (phoneNumber: string): Promise<CustomerSearchResultType[]> => {
+export const searchCustomersByPhone = async (phoneNumber: string) => {
   try {
     if (!phoneNumber || phoneNumber.length < 3) {
       return []
@@ -481,7 +481,7 @@ export const searchCustomersByPhone = async (phoneNumber: string): Promise<Custo
         matchedPhones.push({
           id: phone.id,
           sbmCustomerId: phone.sbmCustomerId,
-          label: phone.label as PhoneLabelType,
+          label: phone.label,
           phoneNumber: phone.phoneNumber,
           createdAt: phone.createdAt,
           updatedAt: phone.updatedAt,
@@ -506,7 +506,7 @@ export const searchCustomersByPhone = async (phoneNumber: string): Promise<Custo
           phones: customer.SbmCustomerPhone.map(phone => ({
             id: phone.id,
             sbmCustomerId: phone.sbmCustomerId,
-            label: phone.label as PhoneLabelType,
+            label: phone.label,
             phoneNumber: phone.phoneNumber,
             createdAt: phone.createdAt,
             updatedAt: phone.updatedAt,
@@ -553,7 +553,7 @@ export const getCustomerByPhone = async (phoneNumber: string): Promise<CustomerT
     phones: customer.SbmCustomerPhone.map(phone => ({
       id: phone.id,
       sbmCustomerId: phone.sbmCustomerId,
-      label: phone.label as PhoneLabelType,
+      label: phone.label,
       phoneNumber: phone.phoneNumber,
       createdAt: phone.createdAt,
       updatedAt: phone.updatedAt,
@@ -649,7 +649,7 @@ export const createOrUpdateCustomer = async (
         phones: result!.SbmCustomerPhone.map(phone => ({
           id: phone.id,
           sbmCustomerId: phone.sbmCustomerId,
-          label: phone.label as PhoneLabelType,
+          label: phone.label,
           phoneNumber: phone.phoneNumber,
           createdAt: phone.createdAt,
           updatedAt: phone.updatedAt,
@@ -748,7 +748,7 @@ export async function getCustomerPhones(customerId: number): Promise<CustomerPho
     return phones.map(phone => ({
       id: phone.id,
       sbmCustomerId: phone.sbmCustomerId,
-      label: phone.label as PhoneLabelType,
+      label: phone.label,
       phoneNumber: phone.phoneNumber,
       createdAt: phone.createdAt,
       updatedAt: phone.updatedAt,
@@ -911,7 +911,7 @@ export const deleteProduct = async (id: number) => {
   }
 }
 
-export const getAllProducts = async (): Promise<ProductType[]> => {
+export const getAllProducts = async () => {
   const products = await prisma.sbmProduct.findMany({
     include: {
       SbmProductPriceHistory: {
@@ -941,7 +941,7 @@ export const getAllProducts = async (): Promise<ProductType[]> => {
 }
 
 // 予約登録時用：表示可能な商品のみ取得
-export const getVisibleProducts = async (): Promise<ProductType[]> => {
+export const getVisibleProducts = async () => {
   const products = await prisma.sbmProduct.findMany({
     where: {isActive: true},
     include: {
@@ -1119,8 +1119,8 @@ export async function upsertReservation(reservationData: Partial<ReservationType
       })) || []
 
     const {newData, oldData} = await (async () => {
-      const newData: changeHistoryObject = {
-        ...(newDataCore as ReservationType),
+      const newData: any = {
+        ...(newDataCore as unknown as ReservationType),
         items: SbmReservationItem as ReservationItemType[],
       }
 
@@ -1129,8 +1129,8 @@ export async function upsertReservation(reservationData: Partial<ReservationType
         include: {SbmReservationItem: true},
       })
 
-      const oldData: changeHistoryObject = {
-        ...(oldDataCoreFromDb as ReservationType),
+      const oldData: any = {
+        ...(oldDataCoreFromDb as unknown as ReservationType),
         items:
           oldDataCoreFromDb?.SbmReservationItem.map(item => ({
             id: item.id,

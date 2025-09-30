@@ -1,3 +1,7 @@
+export type OrderChannelType = '電話' | 'FAX' | 'メール' | 'Web' | '営業' | 'その他'
+export type PurposeType = '会議' | '研修' | '接待' | 'イベント' | '懇親会' | 'その他'
+export type PaymentMethodType = '現金' | '銀行振込' | '請求書' | 'クレジットカード'
+export type PickupLocationType = '配達' | '店舗受取'
 // 選択肢定数
 export const ORDER_CHANNEL_OPTIONS: OrderChannelType[] = ['電話', 'FAX', 'メール', 'Web', '営業', 'その他']
 

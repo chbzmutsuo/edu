@@ -1,4 +1,4 @@
-export interface EtcRecord {
+interface EtcRecord {
   id: number
   fromDate: Date
   fromTime: string
@@ -20,7 +20,7 @@ export interface EtcRecord {
   carType?: string
 }
 
-export interface GroupHeader {
+interface GroupHeader {
   isGroupHeader: boolean
   meisaiId: number
   fromDate: Date
@@ -36,15 +36,15 @@ export interface GroupHeader {
   TbmDriveSchedule?: any
 }
 
-export type TableRecord = EtcRecord | GroupHeader
+type TableRecord = EtcRecord | GroupHeader
 
-export interface FormData {
+interface FormData {
   tbmVehicleId: number
   month: Date
   csvData: string
 }
 
-export interface FileUploadFormData {
+interface FileUploadFormData {
   tbmVehicleId: number
   month: Date
 }

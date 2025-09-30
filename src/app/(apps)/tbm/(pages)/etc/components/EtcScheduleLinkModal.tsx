@@ -11,11 +11,18 @@ import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-c
 interface EtcScheduleLinkModalProps {
   etcMeisaiId: number
   scheduleId: number | null
+  scheduleDate: Date
   onClose: () => void
   onUpdate: () => void
 }
 
-export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({etcMeisaiId, scheduleId, onClose, onUpdate}) => {
+export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({
+  etcMeisaiId,
+  scheduleId,
+  scheduleDate,
+  onClose,
+  onUpdate,
+}) => {
   const [etcMeisai, setEtcMeisai] = useState<any>(null)
   const [availableSchedules, setAvailableSchedules] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
@@ -26,11 +33,13 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({etcMe
         id: 'tbmDriveScheduleId',
         label: '運行明細',
         forSelect: {
-          optionsOrOptionFetcher: availableSchedules.map(schedule => ({
-            name: `${formatDate(schedule.date, 'MM/DD')} ${schedule.TbmRouteGroup?.name || ''} ${schedule.User?.name || ''}`,
-            label: `${formatDate(schedule.date, 'MM/DD')} ${schedule.TbmRouteGroup?.name || ''} ${schedule.User?.name || ''}`,
-            value: schedule.id,
-          })),
+          optionsOrOptionFetcher: availableSchedules.map(schedule => {
+            return {
+              name: `${formatDate(schedule.date, 'MM/DD')} ${schedule.TbmRouteGroup?.name || ''} ${schedule.User?.name || ''}`,
+              label: `${formatDate(schedule.date, 'MM/DD')} ${schedule.TbmRouteGroup?.name || ''} ${schedule.User?.name || ''}`,
+              value: schedule.id,
+            }
+          }),
         },
       },
       {
@@ -81,11 +90,7 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({etcMe
           const schedulesResponse = await doStandardPrisma('tbmDriveSchedule', 'findMany', {
             where: {
               tbmVehicleId: etcResponse.result.tbmVehicleId,
-              date: {
-                gte: monthStart,
-                lte: monthEnd,
-              },
-              approved: true, // 承認済みのもののみ
+              date: scheduleDate,
             },
             include: {
               TbmRouteGroup: true,
@@ -109,17 +114,16 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({etcMe
   const handleSubmit = async (data: any) => {
     setIsLoading(true)
     try {
-      const {tbmDriveScheduleId, feeType} = data
+      const {feeType} = data
+      const tbmDriveScheduleId = Number(data.tbmDriveScheduleId)
 
       if (tbmDriveScheduleId) {
         // 運行明細にETC料金を反映
-        const feeField = feeType === 'postal' ? 'O_postalHighwayFee' : 'Q_generalHighwayFee'
+        const feeField = feeType === 'postal' ? 'M_postalHighwayFee' : 'O_generalHighwayFee'
 
         await doStandardPrisma('tbmDriveSchedule', 'update', {
           where: {id: tbmDriveScheduleId},
-          data: {
-            [feeField]: etcMeisai?.sum || 0,
-          },
+          data: {[feeField]: etcMeisai?.sum || 0},
         })
 
         // ETCデータに運行明細IDを紐付け
@@ -145,8 +149,8 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({etcMe
           await doStandardPrisma('tbmDriveSchedule', 'update', {
             where: {id: scheduleId},
             data: {
-              O_postalHighwayFee: null,
-              Q_generalHighwayFee: null,
+              M_postalHighwayFee: null,
+              O_generalHighwayFee: null,
             },
           })
         }
@@ -169,39 +173,37 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({etcMe
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-        <h3 className="text-lg font-bold mb-4">ETC利用明細の運行紐付け</h3>
+    <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+      <h3 className="text-lg font-bold mb-4">ETC利用明細の運行紐付け</h3>
 
-        <C_Stack className="mb-4 gap-2">
-          <div className="text-sm text-gray-600">
-            <strong>車両:</strong> {etcMeisai.TbmVehicle?.vehicleNumber}
+      <C_Stack className="mb-4 gap-2">
+        <div className="text-sm text-gray-600">
+          <strong>車両:</strong> {etcMeisai.TbmVehicle?.vehicleNumber}
+        </div>
+        <div className="text-sm text-gray-600">
+          <strong>対象月:</strong> {formatDate(etcMeisai.month, 'YYYY年MM月')}
+        </div>
+        <div className="text-sm text-gray-600">
+          <strong>合計金額:</strong> {NumHandler.WithUnit(etcMeisai.sum, '円')}
+        </div>
+        {etcMeisai.TbmDriveSchedule && (
+          <div className="text-sm text-blue-600">
+            <strong>現在の紐付け:</strong> {formatDate(etcMeisai.TbmDriveSchedule.date, 'MM/DD')}{' '}
+            {etcMeisai.TbmDriveSchedule.TbmRouteGroup?.name}
           </div>
-          <div className="text-sm text-gray-600">
-            <strong>対象月:</strong> {formatDate(etcMeisai.month, 'YYYY年MM月')}
-          </div>
-          <div className="text-sm text-gray-600">
-            <strong>合計金額:</strong> {NumHandler.WithUnit(etcMeisai.sum, '円')}
-          </div>
-          {etcMeisai.TbmDriveSchedule && (
-            <div className="text-sm text-blue-600">
-              <strong>現在の紐付け:</strong> {formatDate(etcMeisai.TbmDriveSchedule.date, 'MM/DD')}{' '}
-              {etcMeisai.TbmDriveSchedule.TbmRouteGroup?.name}
-            </div>
-          )}
-        </C_Stack>
+        )}
+      </C_Stack>
 
-        <BasicForm latestFormData={latestFormData} onSubmit={handleSubmit}>
-          <R_Stack className="gap-3">
-            <Button type="button" color="gray" onClick={onClose} disabled={isLoading}>
-              キャンセル
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading ? '処理中...' : '紐付け実行'}
-            </Button>
-          </R_Stack>
-        </BasicForm>
-      </div>
+      <BasicForm latestFormData={latestFormData} onSubmit={handleSubmit}>
+        <R_Stack className="gap-3">
+          <Button type="button" color="gray" onClick={onClose} disabled={isLoading}>
+            キャンセル
+          </Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? '処理中...' : '紐付け実行'}
+          </Button>
+        </R_Stack>
+      </BasicForm>
     </div>
   )
 }

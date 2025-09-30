@@ -4,7 +4,7 @@ import prisma from 'src/lib/prisma'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {DriveScheduleCl, DriveScheduleData} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 import {BillingHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
-import { toUtc} from '@cm/class/Days/date-utils/calculations'
+import {toUtc} from '@cm/class/Days/date-utils/calculations'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Days} from '@cm/class/Days/Days'
 
@@ -128,7 +128,7 @@ export const getInvoiceData = async ({
       // 基本料金（運賃）
       const baseFee = routeGroupFee?.driverFee || 0
       // 通行料
-      const tollFee = (schedule.O_postalHighwayFee || 0) + (schedule.Q_generalHighwayFee || 0)
+      const tollFee = (schedule.M_postalHighwayFee || 0) + (schedule.O_generalHighwayFee || 0)
 
       return sum + baseFee + tollFee
     }, 0)
@@ -174,7 +174,7 @@ export const getInvoiceData = async ({
 
         // 通行料の合計（郵便高速 + 一般高速）
         const tollFee = routeSchedules.reduce(
-          (sum, schedule) => sum + (schedule.O_postalHighwayFee || 0) + (schedule.Q_generalHighwayFee || 0),
+          (sum, schedule) => sum + (schedule.M_postalHighwayFee || 0) + (schedule.O_generalHighwayFee || 0),
           0
         )
 

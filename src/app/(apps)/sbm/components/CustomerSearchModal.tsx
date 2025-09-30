@@ -19,7 +19,7 @@ type CustomerSearchModalProps = {
  */
 const CustomerSearchModal: React.FC<CustomerSearchModalProps> = ({onClose, onSelectCustomer, initialPhone = ''}) => {
   const [searchPhone, setSearchPhone] = useState(initialPhone)
-  const [searchResults, setSearchResults] = useState<CustomerSearchResultType[]>([])
+  const [searchResults, setSearchResults] = useState<any[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [hasSearched, setHasSearched] = useState(false)
 

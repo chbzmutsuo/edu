@@ -48,9 +48,10 @@ export const getScopes = (session: anyObject, options: getScopeOptionsProps) => 
       const userId = !admin ? session?.id : Number(query?.g_userId ?? session?.id ?? 0)
       const tbmBaseId = !admin ? session?.tbmBaseId : Number(query?.g_tbmBaseId ?? session?.tbmBaseId ?? 0)
 
-      const isSystemAdmin = !!arr__findCommonValues([`管理者`], roleNames)
+      const isSystemAdmin = !!arr__findCommonValues([`管理者`], roleNames) || admin
+      const isShocho = !!arr__findCommonValues([`所長`], roleNames)
 
-      return {userId, tbmBaseId, isSystemAdmin}
+      return {userId, tbmBaseId, isSystemAdmin, isShocho}
     },
   }
 

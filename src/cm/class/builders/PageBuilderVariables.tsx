@@ -1,4 +1,3 @@
-
 import GlobalModal from '@cm/components/utils/modal/GlobalModal'
 
 import {PrismaModelNames} from '@cm/types/prisma-types'
@@ -99,9 +98,7 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
   return (
     <div className="p-6 bg-gradient-to-br from-slate-50 to-white">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          ユーザー権限割当表
-        </h2>
+        <h2 className="text-2xl font-bold bg-gradient-to-r bg-blue-500 bg-clip-text text-transparent">ユーザー権限割当表</h2>
         <p className="text-gray-500 mt-2">各ユーザーに適切な権限を割り当ててください</p>
       </div>
 
@@ -172,7 +169,7 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
         <div className="overflow-x-auto">
           <table className="w-full border ">
             <thead>
-              <tr className="bg-gradient-to-r from-blue-500 to-purple-600">
+              <tr className="bg-blue-500">
                 <th className="p-3 px-6 text-left text-white font-semibold rounded-tl-lg">ユーザー</th>
                 {roles.map((r, index) => {
                   return (
@@ -203,7 +200,7 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
                   >
                     <td className="p-3 px-6">
                       <div className="flex items-center space-x-3">
-                        <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                        <div className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
                           {u.name?.charAt(0) || 'U'}
                         </div>
                         <div>
@@ -252,7 +249,7 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
                               <div
                                 className={`
                                 relative w-12 h-6 rounded-full transition-all duration-300 ease-in-out
-                                ${hasRole ? 'bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg' : 'bg-gray-200'}
+                                ${hasRole ? 'bg-blue-500 shadow-lg' : 'bg-gray-200'}
                                 peer-focus:ring-4 peer-focus:ring-blue-300/50
                               `}
                               >

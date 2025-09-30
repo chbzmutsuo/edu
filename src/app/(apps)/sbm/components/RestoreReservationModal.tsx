@@ -65,7 +65,9 @@ export const RestoreReservationModal: React.FC<RestoreReservationModalProps> = (
               <div className="font-medium">{reservation.cancelReason || '理由なし'}</div>
 
               <div className="text-gray-500">取り消し日時:</div>
-              <div className="font-medium">{formatDate(reservation.canceledAt, 'yyyy/MM/dd HH:mm')}</div>
+              <div className="font-medium">
+                {reservation?.canceledAt && formatDate(reservation?.canceledAt, 'yyyy/MM/dd HH:mm')}
+              </div>
             </div>
           </div>
 

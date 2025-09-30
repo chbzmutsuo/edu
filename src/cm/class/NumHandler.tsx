@@ -2,10 +2,10 @@ import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 
 export class NumHandler {
   // 数値を3桁ごとの小数点表記のStringに変換する
-  static toLocaleStr = value => {
+  static toLocaleStr = (value: number) => {
     if (value) {
-      value = String(value).toLocaleString()
-      return value
+      // value = value.toLocaleString();
+      return value.toLocaleString()
     } else {
       return value
     }

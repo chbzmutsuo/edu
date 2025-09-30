@@ -13,15 +13,27 @@ export const tbm_PAGES = (props: PageGetterType) => {
   const scopes = getScopes(session, {query, roles})
   const {login} = scopes
   const admin = scopes.admin
-  const isSystemAdmin = scopes.getTbmScopes().isSystemAdmin
-
-  const onlyAdmin = admin || isSystemAdmin
+  const {isSystemAdmin, isShocho} = scopes.getTbmScopes()
 
   const publicPaths = []
+
   const loginPath = [
     {
+      tabId: 'driver',
+      label: <IconLetter {...{Icon: Truck}}>ドライバーメニュー</IconLetter>,
+      children: [
+        {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
+        {tabId: 'monthly-schedule', label: <IconLetter {...{Icon: Calendar}}>月間予定</IconLetter>},
+      ],
+      exclusiveTo: login,
+      ROOT: [rootPath, 'driver'],
+    },
+  ]
+
+  const shochoPath = [
+    {
       tabId: '',
-      label: <IconLetter {...{Icon: ListIcon}}>メイン</IconLetter>,
+      label: <IconLetter {...{Icon: ListIcon}}>営業所メニュー</IconLetter>,
       children: [
         //
 
@@ -32,19 +44,9 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {
           tabId: 'haisha',
           label: <IconLetter {...{Icon: Truck}}>配車設定</IconLetter>,
-          exclusiveTo: login,
         },
+        {tabId: 'etc', label: 'ETC連携'},
       ],
-    },
-    {
-      tabId: 'driver',
-      label: <IconLetter {...{Icon: Truck}}>ドライバ</IconLetter>,
-      children: [
-        {tabId: 'driveInput', label: <IconLetter {...{Icon: Truck}}>運行入力</IconLetter>},
-        {tabId: 'monthly-schedule', label: <IconLetter {...{Icon: Calendar}}>月間予定</IconLetter>},
-      ],
-      exclusiveTo: login,
-      ROOT: [rootPath, 'driver'],
     },
 
     {
@@ -61,18 +63,14 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {tabId: 'driver/kintai', label: <IconLetter {...{Icon: ListIcon}}>出退勤管理</IconLetter>},
         {tabId: 'seikyu', label: <IconLetter {...{Icon: ListIcon}}>請求書発行</IconLetter>},
       ],
-      exclusiveTo: login,
     },
-    {
-      tabId: '',
-      label: 'その他',
-      children: [
-        //
-        {tabId: 'etc', label: 'ETC連携'},
-      ],
-      exclusiveTo: login,
-    },
+  ].map(item => ({
+    ...item,
+    exclusiveTo: isShocho || isSystemAdmin,
+    ROOT: [rootPath],
+  }))
 
+  const systemAdminPath = [
     {
       tabId: '',
       label: <IconLetter {...{Icon: ListIcon}}>共通設定</IconLetter>,
@@ -81,17 +79,14 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {
           tabId: 'tbmBase',
           label: <IconLetter {...{Icon: Building}}>営業所</IconLetter>,
-          exclusiveTo: onlyAdmin,
         },
         {
           tabId: 'user',
           label: <IconLetter {...{Icon: User}}>ユーザー</IconLetter>,
-          exclusiveTo: onlyAdmin,
         },
         {
           tabId: 'tbmVehicle',
           label: <IconLetter {...{Icon: Truck}}>車両</IconLetter>,
-          exclusiveTo: admin,
         },
         {
           tabId: 'tbmCustomer',
@@ -104,17 +99,20 @@ export const tbm_PAGES = (props: PageGetterType) => {
         {
           tabId: `roleMaster`,
           label: <IconLetter {...{Icon: Settings}}>権限管理</IconLetter>,
-          exclusiveTo: onlyAdmin,
         },
       ],
     },
-  ].map(item => ({
-    ...item,
-    exclusiveTo: item.exclusiveTo ?? scopes.login,
-    ROOT: item.ROOT ?? [rootPath],
-  }))
+  ].map(item => {
+    return {...item, exclusiveTo: isSystemAdmin, ROOT: [rootPath]}
+  })
 
-  const pathSource = [{tabId: 'top', label: 'トップ', hide: true, ROOT: [rootPath]}, ...publicPaths, ...loginPath]
+  const pathSource = [
+    {tabId: 'top', label: 'トップ', hide: true, ROOT: [rootPath]},
+    ...loginPath,
+    ...publicPaths,
+    ...shochoPath,
+    ...systemAdminPath,
+  ]
 
   const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
     rootPath,

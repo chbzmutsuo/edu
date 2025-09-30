@@ -3,7 +3,6 @@ import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doS
 import {toastByResult} from '@cm/lib/ui/notifications'
 import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {EtcRecord} from '../types'
 
 export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -151,4 +150,3 @@ export const useEtcGrouping = (etcRawData: EtcRecord[], onSuccess: () => void) =
     getNextGroupIndex,
   }
 }
-

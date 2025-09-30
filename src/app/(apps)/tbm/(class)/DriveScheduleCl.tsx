@@ -140,10 +140,10 @@ export class DriveScheduleCl {
     const Q_driverFee = (feeOnDate?.driverFee ?? 0) + (feeOnDate?.futaiFee ?? 0)
 
     const L_postalFee = (ConfigForRoute?.tsukoryoSeikyuGaku ?? 0) / jitsudoKaisu
-    const M_postalHighwayFee = schedule.O_postalHighwayFee ?? 0
+    const M_postalHighwayFee = schedule.M_postalHighwayFee ?? 0
 
     const N_generalFee = ConfigForRoute?.generalFee ?? 0
-    const O_generalHighwayFee = schedule.Q_generalHighwayFee ?? 0
+    const O_generalHighwayFee = schedule.O_generalHighwayFee ?? 0
 
     const T_thirteenPercentOfPostalHighway = M_postalHighwayFee * 0.3
     const S_jomuinFutan = M_postalHighwayFee - (L_postalFee + T_thirteenPercentOfPostalHighway)

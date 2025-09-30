@@ -1,5 +1,4 @@
 import {useState, useMemo} from 'react'
-import {EtcRecord} from '../types'
 
 export const useEtcSelection = (etcRawData: EtcRecord[]) => {
   // 選択状態を管理

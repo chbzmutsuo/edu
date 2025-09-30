@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {PlusCircle, Edit, Trash2, Package, History, Eye, EyeOff, Layers} from 'lucide-react'
 import {getAllProducts, createProduct, updateProduct, deleteProduct, deletePriceHistory} from '../../actions'
 
@@ -13,7 +14,6 @@ import {PriceHistoryModal} from '@app/(apps)/sbm/(pages)/products/PriceHistoryMo
 import {IngredientModal} from '@app/(apps)/sbm/(pages)/products/IngredientModal'
 import {ProductCl} from '@app/(apps)/sbm/(pages)/products/ProductCl'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {ProductType} from '../../types'
 
 export default function ProductsClient() {
   // useGlobalを使用してクエリパラメーターを管理
@@ -31,7 +31,7 @@ export default function ProductsClient() {
     setLoading(true)
     try {
       const data = await getAllProducts()
-      setProducts(data)
+      setProducts(data as ProductType[])
     } catch (error) {
       console.error('商品データの取得に失敗しました:', error)
     } finally {
@@ -51,7 +51,7 @@ export default function ProductsClient() {
   const PriceHistoryModalReturn = useModal()
   const IngredientModalReturn = useModal()
 
-  const handleSave = async (productData: Partial<ProductType> & {currentPrice: number; currentCost: number}) => {
+  const handleSave = async (productData: ProductType & {currentPrice: number; currentCost: number}) => {
     try {
       const editingProduct = EditProductModalReturn?.open?.product
 

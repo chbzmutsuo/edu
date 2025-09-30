@@ -8,6 +8,7 @@ import {isDev} from '@cm/lib/methods/common'
 import {getVehicleForSelectConfig} from '@app/(apps)/tbm/(builders)/ColBuilders/TbmVehicleColBuilder'
 import {EtcFileUpload} from './EtcFileUpload'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 
 interface EtcImportFormProps {
   isLoading: boolean
@@ -19,6 +20,9 @@ export const EtcImportForm = (props: EtcImportFormProps) => {
   const {isLoading, importCsvData, onFormChange} = props
   const {firstDayOfMonth} = Days.month.getMonthDatum(new Date())
   const [csvContent, setCsvContent] = useState<string>('')
+  const {session} = useGlobal()
+
+  const {tbmBaseId} = session?.scopes.getTbmScopes()
 
   const {BasicForm, latestFormData} = useBasicFormProps({
     columns: new Fields([
@@ -29,7 +33,7 @@ export const EtcImportForm = (props: EtcImportFormProps) => {
           defaultValue: isDev ? 5 : null,
           style: {width: 300},
         },
-        forSelect: {config: getVehicleForSelectConfig({})},
+        forSelect: {config: getVehicleForSelectConfig({tbmBaseId})},
       },
       {
         id: `month`,

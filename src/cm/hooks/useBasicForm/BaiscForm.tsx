@@ -14,8 +14,9 @@ import {Card} from '@cm/shadcn/ui/card'
 import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 import {cn} from '@shadcn/lib/utils'
 
-import { getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
+import {getUse2ColSpan} from '@cm/hooks/useBasicForm/lib/hookformMethods'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
+import {alignModeType} from '@cm/types/form-control-type'
 
 export type useRegisterType = (props: {col: colType; newestRecord: any}) => {
   currentValue: any
@@ -38,6 +39,7 @@ export type BasicFormType = {
   ReactHookForm: UseFormReturn
   formId: string
   formRef: any
+  alignMode?: alignModeType
   // useRegister: useRegisterType
   useResetValue: useResetValueType
   onFormItemBlur?: onFormItemBlurType

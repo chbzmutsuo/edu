@@ -10,7 +10,7 @@ import BasicForm from 'src/cm/hooks/useBasicForm/BaiscForm'
 import {getLatestFormData, initColumns, makeDefaultValues} from '@cm/hooks/useBasicForm/lib/hookformMethods'
 import useCacheSelectOptions, {useCacheSelectOptionReturnType} from 'src/cm/hooks/useCacheSelectOptions/useCacheSelectOptions'
 
-import {ControlOptionType} from '@cm/types/form-control-type'
+import {alignModeType, ControlOptionType} from '@cm/types/form-control-type'
 import {StrHandler} from '@cm/class/StrHandler'
 import {DH__switchColType} from '@cm/class/DataHandler/type-converter'
 import {anyObject} from '@cm/types/utility-types'
@@ -133,7 +133,7 @@ export type AdditionalBasicFormPropType = {
   wrapperClass?: string | ((props: anyObject) => string)
   ControlOptions?: ControlOptionType
   children?: any
-  alignMode?: 'row' | 'col'
+  alignMode?: alignModeType
   style?: any
   latestFormData: any
 }

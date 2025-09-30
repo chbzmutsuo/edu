@@ -1,28 +1,17 @@
 import {anyObject} from '@cm/types/utility-types'
 import {JSX} from 'react'
 import {getScopes} from 'src/non-common/scope-lib/getScopes'
-import {Advantage_PAGES} from 'src/non-common/getPages/getAdvantagePages'
-import {aquapot_PAGES} from 'src/non-common/getPages/aquapot_PAGES'
+
 import {tbm_PAGES} from 'src/non-common/getPages/getTbm_PAGES'
-import {sohken_PAGES} from 'src/non-common/getPages/sohken_PAGES'
-import {shinsei_PAGES} from 'src/non-common/getPages/shinsei_PAGES'
-import {apex_PAGES} from 'src/non-common/getPages/apex_PAGES'
-import {Grouping_PAGES} from 'src/non-common/getPages/Grouping_PAGES'
+
 import {KM_PAGES} from 'src/non-common/getPages/KM_PAGES'
 import {stock_PAGES} from 'src/non-common/getPages/stock_PAGES'
-import {colabo_PAGES} from 'src/non-common/getPages/CoLab_PAGES'
+
 import {training_PAGES} from 'src/non-common/getPages/training_PAGES'
 
 export const PAGES: any = {
-  apex_PAGES,
-  Grouping_PAGES,
-  colabo_PAGES,
-  Advantage_PAGES,
   tbm_PAGES,
   KM_PAGES,
-  sohken_PAGES,
-  aquapot_PAGES,
-  shinsei_PAGES,
   stock_PAGES,
   training_PAGES,
   keihi_PAGES: (props: PageGetterType) => {

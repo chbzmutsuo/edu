@@ -16,7 +16,6 @@ import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 import BulkCalendarSetter from '@app/(apps)/tbm/(pages)/eigyoshoSettei/components/BulkCalendarSetter'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
-import {Button} from '@cm/components/styles/common-components/Button'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import {useState} from 'react'
 

@@ -9,7 +9,10 @@ export async function hashPassword(password) {
 }
 
 export async function verifyPassword(inputPassword, hashedPassword) {
-  const isMatch = await bcrypt.compare(inputPassword, hashedPassword)
+  if (!inputPassword || !hashedPassword) {
+    return false
+  }
+  const isMatch = await bcrypt.compare(inputPassword ?? '', hashedPassword ?? '')
 
   return isMatch
 }

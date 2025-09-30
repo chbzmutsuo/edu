@@ -81,6 +81,7 @@ export const useSearchHandler = (props: SearchHandler) => {
             {...{
               SP,
               SearchBasicForm,
+              columns,
               ResetBtnMemo,
               modalOpen,
               setmodalOpen,
@@ -94,7 +95,7 @@ export const useSearchHandler = (props: SearchHandler) => {
         </R_Stack>
       )
     }
-  }, [SearchCols, modalOpen, query, ReactHookForm])
+  }, [SearchCols, modalOpen, query, ReactHookForm, columns])
 
   const SearchingStatusMemo = useMemo(() => {
     if (query[searchQueryKey]) {

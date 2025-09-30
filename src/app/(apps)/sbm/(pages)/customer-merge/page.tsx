@@ -1,13 +1,13 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {Search, Users, AlertTriangle, CheckCircle, X, ArrowLeft} from 'lucide-react'
 import {getAllCustomers, mergeCustomers} from '../../actions'
 
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
-import {CustomerType} from '@app/(apps)/sbm/types'
 
 export default function CustomerMergePage() {
   const [customers, setCustomers] = useState<CustomerType[]>([])

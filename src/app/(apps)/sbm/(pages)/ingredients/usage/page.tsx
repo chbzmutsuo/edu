@@ -5,7 +5,7 @@ import {Calculator} from 'lucide-react'
 import {FilterSection} from '@cm/components/utils/FilterSection'
 import {calculateIngredientsUsage} from '../../../actions/ingredientActions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
-import {IngredientUsageType} from '../../../types'
+
 import {toUtc} from '@cm/class/Days/date-utils/calculations'
 
 export default function IngredientsUsagePage() {

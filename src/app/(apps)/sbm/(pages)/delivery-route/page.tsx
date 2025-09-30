@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {Truck, Calendar, Plus, Clock, MapPin} from 'lucide-react'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {Days} from '@cm/class/Days/Days'
@@ -102,14 +103,14 @@ export default function DeliveryRoutePage() {
           lt: toUtc(formatDate(nextDay)),
         },
       })
-      setReservations(reservationData as ReservationType[])
+      setReservations(reservationData as unknown as ReservationType[])
 
       // 配達グループを取得
       const groupData = await getDeliveryGroupsByDate(appliedFilters.date)
       setDeliveryGroups(groupData as DeliveryGroupType[])
 
       // 未割り当ての予約を特定
-      updateUnassignedReservations(reservationData as ReservationType[], groupData as DeliveryGroupType[])
+      updateUnassignedReservations(reservationData as unknown as ReservationType[], groupData as DeliveryGroupType[])
     } catch (error) {
       console.error('データの取得に失敗しました:', error)
       toast.error('データの取得に失敗しました')

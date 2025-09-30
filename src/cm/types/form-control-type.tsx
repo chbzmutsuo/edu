@@ -14,6 +14,7 @@ export type formPropType = {
   type: colTypeStr
 }
 
+export type alignModeType = `row` | `col` | `grid` | `console`
 export type ControlWrapperPropType = {
   formId: string
   formData: anyObject
@@ -38,7 +39,7 @@ export type ControlWrapperPropType = {
   // useGlobalProps: useGlobalPropType
   Register?: any
   currentValue?: any
-  alignMode?: `row` | `col`
+  alignMode?: alignModeType
 }
 
 export type ControlContextType = ControlWrapperPropType & {

@@ -160,18 +160,20 @@ export const useRecordsCore = (props: UseRecordsCoreProps): UseRecordsCoreReturn
 
   // 初期化ロジック
   useEffect(() => {
-    const hasData = inittialDataCount > 0
-    const dataIsUnset = records == null
+    initFetchTableRecords()
 
-    if (initialModelRecords !== undefined && hasData && dataIsUnset) {
-      console.log('初回フェッチ')
-      setFirstData()
-    } else {
-      if (refresedAt === null || (refresedAt && Math.abs(new Date().getTime() - refresedAt.getTime()) >= 100)) {
-        console.log('データ取得')
-        initFetchTableRecords()
-      }
-    }
+    // const hasData = inittialDataCount > 0
+    // const dataIsUnset = records == null
+
+    // if (initialModelRecords !== undefined && hasData && dataIsUnset) {
+    //   console.log('初回フェッチ')
+    //   setFirstData()
+    // } else {
+    //   if (refresedAt === null || (refresedAt && Math.abs(new Date().getTime() - refresedAt.getTime()) >= 100)) {
+    //     console.log('データ取得')
+    //     initFetchTableRecords()
+    //   }
+    // }
   }, [query])
 
   return {

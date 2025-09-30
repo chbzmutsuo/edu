@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState} from 'react'
+
 import {Phone, ShoppingCart} from 'lucide-react'
 import {handlePhoneNumberInput} from '../../utils/phoneUtils'
 
@@ -29,7 +30,7 @@ import {R_Stack} from '@cm/components/styles/common-components/common-components
 import {ProductCl} from '@app/(apps)/sbm/(pages)/products/ProductCl'
 
 // 電話番号ラベル
-const PHONE_LABELS: PhoneLabelType[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
+const PHONE_LABELS: string[] = ['自宅', '携帯', '職場', 'FAX', 'その他']
 
 // 予約フォームモーダル
 export const ReservationModal = ({
@@ -47,11 +48,11 @@ export const ReservationModal = ({
 }) => {
   const {session} = useGlobal()
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [phoneLabel, setPhoneLabel] = useState<PhoneLabelType>('携帯')
+  const [phoneLabel, setPhoneLabel] = useState<string>('携帯')
   const phoneLabels = PHONE_LABELS
   const [phoneNumberTempList, setPhoneNumberTempList] = useState<PhoneNumberTemp[]>(reservation?.phones || [])
   const [matchedCustomer, setMatchedCustomer] = useState<CustomerType | null>(null)
-  const [matchedCustomers, setMatchedCustomers] = useState<CustomerSearchResultType[]>([])
+  const [matchedCustomers, setMatchedCustomers] = useState<CustomerType[]>([])
   const [isCustomerLinked, setIsCustomerLinked] = useState(false)
 
   const [formData, setFormData] = useState<any>(() => {
@@ -96,7 +97,7 @@ export const ReservationModal = ({
       const phoneList: PhoneNumberTemp[] = phones.map(phone => ({
         id: phone.id,
         phoneNumber: phone.phoneNumber,
-        label: phone.label as PhoneLabelType,
+        label: phone.label,
       }))
       setPhoneNumberTempList(phoneList)
     }
@@ -133,7 +134,7 @@ export const ReservationModal = ({
       const phoneList: PhoneNumberTemp[] = phones.map(phone => ({
         id: phone.id,
         phoneNumber: phone.phoneNumber,
-        label: phone.label as PhoneLabelType,
+        label: phone.label,
       }))
       setPhoneNumberTempList(phoneList)
     }
@@ -303,7 +304,7 @@ export const ReservationModal = ({
       const results = await searchCustomersByPhone(numbersOnly)
       if (results.length > 1) {
         // 複数の顧客が見つかった場合
-        setMatchedCustomers(results)
+        setMatchedCustomers(results as any)
         setMatchedCustomer(null)
       } else if (results.length === 1) {
         // 1件のみ見つかった場合
@@ -475,7 +476,7 @@ export const ReservationModal = ({
                   />
                   <select
                     value={phoneLabel}
-                    onChange={e => setPhoneLabel(e.target.value as PhoneLabelType)}
+                    onChange={e => setPhoneLabel(e.target.value)}
                     className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     {phoneLabels.map(label => (

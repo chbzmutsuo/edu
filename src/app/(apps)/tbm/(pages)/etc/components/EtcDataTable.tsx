@@ -3,15 +3,13 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {NumHandler} from '@cm/class/NumHandler'
 import {cn} from '@cm/shadcn/lib/utils'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
-import {Button} from '@cm/components/styles/common-components/Button'
-import {EtcRecord, TableRecord, GroupHeader} from '../types'
 
 interface EtcDataTableProps {
   etcRawData: EtcRecord[]
   selectedRows: {[key: number]: boolean}
   toggleRowSelection: (id: number) => void
   ungroupRecords: (meisaiId: number) => Promise<void>
-  onLinkSchedule: (etcMeisaiId: number, scheduleId: number | null) => void
+  handleLinkSchedule: (etcMeisaiId: number, scheduleId: number | null, scheduleDate: Date) => void
 }
 
 export const EtcDataTable: React.FC<EtcDataTableProps> = ({
@@ -19,7 +17,7 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
   selectedRows,
   toggleRowSelection,
   ungroupRecords,
-  onLinkSchedule,
+  handleLinkSchedule,
 }) => {
   const tableData = useMemo(() => {
     if (etcRawData.length === 0) return []
@@ -147,6 +145,7 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
           {tableData.map((record, i) => {
             if ('isGroupHeader' in record && record.isGroupHeader) {
               const groupHeader = record as GroupHeader
+
               const groupFee = groupHeader.records.reduce((acc, record) => acc + record.fee, 0)
               // グループヘッダー行
               const bgColor = Number(groupHeader.groupIndex) % 2 === 0 ? 'bg-blue-100' : 'bg-green-100'
@@ -165,7 +164,7 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
                       <button
                         onClick={e => {
                           e.stopPropagation()
-                          onLinkSchedule(groupHeader.meisaiId, groupHeader.tbmDriveScheduleId || 0)
+                          handleLinkSchedule(groupHeader.meisaiId, groupHeader.tbmDriveScheduleId || 0, groupHeader.fromDate)
                         }}
                         className="text-xs px-2 py-1 bg-blue-100 border-blue-300 border hover:bg-blue-200 rounded ml-1"
                         title="運行データと紐付け"
@@ -197,13 +196,6 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
                       ) : (
                         <span className="text-xs text-red-500">未紐付け</span>
                       )}
-                      <Button
-                        size="sm"
-                        color={groupHeader.TbmDriveSchedule ? 'blue' : 'green'}
-                        onClick={() => onLinkSchedule(groupHeader.meisaiId, groupHeader.tbmDriveScheduleId || null)}
-                      >
-                        {groupHeader.TbmDriveSchedule ? '変更' : '紐付け'}
-                      </Button>
                     </R_Stack>
                   </td>
                 </tr>

@@ -2,7 +2,6 @@
 
 import prisma from 'src/lib/prisma'
 import {revalidatePath} from 'next/cache'
-import {IngredientType, ProductIngredientType} from '../types'
 
 // 材料マスターの取得
 export const getAllIngredients = async () => {

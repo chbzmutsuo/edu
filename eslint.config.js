@@ -59,6 +59,7 @@ module.exports = [
       'no-constant-binary-expression': 'off',
       'no-unused-private-class-members': 'off',
       '@typescript-eslint/no-unnecessary-type-constraint': 'off',
+      '@typescript-eslint/triple-slash-reference': 'off',
     },
     settings: {
       react: {

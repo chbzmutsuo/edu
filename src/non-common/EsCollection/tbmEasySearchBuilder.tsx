@@ -65,17 +65,17 @@ export const tbmEasySearchBuilder = async () => {
           etcCardExpiration: {lte: threeMonthFromNow},
         },
       },
-      fuelCardExpiration: {
-        label: `燃料カード`,
-        CONDITION: {
-          TbmFuelCard: {
-            some: {
-              startDate: {lte: today},
-              endDate: {gte: oneMonthFromNow},
-            },
-          },
-        },
-      },
+      // fuelCardExpiration: {
+      //   label: `燃料カード`,
+      //   CONDITION: {
+      //     TbmFuelCard: {
+      //       some: {
+      //         startDate: {lte: today},
+      //         endDate: {gte: oneMonthFromNow},
+      //       },
+      //     },
+      //   },
+      // },
     }
 
     const dataArr: makeEasySearchGroupsProp[] = []

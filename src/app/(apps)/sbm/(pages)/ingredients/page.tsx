@@ -1,6 +1,7 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {PlusCircle, Edit, Trash2, Package} from 'lucide-react'
 import {getAllIngredients, createIngredient, updateIngredient, deleteIngredient} from '../../actions/ingredientActions'
 
@@ -9,7 +10,6 @@ import useModal from '@cm/components/utils/modal/useModal'
 import {Padding} from '@cm/components/styles/common-components/common-components'
 import {Button} from '@cm/shadcn/ui/button'
 import {IngredientFormModal} from './IngredientFormModal'
-import {IngredientType} from '../../types'
 
 export default function IngredientsPage() {
   const [ingredients, setIngredients] = useState<IngredientType[]>([])
@@ -175,4 +175,3 @@ export default function IngredientsPage() {
     </div>
   )
 }
-

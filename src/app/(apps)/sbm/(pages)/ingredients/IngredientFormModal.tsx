@@ -1,10 +1,10 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {Button} from '@cm/shadcn/ui/button'
 import {Input} from '@cm/shadcn/ui/input'
 
-import {IngredientType} from '../../types'
 import Textarea from '@cm/shadcn/ui/Organisms/form/Textarea'
 
 type IngredientFormModalProps = {
@@ -64,7 +64,13 @@ export const IngredientFormModal: React.FC<IngredientFormModalProps> = ({ingredi
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">説明</label>
-          <Textarea name="description" value={formData.description} onChange={handleChange} rows={3} className="w-full" />
+          <Textarea
+            name="description"
+            value={formData.description || ''}
+            onChange={handleChange as any}
+            rows={3}
+            className="w-full"
+          />
         </div>
 
         <div className="flex justify-end space-x-3 pt-4">

@@ -3,7 +3,6 @@ import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doS
 import {toastByResult} from '@cm/lib/ui/notifications'
 import {doTransaction} from '@cm/lib/server-actions/common-server-actions/doTransaction/doTransaction'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
-import {EtcRecord} from '../types'
 
 export const useEtcData = () => {
   const [etcRawData, setEtcRawData] = useState<EtcRecord[]>([])

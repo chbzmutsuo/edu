@@ -34,7 +34,7 @@ model User {
   name     String
   kana     String?
   email    String? @unique
-  password String?
+  password String? @default("999999")
 
   type String?
 

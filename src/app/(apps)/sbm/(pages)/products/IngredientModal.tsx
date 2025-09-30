@@ -1,12 +1,13 @@
 'use client'
 
 import React, {useState, useEffect} from 'react'
+
 import {Plus, Trash2, Save} from 'lucide-react'
 import {Button} from '@cm/shadcn/ui/button'
 import {Input} from '@cm/shadcn/ui/input'
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from '@cm/shadcn/ui/select'
 import {getAllIngredients, getProductIngredients, saveProductIngredients} from '../../actions/ingredientActions'
-import {IngredientType, ProductIngredientType} from '../../types'
+
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 type IngredientModalProps = {

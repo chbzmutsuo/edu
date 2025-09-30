@@ -1,16 +1,27 @@
-export type ProductType = {
+type DashboardStatsType = {
+  totalSales: number
+  totalCost: number
+  profit: number
+  orderCount: number
+  avgOrderValue: number
+  salesByPurpose: any[]
+  salesByProduct: any[]
+}
+
+type ProductType = {
   id: number
   name: string
   description: string | null
   category: string
   isActive: boolean
-  createdAt: Date
+  createdAt?: Date
   updatedAt: Date
   currentPrice?: number
   currentCost?: number
+  SbmProductPriceHistory?: ProductPriceHistoryType[]
 }
 
-export type ProductPriceHistoryType = {
+type ProductPriceHistoryType = {
   id: number
   price: number
   cost: number
@@ -19,7 +30,7 @@ export type ProductPriceHistoryType = {
   sbmProductId: number
 }
 
-export type CustomerType = {
+type CustomerType = {
   id: number
   companyName: string
   contactName: string | null
@@ -31,12 +42,12 @@ export type CustomerType = {
   email: string | null
   availablePoints: number
   notes: string | null
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
   phones: CustomerPhoneType[]
 }
 
-export type CustomerPhoneType = {
+type CustomerPhoneType = {
   id: number
   sbmCustomerId: number
   label: string
@@ -45,12 +56,12 @@ export type CustomerPhoneType = {
   updatedAt: Date
 }
 
-export type ReservationType = {
+type ReservationType = {
   id: number
   sbmCustomerId: number
   customerName: string
   contactName: string | null
-  phoneNumber: string
+  phoneNumber?: string
   postalCode: string | null
   prefecture: string | null
   city: string | null
@@ -67,17 +78,20 @@ export type ReservationType = {
   orderStaff: string
   userId: number | null
   notes: string | null
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
   deliveryCompleted: boolean
   recoveryCompleted: boolean
   items: ReservationItemType[]
   isCanceled: boolean
   canceledAt: Date | null
   cancelReason: string | null
+
+  ReservationType?: ReservationItemType[]
+  groupReservations?: DeliveryGroupReservationType[]
 }
 
-export type ReservationItemType = {
+type ReservationItemType = {
   id: string
   sbmReservationId: number
   sbmProductId: number
@@ -85,10 +99,10 @@ export type ReservationItemType = {
   quantity: number
   unitPrice: number
   totalPrice: number
-  createdAt: Date
+  createdAt?: Date
 }
 
-export type ReservationChangeHistoryType = {
+type ReservationChangeHistoryType = {
   id: string
   sbmReservationId: number
   changeType: string
@@ -99,7 +113,7 @@ export type ReservationChangeHistoryType = {
   userId: number | null
 }
 
-export type DeliveryTeamType = {
+type DeliveryTeamType = {
   id: number
   name: string
   date: Date
@@ -107,7 +121,7 @@ export type DeliveryTeamType = {
   updatedAt: Date
 }
 
-export type DeliveryAssignmentType = {
+type DeliveryAssignmentType = {
   id: number
   sbmDeliveryTeamId: number
   sbmReservationId: number
@@ -123,7 +137,22 @@ export type DeliveryAssignmentType = {
   reservation?: ReservationType
 }
 
-export type DeliveryGroupType = {
+type optimizedRouteType = {
+  sbmReservationId: number
+  customerName: string
+  address: string
+  lat: number
+  lng: number
+  estimatedArrival: Date
+  actualArrival: Date
+  deliveryOrder: number
+  deliveryCompleted: boolean
+  recoveryCompleted: boolean
+  estimatedDuration: number
+  notes: string
+}
+
+type DeliveryGroupType = {
   id: number
   name: string
   deliveryDate: Date
@@ -138,9 +167,11 @@ export type DeliveryGroupType = {
   notes: string | null
   createdAt: Date
   updatedAt: Date
+  optimizedRoute: optimizedRouteType[]
+  groupReservations: DeliveryGroupReservationType[]
 }
 
-export type DeliveryRouteStopType = {
+type DeliveryRouteStopType = {
   id: string
   sbmDeliveryGroupId: number
   sbmReservationId: number
@@ -160,7 +191,7 @@ export type DeliveryRouteStopType = {
   reservation?: ReservationType
 }
 
-export type DeliveryGroupReservationType = {
+type DeliveryGroupReservationType = {
   id: number
   sbmDeliveryGroupId: number
   sbmReservationId: number
@@ -173,7 +204,7 @@ export type DeliveryGroupReservationType = {
 }
 
 // 材料マスター型定義
-export type IngredientType = {
+type IngredientType = {
   id: number
   name: string
   description: string | null
@@ -183,7 +214,7 @@ export type IngredientType = {
 }
 
 // 商品材料関連型定義
-export type ProductIngredientType = {
+type ProductIngredientType = {
   id: number
   sbmProductId: number
   sbmIngredientId: number
@@ -194,9 +225,30 @@ export type ProductIngredientType = {
 }
 
 // 材料使用量計算結果型定義
-export type IngredientUsageType = {
+type IngredientUsageType = {
   id: number
   name: string
   unit: string
   totalQuantity: number
 }
+
+// 型をエクスポート
+// export type {
+//   DashboardStatsType,
+//   ProductType,
+//   ProductPriceHistoryType,
+//   CustomerType,
+//   CustomerPhoneType,
+//   ReservationType,
+//   ReservationItemType,
+//   ReservationChangeHistoryType,
+//   DeliveryTeamType,
+//   DeliveryAssignmentType,
+//   optimizedRouteType,
+//   DeliveryGroupType,
+//   DeliveryRouteStopType,
+//   DeliveryGroupReservationType,
+//   IngredientType,
+//   ProductIngredientType,
+//   IngredientUsageType,
+// }

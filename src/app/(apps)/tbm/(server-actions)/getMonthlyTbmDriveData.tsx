@@ -41,13 +41,13 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
     .reduce((acc, row) => {
       const {schedule} = row
       const {User} = schedule
-      if (acc.find(user => user.id === User.id)) {
+      if (acc.find(user => User && user?.id === User?.id)) {
         return acc
       }
       acc.push(User)
       return acc
     }, [] as userType[])
-    .sort((a, b) => -String(a.code ?? '').localeCompare(String(b.code ?? '')))
+    .sort((a, b) => -String(a?.code ?? '').localeCompare(String(b?.code ?? '')))
 
   return {
     monthlyTbmDriveList,

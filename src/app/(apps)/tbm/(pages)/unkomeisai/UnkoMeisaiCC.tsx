@@ -7,7 +7,6 @@ import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTabl
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
 import useModal from '@cm/components/utils/modal/useModal'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList: MonthlyTbmDriveData[]}) {
   const {toastIfFailed} = useGlobal()
@@ -42,27 +41,29 @@ export default function UnkoMeisaiCC({monthlyTbmDriveList}: {monthlyTbmDriveList
                   let value
                   if (item.type === `date`) {
                     value = formatDate(item.cellValue, 'short')
-                  } else if ([`M_postalHighwayFee`, `O_generalHighwayFee`].includes(dataKey)) {
-                    value = (
-                      <input
-                        {...{
-                          defaultValue: schedule[dataKey],
-                          type: 'number',
-                          className: `border-b bg-gray-100/70 w-[70px] px-1 text-xs`,
-                          onBlur: async (e: any) => {
-                            const res = await doStandardPrisma('tbmDriveSchedule', 'update', {
-                              where: {id: schedule.id ?? 0},
-                              data: {
-                                [dataKey]: Number(e.target.value),
-                              },
-                            })
+                  }
+                  // else if ([`M_postalHighwayFee`, `O_generalHighwayFee`].includes(dataKey)) {
+                  //   value = (
+                  //     <input
+                  //       {...{
+                  //         defaultValue: schedule[dataKey],
+                  //         type: 'number',
+                  //         className: `border-b bg-gray-100/70 w-[70px] px-1 text-xs`,
+                  //         onBlur: async (e: any) => {
+                  //           const res = await doStandardPrisma('tbmDriveSchedule', 'update', {
+                  //             where: {id: schedule.id ?? 0},
+                  //             data: {
+                  //               [dataKey]: Number(e.target.value),
+                  //             },
+                  //           })
 
-                            toastIfFailed(res)
-                          },
-                        }}
-                      />
-                    )
-                  } else {
+                  //           toastIfFailed(res)
+                  //         },
+                  //       }}
+                  //     />
+                  //   )
+                  // }
+                  else {
                     value = item.cellValue
                   }
 

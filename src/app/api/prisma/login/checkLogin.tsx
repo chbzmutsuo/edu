@@ -29,6 +29,7 @@ export const CheckLogin = async ({authId, authPw}) => {
 
     if (userData) {
       foundUser = {...userData, authKey}
+      // continue
     }
     i++
   }

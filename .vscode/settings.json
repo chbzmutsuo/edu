@@ -111,12 +111,12 @@
     "**/kickswrap/**": true,
     "**/migrations/**": true,
     "**/page/**": true,
+    "**/sbm/**": true,
     "**/shinsei/**": true,
     "**/sohken/**": true,
     "**/stock/**": true,
     "**/tmp/**": true,
-    "**/training/**": true,
-    "**/sbm/**": true
+    "**/training/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
