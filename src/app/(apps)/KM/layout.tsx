@@ -5,6 +5,7 @@ import {Zen_Old_Mincho} from 'next/font/google'
 
 import {isDev} from '@cm/lib/methods/common'
 import Admin from '@cm/components/layout/Admin/Admin'
+import {initServerComopnent} from 'src/non-common/serverSideFunction'
 
 const font = Zen_Old_Mincho({
   weight: ['400', '500', '600', '700', '900'],
@@ -20,16 +21,13 @@ export default async function AppLayout({children}) {
   if (process.env.NEXT_PUBLIC_ROOTPATH !== 'KM' && !isDev) {
     return <div>このページへはアクセスできません。</div>
   }
+
+  const {session, scopes} = await initServerComopnent({query: {}})
+
   return (
     <div className={font.className}>
       {/* <GreetingLayer> */}
-      <Admin
-        {...{
-          AppName: AppName,
-          Logo,
-          PagesMethod: 'KM_PAGES',
-        }}
-      >
+      <Admin {...{AppName: AppName, Logo, PagesMethod: 'KM_PAGES'}}>
         <div className={` text-sub-main `}>
           <div>{children}</div>
         </div>

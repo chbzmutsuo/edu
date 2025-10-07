@@ -1,6 +1,7 @@
 'use client'
 
 import {Category} from '@app/(apps)/KM/components/Category'
+import {EnhancedCategory} from '@app/(apps)/KM/components/enhanced/EnhancedCategory'
 import {Contact} from '@app/(apps)/KM/components/Contact'
 
 import {Developer} from '@app/(apps)/KM/components/Developer'
@@ -78,7 +79,7 @@ export const getSecondLayerMenus = ({kaizenClient}) => [
             <div className={`text-base text-gray-600`}>多様な事業者様向けに システム開発・業務改善をサポート</div>
           </h3>
 
-          <Category />
+          <EnhancedCategory />
           <hr />
         </C_Stack>
 
@@ -119,13 +120,13 @@ export const getSecondLayerMenus = ({kaizenClient}) => [
             </small>
           </section>
         </C_Stack>
-        <ContentPlayer
+        {/* <ContentPlayer
           {...{
             className: 'shadow-md rounded-md',
             styles: {thumbnail: {width: 200, height: 200}},
             src: '/image/KM/coaching-programs.png',
           }}
-        />
+        /> */}
       </R_Stack>
     ),
   },

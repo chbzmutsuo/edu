@@ -66,9 +66,9 @@ export class Kaizen {
     },
   }
   static KaizenManiaIcon = (
-    <R_Stack>
-      <Image className={`rounded-full`} src={'/image/KM/logo.png'} width={50} height={50} alt="" />
-      <h1 className={`text-kaizen-cool-main text-[30px]`}>改善マニア</h1>
+    <R_Stack className={`gap-1`}>
+      <Image className={`rounded-full`} src={'/image/KM/logo.png'} width={40} height={40} alt="" />
+      <h1 className={`text-kaizen-cool-main text-[20px] lg:text-[30px]`}>改善マニア</h1>
     </R_Stack>
   )
   static KaizenWork = {

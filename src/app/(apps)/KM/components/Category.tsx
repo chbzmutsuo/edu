@@ -56,7 +56,7 @@ export const CategoryTags = props => {
 
   return (
     <div>
-      <TextAccordion maxHeight={80}>
+      <div>
         <div className={`max-w-lg`}>
           <R_Stack className={`pb-2`}>
             {tags?.map((value, index) => {
@@ -64,7 +64,7 @@ export const CategoryTags = props => {
             })}
           </R_Stack>
         </div>
-      </TextAccordion>
+      </div>
     </div>
   )
 }

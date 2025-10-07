@@ -61,7 +61,7 @@ export const Partner = ({p, index}) => {
   return (
     <R_Stack
       className={cl(
-        `  flex h-[80px] w-[350px]  max-w-[90vw] p-2  `,
+        `  flex h-[80px] w-[350px]  max-w-[80vw] p-2  `,
         'rounded shadow',
         index % 2 === 0 ? 'bg-gray-100   ' : 'bg-gray-300   '
       )}

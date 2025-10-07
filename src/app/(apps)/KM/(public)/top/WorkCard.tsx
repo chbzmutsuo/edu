@@ -40,8 +40,6 @@ export const WorkCard = ({work}) => {
 
   const sectionClassName = `p-1 rounded-md shadow-md` + scalingClass
 
-  const cardWidth = Math.min(480, width * 0.95) - 10
-  const imageWidth = Math.max(260, cardWidth - 200)
   const [ready, setready] = useState(false)
 
   useEffect(() => {
@@ -56,7 +54,7 @@ export const WorkCard = ({work}) => {
   const titleClass = `w-[calc(100%-${headerHeight + 30}px)]  `
 
   return (
-    <div style={{width: cardWidth}} className={`bg-white`}>
+    <div className={`bg-white w-full`}>
       <div
         className={twMerge(
           //
@@ -65,7 +63,7 @@ export const WorkCard = ({work}) => {
           `rounded-t-lg  rounded-b-lg shadow-lg `
         )}
       >
-        <TextAccordion minHeight={480} maxHeight={550}>
+        <div>
           <div
             className={twMerge(
               ` bg-kaizen-cool-main  rounded-t-lg  p-2 `,
@@ -93,9 +91,8 @@ export const WorkCard = ({work}) => {
             </C_Stack>
           </div>
 
-          <div className={` animate-fade-in`} style={{width: cardWidth}}>
+          <div className={` animate-fade-in`}>
             <BasicInfo {...{work}} />
-
             <div className={``}>
               {KaizenWorkImage.length > 0 && (
                 <Paper className={` `}>
@@ -103,8 +100,8 @@ export const WorkCard = ({work}) => {
                     <BasicCarousel
                       {...{
                         imgStyle: {
-                          width: imageWidth,
-                          height: imageWidth * 0.7,
+                          // width: imageWidth,
+                          // height: imageWidth * 0.7,
                         },
                         Images: KaizenWorkImage?.map(obj => ({imageUrl: obj.url})),
                       }}
@@ -129,7 +126,7 @@ export const WorkCard = ({work}) => {
               </div>
             </div>
           </div>
-        </TextAccordion>
+        </div>
         <div className={twMerge(`p-2`, 'bg-gradient-to-r from-kaizen-cool-light to-kaizen-cool-light/50')}>
           <R_Stack>
             <Tags {...{work}} />

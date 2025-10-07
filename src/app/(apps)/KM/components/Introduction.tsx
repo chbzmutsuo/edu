@@ -50,7 +50,7 @@ export const Introducation = () => {
             <C_Stack className={`text-center ${fontSm}`}>
               <div>エンジニア・マネージャとしての開発経験。</div>
               <div>
-                エージェント実績190件超。
+                エージェント実績280件超。
                 <small>(ココナラ・ランサーズ)</small>
               </div>
               <div>
