@@ -9,7 +9,7 @@ import TextAccordion from '@cm/components/utils/Accordions/TextAccordiong./TextA
 import BasicCarousel from '@cm/components/utils/Carousel/BasicCarousel'
 import ContentPlayer from '@cm/components/utils/ContentPlayer'
 import PlaceHolder from '@cm/components/utils/loader/PlaceHolder'
-import {MessageCircleIcon, MonitorIcon, ThumbsUpIcon} from 'lucide-react'
+import {MessageCircleIcon, MonitorIcon, ThumbsUpIcon, StarIcon, BuildingIcon} from 'lucide-react'
 
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {cl} from '@cm/lib/methods/common'
@@ -17,9 +17,15 @@ import {cl} from '@cm/lib/methods/common'
 import {useEffect, useState} from 'react'
 import {Paper} from '@cm/components/styles/common-components/paper'
 import {twMerge} from 'tailwind-merge'
+import {motion} from 'framer-motion'
+import {useInView} from 'react-intersection-observer'
 
 export const WorkCard = ({work}) => {
   const {device, width, height} = useWindowSize()
+  const {ref, inView} = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  })
 
   const {
     date = new Date(),
@@ -36,176 +42,190 @@ export const WorkCard = ({work}) => {
     toolPoint,
   } = work
 
-  const scalingClass = `  cursor-pointer    duration-500   `
-
-  const sectionClassName = `p-1 rounded-md shadow-md` + scalingClass
-
   const [ready, setready] = useState(false)
 
   useEffect(() => {
     setTimeout(() => {
       setready(true)
-    }, 500)
+    }, 300)
   }, [])
   if (!ready) return <PlaceHolder></PlaceHolder>
 
-  const headerHeight = 70
-
-  const titleClass = `w-[calc(100%-${headerHeight + 30}px)]  `
+  const isMobile = width < 640
 
   return (
-    <div className={`bg-white w-full`}>
-      <div
-        className={twMerge(
-          //
-          `shadow-kaizen-cool-main ring-kaizen-cool-main  hover:bg-kaizen-cool-light/50
-            hover:ring-2   `,
-          `rounded-t-lg  rounded-b-lg shadow-lg `
-        )}
-      >
-        <div>
-          <div
-            className={twMerge(
-              ` bg-kaizen-cool-main  rounded-t-lg  p-2 `,
-              'bg-gradient-to-r from-kaizen-cool-main to-kaizen-cool-main/50'
-            )}
-          >
-            <C_Stack className={` items-center`}>
-              <R_Stack className={`w-full justify-between flex-nowrap`}>
-                <div className={titleClass}>
-                  <h2 className={` text-start text-[24px] font-bold text-white    `}>{title}</h2>
-                  {subtitle && <small className={`text-sm text-gray-100`}>{subtitle}</small>}
-                </div>
-
-                {allowShowClient && KaizenClient?.iconUrl && (
-                  <div className={`shadow-md p-0.5 rounded bg-white `}>
-                    <ContentPlayer
-                      {...{
-                        styles: {thumbnail: {width: headerHeight, height: headerHeight}},
-                        src: KaizenClient?.iconUrl,
-                      }}
-                    />
-                  </div>
-                )}
-              </R_Stack>
-            </C_Stack>
-          </div>
-
-          <div className={` animate-fade-in`}>
-            <BasicInfo {...{work}} />
-            <div className={``}>
-              {KaizenWorkImage.length > 0 && (
-                <Paper className={` `}>
-                  <div>
-                    <BasicCarousel
-                      {...{
-                        imgStyle: {
-                          // width: imageWidth,
-                          // height: imageWidth * 0.7,
-                        },
-                        Images: KaizenWorkImage?.map(obj => ({imageUrl: obj.url})),
-                      }}
-                    />
-                  </div>
-                </Paper>
-              )}
+    <motion.div
+      ref={ref}
+      initial={{opacity: 0, y: 30}}
+      animate={inView ? {opacity: 1, y: 0} : {}}
+      transition={{duration: 0.5}}
+      className="w-full"
+    >
+      <div className="group overflow-hidden rounded-2xl border-2 border-gray-200 bg-white shadow-lg transition-all duration-300 hover:border-blue-300 hover:shadow-xl">
+        {/* ヘッダー */}
+        <div className="relative bg-gradient-to-r from-blue-800 via-blue-900 to-blue-950 p-4 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex-1">
+              <h2 className="mb-1 text-xl font-bold leading-tight text-white sm:text-2xl lg:text-3xl">{title}</h2>
+              {subtitle && <p className="text-sm text-blue-100 sm:text-base">{subtitle}</p>}
             </div>
-            <div className={` rounded-md  p-0 `}>
-              <div className={`flex flex-col`}>
-                <C_Stack className={`p-2`}>
-                  <Description
+
+            {allowShowClient && KaizenClient?.iconUrl && (
+              <div className="flex-shrink-0">
+                <div className="overflow-hidden rounded-lg bg-white p-1 shadow-md">
+                  <ContentPlayer
                     {...{
-                      sectionClassName,
-                      description,
-                      points,
-                      impression,
-                      reply,
+                      styles: {thumbnail: {width: isMobile ? 50 : 70, height: isMobile ? 50 : 70}},
+                      src: KaizenClient?.iconUrl,
                     }}
                   />
-                </C_Stack>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* クライアント情報（モバイル用） */}
+          {isMobile && allowShowClient && KaizenClient && (
+            <div className="mt-3 flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 backdrop-blur-sm">
+              <BuildingIcon className="h-4 w-4 text-blue-200" />
+              <div className="flex-1 text-xs text-white">
+                <PartnerBasicInfo {...{KaizenClient, showWebsite: false}} />
               </div>
             </div>
+          )}
+        </div>
+
+        {/* メインコンテンツ */}
+        <div className="animate-fade-in">
+          {/* デスクトップ用クライアント情報 */}
+          {!isMobile && <BasicInfo {...{work}} />}
+
+          {/* 画像カルーセル */}
+          {KaizenWorkImage.length > 0 && (
+            <div className="border-b border-gray-100 bg-gray-50 p-2 sm:p-3">
+              <BasicCarousel
+                {...{
+                  imgStyle: {},
+                  Images: KaizenWorkImage?.map(obj => ({imageUrl: obj.url})),
+                }}
+              />
+            </div>
+          )}
+
+          {/* 説明セクション */}
+          <div className="p-3 sm:p-4">
+            <Description
+              {...{
+                description,
+                points,
+                impression,
+                reply,
+              }}
+            />
           </div>
         </div>
-        <div className={twMerge(`p-2`, 'bg-gradient-to-r from-kaizen-cool-light to-kaizen-cool-light/50')}>
-          <R_Stack>
+
+        {/* フッター：タグとレビュー */}
+        <div className="border-t border-gray-100 bg-gradient-to-r from-blue-50 to-blue-100/50 p-3 sm:p-4">
+          <C_Stack className={` items-center`}>
             <Tags {...{work}} />
             <ReviewScore {...{dealPoint, toolPoint}} />
-          </R_Stack>
+          </C_Stack>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 const Tags = ({work}) => {
+  const jobTags = Kaizen.KaizenWork.parseTags(work.jobCategory).flat()
+  const systemTags = Kaizen.KaizenWork.parseTags(work.systemCategory).flat()
+  const toolTags = Kaizen.KaizenWork.parseTags(work.collaborationTool).flat()
+
   return (
-    <R_Stack className={` w-full justify-start`}>
-      {Kaizen.KaizenWork.parseTags(work.jobCategory)
-        .flat()
-        .map((tag, idx) => {
-          return (
-            <KM.tagBadge {...{color: 'cool'}} key={idx}>
-              @{tag}
-            </KM.tagBadge>
-          )
-        })}
-      {Kaizen.KaizenWork.parseTags(work.systemCategory)
-        .flat()
-        .map((tag, idx) => {
-          return (
-            <KM.tagBadge {...{color: ''}} key={idx}>
-              {tag}
-            </KM.tagBadge>
-          )
-        })}
-      {Kaizen.KaizenWork.parseTags(work.collaborationTool)
-        .flat()
-        .map((tag, idx) => {
-          return (
-            <KM.tagBadge {...{color: 'green'}} key={idx}>
-              {tag}
-            </KM.tagBadge>
-          )
-        })}
-    </R_Stack>
+    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+      {jobTags.map((tag, idx) => (
+        <span
+          key={`job-${idx}`}
+          className="inline-flex items-center rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 shadow-sm transition-all hover:scale-105 hover:shadow-md sm:text-sm"
+        >
+          @{tag}
+        </span>
+      ))}
+      {systemTags.map((tag, idx) => (
+        <span
+          key={`sys-${idx}`}
+          className="inline-flex items-center rounded-lg border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-medium text-purple-700 shadow-sm transition-all hover:scale-105 hover:shadow-md sm:text-sm"
+        >
+          {tag}
+        </span>
+      ))}
+      {toolTags.map((tag, idx) => (
+        <span
+          key={`tool-${idx}`}
+          className="inline-flex items-center rounded-lg border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 shadow-sm transition-all hover:scale-105 hover:shadow-md sm:text-sm"
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
   )
 }
 
 const ReviewScore = ({dealPoint, toolPoint}) => {
+  if (!dealPoint && !toolPoint) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-xs text-gray-600 sm:text-sm">
+        <StarIcon className="h-4 w-4 text-gray-400" />
+        <span>レビュー投稿待ち</span>
+      </div>
+    )
+  }
+
   return (
-    <div className={`text-sm`}>
-      {dealPoint && toolPoint ? (
-        <div>
-          <R_Stack>
-            <div className={` text-center leading-4`}>
-              <div>
-                取引評価:<strong className={` px-1 text-[20px]`}>{dealPoint}</strong>
-              </div>
-              <div>
+    <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
+      {dealPoint && (
+        <div className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-2 shadow-sm">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-medium text-gray-600 sm:text-xs">取引評価</span>
+            <div className="flex items-center gap-1">
+              <span className="text-lg font-bold text-amber-600 sm:text-xl">{dealPoint}</span>
+              <div className="flex">
                 {Array.from({length: 5}, (_, i) => (
-                  <span key={i} className={`text-[16px] text-yellow-400`}>
-                    {i < Math.ceil(dealPoint) ? '★' : '☆'}
-                  </span>
+                  <StarIcon
+                    key={i}
+                    className={cl(
+                      'h-3 w-3 sm:h-4 sm:w-4',
+                      i < Math.ceil(dealPoint) ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'
+                    )}
+                  />
                 ))}
               </div>
             </div>
-            <div className={` text-center leading-4`}>
-              <div>
-                成果物評価: <strong className={` px-1 text-[20px]`}>{toolPoint}</strong>
-              </div>
-              <div>
-                {Array.from({length: 5}, (_, i) => (
-                  <span key={i} className={`text-[16px] text-yellow-400`}>
-                    {i < Math.ceil(toolPoint) ? '★' : '☆'}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </R_Stack>
+          </div>
         </div>
-      ) : (
-        <>レビュー投稿待ち・・・</>
+      )}
+
+      {toolPoint && (
+        <div className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-2 shadow-sm">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-medium text-gray-600 sm:text-xs">成果物評価</span>
+            <div className="flex items-center gap-1">
+              <span className="text-lg font-bold text-amber-600 sm:text-xl">{toolPoint}</span>
+              <div className="flex">
+                {Array.from({length: 5}, (_, i) => (
+                  <StarIcon
+                    key={i}
+                    className={cl(
+                      'h-3 w-3 sm:h-4 sm:w-4',
+                      i < Math.ceil(toolPoint) ? 'fill-amber-400 text-amber-400' : 'fill-gray-200 text-gray-200'
+                    )}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
@@ -215,100 +235,87 @@ const BasicInfo = ({work}) => {
   const {title, subtitle, date, KaizenClient, dealPoint, toolPoint} = work
 
   return (
-    <div className={`p-1`}>
-      <section>
-        <small className={`w-full   text-base`}>
-          <R_Stack className={`  w-full items-start justify-end`}>
-            {/* {date && <p>{formatDate(new Date(date), 'YYYY年MM月')}</p>} */}
-
-            {work.allowShowClient && KaizenClient ? (
-              <div className={`flex  justify-end  px-4 text-sm leading-5`}>
-                <PartnerBasicInfo {...{KaizenClient, showWebsite: false}} />
-              </div>
-            ) : (
-              <span>匿名</span>
-            )}
-          </R_Stack>
-        </small>
-        {/* <div>クライアント告知情報</div> */}
-      </section>
+    <div className="border-b border-gray-100 bg-gray-50 px-4 py-3">
+      <div className="flex items-center justify-end">
+        {work.allowShowClient && KaizenClient ? (
+          <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-sm">
+            <BuildingIcon className="h-4 w-4 text-blue-600" />
+            <div className="text-sm">
+              <PartnerBasicInfo {...{KaizenClient, showWebsite: false}} />
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-lg bg-white px-3 py-2 text-sm text-gray-500 shadow-sm">
+            <span>匿名クライアント様</span>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
-const Description = ({sectionClassName, description, points, impression, reply}) => {
+const Description = ({description, points, impression, reply}) => {
   return (
-    <C_Stack className={`gap-4`}>
+    <C_Stack className="gap-3 sm:gap-4">
       {description && (
-        <section className={`text-[15px] leading-5`}>
-          <div
-            // style={{background: Kaizen.const.gradient.coolLight}}
-
-            className={cl(
-              sectionClassName,
-              `text-kaizen-cool-main bg-kaizen-cool-light`,
-              'bg-gradient-to-r from-kaizen-cool-light to-kaizen-cool-light/50'
-            )}
-          >
-            <C_Stack className={`gap-4`}>
-              <div>
-                <h3 className={`row-stack`}>
-                  <MonitorIcon className={`w-5`} />
-                  こんなツール
-                </h3>
+        <section>
+          <div className="overflow-hidden rounded-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50/50 via-white to-blue-50/30 shadow-sm">
+            <div className="border-b border-blue-200 bg-gradient-to-r from-blue-100 to-blue-50 px-3 py-2 sm:px-4 sm:py-3">
+              <h3 className="flex items-center gap-2 text-sm font-bold text-blue-800 sm:text-base">
+                <MonitorIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                こんなツール
+              </h3>
+            </div>
+            <div className="p-3 sm:p-4">
+              <div className="text-sm leading-relaxed text-gray-700 sm:text-base">
                 <SlateEditor {...{readOnly: true}}>{description}</SlateEditor>
               </div>
 
               {points && (
-                <div className={`border-kaizen-cool-main rounded-md border-2 p-1`}>
-                  <h3 className={`row-stack text-kaizen-cool-main`}>
-                    <ThumbsUpIcon className={` w-5`} />
+                <div className="mt-3 rounded-lg border-2 border-blue-300 bg-white p-3 shadow-sm sm:mt-4">
+                  <h4 className="mb-2 flex items-center gap-2 text-sm font-bold text-blue-700 sm:text-base">
+                    <ThumbsUpIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                     ポイント
-                  </h3>
-                  <SlateEditor {...{readOnly: true}}>{points}</SlateEditor>
+                  </h4>
+                  <div className="text-sm leading-relaxed text-gray-700 sm:text-base">
+                    <SlateEditor {...{readOnly: true}}>{points}</SlateEditor>
+                  </div>
                 </div>
               )}
-            </C_Stack>
+            </div>
           </div>
         </section>
       )}
 
       {impression && (
         <section>
-          <div
-            className={cl(
-              sectionClassName,
-              `bg-kaizen-warm-light/50`,
-              'bg-gradient-to-r from-kaizen-warm-light to-kaizen-warm-light/50'
-            )}
-          >
-            <C_Stack>
-              <h3 className={`row-stack text-kaizen-warm-main `}>
-                <MessageCircleIcon className={`w-5`} />
+          <div className="overflow-hidden rounded-xl border-2 border-orange-200 bg-gradient-to-br from-orange-50/50 via-white to-orange-50/30 shadow-sm">
+            <div className="border-b border-orange-200 bg-gradient-to-r from-orange-100 to-orange-50 px-3 py-2 sm:px-4 sm:py-3">
+              <h3 className="flex items-center gap-2 text-sm font-bold text-orange-800 sm:text-base">
+                <MessageCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 ご依頼者様のコメント
               </h3>
-
-              <SlateEditor {...{readOnly: true}}>{impression}</SlateEditor>
+            </div>
+            <div className="p-3 sm:p-4">
+              <div className="text-sm leading-relaxed text-gray-700 sm:text-base">
+                <SlateEditor {...{readOnly: true}}>{impression}</SlateEditor>
+              </div>
 
               {reply && (
-                <div
-                  className={`
-              border-kaizen-warm-main bg-kaizen-warm-light
-               ml-auto w-11/12 rounded-md border-2 p-3 shadow-md`}
-                >
-                  <div className={` text-[15px]`}>
-                    <div className={`row-stack text-start font-bold`}>
-                      <MessageCircleIcon className={`text-kaizen-warm-main w-5`} />
-                      ひとこと解説
-                    </div>
-
-                    <SlateEditor {...{readOnly: true}}>{reply}</SlateEditor>
-
-                    <div className={`text-right`}>改善マニア</div>
+                <div className="ml-auto mt-3 w-full rounded-lg border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-white p-3 shadow-md sm:mt-4 sm:w-11/12 sm:p-4">
+                  <div className="mb-2 flex items-center gap-2 text-sm font-bold text-orange-700 sm:text-base">
+                    <MessageCircleIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+                    ひとこと解説
                   </div>
+
+                  <div className="text-sm leading-relaxed text-gray-700 sm:text-base">
+                    <SlateEditor {...{readOnly: true}}>{reply}</SlateEditor>
+                  </div>
+
+                  <div className="mt-2 text-right text-xs font-semibold text-orange-600 sm:text-sm">改善マニア</div>
                 </div>
               )}
-            </C_Stack>
+            </div>
           </div>
         </section>
       )}
