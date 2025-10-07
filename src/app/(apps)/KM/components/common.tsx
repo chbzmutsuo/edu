@@ -1,6 +1,5 @@
 'use client'
 
-import {Category} from '@app/(apps)/KM/components/Category'
 import {EnhancedCategory} from '@app/(apps)/KM/components/enhanced/EnhancedCategory'
 import {Contact} from '@app/(apps)/KM/components/Contact'
 
@@ -9,7 +8,6 @@ import {Partners} from '@app/(apps)/KM/components/Partner'
 import {Services} from '@app/(apps)/KM/components/Services'
 import {Works} from '@app/(apps)/KM/components/Works'
 
-import ContentPlayer from '@cm/components/utils/ContentPlayer'
 
 import useWindowSize from '@cm/hooks/useWindowSize'
 import {cl} from '@cm/lib/methods/common'

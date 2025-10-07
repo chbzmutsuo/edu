@@ -1,6 +1,6 @@
 'use client'
 
-import {C_Stack, MyContainer, Padding, R_Stack} from '@cm/components/styles/common-components/common-components'
+import {C_Stack, MyContainer, Padding} from '@cm/components/styles/common-components/common-components'
 import {WorkCard} from '@app/(apps)/KM/(public)/top/WorkCard'
 import {Fields} from '@cm/class/Fields/Fields'
 import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'

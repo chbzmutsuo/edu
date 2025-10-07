@@ -51,7 +51,9 @@ export const Introducation = () => {
               <div>エンジニア・マネージャとしての開発経験。</div>
               <div>
                 エージェント実績280件超。
-                <small>(ココナラ・ランサーズ)</small>
+                <div>
+                  <small>(ココナラ・ランサーズ)</small>
+                </div>
               </div>
               <div>
                 <KM.CoolStrong>誰よりも「めんどくさがり」</KM.CoolStrong>

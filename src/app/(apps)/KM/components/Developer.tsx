@@ -2,7 +2,6 @@
 
 import {Kaizen} from '@app/(apps)/KM/class/Kaizen'
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
-import {ImageLabel} from '@cm/components/styles/common-components/ImageLabel'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import Image from 'next/image'
 

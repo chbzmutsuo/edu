@@ -5,7 +5,6 @@ import TableConfig, {TableConfigPropsType} from '../TableConfig'
 import MyPagination from '@cm/components/DataLogic/TFs/MyTable/components/Pagination/MyPagination'
 
 import {ClientPropsType2} from '@cm/components/DataLogic/TFs/PropAdjustor/types/propAdjustor-types'
-import {RecordCountDisplay} from '@cm/components/DataLogic/TFs/MyTable/components/MyTableControls/RecordCountDisplay'
 import {InfiniteScrollToggle} from '@cm/components/DataLogic/TFs/MyTable/components/MyTableControls/InfiniteScrollToggle'
 
 interface MyTableControlsProps {

@@ -9,7 +9,6 @@ import {QueryBuilder} from '@app/(apps)/tbm/(builders)/QueryBuilder'
 
 import {ViewParamBuilder} from '@app/(apps)/tbm/(builders)/ViewParamBuilder'
 import {getMasterPageCommonConfig} from '@cm/components/DataLogic/helpers/getMasterPageCommonConfig'
-import {isDev} from '@cm/lib/methods/common'
 
 export default async function DynamicMasterPage(props) {
   return getMasterPageCommonConfig({

@@ -4,8 +4,6 @@ import {cl} from '@cm/lib/methods/common'
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {ImageLabel} from '@cm/components/styles/common-components/ImageLabel'
 import Link from 'next/link'
-import {Fragment} from 'react'
-import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 import {motion} from 'framer-motion'
 import {useInView} from 'react-intersection-observer'
 
@@ -42,7 +40,7 @@ export const PartnerBasicInfo = (props: {KaizenClient: any; showWebsite?: boolea
   const {KaizenClient, showWebsite = true} = props
   const {name, organization, website} = KaizenClient ?? {}
   return (
-    <C_Stack className="gap-0.5 leading-tight">
+    <R_Stack className="gap-1.5 leading-tight">
       {organization && <div className="truncate text-xs font-medium ">{organization}</div>}
       <div className="flex items-baseline gap-1">
         {name && <span className="truncate text-sm font-bold ">{name}</span>}
@@ -53,7 +51,7 @@ export const PartnerBasicInfo = (props: {KaizenClient: any; showWebsite?: boolea
           {website}
         </Link>
       )}
-    </C_Stack>
+    </R_Stack>
   )
 }
 

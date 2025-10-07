@@ -9,7 +9,7 @@ import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doS
 import {surroundings} from '@cm/components/DataLogic/types/customParams-types'
 import {anyObject} from '@cm/types/utility-types'
 import IconLetter from '@cm/components/styles/common-components/IconLetter'
-import {Settings, Search, Filter} from 'lucide-react'
+import {Settings, Search} from 'lucide-react'
 import {Center} from '@cm/components/styles/common-components/common-components'
 
 export type PageBuidlerClassType = {

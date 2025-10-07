@@ -7,6 +7,7 @@ import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-c
 import {useEffect, useState} from 'react'
 import {motion} from 'framer-motion'
 import {ArrowDown} from 'lucide-react'
+import {cn} from '@cm/shadcn/lib/utils'
 
 export const EnhancedIntroduction = () => {
   const {width} = useWindowSize()
@@ -34,14 +35,16 @@ export const EnhancedIntroduction = () => {
           className="mx-auto max-w-3xl"
         >
           <div
-            className={`${fontBig} mx-2 lg:mx-4 rounded-2xl bg-white/70 p-4 font-bold shadow-2xl backdrop-blur-xs  sm:p-5 lg:p-6`}
+            className={cn(
+              `${fontBig} mx-2 lg:mx-4 rounded-2xl bg-white/70 p-4 font-bold shadow-2xl backdrop-blur-xs  sm:p-5 lg:p-6  `
+            )}
           >
-            <C_Stack className="items-center gap-4 sm:gap-5">
+            <C_Stack className="items-center gap-4 sm:gap-">
               {/* サブタイトル */}
               <motion.div initial={{opacity: 0}} animate={{opacity: isVisible ? 1 : 0}} transition={{duration: 0.8, delay: 0.7}}>
                 <C_Stack className={`text-center ${fontSm}`}>
-                  <div className="text-sm text-gray-700 sm:text-base lg:text-lg">業務改善・自動化に特化したツール開発で</div>
-                  <div className="text-sm text-gray-700 sm:text-base lg:text-lg">中小企業、事業主様の業務改善を担います。</div>
+                  <div className=" text-gray-700 ">業務改善・自動化に特化したツール開発で</div>
+                  <div className=" text-gray-700 ">中小企業、事業主様の業務改善を担います。</div>
                 </C_Stack>
               </motion.div>
 
@@ -66,13 +69,13 @@ export const EnhancedIntroduction = () => {
 
               {/* 信念 */}
               <motion.div initial={{opacity: 0}} animate={{opacity: isVisible ? 1 : 0}} transition={{duration: 0.8, delay: 1.1}}>
-                <C_Stack className={`text-center ${fontSm} text-sm`}>
+                <C_Stack className={`text-center ${fontSm} `}>
                   <div className="text-gray-700">をモットーとし、</div>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <KM.CoolStrong className="rounded-lg bg-blue-900/10 px-2 py-1 text-sm">揺るぎない信念</KM.CoolStrong>
-                    <KM.CoolStrong className="rounded-lg bg-blue-900/10 px-2 py-1 text-sm">確固たる意志</KM.CoolStrong>
+                    <KM.CoolStrong className="rounded-lg bg-blue-900/10 px-2 py-1 ">揺るぎない信念</KM.CoolStrong>
+                    <KM.CoolStrong className="rounded-lg bg-blue-900/10 px-2 py-1 ">確固たる意志</KM.CoolStrong>
                   </div>
-                  <div className="text-gray-700">で、本気の業務改善を行います。</div>
+                  <div className="text-gray-700">で、本気の業務改善を。</div>
                 </C_Stack>
               </motion.div>
 
@@ -85,14 +88,16 @@ export const EnhancedIntroduction = () => {
               >
                 <C_Stack className={`text-center ${fontSm}`}>
                   <div className="rounded-lg bg-blue-900/5 p-3">
-                    <div className="mb-1 text-sm text-gray-700">エンジニア・マネージャとしての開発経験。</div>
+                    <div className="mb-1  text-gray-700">エンジニア・マネージャとしての開発経験。</div>
                     <div className="text-base font-bold text-blue-900 sm:text-lg">
                       エージェント実績280件超。
-                      <small className="ml-2 text-xs text-gray-600">(ココナラ・ランサーズ)</small>
+                      <div>
+                        <small className="ml-2 text-xs text-gray-600">(ココナラ・ランサーズ)</small>
+                      </div>
                     </div>
                   </div>
 
-                  <R_Stack className="mt-3 justify-center gap-2 text-sm text-gray-700 sm:text-base">
+                  <R_Stack className="mt-3 justify-center gap-2  text-gray-700 sm:text-base">
                     <div className="w-fit rounded-lg bg-gradient-to-r from-blue-900/5 to-white p-2 shadow-sm">
                       <KM.CoolStrong>誰よりも「めんどくさがり」</KM.CoolStrong>
                       <span className="ml-1">だからこそ、</span>
