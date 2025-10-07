@@ -6,14 +6,14 @@ export const normalCredentialsProvider = CredentialsProvider({
   id: 'credentials',
   name: 'Normal Login',
   credentials: {
-    email: {label: 'メールアドレス', type: 'text', placeholder: 'test@test.com'},
+    loginKeyField: {label: 'メールアドレス', type: 'text', placeholder: 'test@test.com'},
     password: {label: 'パスワード', type: 'password', placeholder: 'password123'},
   },
-  authorize: async (credentials: {email: string; password: string}, req) => {
-    const {email, password} = credentials
+  authorize: async (credentials: {loginKeyField: string; password: string}, req) => {
+    const {loginKeyField, password} = credentials
 
     const user = await CheckLogin({
-      authId: email,
+      authId: loginKeyField,
       authPw: password,
     })
 

@@ -122,14 +122,6 @@ export default function HaishaTable({days, tbmBase, whereQuery}: HaishaTableProp
           onComplete={fetchData}
         />
       </BulkAssignmentModalReturn.Modal>
-
-      {/* <PaginationControl
-        currentPage={currentPage}
-        itemsPerPage={itemsPerPage}
-        maxRecord={maxRecord}
-        onPageChange={handlePageChange}
-        onItemsPerPageChange={handleItemsPerPageChange}
-      /> */}
     </C_Stack>
   )
 }

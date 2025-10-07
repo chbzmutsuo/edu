@@ -80,9 +80,9 @@ const parameters = async (props: {params; query; session; scopes: ReturnType<typ
         modelNames: [`roleMaster`],
         setParams: async () => ({
           myTable: {
-            edit: isDev ? undefined : false,
-            create: isDev ? undefined : false,
-            delete: isDev ? undefined : false,
+            update: false,
+            create: false,
+            delete: false,
           },
         }),
       },

@@ -12,19 +12,15 @@ import {sleep} from '@cm/lib/methods/common'
 
 export default function LoginForm(props) {
   const {error} = props
-  const {toggleLoad, router, session} = useGlobal()
+  const {toggleLoad, router, session, rootPath} = useGlobal()
 
   const columns =
     props.columns ??
     Fields.transposeColumns([
       {
-        id: 'email',
-        label: 'メールアドレス',
-        form: {
-          register: {
-            required: '必須項目です',
-          },
-        },
+        id: 'loginKeyField',
+        label: process.env.NEXT_PUBLIC_LOGIN_KEY_FIELD_LABEL ?? 'メールアドレス',
+        form: {register: {required: '必須項目です'}},
       },
       {
         id: 'password',
@@ -51,7 +47,7 @@ export default function LoginForm(props) {
               onSubmit: async data => {
                 toggleLoad(
                   async () => {
-                    const user = await CheckLogin({authId: data.email, authPw: data.password})
+                    const user = await CheckLogin({authId: data.loginKeyField, authPw: data.password})
 
                     if (!user) {
                       toast.error(`正しい認証情報を入力してください。`)
@@ -59,7 +55,7 @@ export default function LoginForm(props) {
                     }
                     // const result = await toggleLoad(async () => {
                     const result = await signIn('credentials', {
-                      email: data.email,
+                      loginKeyField: data.loginKeyField,
                       password: data.password,
                       redirect: false,
                     })

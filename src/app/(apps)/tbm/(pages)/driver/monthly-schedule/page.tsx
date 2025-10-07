@@ -13,19 +13,22 @@ import useLocalLoading from '@cm/hooks/globalHooks/useLocalLoading'
 import {showSpendTime} from '@cm/lib/methods/toast-helper'
 import {cn} from '@cm/shadcn/lib/utils'
 import {C_Stack} from '@cm/components/styles/common-components/common-components'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
+import {T_LINK} from '@cm/components/styles/common-components/links'
+import {HREF} from '@cm/lib/methods/urls'
 
 export default function MonthlySchedulePage() {
   const {query, session, addQuery} = useGlobal()
   const {LocalLoader, toggleLocalLoading} = useLocalLoading()
 
   const scopes = getScopes(session, {query})
-  const tbmBaseId = scopes.getTbmScopes().tbmBaseId
+  const {tbmBaseId, userId} = scopes.getTbmScopes()
 
   // queryからパラメータを取得（デフォルトは現在の年月と全ドライバー）
   const currentDate = new Date()
   const defaultYearMonth = formatDate(currentDate, 'YYYY-MM')
   const selectedYearMonth = query.yearMonth || defaultYearMonth
-  const selectedDriverId = query.driverId || 'all'
+  const selectedDriverId = userId
 
   const [monthlyData, setMonthlyData] = useState<any>(null)
   const [userList, setUserList] = useState<any[]>([])
@@ -63,11 +66,16 @@ export default function MonthlySchedulePage() {
 
           const whereQuery = {
             gte: startDate,
-            lt: endDate,
+            lte: endDate,
           }
 
           // 月間運行データを取得
-          const data = await getMonthlyTbmDriveData({whereQuery, tbmBaseId})
+          const data = await getMonthlyTbmDriveData({
+            whereQuery,
+            tbmBaseId,
+            userId: selectedDriverId,
+          })
+
           setMonthlyData(data)
 
           const {result: allUsers} = await doStandardPrisma('user', 'findMany', {
@@ -89,7 +97,7 @@ export default function MonthlySchedulePage() {
 
   useEffect(() => {
     fetchData()
-  }, [selectedYearMonth, tbmBaseId])
+  }, [selectedYearMonth, tbmBaseId, selectedDriverId])
 
   // カレンダー表示用のデータ処理
   const calendarData = useMemo(() => {
@@ -101,8 +109,8 @@ export default function MonthlySchedulePage() {
 
     // 選択されたドライバーのスケジュールをフィルタリング
     const filteredSchedules = monthlyData.monthlyTbmDriveList.filter(item => {
-      if (selectedDriverId === 'all') return true
-      return item.schedule.User.id === parseInt(selectedDriverId)
+      // if (selectedDriverId === 'all') return false
+      return item.schedule?.User?.id === selectedDriverId
     })
 
     // 日付別にスケジュールを整理
@@ -140,7 +148,7 @@ export default function MonthlySchedulePage() {
         <h1 className="text-2xl font-bold mb-4">月間スケジュール</h1>
 
         {/* コントロール部分 */}
-        <div className="flex items-center gap-4 mb-4">
+        <div className="flex items-center gap-4 mb-4 mx-auto w-fit">
           {/* 年月選択 */}
           <div className="flex items-center gap-2">
             <Button onClick={() => navigateMonth('prev')} className="p-2">
@@ -159,7 +167,7 @@ export default function MonthlySchedulePage() {
             </Button>
           </div>
 
-          {/* ドライバー選択 */}
+          {/* ドライバー選択
           <div className="flex items-center gap-2">
             <label className="font-medium">ドライバー:</label>
             <select
@@ -174,7 +182,7 @@ export default function MonthlySchedulePage() {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -235,32 +243,53 @@ export default function MonthlySchedulePage() {
                   if (onThisMonth) {
                     return (
                       <td key={dayIdx} style={cellStyle} className="border p-1">
-                        <C_Stack className="h-[140px]   gap-0.5 w-full text-sm">
-                          {/* 日付表示 */}
-                          <div
-                            className={cn(
-                              'text-right font-bold ',
-                              formatDate(date, 'ddd') === '土' && 'text-blue-600',
-                              formatDate(date, 'ddd') === '日' && 'text-red-600'
-                            )}
-                          >
-                            {dayStr}
-                          </div>
+                        <T_LINK
+                          simple
+                          target="_blank"
+                          href={HREF(
+                            '/tbm/driver/driveInput',
+                            {
+                              from: formatDate(date, 'YYYY-MM-DD'),
+                              g_userId: selectedDriverId,
+                              g_tbmBaseId: tbmBaseId,
+                            },
+                            query
+                          )}
+                        >
+                          <C_Stack className="h-[140px]   gap-0.5 w-full text-sm">
+                            {/* 日付表示 */}
+                            <div
+                              className={cn(
+                                'text-right font-bold ',
+                                formatDate(date, 'ddd') === '土' && 'text-blue-600',
+                                formatDate(date, 'ddd') === '日' && 'text-red-600'
+                              )}
+                            >
+                              {dayStr}
+                            </div>
 
-                          {/* スケジュール表示 */}
-                          <div className="space-y-2 leading-3">
-                            {schedules.map((item, idx) => (
-                              <div key={idx} className="text-[10px] bg-blue-100 ring-blue-300 ring rounded px-1 py-0.5 truncate">
-                                <div className="font-semibold">{/* {item.schedule.User.code} {item.schedule.User.name} */}</div>
-                                <div className="text-gray-600">{item.schedule.TbmRouteGroup?.name}</div>
-                                {/* <div className="text-gray-400">{item.schedule.TbmRouteGroup?.routeName}</div> */}
-                                {item.schedule.TbmVehicle && (
-                                  <div className="text-gray-500">{item.schedule.TbmVehicle.vehicleNumber}</div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </C_Stack>
+                            {/* スケジュール表示 */}
+                            <div className="space-y-2 leading-3">
+                              {schedules.map((item, idx) => (
+                                <div
+                                  key={idx}
+                                  className="text-[10px] bg-blue-100 ring-blue-300 ring rounded px-1 py-0.5 truncate"
+                                >
+                                  <div className="font-semibold">{/* {item.schedule.User.code} {item.schedule.User.name} */}</div>
+                                  <div className="text-gray-600">{item.schedule.TbmRouteGroup?.name}</div>
+                                  {/* <div className="text-gray-400">{item.schedule.TbmRouteGroup?.routeName}</div> */}
+                                  {item.schedule.TbmVehicle && (
+                                    <div className="text-gray-500">{item.schedule.TbmVehicle.vehicleNumber}</div>
+                                  )}
+
+                                  <div className={`text-red-500`}>
+                                    {TimeHandler.formatTimeString(item.schedule.TbmRouteGroup?.departureTime, 'display')}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </C_Stack>
+                        </T_LINK>
                       </td>
                     )
                   } else {

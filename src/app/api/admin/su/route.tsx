@@ -16,13 +16,7 @@ export const POST = async () => {
     rentaStoreId: 5,
   }
   if (isDev) {
-    const user = await prisma.user.upsert({
-      where: {
-        email: data.email,
-      },
-      create: data,
-      update: data,
-    })
+    const user = await prisma.user.upsert({where: {email: data.email}, create: data, update: data})
   }
   return NextResponse.json({})
 }

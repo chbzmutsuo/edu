@@ -185,7 +185,7 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
                     <R_Stack className="gap-2 items-center">
                       {groupHeader.tbmDriveScheduleId && groupHeader.TbmDriveSchedule ? (
                         <div className="text-xs">
-                          <div className="bg-green-100 px-2 py-1 rounded mb-1">
+                          <div className="bg-yellow-100 px-2 py-1 rounded mb-1">
                             {formatDate(groupHeader.TbmDriveSchedule.date)}{' '}
                             {groupHeader.TbmDriveSchedule.TbmRouteGroup?.name || ''}
                           </div>
@@ -238,8 +238,8 @@ export const EtcDataTable: React.FC<EtcDataTableProps> = ({
                       checked={isSelected}
                       onChange={e => {
                         // イベントの伝播を止めて、trのクリックイベントと重複しないようにする
-                        e.stopPropagation()
-                        toggleRowSelection(etcRecord.id)
+                        // e.stopPropagation()
+                        // toggleRowSelection(etcRecord.id)
                       }}
                       className="h-4 w-4 text-blue-600 border-gray-300 rounded"
                     />

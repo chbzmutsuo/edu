@@ -116,7 +116,7 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
           />
         </div>
 
-        {/* 権限フィルタ */}
+        {/* 権限フィルタ
         <div className="space-y-2">
           <div className="flex items-center space-x-2">
             <Filter className="h-5 w-5 text-gray-400" />
@@ -159,10 +159,10 @@ const RoleAllocationTable = ({PageBuilderExtraProps}) => {
               </label>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* 検索結果件数表示 */}
-        <div className="text-sm text-gray-500">{filteredUsers.length}件のユーザーが見つかりました</div>
+        {/* <div className="text-sm text-gray-500">{filteredUsers.length}件のユーザーが見つかりました</div> */}
       </div>
 
       <div className="overflow-hidden  border rounded-lg border-gray-200">

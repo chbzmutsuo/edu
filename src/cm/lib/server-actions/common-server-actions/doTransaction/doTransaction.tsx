@@ -12,6 +12,10 @@ export type transactionQuery = {
 
 type mode = 'transaction' | 'parallel' | 'sequential'
 export const doTransaction = async (props: {transactionQueryList: transactionQuery[]; mode?: mode; uniqueKey?: string}) => {
+  if (props.transactionQueryList.length === 0) {
+    return {success: false, result: [], message: '更新するデータがありません。'}
+  }
+
   const {transactionQueryList, mode = 'parallel'} = props
   const message = `${transactionQueryList.length}件を一括更新しました。`
   const timeKey = [

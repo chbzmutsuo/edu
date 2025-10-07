@@ -9,9 +9,8 @@ import {SessionFaker} from 'src/non-common/SessionFaker'
 export const FakeOrKeepSession = async ({query, realSession}) => {
   const tempScopes = getScopes(realSession, {query})
   const globalUserId = tempScopes.getGlobalUserId()
-  const globalKeys = Object.keys(query ?? {}).filter(key => key.includes('g_'))
+  // const globalKeys = Object.keys(query ?? {}).filter(key => key.includes('g_'))
 
-  const targetModels = SessionFaker.getTargetModels()
   // const models = globalKeys.map(key => key.replace(/g_|Id/g, ''))
   const models = SessionFaker.getTargetModels()
   const schema = getSchema()

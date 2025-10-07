@@ -48,7 +48,7 @@ const MyPagination = React.memo((props: PaginationPropType) => {
 
   return (
     <div className={` items-end   gap-0.5  `}>
-      <R_Stack className={` justify-center  gap-x-1 gap-y-0 rounded-sm bg-gray-100 px-1 `}>
+      <R_Stack className={` justify-center  gap-x-1 gap-y-0 rounded-sm  px-1 `}>
         {/* カウント
          */}
         <section className={` w-fit   p-0.5 font-normal`}>

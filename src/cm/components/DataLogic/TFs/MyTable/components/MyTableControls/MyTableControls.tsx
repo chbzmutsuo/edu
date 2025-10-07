@@ -46,13 +46,13 @@ export const MyTableControls = React.memo<MyTableControlsProps>(
             <R_Stack className="w-fit justify-center gap-y-0">
               <TableConfig TableConfigProps={TableConfigProps} ClientProps2={ClientProps2} />
 
-              <RecordCountDisplay
+              {/* <RecordCountDisplay
                 isInfiniteScrollMode={isInfiniteScrollMode}
                 recordCount={recordCount}
                 totalCount={totalCount}
                 hasMore={hasMore}
                 getPaginationProps={getPaginationProps}
-              />
+              /> */}
 
               {setInfiniteScrollMode && (
                 <InfiniteScrollToggle isInfiniteScrollMode={isInfiniteScrollMode} setInfiniteScrollMode={setInfiniteScrollMode} />

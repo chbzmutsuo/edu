@@ -77,7 +77,8 @@ export const getInvoiceData = async ({
       ...whereQuery,
       gte: Days.day.subtract(whereQuery.gte, 1),
     },
-    tbmBaseId: undefined,
+    tbmBaseId,
+    userId: undefined,
   })
 
   // 指定された顧客の便のみをフィルタリング
@@ -117,7 +118,7 @@ export const getInvoiceData = async ({
   // 便区分ごとの集計
   const summaryByCategory: CategorySummary[] = Object.entries(schedulesByCategory).map((props: [string, DriveScheduleData[]]) => {
     const [categoryCode, schedules] = props
-    const category = TBM_CODE.ROUTE.KBN[categoryCode]?.label || '不明'
+    const category = TBM_CODE.ROUTE_KBN.byCode(categoryCode)?.label || '不明'
     const totalTrips = schedules.length
 
     // 各スケジュールの料金計算
@@ -145,7 +146,7 @@ export const getInvoiceData = async ({
   const detailsByCategory: CategoryDetail[] = Object.entries(schedulesByCategory).flatMap(
     (props: [string, DriveScheduleData[]]) => {
       const [categoryCode, schedules] = props
-      const category = TBM_CODE.ROUTE.KBN[categoryCode]?.label || '不明'
+      const category = TBM_CODE.ROUTE_KBN.byCode(categoryCode)?.label || '不明'
 
       // 路線名ごとにグループ化
       const schedulesByRoute = schedules.reduce(

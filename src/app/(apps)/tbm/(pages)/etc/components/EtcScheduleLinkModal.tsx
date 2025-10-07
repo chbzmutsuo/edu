@@ -168,6 +168,24 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({
     }
   }
 
+  const handleUnlinkEtcMeisai = async () => {
+    try {
+      setIsLoading(true)
+      const result = await doStandardPrisma('tbmEtcMeisai', 'update', {
+        where: {id: etcMeisaiId},
+        data: {tbmDriveScheduleId: null},
+      })
+      toastByResult(result)
+      onUpdate()
+      onClose()
+    } catch (error) {
+      console.error('紐付け解除エラー:', error)
+      toastByResult({success: false, message: '紐付け解除処理に失敗しました'})
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   if (!etcMeisai) {
     return <div>データを読み込み中...</div>
   }
@@ -195,11 +213,11 @@ export const EtcScheduleLinkModal: React.FC<EtcScheduleLinkModalProps> = ({
       </C_Stack>
 
       <BasicForm latestFormData={latestFormData} onSubmit={handleSubmit}>
-        <R_Stack className="gap-3">
-          <Button type="button" color="gray" onClick={onClose} disabled={isLoading}>
+        <R_Stack className="gap- ">
+          <Button type="button" color="red" onClick={handleUnlinkEtcMeisai} disabled={isLoading}>
             キャンセル
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" color="blue" disabled={isLoading || !latestFormData.tbmDriveScheduleId}>
             {isLoading ? '処理中...' : '紐付け実行'}
           </Button>
         </R_Stack>

@@ -20,7 +20,15 @@ import prisma from 'src/lib/prisma'
 import {TbmVehicle, User} from '@prisma/client'
 import {DriveScheduleCl, DriveScheduleData, unkoMeisaiKeyValue} from '@app/(apps)/tbm/(class)/DriveScheduleCl'
 
-export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
+export const getMonthlyTbmDriveData = async ({
+  whereQuery,
+  tbmBaseId,
+  userId,
+}: {
+  whereQuery: {gte?: Date | undefined; lte?: Date | undefined}
+  tbmBaseId: number
+  userId: number | undefined
+}) => {
   const ConfigForMonth = await prisma.tbmMonthlyConfigForRouteGroup.findFirst({
     where: {
       yearMonth: whereQuery.gte,
@@ -28,7 +36,7 @@ export const getMonthlyTbmDriveData = async ({whereQuery, tbmBaseId}) => {
     },
   })
 
-  const tbmDriveSchedule = await DriveScheduleCl.getDriveScheduleList({whereQuery, tbmBaseId})
+  const tbmDriveSchedule = await DriveScheduleCl.getDriveScheduleList({whereQuery, tbmBaseId, userId})
   const monthlyTbmDriveList = tbmDriveSchedule.map(schedule => {
     const unkoMeisaiKeyValue = new DriveScheduleCl(schedule).unkoMeisaiCols
     return {

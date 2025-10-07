@@ -43,7 +43,7 @@ export default function TenkoPage(props) {
   const OrderByPickUpTime = drives.sort((a, b) => {
     // まずドライバーの社員コード順
     const userCodeCompare = (a.User?.code || '').localeCompare(b.User?.code || '')
-    if (userCodeCompare !== 0) return userCodeCompare
+    // if (userCodeCompare !== 0) return userCodeCompare
 
     // 同じドライバーの場合は出発時刻順
     return TimeHandler.compareTimeStrings(

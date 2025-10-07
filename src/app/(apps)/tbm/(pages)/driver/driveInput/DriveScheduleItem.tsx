@@ -1,12 +1,13 @@
 'use client'
 
 import {ColBuilder} from '@app/(apps)/tbm/(builders)/ColBuilders/ColBuilder'
+import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
 import {driveInputPageType} from '@app/(apps)/tbm/(pages)/driver/driveInput/driveInput-page-type'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import ChildCreator from '@cm/components/DataLogic/RTs/ChildCreator/ChildCreator'
 
-import {TextBlue, TextGreen, TextRed} from '@cm/components/styles/common-components/Alert'
+import {TextBlue, TextGray, TextGreen, TextRed} from '@cm/components/styles/common-components/Alert'
 
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
@@ -49,7 +50,7 @@ export const DriveScheduleItem = (props: {
       </section>
 
       <section>
-        <C_Stack>
+        <C_Stack className={`gap-0`}>
           <strong>
             <MarkDownDisplay>{new RouteGroupCl(drive.TbmRouteGroup).name}</MarkDownDisplay>
           </strong>
@@ -69,6 +70,7 @@ export const DriveScheduleItem = (props: {
           >
             {drive.TbmVehicle?.vehicleNumber}
           </TextBlue>
+          <TextGray>出発: {TimeHandler.formatTimeString(drive.TbmRouteGroup?.departureTime, 'display') ?? '未設定'}</TextGray>
         </C_Stack>
       </section>
 

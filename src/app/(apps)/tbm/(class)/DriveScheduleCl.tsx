@@ -87,37 +87,39 @@ export class DriveScheduleCl {
 
   static async getDriveScheduleList(props: {
     whereQuery: {
-      gte: Date
-      lte: Date
+      gte?: Date | undefined
+      lte?: Date | undefined
     }
     tbmBaseId: number | undefined
+    userId: number | undefined
   }) {
-    const {tbmBaseId, whereQuery} = props
+    const {tbmBaseId, whereQuery, userId} = props
     const tbmDriveSchedule = await doStandardPrisma('tbmDriveSchedule', 'findMany', {
       where: {
         approved: DriveScheduleCl.allowNonApprovedSchedule ? undefined : true,
         date: whereQuery,
         tbmBaseId,
+        userId,
       },
-      orderBy: [{date: 'asc'}, {createdAt: 'asc'}, {userId: 'asc'}],
+      orderBy: [
+        {date: 'asc'},
+        {TbmRouteGroup: {departureTime: {sort: 'asc', nulls: 'last'}}},
+        {createdAt: 'asc'},
+        {userId: 'asc'},
+      ],
       include: {
-        TbmEtcMeisai: {
-          include: {},
-        },
+        TbmEtcMeisai: {include: {}},
         TbmRouteGroup: {
           include: {
             TbmMonthlyConfigForRouteGroup: {where: {yearMonth: whereQuery.gte}},
             Mid_TbmRouteGroup_TbmCustomer: {include: {TbmCustomer: {}}},
-            TbmRouteGroupFee: {
-              where: {startDate: {gte: whereQuery.gte}},
-            },
+            TbmRouteGroupFee: {where: {startDate: {gte: whereQuery.gte}}},
           },
         },
         TbmVehicle: {},
         User: {
-          include: {
-            TbmVehicle: {},
-          },
+          where: {id: userId},
+          include: {TbmVehicle: {}},
         },
       },
     }).then(res => res.result)

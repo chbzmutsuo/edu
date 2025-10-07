@@ -12,7 +12,6 @@ import InlineEditField from './components/InlineEditField'
 import {CsvTable} from '@cm/components/styles/common-components/CsvTable/CsvTable'
 import useSWR from 'swr'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
-import {Code} from '@cm/class/Code'
 import {TimeHandler} from '@app/(apps)/tbm/(class)/TimeHandler'
 import {UseWorkStatusCl} from '@app/(apps)/tbm/(class)/UseWorkStatusCl'
 import {Days} from '@cm/class/Days/Days'
@@ -193,7 +192,7 @@ export default function AttendancePage() {
                 placeholder=""
                 onUpdate={fetchData}
                 select={{
-                  options: new Code(TBM_CODE.WORK_STATUS.KBN).array.map(item => ({
+                  options: TBM_CODE.WORK_STATUS_KBN.array.map(item => ({
                     label: item.label,
                     value: item.code,
                   })),

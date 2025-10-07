@@ -4,7 +4,6 @@ import React, {useState, useCallback, useRef, useEffect} from 'react'
 import {upsertUserWorkStatus} from '@app/(apps)/tbm/(server-actions)/userWorkStatusActions'
 import {toast} from 'react-toastify'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
-import {Code} from '@cm/class/Code'
 import {cn} from '@shadcn/lib/utils'
 
 type InlineEditFieldProps = {
@@ -178,7 +177,7 @@ const InlineEditField: React.FC<InlineEditFieldProps> = ({
       <>
         <input {...inputProps} />
         <datalist id="workStatusOptions">
-          {new Code(TBM_CODE.WORK_STATUS.KBN).array.map(item => (
+          {TBM_CODE.WORK_STATUS_KBN.array.map(item => (
             <option key={item.code} value={item.code}>
               {item.label}
             </option>

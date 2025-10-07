@@ -37,7 +37,7 @@ export type EigyoshoUriageRecord = {
 }
 
 export const getEigyoshoUriageData = async ({whereQuery, tbmBaseId}) => {
-  const {monthlyTbmDriveList, userList} = await getMonthlyTbmDriveData({whereQuery, tbmBaseId})
+  const {monthlyTbmDriveList, userList} = await getMonthlyTbmDriveData({whereQuery, tbmBaseId, userId: undefined})
 
   const yearMonth = whereQuery.gte ?? getMidnight()
 

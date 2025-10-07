@@ -9,7 +9,6 @@ import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {TBM_STATUS} from '@app/(apps)/tbm/(constants)/TBM_STATUS'
 import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {VehicleCl} from '@app/(apps)/tbm/(class)/VehicleCl'
-import {Code} from '@cm/class/Code'
 import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {RouteGroupCl} from '@app/(apps)/tbm/(class)/RouteGroupCl'
@@ -24,7 +23,7 @@ import {
 } from '../types/haisha-page-types'
 import {shorten} from '@cm/lib/methods/common'
 
-const WorkStatusList = new Code(TBM_CODE.WORK_STATUS.KBN).array
+const WorkStatusList = TBM_CODE.WORK_STATUS_KBN.array
 
 // 作業ステータス選択コンポーネント
 export const WorkStatusSelector = React.memo(({userWorkStatus, user, date, fetchData}: WorkStatusSelectorProps) => (

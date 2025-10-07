@@ -17,9 +17,7 @@ export const RecordCountDisplay = React.memo<RecordCountDisplayProps>(
       return (
         <div className="flex items-center gap-2 px-2">
           <span className="text-xs text-gray-600">
-            <span>
-              {recordCount.toLocaleString()}件 / {totalCount.toLocaleString()}件{' '}
-            </span>
+            <span>{/* {recordCount.toLocaleString()}件 / {totalCount.toLocaleString()}件{' '} */}</span>
             {/* <span> ({percentage}%)</span> */}
             {/* {hasMore && <span className="text-blue-500 ml-1">読み込み可能</span>} */}
             {isRestoredFromCache && <span className="text-green-500 ml-1">📋</span>}

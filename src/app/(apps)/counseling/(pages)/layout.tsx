@@ -8,7 +8,7 @@ export default async function AppLayout(props) {
     <Admin
       {...{
         AppName: 'テストアプリ',
-        PagesMethod: 'Advantage_PAGES',
+        PagesMethod: 'counseling_PAGES',
         PageBuilderGetter: {class: PageBuilder, getter: 'getGlobalIdSelector'},
       }}
     >

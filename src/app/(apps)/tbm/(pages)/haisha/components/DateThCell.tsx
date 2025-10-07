@@ -1,9 +1,11 @@
+import {TBM_CODE} from '@app/(apps)/tbm/(class)/TBM_CODE'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 import {T_LINK} from '@cm/components/styles/common-components/links'
 import useMyNavigation from '@cm/hooks/globalHooks/useMyNavigation'
 import {createUpdate} from '@cm/lib/methods/createUpdate'
 import {HREF} from '@cm/lib/methods/urls'
+import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 import {NotepadText} from 'lucide-react'
 import React from 'react'
 
@@ -18,15 +20,28 @@ export default function DateThCell({tbmBase, mode, date, userList, scheduleListO
       <div
         className={`t-link `}
         onClick={async () => {
-          const targetUserList = userList.filter(user => {
-            // scheduleがapprovedのもの
-            const schedule = scheduleListOnDate.find(schedule => schedule.approved && schedule.userId === user.id)
-            return schedule
+          const {result: usersOnDate} = await doStandardPrisma(`user`, `findMany`, {
+            where: {
+              tbmBaseId: tbmBase.id,
+              TbmDriveSchedule: {some: {date}},
+            },
+            include: {
+              TbmDriveSchedule: {where: {date}},
+            },
           })
 
-          if (confirm(`${targetUserList.length}件のユーザーを稼働に設定しますか？`)) {
+          const message = [
+            `本営業所で、${formatDate(date, 'M/D(ddd)')}に配車設定がされているユーザー 【${usersOnDate.length}】件をの勤怠を「出勤」に設定します。`,
+            `すでに設定されている勤怠のデータは上書きされますのでご注意ください。`,
+            '',
+            `-------- 対象ユーザ --------`,
+            usersOnDate.map(user => `・${user.name}`).join(`\n`),
+            `--------------------------`,
+          ].join(`\n`)
+
+          if (confirm(message)) {
             await doTransaction({
-              transactionQueryList: targetUserList.map((user, idx) => {
+              transactionQueryList: usersOnDate.map((user, idx) => {
                 const unique_userId_date = {
                   userId: user.id,
                   date,
@@ -41,7 +56,7 @@ export default function DateThCell({tbmBase, mode, date, userList, scheduleListO
                     },
                     ...createUpdate({
                       ...unique_userId_date,
-                      workStatus: '稼働',
+                      workStatus: TBM_CODE.WORK_STATUS_KBN.raw.SHUKKIN.code,
                     }),
                   },
                 }
@@ -67,7 +82,7 @@ export default function DateThCell({tbmBase, mode, date, userList, scheduleListO
 
   return (
     <R_Stack className={` justify-between`}>
-      <div id={`#${dateStr}`}>{routeGroupMode ? <ConfigButton>{dateStr}</ConfigButton> : dateStr}</div>
+      <div id={`#${dateStr}`}>{!routeGroupMode ? <ConfigButton>{dateStr}</ConfigButton> : dateStr}</div>
       <T_LINK href={href}>
         <NotepadText />
       </T_LINK>
