@@ -26,11 +26,11 @@ export const EnhancedEasyProfile = ({kaizenClient, works}: {kaizenClient: any[];
   ]
 
   return (
-    <C_Stack id="EasyProfile" className="mx-auto items-center">
+    <main id="EasyProfile" className="mx-auto items-center" role="main">
       <div className="w-full">
         {sections.map((section, i) => {
           return (
-            <motion.div
+            <motion.section
               key={i}
               id={section.id}
               initial={{opacity: 0}}
@@ -38,13 +38,15 @@ export const EnhancedEasyProfile = ({kaizenClient, works}: {kaizenClient: any[];
               viewport={{once: true, margin: '-100px'}}
               transition={{duration: 0.8}}
               className="relative"
+              aria-labelledby={`${section.id}-heading`}
             >
               {/* セクションヘッダー - よりモダンなデザイン */}
-              <div className="sticky top-0 z-20 mb-6">
+              <header className="sticky top-0 z-20 mb-6">
                 <div className="bg-gradient-to-r from-blue-800 via-blue-900 to-blue-950 shadow-xl">
                   <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between">
                       <motion.h2
+                        id={`${section.id}-heading`}
                         initial={{x: -20, opacity: 0}}
                         whileInView={{x: 0, opacity: 1}}
                         viewport={{once: true}}
@@ -59,6 +61,7 @@ export const EnhancedEasyProfile = ({kaizenClient, works}: {kaizenClient: any[];
                         viewport={{once: true}}
                         transition={{duration: 0.6, type: 'spring'}}
                         className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-base font-bold text-white backdrop-blur-sm"
+                        aria-label={`セクション ${i + 1}`}
                       >
                         {i + 1}
                       </motion.div>
@@ -67,14 +70,14 @@ export const EnhancedEasyProfile = ({kaizenClient, works}: {kaizenClient: any[];
                 </div>
                 {/* 装飾ライン */}
                 <div className="h-1 w-full bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600"></div>
-              </div>
+              </header>
 
               {/* コンテンツ */}
               <div className="pb-16">{section.component}</div>
-            </motion.div>
+            </motion.section>
           )
         })}
       </div>
-    </C_Stack>
+    </main>
   )
 }

@@ -15,11 +15,6 @@ export const EnhancedIntroduction = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    setTimeout(() => {
-      const target = document.getElementById('introduction')
-      if (!target) return
-      target.scrollIntoView({block: 'center'})
-    }, 50)
     setIsVisible(true)
   }, [])
 
@@ -27,7 +22,7 @@ export const EnhancedIntroduction = () => {
 
   const Message = () => {
     return (
-      <div className="relative z-10 py-4 pt-24">
+      <div className="relative z-10 py-4 pt-4">
         <motion.div
           initial={{opacity: 0, y: 50}}
           animate={{opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 50}}
@@ -43,8 +38,8 @@ export const EnhancedIntroduction = () => {
               {/* サブタイトル */}
               <motion.div initial={{opacity: 0}} animate={{opacity: isVisible ? 1 : 0}} transition={{duration: 0.8, delay: 0.7}}>
                 <C_Stack className={`text-center ${fontSm}`}>
-                  <div className=" text-gray-700 ">業務改善・自動化に特化したツール開発で</div>
-                  <div className=" text-gray-700 ">中小企業、事業主様の業務改善を担います。</div>
+                  <h2 className="text-gray-700">業務改善・自動化に特化したツール開発で</h2>
+                  <p className="text-gray-700">中小企業、事業主様の業務改善を担います。</p>
                 </C_Stack>
               </motion.div>
 
@@ -57,11 +52,19 @@ export const EnhancedIntroduction = () => {
               >
                 <C_Stack className={`${fontBig} p-0 lg:p-4 text-center`}>
                   <div className="relative">
-                    <KM.CoolStrong className="text-center text-lg sm:text-2xl lg:text-3xl">無駄な業務の撲滅を。</KM.CoolStrong>
+                    <h1 className="text-center text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                      <span className="bg-gradient-to-r from-blue-700 to-blue-900 bg-clip-text text-transparent">
+                        無駄な業務の撲滅を。
+                      </span>
+                    </h1>
                     <div className="absolute -bottom-1 left-1/2 h-1 w-3/4 -translate-x-1/2 transform rounded-full bg-gradient-to-r from-blue-700 to-blue-900"></div>
                   </div>
                   <div className="relative mt-2">
-                    <KM.WarmStrong className="text-end text-lg sm:text-2xl lg:text-3xl">ヒトの時間に余白を。</KM.WarmStrong>
+                    <h2 className="text-end text-lg sm:text-2xl lg:text-3xl font-bold text-gray-900">
+                      <span className="bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
+                        ヒトの時間に余白を。
+                      </span>
+                    </h2>
                     <div className="absolute -bottom-1 right-0 h-1 w-3/4 rounded-full bg-gradient-to-r from-amber-400 to-amber-600"></div>
                   </div>
                 </C_Stack>
@@ -70,12 +73,14 @@ export const EnhancedIntroduction = () => {
               {/* 信念 */}
               <motion.div initial={{opacity: 0}} animate={{opacity: isVisible ? 1 : 0}} transition={{duration: 0.8, delay: 1.1}}>
                 <C_Stack className={`text-center ${fontSm} `}>
-                  <div className="text-gray-700">をモットーとし、</div>
+                  <p className="text-gray-700">をモットーとし、</p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <KM.CoolStrong className="rounded-lg bg-blue-900/10 px-2 py-1 ">揺るぎない信念</KM.CoolStrong>
-                    <KM.CoolStrong className="rounded-lg bg-blue-900/10 px-2 py-1 ">確固たる意志</KM.CoolStrong>
+                    <span className="rounded-lg bg-blue-900/10 px-2 py-1 text-sm font-semibold text-blue-900">
+                      揺るぎない信念
+                    </span>
+                    <span className="rounded-lg bg-blue-900/10 px-2 py-1 text-sm font-semibold text-blue-900">確固たる意志</span>
                   </div>
-                  <div className="text-gray-700">で、本気の業務改善を。</div>
+                  <p className="text-gray-700">で、本気の業務改善を。</p>
                 </C_Stack>
               </motion.div>
 
@@ -155,9 +160,9 @@ export const EnhancedIntroduction = () => {
   }
 
   return (
-    <section id="introduction" className="relative min-h-screen">
-      <BackGroundImage {...{url: bgUrl}} />
+    <header id="introduction" className="relative min-h-screen" role="banner">
+      <BackGroundImage {...{url: bgUrl, alt: '改善マニア システム開発・業務改善のプロフェッショナル'}} />
       <Message />
-    </section>
+    </header>
   )
 }
