@@ -13,7 +13,7 @@ export const getAllProducts = async () => {
           },
         },
       },
-      orderBy: {sortOrder: 'asc'},
+      orderBy: {id: 'asc'},
     })
     return {success: true, data: products}
   } catch (error) {
@@ -111,7 +111,7 @@ export const deleteRecipe = async (id: number) => {
 export const getAllRawMaterials = async () => {
   try {
     const materials = await prisma.rawMaterial.findMany({
-      orderBy: {sortOrder: 'asc'},
+      orderBy: {id: 'asc'},
     })
     return {success: true, data: materials}
   } catch (error) {

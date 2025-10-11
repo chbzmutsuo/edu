@@ -145,7 +145,7 @@ const OrderClient = ({initialOrders, products}: OrderClientProps) => {
                 <th className="px-4 py-3">製品</th>
                 <th className="px-4 py-3">カラー</th>
                 <th className="px-4 py-3 text-right">数量</th>
-                <th className="px-4 py-3 text-right">金額</th>
+
                 <th className="px-4 py-3">備考</th>
                 <th className="px-4 py-3">操作</th>
               </tr>
@@ -164,7 +164,7 @@ const OrderClient = ({initialOrders, products}: OrderClientProps) => {
                     <td className="px-4 py-3 font-medium text-gray-900">{order.Product.name}</td>
                     <td className="px-4 py-3">{order.Product.color}</td>
                     <td className="px-4 py-3 text-right">{order.quantity.toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right">¥{order.amount.toLocaleString()}</td>
+
                     <td className="px-4 py-3 text-gray-600">{order.note || '-'}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
@@ -232,19 +232,6 @@ const OrderClient = ({initialOrders, products}: OrderClientProps) => {
               name="quantity"
               value={formData.quantity}
               onChange={handleQuantityChange}
-              required
-              min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">金額（円）</label>
-            <input
-              type="number"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
               required
               min="0"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"

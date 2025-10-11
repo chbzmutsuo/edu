@@ -23,6 +23,8 @@ type ProductData = {
   currentStock: number
   remainingTarget: number
   targetAchievementRate: number
+  expectedProduction: number
+  excessExpected: number
 }
 
 export type DailyPlan = {
@@ -112,11 +114,15 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase">製品名（カラー）</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">月間目標</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">月初在庫</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">今月生産</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">今月出荷</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">現在在庫</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">今月生産済</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">残り必要数</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">達成率</th>
+
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">総作成見込数</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">超過見込数</th>
+
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">今月出荷</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase">現在在庫</th>
               </tr>
             </thead>
             <tbody>
@@ -127,12 +133,15 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                   </td>
                   <td className="px-4 py-3 text-right">{product.monthlyTarget.toLocaleString()}</td>
                   <td className="px-4 py-3 text-right">{product.monthStartStock.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right">{product.monthlyProduction.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right">{product.monthlyShipment.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-right font-semibold">{product.currentStock.toLocaleString()}</td>
+
+                  <td className="px-4 py-3 text-right font-semibold text-blue-600">
+                    {product.monthlyProduction.toLocaleString()}
+                  </td>
+
                   <td className="px-4 py-3 text-right font-semibold text-orange-600">
                     {product.remainingTarget.toLocaleString()}
                   </td>
+
                   <td className="px-4 py-3 text-right">
                     <span
                       className={`inline-block px-2 py-1 rounded text-xs font-semibold ${
@@ -146,6 +155,16 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                       {product.targetAchievementRate}%
                     </span>
                   </td>
+
+                  <td className="px-4 py-3 text-right font-semibold text-green-600">
+                    {product.expectedProduction.toLocaleString()}
+                  </td>
+
+                  <td className="px-4 py-3 text-right font-semibold text-green-600">{product.excessExpected.toLocaleString()}</td>
+
+                  <td className="px-4 py-3 text-right">{product.monthlyShipment.toLocaleString()}</td>
+
+                  <td className="px-4 py-3 text-right font-semibold">{product.currentStock.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
@@ -180,7 +199,7 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
             {/* 日付セル */}
             {calendar.days.map((day, index) => {
               if (!day.day) {
-                return <div key={`empty-${index}`} className="bg-white min-h-[120px]" />
+                return <div key={`empty-${index}`} className="bg-white min-h-[120px] min-w-[180px]" />
               }
 
               const isHoliday = day.isHoliday
@@ -188,7 +207,7 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
               const isToday = day.isToday
 
               const dayClassName = cn(
-                `bg-white min-h-[120px] p-2 cursor-pointer hover:bg-gray-50 transition-colors border-l border-t`,
+                `bg-white min-h-[120px] min-w-[180px] p-2 cursor-pointer hover:bg-gray-50 transition-colors border-l border-t`,
                 isHoliday ? 'bg-gray-100' : '',
                 isToday ? 'ring-2 ring-blue-500' : ''
               )
@@ -203,7 +222,7 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                   </div>
 
                   {/* 製品別生産計画 */}
-                  {!day.isHoliday && day.plans && (
+                  {day.plans && (
                     <div className="space-y-1">
                       {day.plans.map(plan => {
                         const isRisky = plan.isRisky
@@ -212,7 +231,7 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                         let itemBgClassName = ''
                         let itemTextClassName = ''
                         if (isPast) {
-                          itemBgClassName = 'bg-gray-50  opacity-60'
+                          itemBgClassName = 'bg-gray-50  opacity-80'
                           itemTextClassName = 'text-gray-700  '
                         } else {
                           if (isRisky) {
@@ -227,18 +246,35 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                         const diff = plan.dailyCapacity - dailyTarget
 
                         return (
-                          <div key={plan.productId} className={cn(`text-xs p-1 rounded `, itemBgClassName)}>
-                            <div className="flex items-center gap-1">
-                              {!isPast && (
-                                <div>
-                                  {isRisky && <AlertTriangle className={cn('w-3 h-3', itemTextClassName)} strokeWidth={4} />}
-                                  {!isRisky && <CheckCircle className={cn('w-3 h-3', itemTextClassName)} strokeWidth={3} />}
+                          <C_Stack key={plan.productId} className={cn(`text-xs p-1 rounded 0.5 `, itemBgClassName)}>
+                            <R_Stack className=" gap-1 justify-between w-full">
+                              <R_Stack className={` gap-0.5`}>
+                                {!!dailyTarget && !isPast && (
+                                  <div>
+                                    {isRisky && <AlertTriangle className={cn('w-3 h-3', itemTextClassName)} strokeWidth={4} />}
+                                    {!isRisky && <CheckCircle className={cn('w-3 h-3', itemTextClassName)} strokeWidth={3} />}
+                                  </div>
+                                )}
+
+                                <span className="font-medium truncate">
+                                  {plan.productName}({plan.productColor})
+                                </span>
+                              </R_Stack>
+
+                              {!!plan.actualProduction && (
+                                <div
+                                  className={` ml-auto px-2 py-1 rounded-full bg-blue-100 border-blue-500 border text-blue-600`}
+                                >
+                                  <div className={plan.actualProduction ? 'font-bold ' : 'opacity-50'}>
+                                    <C_Stack className={`gap-0.5 leading-2`}>
+                                      {/* <span className={`text-[8px] text-gray-600`}>実績</span> */}
+                                      <span>済{plan.actualProduction}</span>
+                                    </C_Stack>
+                                  </div>
                                 </div>
                               )}
-                              <span className="font-medium truncate">
-                                {plan.productName}({plan.productColor})
-                              </span>
-                            </div>
+                            </R_Stack>
+
                             <R_Stack className=" gap-0.5">
                               {!isPast && (
                                 <R_Stack className={`gap-0.5`}>
@@ -257,17 +293,8 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                                   </R_Stack>
                                 </R_Stack>
                               )}
-
-                              {isPast && (
-                                <div className={plan.actualProduction ? 'font-bold text-blue-600' : 'opacity-50'}>
-                                  <C_Stack className={`gap-0.5 leading-2`}>
-                                    <span className={`text-[8px] text-gray-600`}>実績</span>
-                                    <span>{plan.actualProduction}</span>
-                                  </C_Stack>
-                                </div>
-                              )}
                             </R_Stack>
-                          </div>
+                          </C_Stack>
                         )
                       })}
                     </div>

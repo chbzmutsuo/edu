@@ -83,7 +83,7 @@ export const deleteProduction = async (id: number) => {
 export const getAllProducts = async () => {
   try {
     const products = await prisma.product.findMany({
-      orderBy: {sortOrder: 'asc'},
+      orderBy: {id: 'asc'},
     })
     return {success: true, data: products}
   } catch (error) {
