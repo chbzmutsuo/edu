@@ -100,7 +100,19 @@
     "**/Keihi/**": true,
     "**/achievement/**": true,
     "**/Grouping/**": true,
-    "**/sara/**": true
+    "**/sara/**": true,
+    "**/KM/**": true,
+    "**/counseling/**": true,
+    "**/edu/**": true,
+    "**/keihi/**": true,
+    "**/kickswrap/**": true,
+    "**/migrations/**": true,
+    "**/page/**": true,
+    "**/sbm/**": true,
+    "**/stock/**": true,
+    "**/tbm/**": true,
+    "**/tmp/**": true,
+    "**/training/**": true
   },
   "typescript.tsserver.log": "off",
   "typescript.tsserver.maxTsServerMemory": 4096,
@@ -108,6 +120,19 @@
   "typescript.suggest.autoImports": true,
   "typescript.suggest.includeAutomaticOptionalChainCompletions": false,
   "typescript.workspaceSymbols.scope": "currentProject",
-  "typescript.preferences.autoImportFileExcludePatterns": [],
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "KM",
+    "counseling",
+    "edu",
+    "keihi",
+    "kickswrap",
+    "migrations",
+    "page",
+    "sbm",
+    "stock",
+    "tbm",
+    "tmp",
+    "training"
+  ],
   "editor.stickyScroll.enabled": false
 }

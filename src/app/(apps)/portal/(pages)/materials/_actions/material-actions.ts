@@ -1,15 +1,28 @@
 'use server'
 
 import prisma from 'src/lib/prisma'
-import {RawMaterial, StockAdjustment} from '@prisma/client'
 
-export type RawMaterialWithStock = RawMaterial & {
-  currentStock?: number
-  isAlert?: boolean
+// 原材料を全て取得
+export const getAllRawMaterials = async () => {
+  try {
+    const materials = await prisma.rawMaterial.findMany({
+      orderBy: {sortOrder: 'asc'},
+    })
+    return {success: true, data: materials}
+  } catch (error) {
+    console.error('原材料の取得に失敗しました:', error)
+    return {success: false, error: '原材料の取得に失敗しました', data: []}
+  }
 }
 
-// --- Create ---
-export const createRawMaterial = async (data: Omit<RawMaterial, 'id' | 'createdAt' | 'updatedAt' | 'sortOrder'>) => {
+// 原材料を作成
+export const createRawMaterial = async (data: {
+  name: string
+  category: string
+  unit: string
+  cost: number
+  safetyStock: number
+}) => {
   try {
     const material = await prisma.rawMaterial.create({
       data,
@@ -21,43 +34,17 @@ export const createRawMaterial = async (data: Omit<RawMaterial, 'id' | 'createdA
   }
 }
 
-// --- Read ---
-export const getAllRawMaterials = async () => {
-  try {
-    const materials = await prisma.rawMaterial.findMany({
-      orderBy: [{createdAt: 'asc'}, {sortOrder: 'asc'}],
-    })
-    return {success: true, data: materials}
-  } catch (error) {
-    console.error('原材料の取得に失敗しました:', error)
-    return {success: false, error: '原材料の取得に失敗しました', data: []}
+// 原材料を更新
+export const updateRawMaterial = async (
+  id: number,
+  data: {
+    name: string
+    category: string
+    unit: string
+    cost: number
+    safetyStock: number
   }
-}
-
-export const getRawMaterialById = async (id: number) => {
-  try {
-    const material = await prisma.rawMaterial.findUnique({
-      where: {id},
-      include: {
-        ProductRecipe: {
-          include: {
-            Product: true,
-          },
-        },
-        StockAdjustment: {
-          orderBy: {adjustmentAt: 'desc'},
-        },
-      },
-    })
-    return {success: true, data: material}
-  } catch (error) {
-    console.error('原材料の取得に失敗しました:', error)
-    return {success: false, error: '原材料の取得に失敗しました', data: null}
-  }
-}
-
-// --- Update ---
-export const updateRawMaterial = async (id: number, data: Partial<RawMaterial>) => {
+) => {
   try {
     const material = await prisma.rawMaterial.update({
       where: {id},
@@ -70,7 +57,7 @@ export const updateRawMaterial = async (id: number, data: Partial<RawMaterial>) 
   }
 }
 
-// --- Delete ---
+// 原材料を削除
 export const deleteRawMaterial = async (id: number) => {
   try {
     await prisma.rawMaterial.delete({
@@ -83,19 +70,7 @@ export const deleteRawMaterial = async (id: number) => {
   }
 }
 
-// --- Stock Adjustments ---
-export const createStockAdjustment = async (data: Omit<StockAdjustment, 'id' | 'createdAt' | 'updatedAt' | 'sortOrder'>) => {
-  try {
-    const adjustment = await prisma.stockAdjustment.create({
-      data,
-    })
-    return {success: true, data: adjustment}
-  } catch (error) {
-    console.error('在庫調整の作成に失敗しました:', error)
-    return {success: false, error: '在庫調整の作成に失敗しました'}
-  }
-}
-
+// 在庫調整履歴を取得
 export const getStockAdjustmentsByMaterial = async (rawMaterialId: number) => {
   try {
     const adjustments = await prisma.stockAdjustment.findMany({
@@ -109,6 +84,25 @@ export const getStockAdjustmentsByMaterial = async (rawMaterialId: number) => {
   }
 }
 
+// 在庫調整を作成
+export const createStockAdjustment = async (data: {
+  rawMaterialId: number
+  adjustmentAt: Date
+  reason: string
+  quantity: number
+}) => {
+  try {
+    const adjustment = await prisma.stockAdjustment.create({
+      data,
+    })
+    return {success: true, data: adjustment}
+  } catch (error) {
+    console.error('在庫調整の作成に失敗しました:', error)
+    return {success: false, error: '在庫調整の作成に失敗しました'}
+  }
+}
+
+// 在庫調整を削除
 export const deleteStockAdjustment = async (id: number) => {
   try {
     await prisma.stockAdjustment.delete({
@@ -128,11 +122,13 @@ export const calculateCurrentStock = async (rawMaterialId: number) => {
     const adjustments = await prisma.stockAdjustment.findMany({
       where: {rawMaterialId},
     })
-    const totalAdjusted = adjustments.reduce((sum, adj) => sum + adj.quantity, 0)
+    const adjustmentTotal = adjustments.reduce((sum, adj) => sum + adj.quantity, 0)
 
-    // 生産による消費（国産のみ）
+    // 生産での使用量（国産製品のみ）
     const productions = await prisma.production.findMany({
-      where: {type: '国産'},
+      where: {
+        type: '国産',
+      },
       include: {
         Product: {
           include: {
@@ -144,14 +140,19 @@ export const calculateCurrentStock = async (rawMaterialId: number) => {
       },
     })
 
-    const totalUsed = productions.reduce((sum, prod) => {
+    let productionTotal = 0
+    productions.forEach(prod => {
       const recipe = prod.Product.ProductRecipe.find(r => r.rawMaterialId === rawMaterialId)
-      return sum + (recipe ? recipe.amount * prod.quantity : 0)
-    }, 0)
+      if (recipe) {
+        productionTotal += prod.quantity * recipe.amount
+      }
+    })
 
-    return {success: true, currentStock: totalAdjusted - totalUsed, totalAdjusted, totalUsed}
+    const currentStock = adjustmentTotal - productionTotal
+
+    return {success: true, currentStock, adjustmentTotal, productionTotal}
   } catch (error) {
-    console.error('在庫計算に失敗しました:', error)
-    return {success: false, error: '在庫計算に失敗しました', currentStock: 0, totalAdjusted: 0, totalUsed: 0}
+    console.error('現在庫の計算に失敗しました:', error)
+    return {success: false, error: '現在庫の計算に失敗しました', currentStock: 0, adjustmentTotal: 0, productionTotal: 0}
   }
 }

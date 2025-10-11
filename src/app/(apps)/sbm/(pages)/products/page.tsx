@@ -1,6 +1,7 @@
 import ProductsClient from '@app/(apps)/sbm/(pages)/products/ProductsClient'
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import React from 'react'
+import {FitMargin} from '@cm/components/styles/common-components/common-components'
 
 export default async function Page(props) {
   const query = await props.searchParams

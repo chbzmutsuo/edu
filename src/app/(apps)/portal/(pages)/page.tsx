@@ -1,6 +1,7 @@
 import React from 'react'
 import {getDashboardData} from './_actions/dashboard-actions'
 import DashboardClient from './DashboardClient'
+import {FitMargin} from '@cm/components/styles/common-components/common-components'
 
 const PortalHomePage = async () => {
   const today = new Date()
@@ -20,7 +21,11 @@ const PortalHomePage = async () => {
     )
   }
 
-  return <DashboardClient products={result.data.products} calendar={result.data.calendar} workingDays={result.data.workingDays} />
+  return (
+    <FitMargin>
+      <DashboardClient products={result.data.products} calendar={result.data.calendar} workingDays={result.data.workingDays} />
+    </FitMargin>
+  )
 }
 
 export default PortalHomePage
