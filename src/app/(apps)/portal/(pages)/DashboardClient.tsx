@@ -9,6 +9,7 @@ import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {cn} from '@cm/shadcn/lib/utils'
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
+import {NumHandler} from '@cm/class/NumHandler'
 
 type ProductData = {
   id: number
@@ -286,10 +287,12 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                                     <span>/</span>
                                     <C_Stack className={`gap-0.5 leading-2`}>
                                       <span className={`text-[8px] text-gray-600`}>目標</span>
-                                      <span>{plan.dailyTarget}</span>
+                                      <span>{NumHandler.round(plan.dailyTarget, 1)}</span>
                                     </C_Stack>
 
-                                    <span className={itemTextClassName}>({diff > 0 ? `+${diff}` : diff})</span>
+                                    <span className={itemTextClassName}>
+                                      ({diff > 0 ? `+${NumHandler.round(diff, 1)}` : NumHandler.round(diff, 1)})
+                                    </span>
                                   </R_Stack>
                                 </R_Stack>
                               )}
