@@ -15,10 +15,11 @@ model Product {
  allowanceStock     Int // 余裕在庫数（枚）
 
  // リレーション
- ProductRecipe ProductRecipe[]
- Order         Order[]
- Production    Production[]
- Shipment      Shipment[]
+ ProductRecipe        ProductRecipe[]
+ Order                Order[]
+ Production           Production[]
+ Shipment             Shipment[]
+ DailyStaffAssignment DailyStaffAssignment[]
 }
 
 // 原材料マスター
@@ -134,4 +135,21 @@ model CompanyHoliday {
  holidayAt   DateTime @unique // 日付
  holidayType String   @default("休日") // 休日種別（休日、祝日、夏季休暇など）
  note        String? // 備考
+}
+
+// 日別人員配置（ダッシュボード用）
+model DailyStaffAssignment {
+ id        Int       @id @default(autoincrement())
+ createdAt DateTime  @default(now())
+ updatedAt DateTime? @updatedAt()
+ sortOrder Float     @default(0)
+
+ assignmentAt DateTime // 配置日
+ productId    Int
+ staffCount   Int      @default(3) // 配置人数（デフォルト3人）
+
+ // リレーション
+ Product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+ @@unique([assignmentAt, productId], name: "assignment_product_unique")
 }

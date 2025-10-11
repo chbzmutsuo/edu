@@ -6,6 +6,8 @@ import useModal from '@cm/components/utils/modal/useModal'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {updateDailyStaffAssignment} from './_actions/dashboard-actions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
+import {cn} from '@cm/shadcn/lib/utils'
+import {R_Stack} from '@cm/components/styles/common-components/common-components'
 
 type ProductData = {
   id: number
@@ -22,7 +24,7 @@ type ProductData = {
   targetAchievementRate: number
 }
 
-type DailyPlan = {
+export type DailyPlan = {
   productId: number
   productName: string
   productColor: string
@@ -180,16 +182,18 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                 return <div key={`empty-${index}`} className="bg-white min-h-[120px]" />
               }
 
-              const hasRiskyPlan = day.plans?.some(p => p.isRisky)
+              const isHoliday = day.isHoliday
+              const isPast = day.isPast
+              const isToday = day.isToday
+
+              const dayClassName = cn(
+                `bg-white min-h-[120px] p-2 cursor-pointer hover:bg-gray-50 transition-colors border-l border-t`,
+                isHoliday ? 'bg-gray-100' : '',
+                isToday ? 'ring-2 ring-blue-500' : ''
+              )
 
               return (
-                <div
-                  key={day.day}
-                  className={`bg-white min-h-[120px] p-2 cursor-pointer hover:bg-gray-50 transition-colors border-l border-t ${
-                    day.isHoliday ? 'bg-gray-100' : ''
-                  } ${day.isToday ? 'ring-2 ring-blue-500' : ''}`}
-                  onClick={() => handleDayClick(day)}
-                >
+                <div key={day.day} className={dayClassName} onClick={() => handleDayClick(day)}>
                   {/* 日付 */}
                   <div
                     className={`text-sm font-medium mb-1 ${day.isToday ? 'text-blue-600' : day.isHoliday ? 'text-red-500' : ''}`}
@@ -200,29 +204,44 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                   {/* 製品別生産計画 */}
                   {!day.isHoliday && day.plans && (
                     <div className="space-y-1">
-                      {day.plans.map(plan => (
-                        <div
-                          key={plan.productId}
-                          className={`text-xs p-1 rounded ${
-                            plan.isRisky
-                              ? 'bg-red-100 text-red-800'
-                              : plan.dailyTarget === 0
-                                ? 'bg-gray-100 text-gray-600'
-                                : 'bg-green-100 text-green-800'
-                          }`}
-                        >
-                          <div className="flex items-center gap-1">
-                            {plan.isRisky && <AlertTriangle className="w-3 h-3" />}
-                            {!plan.isRisky && plan.dailyTarget > 0 && <CheckCircle className="w-3 h-3" />}
-                            <span className="font-medium truncate">
-                              {plan.productName}({plan.productColor})
-                            </span>
+                      {day.plans.map(plan => {
+                        const isRisky = plan.isRisky
+                        const dailyTarget = plan.dailyTarget
+
+                        let itemClassName = ''
+                        if (isRisky) {
+                          if (isPast) {
+                            itemClassName = 'bg-gray-100 text-gray-600 opacity-60'
+                          } else {
+                            itemClassName = 'bg-red-100 text-red-800'
+                          }
+                        } else if (dailyTarget === 0) {
+                          itemClassName = 'bg-gray-100 text-gray-600'
+                        } else {
+                          itemClassName = 'bg-green-100 text-green-800'
+                        }
+
+                        return (
+                          <div key={plan.productId} className={cn(`text-xs p-1 rounded `, itemClassName)}>
+                            <div className="flex items-center gap-1">
+                              {isRisky && <AlertTriangle className="w-3 h-3" />}
+                              {!isRisky && dailyTarget > 0 && <CheckCircle className="w-3 h-3" />}
+                              <span className="font-medium truncate">
+                                {plan.productName}({plan.productColor})
+                              </span>
+                            </div>
+                            <R_Stack className=" gap-0.5">
+                              <span className={isPast && plan.dailyTarget ? 'opacity-50' : 'font-bold'}>
+                                目標: {plan.dailyTarget}
+                              </span>
+                              <span>/</span>
+                              <span className={isPast && plan.actualProduction ? 'font-bold text-blue-600' : 'opacity-50'}>
+                                実績: {plan.actualProduction}
+                              </span>
+                            </R_Stack>
                           </div>
-                          <div className="mt-0.5">
-                            目標: {plan.dailyTarget} / 実績: {plan.actualProduction}
-                          </div>
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   )}
                 </div>

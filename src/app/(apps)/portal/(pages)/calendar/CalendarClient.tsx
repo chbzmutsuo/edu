@@ -5,7 +5,7 @@ import {CompanyHoliday} from '@prisma/client'
 import {PlusCircle, Trash2, Calendar} from 'lucide-react'
 import useModal from '@cm/components/utils/modal/useModal'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
-import {createHoliday, deleteHoliday, getAllHolidays} from './_actions/calendar-actions'
+import {createHoliday, updateHoliday, deleteHoliday, getAllHolidays} from './_actions/calendar-actions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
@@ -83,11 +83,15 @@ const CalendarClient = ({initialHolidays}: CalendarClientProps) => {
     e.preventDefault()
 
     await toggleLoad(async () => {
-      const result = await createHoliday({
+      const existingHoliday = AddModalReturn.open?.existingHoliday
+
+      const data = {
         holidayAt: new Date(formData.holidayAt),
         holidayType: formData.holidayType,
         note: formData.note || null,
-      })
+      }
+
+      const result = existingHoliday ? await updateHoliday(existingHoliday.id, data) : await createHoliday(data)
 
       if (result.success) {
         await loadHolidays()
@@ -98,7 +102,7 @@ const CalendarClient = ({initialHolidays}: CalendarClientProps) => {
           note: '',
         })
       } else {
-        alert(result.error || '登録に失敗しました')
+        alert(result.error || (existingHoliday ? '更新に失敗しました' : '登録に失敗しました'))
       }
     })
   }
@@ -182,7 +186,7 @@ const CalendarClient = ({initialHolidays}: CalendarClientProps) => {
             return (
               <div
                 key={index}
-                className={`bg-white p-2 min-h-[80px] cursor-pointer hover:bg-gray-50 transition-colors ${
+                className={`bg-white p-2 min-h-[120px] min-w-[120px] cursor-pointer hover:bg-gray-50 transition-colors ${
                   today ? 'ring-2 ring-blue-500' : ''
                 }`}
                 onClick={() => handleDateClick(date)}

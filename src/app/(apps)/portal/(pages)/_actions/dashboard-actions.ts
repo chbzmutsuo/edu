@@ -1,5 +1,6 @@
 'use server'
 
+import {DailyPlan} from '@app/(apps)/portal/(pages)/DashboardClient'
 import prisma from 'src/lib/prisma'
 
 // 過去3年間の同月平均受注数から月間生産目標を算出
@@ -328,7 +329,15 @@ const generateCalendarData = async (year: number, month: number, products: any[]
 
     // 空白セル
     for (let i = 0; i < firstDayOfWeek; i++) {
-      calendarDays.push({day: null})
+      calendarDays.push({
+        day: null,
+        date: '',
+        dayOfWeek: 0,
+        isHoliday: false,
+        isPast: false,
+        isToday: false,
+        plans: [],
+      })
     }
 
     // 日付セル
@@ -336,8 +345,9 @@ const generateCalendarData = async (year: number, month: number, products: any[]
       const date = new Date(year, month - 1, day)
       const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       const dayOfWeek = date.getDay()
-      const isHoliday = dayOfWeek === 0 || dayOfWeek === 6 || holidayDates.includes(day)
+      const isHoliday = holidayDates.includes(day)
       const isPast = isCurrentMonth && day < currentDate
+
       const isToday = isCurrentMonth && day === currentDate
 
       // 残り稼働日を計算
@@ -384,7 +394,18 @@ const generateCalendarData = async (year: number, month: number, products: any[]
           const actualProduction = actualProductions.reduce((sum, p) => sum + p.quantity, 0)
 
           // 危険度判定
-          const isRisky = !isHoliday && dailyTarget > dailyCapacity
+          // 過去の日付：実績値が目標に足りているかで判定
+          // 当日以降：生産能力が目標に足りているかで判定
+          let isRisky = false
+          if (!isHoliday) {
+            if (isPast) {
+              // 過去の日付：実績が目標に足りていない場合は危険
+              isRisky = actualProduction < dailyTarget
+            } else {
+              // 当日以降：生産能力が目標に足りていない場合は危険
+              isRisky = dailyTarget > dailyCapacity
+            }
+          }
 
           return {
             productId: product.id,

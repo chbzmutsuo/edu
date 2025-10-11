@@ -28,6 +28,20 @@ export const createHoliday = async (data: {holidayAt: Date; holidayType: string;
   }
 }
 
+// 休日を更新
+export const updateHoliday = async (id: number, data: {holidayAt: Date; holidayType: string; note: string | null}) => {
+  try {
+    const holiday = await prisma.companyHoliday.update({
+      where: {id},
+      data,
+    })
+    return {success: true, data: holiday}
+  } catch (error) {
+    console.error('休日の更新に失敗しました:', error)
+    return {success: false, error: '休日の更新に失敗しました'}
+  }
+}
+
 // 休日を削除
 export const deleteHoliday = async (id: number) => {
   try {
