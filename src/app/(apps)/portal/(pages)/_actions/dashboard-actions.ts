@@ -5,6 +5,273 @@ const baseStaffCount = 3
 import {DailyPlan} from '@app/(apps)/portal/(pages)/DashboardClient'
 import prisma from 'src/lib/prisma'
 
+// ============================================================================
+// 型定義
+// ============================================================================
+
+type DayInfo = {
+  day: number
+  date: Date
+  dateString: string
+  dayOfWeek: number
+  isHoliday: boolean
+  isPast: boolean
+  isToday: boolean
+}
+
+type ProductCumulative = {
+  cumulativeProduction: number
+  remainingTarget: number
+}
+
+// ============================================================================
+// ヘルパー関数（純粋関数 - DBアクセスなし）
+// ============================================================================
+
+// 過去データから月間目標を計算
+function calculateMonthlyTargetFromData(
+  productId: number,
+  year: number,
+  month: number,
+  allOrders: any[],
+  allowanceStock: number
+): number {
+  // 過去3年間の同月データをフィルタ
+  const relevantOrders = allOrders.filter(order => {
+    const orderDate = new Date(order.orderAt)
+    const orderYear = orderDate.getFullYear()
+    const orderMonth = orderDate.getMonth() + 1
+    return order.productId === productId && orderMonth === month && orderYear >= year - 3 && orderYear < year
+  })
+
+  // 年度ごとにグループ化
+  const yearlyOrders: Record<number, number> = {}
+  relevantOrders.forEach(order => {
+    const orderYear = new Date(order.orderAt).getFullYear()
+    if (!yearlyOrders[orderYear]) yearlyOrders[orderYear] = 0
+    yearlyOrders[orderYear] += order.quantity
+  })
+
+  // 平均を計算
+  const years = Object.keys(yearlyOrders)
+  const totalQuantity = Object.values(yearlyOrders).reduce((sum, qty) => sum + qty, 0)
+  const average = years.length > 0 ? totalQuantity / years.length : 0
+
+  return average + allowanceStock
+}
+
+// 過去データから月初在庫を計算
+function calculateMonthStartStockFromData(
+  productId: number,
+  monthStart: Date,
+  allProductions: any[],
+  allShipments: any[]
+): number {
+  const totalProduction = allProductions
+    .filter(p => p.productId === productId && new Date(p.productionAt) < monthStart)
+    .reduce((sum, p) => sum + p.quantity, 0)
+
+  const totalShipment = allShipments
+    .filter(s => s.productId === productId && new Date(s.shipmentAt) < monthStart)
+    .reduce((sum, s) => sum + s.quantity, 0)
+
+  return totalProduction - totalShipment
+}
+
+// 日付情報リストを生成
+function generateDayInfoList(year: number, month: number, today: Date, holidayDates: number[]): DayInfo[] {
+  const currentDate = today.getDate()
+  const currentMonth = today.getMonth() + 1
+  const currentYear = today.getFullYear()
+  const isCurrentMonth = year === currentYear && month === currentMonth
+  const daysInMonth = new Date(year, month, 0).getDate()
+
+  return Array.from({length: daysInMonth}, (_, i) => {
+    const day = i + 1
+    const date = new Date(year, month - 1, day)
+    const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    const dayOfWeek = date.getDay()
+    const isHoliday = holidayDates.includes(day)
+    const isPast = isCurrentMonth && day < currentDate
+    const isToday = isCurrentMonth && day === currentDate
+
+    return {day, date, dateString, dayOfWeek, isHoliday, isPast, isToday}
+  })
+}
+
+// 製品の日別計画を計算
+function calculateDailyPlan(
+  product: any,
+  productData: ProductData,
+  dayInfo: DayInfo,
+  dayListInMonth: DayInfo[],
+  currentDate: number,
+  cumulative: ProductCumulative,
+  staffAssignments: any[],
+  dailyProductionMap: Map<string, number>
+): DailyPlan {
+  const {day, date, isHoliday, isPast} = dayInfo
+  const monthlyTarget = productData.monthlyTarget
+
+  // 人員配置を取得
+  const assignment = staffAssignments.find(a => new Date(a.assignmentAt).getDate() === day && a.productId === product.id)
+  const staffCount = assignment?.staffCount || baseStaffCount
+
+  // その日の生産能力を計算
+  const dailyCapacity = staffCount * product.productionCapacity * 8
+
+  let dailyTarget = 0
+  let actualProduction = 0
+  let isRisky = false
+
+  // 昨日までの累積（この日の処理前）
+  const cumulativeProductionForDisplay = cumulative.cumulativeProduction
+
+  if (isPast) {
+    // 過去日：実績を取得
+    const key = `${product.id}-${day}`
+    actualProduction = dailyProductionMap.get(key) || 0
+
+    // この日の時点での残り稼働日数（この日を含む）
+    const remainingDaysFromThisDay = dayListInMonth.filter(d => d.day >= day && !d.isHoliday).length
+
+    // 過去日の目標：残り目標を残り日数で均等割
+    dailyTarget = cumulative.remainingTarget / Math.max(1, remainingDaysFromThisDay)
+
+    // 累積に実績を加算
+    cumulative.cumulativeProduction += actualProduction
+    cumulative.remainingTarget = monthlyTarget - cumulative.cumulativeProduction
+  } else {
+    // 未来日：均等割配分 + 能力超過時の先取り
+
+    // この日以降の稼働日数（この日を含む）
+    const remainingDaysFromThisDay = dayListInMonth.filter(d => d.day >= day && !d.isHoliday).length
+
+    // 日別目標：残り目標を残り日数で均等割
+    dailyTarget = cumulative.remainingTarget / Math.max(1, remainingDaysFromThisDay)
+
+    // 実際に作れる量（能力と残り目標の小さい方）
+    const productionPlan = Math.min(dailyCapacity, Math.max(0, cumulative.remainingTarget))
+
+    // 累積に実際の生産予定を加算
+    cumulative.cumulativeProduction += productionPlan
+    cumulative.remainingTarget = monthlyTarget - cumulative.cumulativeProduction
+
+    // 未来日の危険度判定：製造能力が目標に足りていない場合
+    if (!isHoliday && cumulative.remainingTarget > 0 && dailyCapacity < dailyTarget) {
+      isRisky = true
+    }
+  }
+
+  const remainingWorkingDaysFromToday = dayListInMonth.filter(d => d.day >= currentDate).length
+
+  return {
+    productId: product.id,
+    productName: product.name,
+    productColor: product.color,
+    monthlyTarget,
+    dailyTarget,
+    dailyCapacity,
+    staffCount,
+    actualProduction,
+    cumulativeProduction: cumulativeProductionForDisplay,
+    remainingWorkingDays: remainingWorkingDaysFromToday,
+    isRisky,
+  }
+}
+
+// カレンダーデータを生成（最適化版 - DBアクセスなし）
+function generateCalendarDataFromData(
+  today: Date,
+  year: number,
+  month: number,
+  products: any[],
+  productData: ProductData[],
+  holidays: any[],
+  staffAssignments: any[],
+  dailyProductionMap: Map<string, number>
+) {
+  const holidayDates = holidays.map(h => new Date(h.holidayAt).getDate())
+  const currentDate = today.getDate()
+  const firstDayOfWeek = new Date(year, month - 1, 1).getDay()
+
+  // 日付情報リストを生成
+  const dayListInMonth = generateDayInfoList(year, month, today, holidayDates)
+
+  // カレンダーの日付データを格納
+  const calendarDays: {
+    day: number | null
+    date: string
+    dayOfWeek: number
+    isHoliday: boolean
+    isPast: boolean
+    isToday: boolean
+    plans: DailyPlan[]
+  }[] = []
+
+  // 空白セル
+  for (let i = 0; i < firstDayOfWeek; i++) {
+    calendarDays.push({
+      day: null,
+      date: '',
+      dayOfWeek: 0,
+      isHoliday: false,
+      isPast: false,
+      isToday: false,
+      plans: [],
+    })
+  }
+
+  // 製品ごとの累積追跡Mapを初期化
+  const productCumulatives = new Map<number, ProductCumulative>()
+  products.forEach(product => {
+    const monthlyTarget = productData.find(p => p.id === product.id)?.monthlyTarget || 0
+    productCumulatives.set(product.id, {
+      cumulativeProduction: 0,
+      remainingTarget: monthlyTarget,
+    })
+  })
+
+  // 日付ごとの計画を生成
+  dayListInMonth.forEach(dayInfo => {
+    const dailyPlans = products.map(product => {
+      const productDataItem = productData.find(p => p.id === product.id)!
+      const cumulative = productCumulatives.get(product.id)!
+
+      return calculateDailyPlan(
+        product,
+        productDataItem,
+        dayInfo,
+        dayListInMonth,
+        currentDate,
+        cumulative,
+        staffAssignments,
+        dailyProductionMap
+      )
+    })
+
+    calendarDays.push({
+      day: dayInfo.day,
+      date: dayInfo.dateString,
+      dayOfWeek: dayInfo.dayOfWeek,
+      isHoliday: dayInfo.isHoliday,
+      isPast: dayInfo.isPast,
+      isToday: dayInfo.isToday,
+      plans: dailyPlans,
+    })
+  })
+
+  return {
+    year,
+    month,
+    days: calendarDays,
+  }
+}
+
+// ============================================================================
+// 既存のexport関数（後方互換性のため保持）
+// ============================================================================
+
 // 過去3年間の同月平均受注数から月間生産目標を算出
 export const calculateMonthlyTarget = async (productId: number, year: number, month: number) => {
   try {
@@ -248,76 +515,171 @@ export type ProductData = {
   targetAchievementRate: number
 }
 
-// ダッシュボード用の統合データを取得
+// ============================================================================
+// ダッシュボード用の統合データを取得（パフォーマンス最適化版）
+// ============================================================================
+
 export const getDashboardData = async (today: Date) => {
   const year = today.getFullYear()
   const month = today.getMonth() + 1
+  const monthStart = new Date(year, month - 1, 1)
+  const monthEnd = new Date(year, month, 0, 23, 59, 59)
+
   try {
-    // 全製品を取得
-    const products = await prisma.product.findMany({
-      orderBy: {id: 'asc'},
-    })
+    // ============================================================================
+    // 1. 必要なデータを全て一括取得（N+1問題の解消）
+    // ============================================================================
+    const [products, allOrders, allProductions, allShipments, holidays, staffAssignments] = await Promise.all([
+      // 全製品
+      prisma.product.findMany({orderBy: {id: 'asc'}}),
 
-    // 製品ごとのデータを並列取得
-    const productData: ProductData[] = await Promise.all(
-      products.map(async product => {
-        const [monthlyTargetResult, monthStartStockResult, monthlyProductionResult, monthlyShipmentResult] = await Promise.all([
-          calculateMonthlyTarget(product.id, year, month),
-          getMonthStartStock(product.id, year, month),
-          getMonthlyProduction(product.id, year, month),
-          getMonthlyShipment(product.id, year, month),
-        ])
+      // 過去3年間の全受注データ
+      prisma.order.findMany({
+        where: {
+          orderAt: {
+            gte: new Date(year - 3, 0, 1),
+            lt: new Date(year, month, 0),
+          },
+        },
+      }),
 
-        const monthlyTarget = monthlyTargetResult.data?.monthlyTarget || 0
-        const monthStartStock = monthStartStockResult.data || 0
-        const monthlyProduction = monthlyProductionResult.data || 0
-        const monthlyShipment = monthlyShipmentResult.data || 0
-        const currentStock = monthStartStock + monthlyProduction - monthlyShipment
-        const remainingTarget = Math.max(0, monthlyTarget - monthlyProduction)
+      // 全期間の生産データ
+      prisma.production.findMany({
+        where: {
+          productionAt: {
+            lt: new Date(year, month, 0),
+          },
+        },
+      }),
 
-        return {
-          ...product,
-          monthlyTarget,
-          monthStartStock,
-          monthlyProduction,
-          monthlyShipment,
-          currentStock,
-          remainingTarget,
-          targetAchievementRate: monthlyTarget > 0 ? Math.round((monthlyProduction / monthlyTarget) * 100) : 0,
-        }
-      })
-    )
+      // 全期間の出荷データ
+      prisma.shipment.findMany({
+        where: {
+          shipmentAt: {
+            lt: new Date(year, month, 0),
+          },
+        },
+      }),
 
-    // 稼働日と人員配置を取得
-    const [workingDaysResult, staffAssignmentsResult] = await Promise.all([
-      getWorkingDays(year, month),
-      getDailyStaffAssignments(year, month),
+      // 会社休日
+      prisma.companyHoliday.findMany({
+        where: {
+          holidayAt: {
+            gte: monthStart,
+            lte: monthEnd,
+          },
+        },
+      }),
+
+      // 人員配置
+      prisma.dailyStaffAssignment.findMany({
+        where: {
+          assignmentAt: {
+            gte: monthStart,
+            lte: monthEnd,
+          },
+        },
+        include: {Product: true},
+      }),
     ])
 
-    // カレンダーデータを生成
-    const calendarData = await generateCalendarData(today, year, month, products, staffAssignmentsResult.data || [], productData)
+    // ============================================================================
+    // 2. データをMap化して高速検索可能にする
+    // ============================================================================
 
-    // カレンダーデータから各製品の作成見込み数を計算
+    // 製品別の月間生産実績をMap化
+    const monthlyProductionMap = new Map<number, number>()
+    allProductions.forEach(prod => {
+      const prodDate = new Date(prod.productionAt)
+      if (prodDate >= monthStart && prodDate <= monthEnd) {
+        const current = monthlyProductionMap.get(prod.productId) || 0
+        monthlyProductionMap.set(prod.productId, current + prod.quantity)
+      }
+    })
+
+    // 製品別×日別の生産実績をMap化
+    const dailyProductionMap = new Map<string, number>()
+    allProductions.forEach(prod => {
+      const prodDate = new Date(prod.productionAt)
+      if (prodDate >= monthStart && prodDate <= monthEnd) {
+        const key = `${prod.productId}-${prodDate.getDate()}`
+        const current = dailyProductionMap.get(key) || 0
+        dailyProductionMap.set(key, current + prod.quantity)
+      }
+    })
+
+    // 製品別の月間出荷をMap化
+    const monthlyShipmentMap = new Map<number, number>()
+    allShipments.forEach(ship => {
+      const shipDate = new Date(ship.shipmentAt)
+      if (shipDate >= monthStart && shipDate <= monthEnd) {
+        const current = monthlyShipmentMap.get(ship.productId) || 0
+        monthlyShipmentMap.set(ship.productId, current + ship.quantity)
+      }
+    })
+
+    // ============================================================================
+    // 3. 製品データを計算
+    // ============================================================================
+
+    const productData: ProductData[] = products.map(product => {
+      // 月間目標の計算
+      const monthlyTarget = calculateMonthlyTargetFromData(product.id, year, month, allOrders, product.allowanceStock)
+
+      // 月初在庫の計算
+      const monthStartStock = calculateMonthStartStockFromData(product.id, monthStart, allProductions, allShipments)
+
+      // 今月の生産・出荷
+      const monthlyProduction = monthlyProductionMap.get(product.id) || 0
+      const monthlyShipment = monthlyShipmentMap.get(product.id) || 0
+
+      const currentStock = monthStartStock + monthlyProduction - monthlyShipment
+      const remainingTarget = Math.max(0, monthlyTarget - monthlyProduction)
+
+      return {
+        ...product,
+        monthlyTarget,
+        monthStartStock,
+        monthlyProduction,
+        monthlyShipment,
+        currentStock,
+        remainingTarget,
+        targetAchievementRate: monthlyTarget > 0 ? Math.round((monthlyProduction / monthlyTarget) * 100) : 0,
+      }
+    })
+
+    // ============================================================================
+    // 4. カレンダーデータを生成
+    // ============================================================================
+
+    const calendarData = generateCalendarDataFromData(
+      today,
+      year,
+      month,
+      products,
+      productData,
+      holidays,
+      staffAssignments,
+      dailyProductionMap
+    )
+
+    // ============================================================================
+    // 5. 見込み生産数を計算
+    // ============================================================================
+
     const expectedProductionByProduct = new Map<number, number>()
     calendarData.days.forEach(dayData => {
-      if (
-        dayData.day !== null
-        // && !dayData.isPast
-      ) {
+      if (dayData.day !== null) {
         dayData.plans.forEach(plan => {
           const current = expectedProductionByProduct.get(plan.productId) || 0
-
           const addCount = dayData.isPast ? plan.actualProduction : plan.dailyCapacity
-
           expectedProductionByProduct.set(plan.productId, current + addCount)
         })
       }
     })
 
-    // productDataに作成見込み数と超過見込み数を追加
     const productsWithExpected = productData.map(product => {
       const expectedProduction = expectedProductionByProduct.get(product.id) || 0
-
       const excessExpected = Math.max(0, product.monthlyProduction + expectedProduction)
 
       return {
@@ -327,230 +689,27 @@ export const getDashboardData = async (today: Date) => {
       }
     })
 
+    // 稼働日を計算
+    const holidayDates = holidays.map(h => new Date(h.holidayAt).getDate())
+    const daysInMonth = new Date(year, month, 0).getDate()
+    const workingDays: number[] = []
+    for (let day = 1; day <= daysInMonth; day++) {
+      if (!holidayDates.includes(day)) {
+        workingDays.push(day)
+      }
+    }
+
     return {
       success: true,
       data: {
         products: productsWithExpected,
-        workingDays: workingDaysResult.data || [],
-        staffAssignments: staffAssignmentsResult.data || [],
+        workingDays,
+        staffAssignments,
         calendar: calendarData,
       },
     }
   } catch (error) {
     console.error('ダッシュボードデータの取得に失敗しました:', error)
     return {success: false, error: 'ダッシュボードデータの取得に失敗しました'}
-  }
-}
-
-// カレンダーデータを生成
-const generateCalendarData = async (
-  today: Date,
-  year: number,
-  month: number,
-  products: any[],
-  staffAssignments: any[],
-  productData: ProductData[]
-) => {
-  try {
-    // 会社休日を取得
-    const holidays = await prisma.companyHoliday.findMany({
-      where: {holidayAt: {gte: new Date(year, month - 1, 1), lte: new Date(year, month, 0)}},
-    })
-    const holidayDates = holidays.map(h => new Date(h.holidayAt).getDate())
-
-    const currentDate = today.getDate()
-    const currentMonth = today.getMonth() + 1
-    const currentYear = today.getFullYear()
-    const isCurrentMonth = year === currentYear && month === currentMonth
-
-    const daysInMonth = new Date(year, month, 0).getDate()
-
-    const firstDayOfWeek = new Date(year, month - 1, 1).getDay()
-
-    const dayListInMonth = Array.from({length: daysInMonth}, (_, i) => {
-      const day = i + 1
-      const date = new Date(year, month - 1, day)
-      const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-      const dayOfWeek = date.getDay()
-      const isHoliday = holidayDates.includes(day)
-      const isPast = isCurrentMonth && day < currentDate
-
-      const isToday = isCurrentMonth && day === currentDate
-
-      return {
-        day,
-        date,
-        dateString,
-        dayOfWeek,
-        isHoliday,
-        isPast,
-        isToday,
-      }
-    })
-
-    const remainingWorkingDays = dayListInMonth.filter(d => d.day >= currentDate).length
-
-    // 月の全日付データを生成
-    const calendarDays: {
-      day: number | null
-      date: string
-      dayOfWeek: number
-      isHoliday: boolean
-      isPast: boolean
-      isToday: boolean
-      plans: DailyPlan[]
-    }[] = []
-
-    // 空白セル
-    for (let i = 0; i < firstDayOfWeek; i++) {
-      calendarDays.push({
-        day: null,
-        date: '',
-        dayOfWeek: 0,
-        isHoliday: false,
-        isPast: false,
-        isToday: false,
-        plans: [],
-      })
-    }
-
-    // 製品ごとの累積追跡Mapを初期化
-    const productCumulatives = new Map<
-      number,
-      {
-        cumulativeProduction: number // 累積生産数（実績/予定）
-        remainingTarget: number // 残り目標数
-      }
-    >()
-
-    // 各製品の初期状態を設定（月初在庫は考慮せず、月間目標からスタート）
-    products.forEach(product => {
-      const monthlyTarget = productData.find(p => p.id === product.id)?.monthlyTarget || 0
-      productCumulatives.set(product.id, {
-        cumulativeProduction: 0,
-        remainingTarget: monthlyTarget,
-      })
-    })
-
-    // 日付セル
-    for (let i = 1; i <= dayListInMonth.length; i++) {
-      const dayObj = dayListInMonth[i - 1]
-      const {day, date, dateString, dayOfWeek, isHoliday, isPast, isToday} = dayObj
-
-      // 残り稼働日を計算（今日以降の稼働日数）
-      const remainingWorkingDaysFromToday = dayListInMonth.filter(d => d.day >= currentDate).length
-
-      // 製品ごとの日別計画を生成
-      const dailyPlans = await Promise.all(
-        products.map(async product => {
-          const monthlyTarget = productData.find(p => p.id === product.id)?.monthlyTarget || 0
-
-          // 製品の累積データを取得
-          const cumulative = productCumulatives.get(product.id)!
-
-          // 人員配置を取得
-          const assignment = staffAssignments.find(a => new Date(a.assignmentAt).getDate() === day && a.productId === product.id)
-          const staffCount = assignment?.staffCount || baseStaffCount
-
-          // その日の生産能力を計算
-          const dailyCapacity = staffCount * product.productionCapacity * 8
-
-          let dailyTarget = 0
-          let actualProduction = 0
-          let productionPlan = 0
-          let isRisky = false
-
-          // 昨日までの累積（この日の処理前）
-          const cumulativeProductionForDisplay = cumulative.cumulativeProduction
-
-          if (isPast) {
-            // 過去日または当日：実績を取得
-            const actualProductions = await prisma.production.findMany({
-              where: {
-                productId: product.id,
-                productionAt: date,
-              },
-            })
-            actualProduction = actualProductions.reduce((sum, p) => sum + p.quantity, 0)
-
-            // この日の時点での残り稼働日数（この日を含む）
-            const remainingDaysFromThisDay = dayListInMonth.filter(d => d.day >= day && !d.isHoliday).length
-
-            // 過去日の目標：残り目標を残り日数で均等割
-            dailyTarget = cumulative.remainingTarget / Math.max(1, remainingDaysFromThisDay)
-
-            // 累積に実績を加算
-            cumulative.cumulativeProduction += actualProduction
-            cumulative.remainingTarget = monthlyTarget - cumulative.cumulativeProduction
-
-            // // 過去日の危険度判定：実績が目標に足りていない場合
-            // if (!isHoliday && actualProduction < dailyTarget) {
-            //   // isRisky = true
-            // }
-          } else {
-            // 未来日：均等割配分 + 能力超過時の先取り
-
-            // この日以降の稼働日数（この日を含む）
-            const remainingDaysFromThisDay = dayListInMonth.filter(d => d.day >= day && !d.isHoliday).length
-
-            // 日別目標：残り目標を残り日数で均等割
-            dailyTarget = cumulative.remainingTarget / Math.max(1, remainingDaysFromThisDay)
-
-            console.log({
-              day,
-              今日: dailyTarget,
-              あと: remainingDaysFromThisDay,
-              残り: cumulative.remainingTarget,
-            }) //logs
-
-            // 実際に作れる量（能力と残り目標の小さい方）
-            productionPlan = Math.min(dailyCapacity, Math.max(0, cumulative.remainingTarget))
-
-            // 累積に実際の生産予定を加算（超過分も含む）
-            cumulative.cumulativeProduction += productionPlan
-            cumulative.remainingTarget = monthlyTarget - cumulative.cumulativeProduction
-
-            // 未来日の危険度判定：製造能力が目標に足りていない場合
-            // （残り目標がまだあるのに、能力が足りない）
-            if (!isHoliday && cumulative.remainingTarget > 0 && dailyCapacity < dailyTarget) {
-              isRisky = true
-            }
-          }
-
-          return {
-            productId: product.id,
-            productName: product.name,
-            productColor: product.color,
-            monthlyTarget,
-            dailyTarget,
-            dailyCapacity,
-            staffCount,
-            actualProduction,
-            cumulativeProduction: cumulativeProductionForDisplay,
-            remainingWorkingDays: remainingWorkingDaysFromToday,
-            isRisky,
-          }
-        })
-      )
-
-      calendarDays.push({
-        day,
-        date: dateString,
-        dayOfWeek,
-        isHoliday,
-        isPast,
-        isToday,
-        plans: dailyPlans,
-      })
-    }
-
-    return {
-      year,
-      month,
-      days: calendarDays,
-    }
-  } catch (error) {
-    console.error('カレンダーデータの生成に失敗しました:', error)
-    return {year, month, days: []}
   }
 }
