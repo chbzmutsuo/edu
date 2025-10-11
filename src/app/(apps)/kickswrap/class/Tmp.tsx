@@ -13,13 +13,6 @@ export class Tmp {
     ],
   }
 
-  static getMyLessonLog = async ({session}) => {
-    const {result} = await doStandardPrisma('lessonLog', 'findMany', {
-      where: {userId: session?.id},
-    })
-    return result
-  }
-
   static task = {
     admin: {},
   }

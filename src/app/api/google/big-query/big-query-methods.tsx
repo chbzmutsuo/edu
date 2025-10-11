@@ -8,34 +8,6 @@ export const getBigQueryClient = async () => {
   return bigquery
 }
 
-// export const getDatasets = async () => {
-//   const datasets = await bigquery.getDatasets()
-//   return datasets.flat() as bgDataSet[]
-// }
-
-// export const getTables = async () => {
-//   const datasets = await getDatasets()
-//   let allTables: bqTable[] = []
-//   await Promise.all(
-//     datasets.map(async (dataset: bgDataSet) => {
-//       const {id} = dataset
-//       let tables = await dataset.getTables()
-//       tables = tables[0].map(d => d?.metadata) as bqTable[]
-//       allTables = [...allTables, ...tables]
-//     })
-//   )
-//   return allTables
-// }
-
-// export const getSchema = async ({datasetId, tableId}) => {
-//   const dataset = await bigquery.dataset(datasetId)
-//   const table = await dataset.table(tableId)
-//   const metadata = await table.getMetadata()
-//   const schema = metadata?.[0]?.schema
-//   const {fields} = schema
-//   return {dataset, table, fields}
-// }
-
 export const handleBigQuery = async (props: bigQuerytableConfig) => {
   const {datasetId, tableId} = props
 

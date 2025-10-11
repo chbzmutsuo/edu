@@ -144,9 +144,10 @@ export const getMonthlyShipment = async (productId: number, year: number, month:
 }
 
 // 稼働日を計算（休日・土日を除外）
-export const getWorkingDays = async (year: number, month: number, startDay = 1) => {
+export const getWorkingDays = async (year: number, month: number, startDay = 1, endDay?: number) => {
   try {
     const daysInMonth = new Date(year, month, 0).getDate()
+    const lastDay = endDay !== undefined ? Math.min(endDay, daysInMonth) : daysInMonth
 
     // 会社休日を取得
     const holidays = await prisma.companyHoliday.findMany({
@@ -162,12 +163,12 @@ export const getWorkingDays = async (year: number, month: number, startDay = 1) 
 
     // 稼働日をカウント
     const workingDays: number[] = []
-    for (let day = startDay; day <= daysInMonth; day++) {
+    for (let day = startDay; day <= lastDay; day++) {
       const date = new Date(year, month - 1, day)
       const dayOfWeek = date.getDay()
 
       // 土日と会社休日を除外
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && !holidayDates.includes(day)) {
+      if (!holidayDates.includes(day)) {
         workingDays.push(day)
       }
     }
@@ -232,7 +233,9 @@ export const updateDailyStaffAssignment = async (date: Date, productId: number, 
 }
 
 // ダッシュボード用の統合データを取得
-export const getDashboardData = async (year: number, month: number) => {
+export const getDashboardData = async (today: Date) => {
+  const year = today.getFullYear()
+  const month = today.getMonth() + 1
   try {
     // 全製品を取得
     const products = await prisma.product.findMany({
@@ -276,7 +279,7 @@ export const getDashboardData = async (year: number, month: number) => {
     ])
 
     // カレンダーデータを生成
-    const calendarData = await generateCalendarData(year, month, products, staffAssignmentsResult.data || [])
+    const calendarData = await generateCalendarData(today, year, month, products, staffAssignmentsResult.data || [])
 
     return {
       success: true,
@@ -294,9 +297,8 @@ export const getDashboardData = async (year: number, month: number) => {
 }
 
 // カレンダーデータを生成
-const generateCalendarData = async (year: number, month: number, products: any[], staffAssignments: any[]) => {
+const generateCalendarData = async (today: Date, year: number, month: number, products: any[], staffAssignments: any[]) => {
   try {
-    const today = new Date()
     const currentDate = today.getDate()
     const currentMonth = today.getMonth() + 1
     const currentYear = today.getFullYear()
@@ -373,9 +375,39 @@ const generateCalendarData = async (year: number, month: number, products: any[]
           const monthlyTargetResult = await calculateMonthlyTarget(product.id, year, month)
           const monthlyTarget = monthlyTargetResult.data?.monthlyTarget || 0
 
-          // 今日の生産目標
-          const remainingTarget = Math.max(0, monthlyTarget - cumulativeProduction)
-          const dailyTarget = !isHoliday && remainingWorkingDays > 0 ? Math.ceil(remainingTarget / remainingWorkingDays) : 0
+          // 今日の生産目標の計算
+          let dailyTarget = 0
+          if (!isHoliday && remainingWorkingDays > 0) {
+            // 残り目標を計算
+            let remainingTarget = Math.max(0, monthlyTarget - cumulativeProduction)
+
+            // 未来の日付の場合：今日から対象日の前日までの生産能力分は消化されると仮定
+            if (!isPast && !isToday) {
+              // 今日から対象日の前日までの稼働日を取得
+              const daysBetweenResult = await getWorkingDays(year, month, currentDate, day - 1)
+              const workingDaysBetween = daysBetweenResult.data || []
+
+              // 各日の生産能力を考慮して消化される目標を計算
+              let expectedConsumption = 0
+              for (const betweenDay of workingDaysBetween) {
+                // その日の人員配置を取得
+                const betweenAssignment = staffAssignments.find(
+                  a => new Date(a.assignmentAt).getDate() === betweenDay && a.productId === product.id
+                )
+                const betweenStaffCount = betweenAssignment?.staffCount || 3
+                // その日の生産能力
+                const betweenCapacity = betweenStaffCount * product.productionCapacity * 8
+                // その日に消化される目標（生産能力分）
+                expectedConsumption += betweenCapacity
+              }
+
+              // 対象日時点での残り目標
+              remainingTarget = Math.max(0, remainingTarget - expectedConsumption)
+            }
+
+            // 1日あたりの目標を計算
+            dailyTarget = Math.ceil(remainingTarget / remainingWorkingDays)
+          }
 
           // 人員配置
           const assignment = staffAssignments.find(a => new Date(a.assignmentAt).getDate() === day && a.productId === product.id)

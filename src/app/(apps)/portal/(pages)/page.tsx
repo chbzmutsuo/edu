@@ -5,11 +5,10 @@ import {FitMargin} from '@cm/components/styles/common-components/common-componen
 
 const PortalHomePage = async () => {
   const today = new Date()
-  const year = today.getFullYear()
-  const month = today.getMonth() + 1
+  today.setDate(today.getDate() + 1)
 
   // ダッシュボードデータを取得
-  const result = await getDashboardData(year, month)
+  const result = await getDashboardData(today)
 
   if (!result.success || !result.data) {
     return (

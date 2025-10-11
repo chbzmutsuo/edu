@@ -31,6 +31,7 @@ export const roopMakeRelationalInclude = ({parentName, parentObj}) => {
       if (relationalObj[key]?.relationalType === 'hasMany') {
         if (parentObj.include[key].orderBy === undefined) {
           parentObj.include[key] = {...parentObj.include[key], ...SORT_ARGS}
+          // console.log({key}) //logs
 
           roopMakeRelationalInclude({
             parentName: key,

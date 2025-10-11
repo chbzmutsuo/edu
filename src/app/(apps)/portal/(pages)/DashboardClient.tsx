@@ -7,7 +7,7 @@ import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {updateDailyStaffAssignment} from './_actions/dashboard-actions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {cn} from '@cm/shadcn/lib/utils'
-import {R_Stack} from '@cm/components/styles/common-components/common-components'
+import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
 
 type ProductData = {
   id: number
@@ -208,21 +208,28 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                         const isRisky = plan.isRisky
                         const dailyTarget = plan.dailyTarget
 
-                        let itemClassName = ''
+                        let itemBgClassName = ''
+                        let itemTextClassName = ''
                         if (isRisky) {
                           if (isPast) {
-                            itemClassName = 'bg-gray-100 text-gray-600 opacity-60'
+                            itemBgClassName = 'bg-gray-50  opacity-60'
+                            itemTextClassName = 'text-gray-700  font-bold'
                           } else {
-                            itemClassName = 'bg-red-100 text-red-800'
+                            itemBgClassName = 'bg-red-50 '
+                            itemTextClassName = 'text-red-700 font-bold'
                           }
                         } else if (dailyTarget === 0) {
-                          itemClassName = 'bg-gray-100 text-gray-600'
+                          itemBgClassName = 'bg-gray-50 '
+                          itemTextClassName = 'text-gray-700 font-bold'
                         } else {
-                          itemClassName = 'bg-green-100 text-green-800'
+                          itemBgClassName = 'bg-green-50 '
+                          itemTextClassName = 'text-green-700 font-bold'
                         }
 
+                        const diff = plan.dailyCapacity - dailyTarget
+
                         return (
-                          <div key={plan.productId} className={cn(`text-xs p-1 rounded `, itemClassName)}>
+                          <div key={plan.productId} className={cn(`text-xs p-1 rounded `, itemBgClassName)}>
                             <div className="flex items-center gap-1">
                               {isRisky && <AlertTriangle className="w-3 h-3" />}
                               {!isRisky && dailyTarget > 0 && <CheckCircle className="w-3 h-3" />}
@@ -231,13 +238,29 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                               </span>
                             </div>
                             <R_Stack className=" gap-0.5">
-                              <span className={isPast && plan.dailyTarget ? 'opacity-50' : 'font-bold'}>
-                                目標: {plan.dailyTarget}
-                              </span>
-                              <span>/</span>
-                              <span className={isPast && plan.actualProduction ? 'font-bold text-blue-600' : 'opacity-50'}>
-                                実績: {plan.actualProduction}
-                              </span>
+                              {!isPast && (
+                                <R_Stack className={`gap-0.5`}>
+                                  <R_Stack className={cn('gap-2   items-baseline-last')}>
+                                    <C_Stack className={`gap-0.5 leading-2`}>
+                                      <span className={`text-[8px] text-gray-600`}>見込</span>
+                                      <span>{plan.dailyCapacity}</span>
+                                    </C_Stack>
+                                    <span>/</span>
+                                    <C_Stack className={`gap-0.5 leading-2`}>
+                                      <span className={`text-[8px] text-gray-600`}>目標</span>
+                                      <span>{plan.dailyTarget}</span>
+                                    </C_Stack>
+
+                                    <span className={itemTextClassName}>({diff > 0 ? `+${diff}` : diff})</span>
+                                  </R_Stack>
+                                </R_Stack>
+                              )}
+
+                              {isPast && (
+                                <span className={plan.actualProduction ? 'font-bold text-blue-600' : 'opacity-50'}>
+                                  実績: {plan.actualProduction}
+                                </span>
+                              )}
                             </R_Stack>
                           </div>
                         )

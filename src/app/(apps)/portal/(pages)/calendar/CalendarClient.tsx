@@ -6,7 +6,6 @@ import {PlusCircle, Trash2, Calendar} from 'lucide-react'
 import useModal from '@cm/components/utils/modal/useModal'
 import useGlobal from '@cm/hooks/globalHooks/useGlobal'
 import {createHoliday, updateHoliday, deleteHoliday, getAllHolidays} from './_actions/calendar-actions'
-import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import NewDateSwitcher from '@cm/components/utils/dates/DateSwitcher/NewDateSwitcher'
 import {R_Stack} from '@cm/components/styles/common-components/common-components'
 

@@ -51,12 +51,15 @@ export class QueryBuilder {
         },
       } as Prisma.OdometerInputFindManyArgs,
     }
+
     Object.keys(include).forEach(key => {
       roopMakeRelationalInclude({
         parentName: key,
         parentObj: include[key],
       })
     })
+
+    console.log(JSON.stringify(include, null, 2).length) //logs
 
     return include
   }
