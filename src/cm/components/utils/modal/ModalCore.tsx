@@ -13,6 +13,9 @@ export type basicModalPropType = {
   style?: object
   alertOnClose?: string | boolean
   closeBtn?: boolean | JSX.Element
+  childrenProps?: {
+    className?: string
+  }
 
   open?: any
   setopen?: any
@@ -33,7 +36,18 @@ const getAlertOnClose = (props: ModalCorePropType) => {
 }
 
 export const ModalCore = React.memo((props: ModalCorePropType) => {
-  const {Trigger, style, children, title, description, withPaper = true} = props
+  const {
+    Trigger,
+    style,
+    children,
+    title,
+    description,
+    withPaper = true,
+    childrenProps = {
+      className: 'p-4',
+    },
+  } = props
+
   const alertOnClose = getAlertOnClose(props)
 
   const open = props.open
@@ -68,11 +82,12 @@ export const ModalCore = React.memo((props: ModalCorePropType) => {
           title,
           description,
           children,
+          childrenProps,
           withPaper,
         }}
       />
     )
-  }, [open, setopen, modalStyle, Trigger, title, description, children, withPaper])
+  }, [open, setopen, modalStyle, Trigger, title, description, children, withPaper, childrenProps])
 
   return ModalMemo
 })

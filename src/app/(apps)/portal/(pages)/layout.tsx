@@ -7,15 +7,12 @@ export default async function AppLayout(props) {
   return (
     <Admin
       {...{
-        AppName: 'テストアプリ',
-        PagesMethod: 'Advantage_PAGES',
+        AppName: '生産管理システム',
+        PagesMethod: 'portal_PAGES',
         PageBuilderGetter: {class: PageBuilder, getter: 'getGlobalIdSelector'},
       }}
     >
-      <div>
-        {/* <Tasks /> */}
-        <div>{children}</div>
-      </div>
+      <div>{children}</div>
     </Admin>
   )
 }

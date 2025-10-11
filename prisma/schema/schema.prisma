@@ -63,55 +63,28 @@ model User {
 
   School School? @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  VideoFromUser           VideoFromUser[]
-  Comment                 Comment[]
-  LessonLog               LessonLog[]
-  LessonLogAuthorizedUser LessonLogAuthorizedUser[]
-
-  Payment        Payment[]
-  SystemChat     SystemChat[]    @relation("user")
-  SystemChatRoom SystemChatRoom?
-  Ticket         Ticket[]
-
-  GenbaDayShift GenbaDayShift[]
-  SohkenCar     SohkenCar[]
-
   bcc String?
 
-  UserRole   UserRole[]
-  AqSaleCart AqSaleCart[]
-
-  AqCustomerRecord AqCustomerRecord[]
-
-  AqSaleRecord AqSaleRecord[]
+  UserRole UserRole[]
 
   // TbmOperation                     TbmOperation[]
   // TbmOperationGroup                TbmOperationGroup[]
-  AqCustomer        AqCustomer[]
-  TbmBase           TbmBase?            @relation(fields: [tbmBaseId], references: [id])
-  tbmBaseId         Int?
-  TbmDriveSchedule  TbmDriveSchedule[]
-  UserWorkStatus    UserWorkStatus[]
-  OdometerInput     OdometerInput[]
-  TbmRefuelHistory  TbmRefuelHistory[]
-  DayRemarksUser    DayRemarksUser[]
+
+  TbmBase          TbmBase?           @relation(fields: [tbmBaseId], references: [id])
+  tbmBaseId        Int?
+  TbmDriveSchedule TbmDriveSchedule[]
+  UserWorkStatus   UserWorkStatus[]
+  OdometerInput    OdometerInput[]
+  TbmRefuelHistory TbmRefuelHistory[]
+
   TbmCarWashHistory TbmCarWashHistory[]
-  PurchaseRequest   PurchaseRequest[]
-  LeaveRequest      LeaveRequest[]
-  Approval          Approval[]
 
   KyuyoTableRecord KyuyoTableRecord[]
   Department       Department?        @relation(fields: [departmentId], references: [id])
   departmentId     Int?
-  HealthRecord     HealthRecord[]
-  HealthJournal    HealthJournal[]
 
-  // Sara App リレーション
-  Family                Family?                     @relation("FamilyUsers", fields: [familyId], references: [id])
-  RequestedEvaluations  ActivityEvaluationRequest[] @relation("RequestedBy")
-  ApprovedEvaluations   ActivityEvaluationRequest[] @relation("ApprovedBy")
   // TbmVehicle           TbmVehicle?
-  TbmVehicle            TbmVehicle?                 @relation(fields: [tbmVehicleId], references: [id])
+  TbmVehicle            TbmVehicle?             @relation(fields: [tbmVehicleId], references: [id])
   tbmVehicleId          Int?
   SbmReservation        SbmReservation[]
   SbmDeliveryAssignment SbmDeliveryAssignment[]

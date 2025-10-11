@@ -1,4 +1,3 @@
-import prisma from 'src/lib/prisma'
 import {normalCredentialsProvider} from '@app/api/auth/[...nextauth]/constants/next-auth-providers'
 import {googleProvider} from '@app/api/auth/[...nextauth]/constants/GoogleProvider'
 
@@ -27,24 +26,10 @@ export const authOptions: any = {
       return token
     },
     async session({session, token}) {
-      const familyId = token.user.familyId ?? 0
-      const Family = await prisma.family.findUnique({
-        where: {id: token.user.familyId ?? 0},
-        include: {User: true},
-      })
-
-      const Parent = Family?.User.filter((u: any) => u.type === 'parent')
-      const Child = Family?.User.filter((u: any) => u.type === 'child')
-
       session.accmessToken = token.accessToken
       session.refreshToken = token.refreshToken
       session.accessTokenExpires = token.accessTokenExpires
-      session.user = {
-        ...token.user,
-        Family,
-        Parent,
-        Child,
-      }
+      session.user = {...token.user}
 
       return session
     },

@@ -49,9 +49,6 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
 
-  // パフォーマンス最適化
-  swcMinify: true,
-
   // ヘッダー最適化
   async headers() {
     return [

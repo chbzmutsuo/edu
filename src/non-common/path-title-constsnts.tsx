@@ -150,6 +150,52 @@ export const PAGES: any = {
       breads,
     }
   },
+  portal_PAGES: (props: PageGetterType) => {
+    const {roles, query, session, rootPath, pathname} = props
+
+    const {login, admin} = getScopes(session, {query, roles})
+
+    const loginPaths = [
+      {tabId: '', label: 'ダッシュボード', ROOT: [rootPath]},
+
+      {
+        tabId: '',
+        label: 'データ入力',
+        ROOT: [rootPath],
+        children: [
+          {tabId: 'orders', label: '受注', ROOT: [rootPath]},
+          {tabId: 'productions', label: '生産', ROOT: [rootPath]},
+          {tabId: 'shipments', label: '出荷', ROOT: [rootPath]},
+        ],
+      },
+      {tabId: 'inventory', label: '在庫管理', ROOT: [rootPath]},
+      {
+        tabId: '',
+        label: 'マスタ管理',
+        ROOT: [rootPath],
+        children: [
+          {tabId: 'materials', label: '原材料マスター', ROOT: [rootPath]},
+          {tabId: 'products', label: '製品マスター', ROOT: [rootPath]},
+          {tabId: 'calendar', label: 'カレンダー管理', ROOT: [rootPath]},
+        ],
+      },
+    ]
+
+    const pathSource: pathItemType[] = [...loginPaths]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      session,
+    })
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
 }
 
 export const CleansePathSource = (props: anyObject) => {

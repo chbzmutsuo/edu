@@ -38,6 +38,9 @@ type ShadModalProps = {
   footer?: React.ReactNode
   className?: string
   style?: React.CSSProperties
+  childrenProps?: {
+    className?: string
+  }
 }
 
 const ShadModal = React.memo((props: ShadModalProps) => {
@@ -45,6 +48,7 @@ const ShadModal = React.memo((props: ShadModalProps) => {
     open,
     onOpenChange,
     Trigger: Trigger,
+    childrenProps,
     children,
     onOpenAutoFocus = e => e.preventDefault(),
     title,
@@ -80,15 +84,17 @@ const ShadModal = React.memo((props: ShadModalProps) => {
             onOpenAutoFocus={onOpenAutoFocus}
             className={cn(`ModalContent rounded-lg bg-white p-1 shadow-md border border-gray-200 ${className}`)}
           >
-            <div className="mx-auto w-full ">
-              <DrawerHeader>
-                <DrawerTitle>{title}</DrawerTitle>
-                <DrawerDescription>{description}</DrawerDescription>
-              </DrawerHeader>
+            <div>
+              <div className="mx-auto w-full ">
+                <DrawerHeader>
+                  <DrawerTitle>{title}</DrawerTitle>
+                  <DrawerDescription>{description}</DrawerDescription>
+                </DrawerHeader>
 
-              <div className="w-fit mx-auto p-4">{children}</div>
+                <div className="w-fit mx-auto p-4">{children}</div>
 
-              <DrawerFooter>{footer}</DrawerFooter>
+                <DrawerFooter>{footer}</DrawerFooter>
+              </div>
             </div>
           </DrawerContent>
         </DrawerPortal>
@@ -109,7 +115,10 @@ const ShadModal = React.memo((props: ShadModalProps) => {
             maxWidth: '95vw',
             overflow: 'auto',
           }}
-          className={cn(`ModalContent p-6 w-fit mx-auto shadow-lg shadow-gray-500  border-gray-200 bg-white ${className}`)}
+          className={cn(
+            `ModalContent  w-fit mx-auto shadow-lg shadow-gray-500  border-gray-200 bg-white ${className}`,
+            childrenProps?.className
+          )}
         >
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>

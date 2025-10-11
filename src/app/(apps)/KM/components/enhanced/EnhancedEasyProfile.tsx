@@ -3,7 +3,6 @@
 import {EnhancedServices} from '@app/(apps)/KM/components/enhanced/EnhancedServices'
 import {EnhancedWorks} from '@app/(apps)/KM/components/enhanced/EnhancedWorks'
 import {EnhancedContact} from '@app/(apps)/KM/components/enhanced/EnhancedContact'
-import {C_Stack} from '@cm/components/styles/common-components/common-components'
 import {motion} from 'framer-motion'
 
 export const EnhancedEasyProfile = ({kaizenClient, works}: {kaizenClient: any[]; works: any[]}) => {
