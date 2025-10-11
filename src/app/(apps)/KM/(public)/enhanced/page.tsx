@@ -7,15 +7,6 @@ import {Metadata} from 'next'
 
 // SEO用のメタデータ生成
 export async function generateMetadata(): Promise<Metadata> {
-  // const kaizenClient = await prisma.kaizenClient.findMany({where: {public: true}, orderBy: [{id: 'asc'}]})
-  // const works = await prisma.kaizenWork.findMany({
-  //   include: {
-  //     KaizenClient: {},
-  //     KaizenWorkImage: true,
-  //   },
-  //   orderBy: [{date: 'desc'}],
-  // })
-
   const title = '改善マニア | システム開発・業務改善のプロフェッショナル'
   const description =
     '改善マニアは業務改善・システム開発の専門家です。スプレッドシートからWEBアプリまで、様々なツール開発で業務効率化を実現。業界・職種を問わず、無駄な業務の撲滅をサポートします。'
@@ -156,12 +147,12 @@ const KM_ENHANCED_PAGE = async () => {
       <div className="min-h-screen">
         {/* <EnhancedHeader menuItems={menuItems} /> */}
 
-        <div className={`max-w-screen-xl mx-auto bg-gray-100 lg:p-8`}>
+        <div className={`max-w-screen-2xl mx-auto bg-gray-100 lg:p-8`}>
           <main role="main">
             <div>
               <EnhancedIntroduction />
             </div>
-            <div className=" mt-4 max-w-screen-xl mx-auto rounded-2xl bg-gray-50 p-1 lg:p-4">
+            <div className=" mt-4 max-w-screen-2xl mx-auto rounded-2xl bg-gray-50 p-1 lg:p-4">
               <EnhancedEasyProfile {...{kaizenClient, works}} />
             </div>
           </main>

@@ -135,7 +135,7 @@ const MaterialClient = ({initialMaterials}: MaterialClientProps) => {
                 <th className="px-4 py-3">名称</th>
                 <th className="px-4 py-3">カテゴリ</th>
                 <th className="px-4 py-3">単位</th>
-                <th className="px-4 py-3 text-right">コスト</th>
+
                 <th className="px-4 py-3 text-right">現在庫</th>
                 <th className="px-4 py-3 text-right">安全在庫</th>
                 <th className="px-4 py-3">操作</th>
@@ -154,7 +154,7 @@ const MaterialClient = ({initialMaterials}: MaterialClientProps) => {
                     <td className="px-4 py-3 font-medium text-gray-900">{material.name}</td>
                     <td className="px-4 py-3">{material.category}</td>
                     <td className="px-4 py-3">{material.unit}</td>
-                    <td className="px-4 py-3 text-right">¥{material.cost.toLocaleString()}</td>
+
                     <td className={`px-4 py-3 text-right font-semibold ${material.isAlert ? 'text-red-600' : 'text-gray-900'}`}>
                       {material.currentStock?.toLocaleString()} {material.unit}
                     </td>
@@ -211,13 +211,17 @@ const MaterialClient = ({initialMaterials}: MaterialClientProps) => {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">カテゴリ</label>
-            <input
-              type="text"
+            <select
               name="category"
               value={formData.category}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
+              required
+            >
+              <option></option>
+              <option>カラーチップ</option>
+              <option>ヒーター線</option>
+            </select>
           </div>
 
           <div>
@@ -236,19 +240,6 @@ const MaterialClient = ({initialMaterials}: MaterialClientProps) => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">コスト（円）</label>
-            <input
-              type="number"
-              name="cost"
-              value={formData.cost}
-              onChange={handleChange}
-              required
-              min="0"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">安全在庫</label>
             <input
               type="number"
@@ -262,13 +253,6 @@ const MaterialClient = ({initialMaterials}: MaterialClientProps) => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <button
-              type="button"
-              onClick={EditModalReturn.handleClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              キャンセル
-            </button>
             <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
               {EditModalReturn.open?.material ? '更新' : '登録'}
             </button>
@@ -277,14 +261,14 @@ const MaterialClient = ({initialMaterials}: MaterialClientProps) => {
       </EditModalReturn.Modal>
 
       {/* 在庫履歴モーダル */}
-      {HistoryModalReturn.open?.material && (
+
+      <HistoryModalReturn.Modal>
         <StockHistoryModal
           material={HistoryModalReturn.open.material}
-          isOpen={HistoryModalReturn.isOpen}
           onClose={HistoryModalReturn.handleClose}
           onUpdate={loadMaterials}
         />
-      )}
+      </HistoryModalReturn.Modal>
     </div>
   )
 }

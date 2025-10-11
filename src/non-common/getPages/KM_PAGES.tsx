@@ -5,13 +5,14 @@ export const KM_PAGES = (props: PageGetterType) => {
   const {roles, query, session, rootPath, pathname} = props
   const scopes = getScopes(session, {query, roles})
 
-  const publicPaths = [
-    // {tabId: 'greeting', label: 'ご挨拶'},
-    {tabId: 'service', label: 'サービス'},
-    {tabId: 'works', label: '実績'},
-    {tabId: 'principle', label: '改善思想'},
-    {tabId: 'contact', label: 'ご依頼・お問い合わせ'},
-  ].map(item => ({...item, ...{ROOT: [rootPath, 'top']}}))
+  // const publicPaths = [
+  //   // // {tabId: 'greeting', label: 'ご挨拶'},
+  //   // {tabId: 'service', label: 'サービス'},
+  //   // {tabId: 'works', label: '実績'},
+  //   // {tabId: 'principle', label: '改善思想'},
+  //   // {tabId: 'contact', label: 'ご依頼・お問い合わせ'},
+  // ].map(item => ({...item, ...{ROOT: [rootPath]}}))
+  const publicPaths = []
 
   const adminPaths = [
     {

@@ -116,9 +116,9 @@ export const EnhancedWorks = ({works}: {works: any[]}) => {
           </div>
 
           {/* 実績カードグリッド */}
-          <C_Stack className="gap-8 max-w-screen-md mx-auto">
+          <C_Stack className="gap-16  mx-auto">
             {workState.filter(work => work.description).length > 0 ? (
-              <div className="items-start justify-center gap-6 sm:gap-8 lg:gap-12 grid grid-cols-1 md:grid-cols-2 gap-y-20">
+              <div className="items-start justify-center gap-6 sm:gap-8 lg:gap-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-y-20">
                 {workState
                   .filter(work => work.description)
                   .map((work, index) => (

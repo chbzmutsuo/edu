@@ -8,6 +8,7 @@ import {updateDailyStaffAssignment} from './_actions/dashboard-actions'
 import {formatDate} from '@cm/class/Days/date-utils/formatters'
 import {cn} from '@cm/shadcn/lib/utils'
 import {C_Stack, R_Stack} from '@cm/components/styles/common-components/common-components'
+import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 
 type ProductData = {
   id: number
@@ -210,20 +211,17 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
 
                         let itemBgClassName = ''
                         let itemTextClassName = ''
-                        if (isRisky) {
-                          if (isPast) {
-                            itemBgClassName = 'bg-gray-50  opacity-60'
-                            itemTextClassName = 'text-gray-700  font-bold'
-                          } else {
+                        if (isPast) {
+                          itemBgClassName = 'bg-gray-50  opacity-60'
+                          itemTextClassName = 'text-gray-700  '
+                        } else {
+                          if (isRisky) {
                             itemBgClassName = 'bg-red-50 '
                             itemTextClassName = 'text-red-700 font-bold'
+                          } else {
+                            itemBgClassName = 'bg-green-50 '
+                            itemTextClassName = 'text-green-700 font-bold'
                           }
-                        } else if (dailyTarget === 0) {
-                          itemBgClassName = 'bg-gray-50 '
-                          itemTextClassName = 'text-gray-700 font-bold'
-                        } else {
-                          itemBgClassName = 'bg-green-50 '
-                          itemTextClassName = 'text-green-700 font-bold'
                         }
 
                         const diff = plan.dailyCapacity - dailyTarget
@@ -231,8 +229,12 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                         return (
                           <div key={plan.productId} className={cn(`text-xs p-1 rounded `, itemBgClassName)}>
                             <div className="flex items-center gap-1">
-                              {isRisky && <AlertTriangle className="w-3 h-3" />}
-                              {!isRisky && dailyTarget > 0 && <CheckCircle className="w-3 h-3" />}
+                              {!isPast && (
+                                <div>
+                                  {isRisky && <AlertTriangle className={cn('w-3 h-3', itemTextClassName)} strokeWidth={4} />}
+                                  {!isRisky && <CheckCircle className={cn('w-3 h-3', itemTextClassName)} strokeWidth={3} />}
+                                </div>
+                              )}
                               <span className="font-medium truncate">
                                 {plan.productName}({plan.productColor})
                               </span>
@@ -257,9 +259,12 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                               )}
 
                               {isPast && (
-                                <span className={plan.actualProduction ? 'font-bold text-blue-600' : 'opacity-50'}>
-                                  実績: {plan.actualProduction}
-                                </span>
+                                <div className={plan.actualProduction ? 'font-bold text-blue-600' : 'opacity-50'}>
+                                  <C_Stack className={`gap-0.5 leading-2`}>
+                                    <span className={`text-[8px] text-gray-600`}>実績</span>
+                                    <span>{plan.actualProduction}</span>
+                                  </C_Stack>
+                                </div>
                               )}
                             </R_Stack>
                           </div>
@@ -277,7 +282,7 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
       {/* 日別モーダル */}
       <DayModalReturn.Modal title={selectedDay?.date ? `${formatDate(new Date(selectedDay.date))} の生産計画` : '生産計画'}>
         {selectedDay?.plans && (
-          <div className="space-y-4">
+          <AutoGridContainer {...{maxCols: {xl: 2, xl2: 3}, className: 'gap-8'}}>
             {selectedDay.plans.map(plan => (
               <div key={plan.productId} className="border rounded-lg p-4">
                 <div className="flex items-center justify-between mb-3">
@@ -352,7 +357,7 @@ const DashboardClient = ({products, calendar, workingDays}: DashboardClientProps
                 </div>
               </div>
             ))}
-          </div>
+          </AutoGridContainer>
         )}
       </DayModalReturn.Modal>
     </div>

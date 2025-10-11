@@ -1,38 +1,42 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const fs = require('fs');
-const path = require('path');
+const fs = require('fs')
+const path = require('path')
+const {getDMMF} = require('@prisma/internals')
 
+async function generateSchemaExports() {
+  // すべての.prismaファイルを読み込む
+  const schemaDir = 'prisma/schema'
+  const fileNames = fs.readdirSync(schemaDir).filter(name => name.endsWith('.prisma'))
 
+  let combinedSchema = ''
+  for (let i = 0; i < fileNames.length; i++) {
+    const fileName = fileNames[i]
+    const schemaPath = path.join(schemaDir, fileName)
+    const schema = fs.readFileSync(schemaPath, 'utf8')
+    combinedSchema += schema + '\n'
+  }
 
+  // DMMFを取得
+  const dmmf = await getDMMF({
+    datamodel: combinedSchema,
+  })
 
-
-const fileNames = fs.readdirSync('prisma/schema');
-let jsResult = `
+  // ES Module形式でエクスポート（Next.jsで使用）
+  const output = `
 export const prismaSchemaString = \`
-`;
-for (let i = 0; i < fileNames.length; i++) {
- const fileName = fileNames[i];
- const schemaPath = path.join('prisma', 'schema', fileName);
- const schema = fs.readFileSync(schemaPath, 'utf8');
- jsResult += `
-${schema}
- `
-}
+${combinedSchema}
+\`;
 
-
-// schema.prisma の内容を適切な形式で変換（必要に応じて）
-jsResult += `\`;
+export const prismaDMMF = ${JSON.stringify(dmmf.datamodel, null, 2)};
 `
 
-const schemaPath = path.join('prisma', 'schema/schema.prisma');
-const outputPath = path.join('src/cm/lib/methods/scheme-json-export.js'); // 出力先のパスを指定
+  const outputPath = path.join('src/cm/lib/methods/scheme-json-export.js')
+  fs.writeFileSync(outputPath, output)
 
+  console.log('✅ Schema exports generated successfully!')
+}
 
-
-
-
-
-// schema.prisma の内容を適切な形式で変換（必要に応じて）
-
-
-fs.writeFileSync(outputPath, jsResult);
+generateSchemaExports().catch(error => {
+  console.error('Error generating schema exports:', error)
+  process.exit(1)
+})

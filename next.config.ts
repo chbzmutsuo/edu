@@ -27,11 +27,7 @@ const withPWA = require('next-pwa')({
 
 const nextConfig: NextConfig = {
   reactStrictMode: false,
-  // eslint: {ignoreDuringBuilds: true},
-  experimental: {
-    serverActions: {bodySizeLimit: '10mb'},
-  },
-
+  experimental: {serverActions: {bodySizeLimit: '10mb'}},
   images: {
     remotePatterns: [
       {protocol: 'https', hostname: '**kickswrap.com'},
@@ -55,42 +51,14 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-XSS-Protection',
-            value: '1; mode=block',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
+          {key: 'X-Content-Type-Options', value: 'nosniff'},
+          {key: 'X-Frame-Options', value: 'DENY'},
+          {key: 'X-XSS-Protection', value: '1; mode=block'},
+          {key: 'Referrer-Policy', value: 'origin-when-cross-origin'},
         ],
       },
-      {
-        source: '/image/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/api/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, max-age=0',
-          },
-        ],
-      },
+      {source: '/image/(.*)', headers: [{key: 'Cache-Control', value: 'public, max-age=31536000, immutable'}]},
+      {source: '/api/(.*)', headers: [{key: 'Cache-Control', value: 'no-store, max-age=0'}]},
     ]
   },
 }

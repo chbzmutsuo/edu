@@ -59,8 +59,6 @@ export class QueryBuilder {
       })
     })
 
-    console.log(JSON.stringify(include, null, 2).length) //logs
-
     return include
   }
 }

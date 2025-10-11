@@ -243,13 +243,6 @@ const ShipmentClient = ({initialShipments, products}: ShipmentClientProps) => {
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <button
-              type="button"
-              onClick={EditModalReturn.handleClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
-            >
-              キャンセル
-            </button>
             <button type="submit" className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors">
               {EditModalReturn.open?.shipment ? '更新' : '登録'}
             </button>

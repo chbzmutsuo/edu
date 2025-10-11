@@ -67,7 +67,7 @@ export const transposeColumns = (columns: colType[], transposeColumnsOptions?: t
             <ContentPlayer
               styles={{
                 main: {...col?.form?.style},
-                thumbnail: {...col?.td?.style},
+                thumbnail: {width: 100, height: 100, ...col?.td?.style},
               }}
               src={row[col.id]}
             />

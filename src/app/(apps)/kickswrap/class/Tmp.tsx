@@ -1,4 +1,3 @@
-import {doStandardPrisma} from '@cm/lib/server-actions/common-server-actions/doStandardPrisma/doStandardPrisma'
 
 export class Tmp {
   static const = {

@@ -2,7 +2,7 @@
 import {getToken} from 'next-auth/jwt'
 import {NextRequest, NextResponse} from 'next/server'
 
-const defaultPathValidateConfig = {
+const pathValidation = {
   isValid: session => session?.email,
   redirect: (origin, rootPath) => `${origin}/not-found?rootPath=${rootPath}`,
 }
@@ -21,11 +21,19 @@ const getFreePathsMathcer = (rootPath, pathArray) => {
 }
 
 export const rootPaths: rootPath[] = [
-  {paths: [{matcher: getFreePathsMathcer(`Grouping`, [`/game/main`]), ...defaultPathValidateConfig}], rootPath: 'Grouping'},
-  {paths: [{matcher: getFreePathsMathcer(`aquapot`, [`/myPage`]), ...defaultPathValidateConfig}], rootPath: `aquapot`},
-  {paths: [{matcher: getFreePathsMathcer(`sohken`, []), ...defaultPathValidateConfig}], rootPath: `sohken`},
-  {paths: [{matcher: getFreePathsMathcer(`tbm`, []), ...defaultPathValidateConfig}], rootPath: `tbm`},
-  {paths: [{matcher: getFreePathsMathcer(`health`, []), ...defaultPathValidateConfig}], rootPath: `health`},
+  {paths: [{matcher: getFreePathsMathcer(`Grouping`, [`/game/main`]), ...pathValidation}], rootPath: 'Grouping'},
+
+  {paths: [{matcher: getFreePathsMathcer(`tbm`, []), ...pathValidation}], rootPath: `tbm`},
+
+  {
+    paths: [
+      {
+        matcher: getFreePathsMathcer(`KM`, []),
+        ...pathValidation,
+      },
+    ],
+    rootPath: `KM`,
+  },
 ]
 
 export async function middleware(req: NextRequest) {

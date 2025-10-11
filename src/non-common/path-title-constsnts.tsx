@@ -168,7 +168,6 @@ export const PAGES: any = {
           {tabId: 'shipments', label: '出荷', ROOT: [rootPath]},
         ],
       },
-      {tabId: 'inventory', label: '在庫管理', ROOT: [rootPath]},
       {
         tabId: '',
         label: 'マスタ管理',

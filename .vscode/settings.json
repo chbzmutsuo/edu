@@ -108,9 +108,9 @@
     "**/kickswrap/**": true,
     "**/migrations/**": true,
     "**/page/**": true,
-    "**/portal/**": true,
     "**/sbm/**": true,
     "**/stock/**": true,
+    "**/tbm/**": true,
     "**/tmp/**": true,
     "**/training/**": true
   },
@@ -128,9 +128,9 @@
     "kickswrap",
     "migrations",
     "page",
-    "portal",
     "sbm",
     "stock",
+    "tbm",
     "tmp",
     "training"
   ],

@@ -2,8 +2,8 @@
 
 import React, {useState, useEffect} from 'react'
 import {Order} from '@prisma/client'
-import {OrderWithProduct} from '../_actions/order-actions'
-import {ProductWithRecipe} from '../../products/_actions/product-actions'
+import {OrderWithProduct} from '@app/(apps)/portal/(pages)/orders/OrderClient'
+import {ProductWithRecipe} from '@app/(apps)/portal/(pages)/products/ProductClient'
 
 type OrderFormProps = {
   order?: OrderWithProduct
