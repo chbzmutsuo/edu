@@ -7,6 +7,7 @@ import prisma from 'src/lib/prisma'
 /**
  * 特定日付の配達チームを取得
  */
+
 export async function getDeliveryTeamsByDate(date: string): Promise<DeliveryTeamType[]> {
   try {
     const startDate = new Date(date)

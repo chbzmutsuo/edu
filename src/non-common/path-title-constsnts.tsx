@@ -14,6 +14,125 @@ export const PAGES: any = {
   KM_PAGES,
   stock_PAGES,
   training_PAGES,
+  Colabo_PAGES: (props: PageGetterType) => {
+    const {roles, session, rootPath, query, pathname, dynamicRoutingParams} = props
+
+    const scopes = getScopes(session, {query, roles})
+    const {isSchoolLeader} = scopes.getGroupieScopes()
+
+    const {admin} = scopes
+    const configROOTS = [rootPath]
+
+    const normalPaths: pathItemType[] = [
+      {ROOT: [rootPath], tabId: '', label: 'TOP', exclusiveTo: 'always'},
+      {
+        ROOT: [rootPath],
+        tabId: '',
+        label: 'アプリ',
+        children: [
+          {tabId: 'Grouping', label: 'Grouping'},
+          {tabId: 'Colabo', label: 'Colabo'},
+        ],
+      },
+    ]
+
+    const adminPaths: pathItemType[] = [
+      {
+        tabId: 'admin',
+        label: 'デバッグメニュー',
+        link: {},
+        exclusiveTo: true,
+        children: [
+          {tabId: 'game', label: '授業', link: {}, exclusiveTo: true},
+          {tabId: 'slide', label: 'スライド', link: {}, exclusiveTo: true},
+        ],
+      },
+    ].map(item => {
+      return {
+        ...item,
+        ROOT: configROOTS,
+        exclusiveTo: admin,
+      }
+    })
+
+    const pathSource = [
+      //
+      ...normalPaths,
+      ...adminPaths,
+    ] as pathItemType[]
+
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      query,
+      session,
+      dynamicRoutingParams,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
+
+  Grouping_PAGES: (props: PageGetterType) => {
+    const {roles, session, rootPath, query, pathname, dynamicRoutingParams} = props
+
+    const scopes = getScopes(session, {query, roles})
+
+    const {admin} = scopes
+    const {isSchoolLeader} = scopes.getGroupieScopes()
+
+    const configROOTS = [rootPath]
+
+    const pathSource: pathItemType[] = [
+      {
+        ROOT: [rootPath],
+        tabId: '',
+        label: 'アプリ',
+        children: [
+          {tabId: 'Grouping', label: 'Grouping'},
+          {tabId: 'Colabo', label: 'Colabo'},
+        ],
+      },
+
+      {
+        ROOT: configROOTS,
+        tabId: '',
+        label: '各種設定',
+        exclusiveTo: isSchoolLeader,
+        children: [
+          {tabId: 'school', label: '学校', exclusiveTo: admin},
+          {tabId: 'teacher', label: '教員', exclusiveTo: isSchoolLeader},
+          {tabId: 'classroom', label: 'クラス', exclusiveTo: isSchoolLeader},
+          {tabId: 'student', label: '児童・生徒', exclusiveTo: isSchoolLeader},
+          {tabId: 'subjectNameMaster', label: '教科', exclusiveTo: isSchoolLeader},
+          {tabId: 'csv-import', label: 'CSV取り込み', exclusiveTo: isSchoolLeader},
+        ],
+      },
+      {ROOT: [rootPath], tabId: 'public', label: '公開ページ', children: [{tabId: 'enter', label: '児童・生徒用', link: {}}]},
+      {ROOT: [rootPath, `admin`], tabId: 'dataManagement', label: 'データ抽出（管理者用）', exclusiveTo: admin},
+    ]
+    const {cleansedPathSource, navItems, breads, allPathsPattenrs} = CleansePathSource({
+      rootPath,
+      pathSource,
+      pathname,
+      query,
+      session,
+      dynamicRoutingParams,
+    })
+
+    return {
+      allPathsPattenrs,
+      pathSource: cleansedPathSource,
+      navItems,
+      breads,
+    }
+  },
+
   keihi_PAGES: (props: PageGetterType) => {
     const {roles, query, session, rootPath, pathname} = props
 

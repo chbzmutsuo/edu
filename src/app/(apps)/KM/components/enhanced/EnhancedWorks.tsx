@@ -7,9 +7,10 @@ import useBasicFormProps from '@cm/hooks/useBasicForm/useBasicFormProps'
 import {useState} from 'react'
 import BasicModal from '@cm/components/utils/modal/BasicModal'
 import {Search, Filter} from 'lucide-react'
-import {Button} from '@cm/shadcn/ui/button'
+
 import {motion} from 'framer-motion'
 import {useInView} from 'react-intersection-observer'
+import {Button} from '@cm/components/styles/common-components/Button'
 
 export const EnhancedWorks = ({works}: {works: any[]}) => {
   const {ref, inView} = useInView({
@@ -82,8 +83,7 @@ export const EnhancedWorks = ({works}: {works: any[]}) => {
       <BasicModal
         Trigger={
           <Button
-            variant="default"
-            size="lg"
+            color="blue"
             className="gap-2 bg-gradient-to-r from-blue-600 to-blue-700 shadow-lg transition-all hover:scale-105 hover:shadow-xl"
           >
             <Filter className="h-5 w-5" />

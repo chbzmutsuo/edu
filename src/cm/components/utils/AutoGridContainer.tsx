@@ -17,8 +17,9 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
   children,
   className,
   maxCols = {
-    sm: 2,
-    xl: 3,
+    md: 2,
+    lg: 3,
+    xl: 4,
   },
 }) => {
   const childrenArray = React.Children.toArray(children)

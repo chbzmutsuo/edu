@@ -414,7 +414,7 @@ const CalendarIcon = props => (
 // ===================================================================================
 // 予約フォームページ (ReservationFormPage)
 // ===================================================================================
-const ReservationFormPage = ({reservations, slots, stores}) => {
+export const ReservationFormPage = ({reservations, slots, stores}) => {
   // ... This component is largely unchanged. A store selector has been added. ...
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [formData, setFormData] = useState({

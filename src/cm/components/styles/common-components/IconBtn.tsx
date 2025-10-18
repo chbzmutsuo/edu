@@ -18,12 +18,18 @@ export const IconBtn = React.memo(
       disabled?: boolean
     }
   ) => {
-    const {className, style, color, active = true, vivid = false, rounded = true, children, ...rest} = props
+    const {className, style, color, active = true, vivid = true, rounded = false, children, ...rest} = props
 
     const colorUndetected = !iconBtnColorVariants[color ?? ''] && color
 
     const customeStyle = useMemo(() => {
-      if (vivid) return {...getColorStyles(color ?? '')}
+      if (vivid && color) {
+        return {
+          ...getColorStyles(color ? color + '90' : ''),
+          border: '2px solid ' + color,
+        }
+      }
+
       if (colorUndetected) {
         return {
           background: color + '40',

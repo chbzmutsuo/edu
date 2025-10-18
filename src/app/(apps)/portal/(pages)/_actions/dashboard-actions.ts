@@ -663,29 +663,61 @@ export const getDashboardData = async (today: Date) => {
       dailyProductionMap
     )
 
+    // const lastDayInfomation = calendarData.days
+    //   .filter(day => !day.isHoliday)
+    //   .sort((a, b) => (a.day ?? 0) - (b.day ?? 0))
+    //   .pop()
+
+    // if (lastDayInfomation) {
+    //   const plans = lastDayInfomation.plans
+    //   plans?.forEach(plan => {
+    //     plan.monthlyTarget <= plan.cumulativeProduction
+    //     const product = productData.find(p => p.id === plan.productId)
+    //     if (product) {
+    //       const isFullFilled = product.monthlyTarget <= product.monthlyProduction + plan.dailyCapacity
+    //     }
+    //   })
+    // }
+
     // ============================================================================
     // 5. 見込み生産数を計算
     // ============================================================================
+
+    const scheduledProductionByProduct = new Map<number, number>()
 
     const expectedProductionByProduct = new Map<number, number>()
     calendarData.days.forEach(dayData => {
       if (dayData.day !== null) {
         dayData.plans.forEach(plan => {
           const current = expectedProductionByProduct.get(plan.productId) || 0
+
+          //実績と予定両方の合計を計算
           const addCount = dayData.isPast ? plan.actualProduction : plan.dailyCapacity
           expectedProductionByProduct.set(plan.productId, current + addCount)
+
+          //予定のみの合計を計算
+
+          scheduledProductionByProduct.set(
+            plan.productId,
+            (scheduledProductionByProduct.get(plan.productId) || 0) + (dayData.isPast ? 0 : plan.dailyCapacity)
+          )
         })
       }
     })
 
     const productsWithExpected = productData.map(product => {
+      const scheduledProduction = scheduledProductionByProduct.get(product.id) || 0
       const expectedProduction = expectedProductionByProduct.get(product.id) || 0
-      const excessExpected = Math.max(0, product.monthlyProduction + expectedProduction)
+      const excessExpected = expectedProduction - product.monthlyTarget
+
+      const isFullFilledOnLastDay = product.monthlyTarget <= product.monthlyProduction + scheduledProduction
 
       return {
         ...product,
+        scheduledProduction,
         expectedProduction,
         excessExpected,
+        isFullFilledOnLastDay,
       }
     })
 

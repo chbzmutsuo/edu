@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -22,9 +26,15 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/app/*"],
-      "@cm/*": ["src/cm/*"],
-      "@shadcn/*": ["src/cm/shadcn/*"]
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@cm/*": [
+        "src/cm/*"
+      ],
+      "@shadcn/*": [
+        "src/cm/shadcn/*"
+      ]
     },
     "strictNullChecks": true
   },
@@ -43,6 +53,18 @@
     "scripts/**/*",
     ".next/cache/**/*",
     ".next/server/**/*",
-    ".next/static/**/*"
+    ".next/static/**/*",
+    "src/app/(apps)/KM/**/*",
+    "src/app/(apps)/counseling/**/*",
+    "src/app/(apps)/keihi/**/*",
+    "src/app/(apps)/kickswrap/**/*",
+    "src/app/(apps)/migrations/**/*",
+    "src/app/(apps)/page/**/*",
+    "src/app/(apps)/portal/**/*",
+    "src/app/(apps)/sbm/**/*",
+    "src/app/(apps)/stock/**/*",
+    "src/app/(apps)/tbm/**/*",
+    "src/app/(apps)/tmp/**/*",
+    "src/app/(apps)/training/**/*"
   ]
 }

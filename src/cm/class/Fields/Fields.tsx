@@ -16,9 +16,11 @@ import {NestHandler} from '@cm/class/NestHandler'
 
 import React from 'react'
 import {NumHandler} from '@cm/class/NumHandler'
+
 import {TableInfo, TableInfoWrapper} from '@cm/class/builders/ColBuilderVariables'
 import {DH__convertDataType} from '@cm/class/DataHandler/type-converter'
 import {cn} from '@shadcn/lib/utils'
+import {defaultFormat} from '@cm/class/Fields/lib/defaultFormat'
 
 export const defaultSelect = {id: true, name: true}
 export const masterDataSelect = {...defaultSelect, color: true}
@@ -67,12 +69,20 @@ export class Fields {
 
       columns.forEach(col => {
         const pseudoId = props.convertColId?.[col.id] ?? col.id
-        let colValue = col.format
-          ? col.format(value, row, col)
-          : DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
+        let colValue = ''
 
-        if (col.type === 'price') colValue = NumHandler.toPrice(colValue)
-        if (col.type === 'password') colValue = '********'
+        if (col.format) {
+          colValue = col.format(value, row, col)
+        } else if (col.type === 'price') {
+          colValue = NumHandler.toPrice(colValue)
+        } else if (col.type === 'password') {
+          colValue = '********'
+        } else if (col.forSelect) {
+          const value = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
+          colValue = defaultFormat(value, row, col) as string
+        } else {
+          colValue = DH__convertDataType(NestHandler.GetNestedValue(pseudoId, row), col.type, 'client')
+        }
 
         const item = {label: col.label, value: colValue}
 

@@ -11,6 +11,10 @@ export class NumHandler {
     }
   }
 
+  static withPlusMinus = (value: number) => {
+    return value > 0 ? '+' + value.toLocaleString() : value.toLocaleString()
+  }
+
   static getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min
   }

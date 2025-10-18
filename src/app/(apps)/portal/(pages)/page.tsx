@@ -5,7 +5,7 @@ import {FitMargin} from '@cm/components/styles/common-components/common-componen
 
 const PortalHomePage = async () => {
   const today = new Date()
-  // today.setDate(today.getDate() + 1)
+  today.setDate(today.getDate() + 3)
 
   // ダッシュボードデータを取得
   const result = await getDashboardData(today)

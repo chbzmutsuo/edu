@@ -18,7 +18,7 @@ import {obj__initializeProperty} from '@cm/class/ObjHandler/transformers'
 
 export const getColMinWidth = (col: colType) => {
   const dateTypeWidth = 140
-  const minWidth = col.type === `date` ? dateTypeWidth : 80
+  const minWidth = col.type === `date` ? dateTypeWidth : col.type === `color` ? 20 : 80
   return minWidth
 }
 
