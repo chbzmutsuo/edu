@@ -11,7 +11,7 @@ export default function Page() {
   return (
     <CenterScreen>
       <C_Stack className={`items-center gap-8 text-2xl`}>
-        <T_LINK href={HREF('/edu/colabo', {}, query)}>Colabo</T_LINK>
+        <T_LINK href={HREF('/edu/Colabo', {}, query)}>Colabo</T_LINK>
         <T_LINK href={HREF('/edu/Grouping', {}, query)}>Grouping</T_LINK>
       </C_Stack>
     </CenterScreen>

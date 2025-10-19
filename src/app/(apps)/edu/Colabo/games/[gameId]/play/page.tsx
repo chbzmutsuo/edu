@@ -2,6 +2,7 @@ import {initServerComopnent} from 'src/non-common/serverSideFunction'
 import prisma from 'src/lib/prisma'
 import Redirector from '@cm/components/utils/Redirector'
 import ColaboGamePlayPage from './ColaboGamePlayPage'
+import {GameCl, gameDataType} from '@app/(apps)/edu/Colabo/class/GameCl'
 
 const Page = async props => {
   const params = await props.params
@@ -18,44 +19,7 @@ const Page = async props => {
   }
 
   // Gameの詳細を取得
-  const game = await prisma.game.findUnique({
-    where: {id: gameId},
-    include: {
-      School: true,
-      Teacher: true,
-      SubjectNameMaster: true,
-      GameStudent: {
-        include: {
-          Student: {
-            select: {
-              id: true,
-              name: true,
-              kana: true,
-              attendanceNumber: true,
-              gender: true,
-            },
-          },
-        },
-        orderBy: {
-          sortOrder: 'asc',
-        },
-      },
-      Slide: {
-        where: {active: true},
-        orderBy: {sortOrder: 'asc'},
-      },
-      Group: {
-        where: {active: true},
-        include: {
-          Squad: {
-            include: {
-              Student: true,
-            },
-          },
-        },
-      },
-    },
-  })
+  const game = await GameCl.getCurrentSlideAnswers(gameId)
 
   if (!game) {
     return <div className="p-6 text-center">Gameが見つかりません</div>

@@ -12,7 +12,7 @@ interface TeacherViewProps {
   currentMode: 'view' | 'answer' | 'result' | null
   answerStats: any
   socket: any
-  onSlideChange: (index: number) => void
+  onSlideChange: (slideId: number, index: number) => void
 }
 
 export default function TeacherView({
@@ -36,8 +36,8 @@ export default function TeacherView({
 
     const newSlide = game.Slide[newIndex]
     if (newSlide) {
-      socket.changeSlide(newSlide.id, newIndex)
-      onSlideChange(newIndex)
+      socket.changeSlide(newIndex)
+      onSlideChange(newSlide.id, newIndex)
     }
   }
 
@@ -69,19 +69,19 @@ export default function TeacherView({
       setIsLoadingAnswers(false)
     }
   }
-
-  // 結果モードになったら回答を取得
-  useEffect(() => {
-    if (currentMode === 'result') {
-      loadAnswers()
-    }
-  }, [currentMode, currentSlide])
-
   // 正答を公開
   const handleRevealCorrect = () => {
     if (!currentSlide) return
     socket.revealCorrect(currentSlide.id)
   }
+
+  // 結果モードになったら回答を取得
+  useEffect(() => {
+    if (currentMode === 'result') {
+      loadAnswers()
+      handleRevealCorrect()
+    }
+  }, [currentMode, currentSlide])
 
   // 特定の回答を共有
   const handleShareAnswer = (answerId: number, isAnonymous: boolean = false) => {
@@ -270,14 +270,14 @@ export default function TeacherView({
               <div className="text-center py-4 text-gray-500">まだ回答がありません</div>
             )}
 
-            {/* 正答公開ボタン（選択クイズの場合） */}
+            {/* 正答公開ボタン（選択クイズの場合）
             {currentSlide?.templateType === 'choice' && (
               <div className="mt-4">
                 <Button onClick={handleRevealCorrect} className="w-full bg-green-600 hover:bg-green-700">
                   ✅ 正答を公開
                 </Button>
               </div>
-            )}
+            )} */}
           </div>
         )}
       </div>

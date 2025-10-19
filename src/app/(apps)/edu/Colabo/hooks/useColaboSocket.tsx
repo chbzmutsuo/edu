@@ -66,26 +66,49 @@ export function useColaboSocket({
   /**
    * Socket.io接続を確立
    */
-  const connect = useCallback(() => {
+  const connect = () => {
     if (socketRef.current?.connected) {
-      console.log('[useColaboSocket] 既に接続済み')
+      console.log('既に接続済み')
       return
     }
 
-    console.log('[useColaboSocket] 接続開始...')
+    console.log('接続開始...')
+    console.log('URL:', SOCKET_CONFIG.path)
+    console.log('設定:', SOCKET_CONFIG)
     setConnectionStatus('connecting')
 
-    // Socket.ioインスタンスを作成
-    const socket = io(SOCKET_CONFIG.path, {
-      ...SOCKET_CONFIG,
+    // 既存のSocketがあれば切断
+    if (socketRef.current) {
+      console.log('既存の接続をクリーンアップ')
+      socketRef.current.removeAllListeners()
+      socketRef.current.disconnect()
+      socketRef.current = null
+    }
+
+    // Socket.ioインスタンスを作成（完全なURLを指定）
+    const socketUrl =
+      typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : 'http://localhost:3000'
+
+    console.log('接続先:', socketUrl)
+
+    const socket = io(socketUrl, {
+      path: SOCKET_CONFIG.path,
+      transports: SOCKET_CONFIG.transports,
+      reconnection: SOCKET_CONFIG.reconnection,
+      reconnectionAttempts: SOCKET_CONFIG.reconnectionAttempts,
+      reconnectionDelay: SOCKET_CONFIG.reconnectionDelay,
+      reconnectionDelayMax: SOCKET_CONFIG.reconnectionDelayMax,
+      timeout: SOCKET_CONFIG.timeout,
       autoConnect: false,
+      forceNew: false,
+      upgrade: true,
     })
 
     socketRef.current = socket
 
-    // 接続イベント
+    // // 接続イベント
     socket.on('connect', () => {
-      console.log('[useColaboSocket] Socket.io接続成功')
+      console.log('Socket.io接続成功')
       setConnectionStatus('connected')
 
       // Gameに参加
@@ -100,7 +123,7 @@ export function useColaboSocket({
 
     // 接続確認応答
     socket.on(SOCKET_EVENTS.CONNECTION_ACK, (data: ConnectionAckPayload) => {
-      console.log('[useColaboSocket] 接続確認:', data)
+      console.log({接続確認: data})
       if (data.currentState) {
         setCurrentState(data.currentState)
         onGameStateSync?.(data.currentState)
@@ -109,7 +132,7 @@ export function useColaboSocket({
 
     // 状態同期
     socket.on(SOCKET_EVENTS.GAME_STATE_SYNC, (data: GameStateSyncPayload) => {
-      console.log('[useColaboSocket] 状態同期:', data)
+      console.log({状態同期: data})
       setCurrentState(data)
       onGameStateSync?.(data)
 
@@ -124,49 +147,86 @@ export function useColaboSocket({
 
     // 回答状況更新（教師のみ）
     socket.on(SOCKET_EVENTS.GAME_ANSWER_UPDATED, (data: AnswerUpdatedPayload) => {
-      console.log('[useColaboSocket] 回答状況更新:', data)
+      console.log({回答状況更新: data})
       onAnswerUpdate?.(data)
     })
 
     // 回答保存完了（生徒のみ）
     socket.on(SOCKET_EVENTS.STUDENT_ANSWER_SAVED, (data: any) => {
-      console.log('[useColaboSocket] 回答保存完了:', data)
+      console.log({回答保存完了: data})
       onAnswerSaved?.(data)
     })
 
     // 回答共有
     socket.on(SOCKET_EVENTS.TEACHER_SHARE_ANSWER, (data: any) => {
-      console.log('[useColaboSocket] 回答共有:', data)
+      console.log({回答共有: data})
       onSharedAnswer?.(data)
     })
 
     // 正答公開
     socket.on(SOCKET_EVENTS.TEACHER_REVEAL_CORRECT, (data: any) => {
-      console.log('[useColaboSocket] 正答公開:', data)
+      console.log({正答公開: data})
       onRevealCorrect?.(data)
     })
 
     // エラー
     socket.on(SOCKET_EVENTS.ERROR, (error: SocketErrorPayload) => {
-      console.error('[useColaboSocket] エラー:', error)
+      console.error({エラー: error})
       onError?.(error)
     })
 
     // 切断
     socket.on('disconnect', reason => {
-      console.log('[useColaboSocket] 切断:', reason)
+      console.log({切断: reason})
+      console.log('切断理由の詳細:', reason)
       setConnectionStatus('disconnected')
     })
 
     // 接続エラー
-    socket.on('connect_error', error => {
-      console.error('[useColaboSocket] 接続エラー:', error)
+    socket.on('connect_error', (error: any) => {
+      console.error({接続エラー: error})
+      console.error('エラーメッセージ:', error.message || error.toString())
       setConnectionStatus('error')
+
+      const errorPayload: SocketErrorPayload = {
+        message: `接続エラー: ${error.message || error.toString()}`,
+        code: 'CONNECTION_ERROR',
+      }
+      onError?.(errorPayload)
     })
 
-    // 再接続
+    // 接続タイムアウト
+    socket.on('connect_timeout', () => {
+      console.error({接続タイムアウト: {message: '接続がタイムアウトしました'}})
+      setConnectionStatus('error')
+
+      const errorPayload: SocketErrorPayload = {
+        message: '接続がタイムアウトしました',
+        code: 'CONNECTION_TIMEOUT',
+      }
+      onError?.(errorPayload)
+    })
+
+    // 再接続試行
+    socket.on('reconnect_attempt', attemptNumber => {
+      console.log({再接続試行: attemptNumber})
+    })
+
+    // 再接続失敗
+    socket.on('reconnect_failed', () => {
+      console.error({再接続失敗: {message: '再接続に失敗しました'}})
+      setConnectionStatus('error')
+
+      const errorPayload: SocketErrorPayload = {
+        message: '再接続に失敗しました',
+        code: 'RECONNECT_FAILED',
+      }
+      onError?.(errorPayload)
+    })
+
+    // 再接続成功
     socket.on('reconnect', attemptNumber => {
-      console.log('[useColaboSocket] 再接続成功:', attemptNumber)
+      console.log({再接続成功: attemptNumber})
       setConnectionStatus('connected')
 
       // 再度Gameに参加
@@ -180,22 +240,9 @@ export function useColaboSocket({
     })
 
     // 接続開始
+    console.log({socketConnect: 'socket.connect() を呼び出します'})
     socket.connect()
-  }, [
-    gameId,
-    role,
-    userId,
-    userName,
-    onSlideChange,
-    onModeChange,
-    onGameStateSync,
-    onAnswerUpdate,
-    onAnswerSaved,
-    onSharedAnswer,
-    onRevealCorrect,
-    onError,
-    currentState,
-  ])
+  }
 
   /**
    * 接続を切断
@@ -203,7 +250,7 @@ export function useColaboSocket({
   const disconnect = useCallback(() => {
     if (!socketRef.current) return
 
-    console.log('[useColaboSocket] 切断処理開始')
+    console.log({切断処理開始: {}})
 
     // Gameから退出
     socketRef.current.emit(SOCKET_EVENTS.LEAVE_GAME, {gameId})
@@ -220,12 +267,12 @@ export function useColaboSocket({
   const changeSlide = useCallback(
     (slideId: number, slideIndex: number) => {
       if (!socketRef.current?.connected) {
-        console.warn('[useColaboSocket] 未接続のためスライド変更できません')
+        console.warn({未接続のためスライド変更できません: {}})
         return
       }
 
       if (role !== 'teacher') {
-        console.warn('[useColaboSocket] 教師のみがスライドを変更できます')
+        console.warn({教師のみがスライドを変更できます: {}})
         return
       }
 
@@ -245,12 +292,12 @@ export function useColaboSocket({
   const changeMode = useCallback(
     (slideId: number, mode: SlideMode) => {
       if (!socketRef.current?.connected) {
-        console.warn('[useColaboSocket] 未接続のためモード変更できません')
+        console.warn({未接続のためモード変更できません: {}})
         return
       }
 
       if (role !== 'teacher') {
-        console.warn('[useColaboSocket] 教師のみがモードを変更できます')
+        console.warn({教師のみがモードを変更できます: {}})
         return
       }
 
@@ -270,12 +317,12 @@ export function useColaboSocket({
   const closeAnswer = useCallback(
     (slideId: number) => {
       if (!socketRef.current?.connected) {
-        console.warn('[useColaboSocket] 未接続のため回答締切できません')
+        console.warn({未接続のため回答締切できません: {}})
         return
       }
 
       if (role !== 'teacher') {
-        console.warn('[useColaboSocket] 教師のみが回答を締め切れます')
+        console.warn({教師のみが回答を締め切れます: {}})
         return
       }
 
@@ -294,12 +341,12 @@ export function useColaboSocket({
   const submitAnswer = useCallback(
     (slideId: number, answerData: any) => {
       if (!socketRef.current?.connected) {
-        console.warn('[useColaboSocket] 未接続のため回答送信できません')
+        console.warn('未接続のため回答送信できません')
         return
       }
 
       if (role !== 'student') {
-        console.warn('[useColaboSocket] 生徒のみが回答を送信できます')
+        console.warn('生徒のみが回答を送信できます')
         return
       }
 
@@ -320,12 +367,12 @@ export function useColaboSocket({
   const shareAnswer = useCallback(
     (slideId: number, answerId: number, isAnonymous: boolean = false) => {
       if (!socketRef.current?.connected) {
-        console.warn('[useColaboSocket] 未接続のため回答共有できません')
+        console.warn('未接続のため回答共有できません')
         return
       }
 
       if (role !== 'teacher') {
-        console.warn('[useColaboSocket] 教師のみが回答を共有できます')
+        console.warn('教師のみが回答を共有できます')
         return
       }
 
@@ -346,12 +393,12 @@ export function useColaboSocket({
   const revealCorrect = useCallback(
     (slideId: number) => {
       if (!socketRef.current?.connected) {
-        console.warn('[useColaboSocket] 未接続のため正答公開できません')
+        console.warn('未接続のため正答公開できません')
         return
       }
 
       if (role !== 'teacher') {
-        console.warn('[useColaboSocket] 教師のみが正答を公開できます')
+        console.warn('教師のみが正答を公開できます')
         return
       }
 
@@ -374,7 +421,7 @@ export function useColaboSocket({
     return () => {
       disconnect()
     }
-  }, [autoConnect, connect, disconnect])
+  }, [autoConnect])
 
   return {
     // 状態

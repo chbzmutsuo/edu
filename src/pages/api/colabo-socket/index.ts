@@ -516,23 +516,40 @@ function handleLeaveGame(socket: Socket, gameId: number) {
  * Next.js APIハンドラー
  */
 export default function handler(req: any, res: any) {
-  if (!res.socket.server.io) {
-    console.log('[Colabo Socket.io] 新しいSocket.ioサーバーを初期化')
+  // Socket.ioが既に初期化されている場合
+  if (res.socket.server.io) {
+    console.log('[Colabo Socket.io] Socket.ioサーバーは既に起動済み')
+    res.end()
+    return
+  }
 
-    const httpServer: HTTPServer = res.socket.server
+  console.log('[Colabo Socket.io] 新しいSocket.ioサーバーを初期化')
+
+  try {
+    const httpServer: HTTPServer = res.socket.server as HTTPServer
+
+    // Socket.ioサーバーを作成
     const io = new SocketIOServer(httpServer, {
-      path: '/api/colabo-socket',
+      path: '/api/colabo-socket/', // 末尾にスラッシュを追加
       addTrailingSlash: false,
+      transports: ['polling', 'websocket'], // pollingを先に試す
       cors: {
         origin: '*',
         methods: ['GET', 'POST'],
+        credentials: true,
       },
+      allowEIO3: true, // Engine.IO v3との互換性
     })
 
+    // グローバルにSocket.ioインスタンスを保存
     res.socket.server.io = io
+
+    // イベントハンドラーを設定
     setupSocketIO(io)
-  } else {
-    console.log('[Colabo Socket.io] Socket.ioサーバーは既に起動済み')
+
+    console.log('[Colabo Socket.io] サーバー初期化完了')
+  } catch (error) {
+    console.error('[Colabo Socket.io] サーバー初期化エラー:', error)
   }
 
   res.end()

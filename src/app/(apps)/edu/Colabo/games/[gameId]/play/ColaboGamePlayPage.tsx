@@ -26,7 +26,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     role,
     userId,
     userName: role === 'student' ? student?.name : game.Teacher?.name,
-    onSlideChange: (slideId, slideIndex) => {
+    onSlideChange: slideIndex => {
       setCurrentSlideIndex(slideIndex)
       // スライドが変わったらリセット
       setIsCorrectRevealed(false)
@@ -39,6 +39,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
         setIsCorrectRevealed(false)
       }
     },
+
     onGameStateSync: state => {
       // 初期状態の同期
       if (state.currentSlideId) {
@@ -61,6 +62,8 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     },
     onSharedAnswer: data => {
       // 共有された回答を追加
+
+      console.log(data) //logs
       setSharedAnswers(prev => [...prev, data])
     },
     onRevealCorrect: data => {
@@ -69,7 +72,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     },
   })
 
-  const currentSlide = game.Slide[currentSlideIndex] || null
+  const currentSlide = game.Slide[currentSlideIndex ?? 0] || null
 
   // 接続状態の表示
   const connectionStatusBadge = () => {

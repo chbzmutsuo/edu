@@ -5,9 +5,10 @@ import {Button} from '@cm/components/styles/common-components/Button'
 import {SlideBlock} from '../../../(components)/SlideBlock'
 import {saveSlideAnswer} from '../../../colabo-server-actions'
 import {toast} from 'react-toastify'
+import {gameDataType} from '@app/(apps)/edu/Colabo/class/GameCl'
 
 interface StudentViewProps {
-  game: any
+  game: gameDataType
   currentSlide: any
   currentMode: 'view' | 'answer' | 'result' | null
   student: any
@@ -31,6 +32,17 @@ export default function StudentView({
 
   // スライドが変わったらリセット
   useEffect(() => {
+    const theSlide = game.Slide.find((slide: any) => slide.id === currentSlide?.id)
+
+    if (theSlide) {
+      const Answers = theSlide?.SlideAnswer.find((answer: any) => answer.studentId === student.id)
+      if (Answers) {
+        setAnswerData(Answers.answerData)
+        setHasSubmitted(true)
+        return
+      }
+    }
+
     setAnswerData(null)
     setHasSubmitted(false)
   }, [currentSlide?.id])
@@ -202,7 +214,6 @@ export default function StudentView({
             {currentMode === 'result' && (
               <div className="border-t pt-6">
                 <h3 className="font-semibold text-lg mb-4">結果</h3>
-
                 {/* 正答表示（選択クイズの場合） */}
                 {currentSlide.templateType === 'choice' && isCorrectRevealed && (
                   <div className="mb-4">
@@ -237,6 +248,7 @@ export default function StudentView({
                           <div className="bg-red-50 border border-red-300 rounded-lg p-4 text-center">
                             <div className="text-4xl mb-2">💭</div>
                             <div className="font-bold text-red-800 text-xl">不正解です</div>
+
                             <div className="text-sm text-red-600 mt-2">
                               あなたの回答: {currentSlide.contentData.choices[answerData.choiceIndex]?.text}
                             </div>
@@ -248,7 +260,7 @@ export default function StudentView({
                 )}
 
                 {/* 共有された回答（自由記述の場合） */}
-                {currentSlide.templateType === 'freetext' && sharedAnswers.length > 0 && (
+                {sharedAnswers.length > 0 && (
                   <div className="space-y-2">
                     <h4 className="font-semibold">共有された回答</h4>
                     {sharedAnswers.map((shared, index) => (
@@ -256,7 +268,7 @@ export default function StudentView({
                         {shared.isAnonymous ? (
                           <div className="text-sm text-gray-600 mb-1">匿名</div>
                         ) : (
-                          <div className="text-sm text-gray-600 mb-1">生徒の回答</div>
+                          <div className="text-sm text-gray-600 mb-1">{shared.Student?.name}</div>
                         )}
                         <div className="text-gray-800">{shared.content}</div>
                       </div>

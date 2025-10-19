@@ -4,17 +4,24 @@
  */
 
 // Socket.ioの接続パス
-export const SOCKET_PATH = '/api/colabo-socket'
+export const SOCKET_PATH = '/api/colabo-socket/'
+
+// Socket.io接続URL（環境に応じて自動設定）
+export const SOCKET_URL =
+  typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : 'http://localhost:3000'
 
 // Socket.io接続設定
 export const SOCKET_CONFIG = {
   path: SOCKET_PATH,
+  transports: ['polling', 'websocket'], // pollingを先に試す
   reconnection: true,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
-  timeout: 20000,
+  reconnectionAttempts: 10, // 再接続試行回数を増やす
+  reconnectionDelay: 2000,
+  reconnectionDelayMax: 10000,
+  timeout: 30000, // タイムアウトを長く
   autoConnect: false, // 手動で接続を管理
+  forceNew: false, // 既存の接続を再利用
+  upgrade: true, // polling → websocketへのアップグレードを許可
 }
 
 // イベント名の定数定義
