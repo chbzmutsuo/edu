@@ -1,10 +1,11 @@
 'use client'
 
-import {useRouter} from 'next/navigation'
 import {SlideEditor} from '../../../../../(components)/SlideEditor'
 import {updateSlide} from '../../../../../colabo-server-actions'
 import {toast} from 'react-toastify'
 import Link from 'next/link'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {HREF} from '@cm/lib/methods/urls'
 
 interface SlideEditPageProps {
   game: any
@@ -12,7 +13,7 @@ interface SlideEditPageProps {
 }
 
 export default function SlideEditPage({game, slide}: SlideEditPageProps) {
-  const router = useRouter()
+  const {router, query} = useGlobal()
 
   const handleSave = async (slideData: any) => {
     try {
@@ -27,7 +28,7 @@ export default function SlideEditPage({game, slide}: SlideEditPageProps) {
 
       if (result.success) {
         toast.success('スライドを保存しました')
-        router.push(`/edu/Colabo/games/${game.id}/slides`)
+        router.push(HREF(`/edu/Colabo/games/${game.id}/slides`, {}, query))
       } else {
         toast.error(result.error || 'スライドの保存に失敗しました')
       }
@@ -38,7 +39,7 @@ export default function SlideEditPage({game, slide}: SlideEditPageProps) {
   }
 
   const handleCancel = () => {
-    router.push(`/edu/Colabo/games/${game.id}/slides`)
+    router.push(HREF(`/edu/Colabo/games/${game.id}/slides`, {}, query))
   }
 
   // スライドデータを展開
@@ -57,7 +58,7 @@ export default function SlideEditPage({game, slide}: SlideEditPageProps) {
           <div className="flex items-center justify-between">
             <div>
               <Link
-                href={`/edu/Colabo/games/${game.id}/slides`}
+                href={HREF(`/edu/Colabo/games/${game.id}/slides`, {}, query)}
                 className="text-blue-600 hover:underline text-sm mb-2 inline-block"
               >
                 ← スライド一覧に戻る

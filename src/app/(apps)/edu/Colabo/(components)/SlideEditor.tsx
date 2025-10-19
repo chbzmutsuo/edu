@@ -5,12 +5,15 @@ import {Button} from '@cm/components/styles/common-components/Button'
 import {BlockEditor} from './BlockEditor'
 
 import {SlideBlock} from '@app/(apps)/edu/Colabo/(components)/SlideBlock'
+import useModal from '@cm/components/utils/modal/useModal'
 
 export const SlideEditor = ({slide, onSave, onCancel}) => {
   const [title, setTitle] = useState(slide?.title || '')
   const [templateType, setTemplateType] = useState(slide?.templateType || 'normal')
   const [blocks, setBlocks] = useState(slide?.SlideBlock || [])
-  const [editingBlock, setEditingBlock] = useState<any | null>(null)
+  // const [editingBlock, setEditingBlock] = useState<any | null>(null)
+
+  const blockEditorModalReturn = useModal<{block: any}>()
   const [isPreview, setIsPreview] = useState(false)
 
   const templateOptions = [
@@ -31,7 +34,7 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
       isNew: true,
     }
     setBlocks([...blocks, newBlock])
-    setEditingBlock(newBlock) // 新しいブロックを編集モードにする
+    blockEditorModalReturn.handleOpen({block: newBlock}) // 新しいブロックを編集モードにする
   }
 
   const updateBlock = (blockId, updates) => {
@@ -40,7 +43,7 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
 
   const deleteBlock = blockId => {
     setBlocks(blocks.filter(block => block.id !== blockId))
-    setEditingBlock(null)
+    blockEditorModalReturn.handleClose()
   }
 
   const moveBlock = (blockId, direction) => {
@@ -182,7 +185,7 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
                             <Button size="sm" onClick={() => moveBlock(block.id, 'down')} disabled={index === blocks.length - 1}>
                               ↓
                             </Button>
-                            <Button size="sm" onClick={() => setEditingBlock(block)}>
+                            <Button size="sm" onClick={() => blockEditorModalReturn.handleOpen(block)}>
                               編集
                             </Button>
                             <Button size="sm" onClick={() => deleteBlock(block.id)}>
@@ -209,16 +212,17 @@ export const SlideEditor = ({slide, onSave, onCancel}) => {
       </div>
 
       {/* ブロック編集モーダル */}
-      {editingBlock && (
+
+      <blockEditorModalReturn.Modal>
         <BlockEditor
-          block={editingBlock}
+          block={blockEditorModalReturn.open?.block}
           onSave={updates => {
-            updateBlock(editingBlock.id, updates)
-            setEditingBlock(null)
+            updateBlock(blockEditorModalReturn.open?.block?.id, updates)
+            blockEditorModalReturn.handleClose()
           }}
-          onCancel={() => setEditingBlock(null)}
+          onCancel={() => blockEditorModalReturn.handleClose()}
         />
-      )}
+      </blockEditorModalReturn.Modal>
     </div>
   )
 }

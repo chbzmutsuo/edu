@@ -1,5 +1,6 @@
 'use client'
 
+import {T_LINK} from '@cm/components/styles/common-components/links'
 import {MarkDownDisplay} from '@cm/components/utils/texts/MarkdownDisplay'
 
 export const SlideBlock = ({block, isPreview = false}) => {
@@ -20,11 +21,11 @@ export const SlideBlock = ({block, isPreview = false}) => {
   const getAlignmentClass = () => {
     switch (alignment) {
       case 'center':
-        return 'text-center'
+        return 'justify-center'
       case 'right':
-        return 'text-right'
+        return 'justify-end'
       default:
-        return 'text-left'
+        return 'justify-start'
     }
   }
 
@@ -46,7 +47,7 @@ export const SlideBlock = ({block, isPreview = false}) => {
     textDecoration: textDecoration || 'none',
   })
 
-  const containerClass = `${getAlignmentClass()} ${getVerticalAlignClass()} min-h-16 p-2`
+  const containerClass = `${getAlignmentClass()} ${getVerticalAlignClass()}  p-2`
 
   if (blockType === 'text') {
     return (
@@ -89,18 +90,24 @@ export const SlideBlock = ({block, isPreview = false}) => {
   }
 
   if (blockType === 'link') {
+    const {color, backgroundColor, fontWeight, textDecoration} = getTextStyle()
+    const noColorStyle = color === '#000000' && backgroundColor === '#ffffff'
     return (
       <div className={containerClass}>
         {linkUrl ? (
-          <a
+          <T_LINK
             href={linkUrl}
             target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800 underline"
-            style={getTextStyle()}
+            style={{
+              color: noColorStyle ? 'blue' : color,
+              backgroundColor: noColorStyle ? 'transparent' : backgroundColor,
+              fontWeight: fontWeight ?? 'normal',
+              textDecoration: textDecoration ?? 'none',
+              borderBottom: '1px solid blue',
+            }}
           >
             {content || linkUrl}
-          </a>
+          </T_LINK>
         ) : (
           !isPreview && (
             <div className="w-full">

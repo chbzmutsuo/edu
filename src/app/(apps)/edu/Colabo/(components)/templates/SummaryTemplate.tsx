@@ -137,7 +137,7 @@ export const SummaryTemplate = ({
             <div key={categoryIndex} className="bg-white border border-gray-200 rounded-lg p-6">
               <h3 className="text-xl font-semibold mb-6 text-gray-800">{category.category}</h3>
 
-              <div className="space-y-6">
+              <div className="space-y-1">
                 {category.questions.map((question, questionIndex) => (
                   <div key={question.type} className="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
                     <div className="mb-4">
@@ -237,7 +237,7 @@ export const SummaryTemplate = ({
 
       {/* 教師用ランキング表示 */}
       {isTeacher && showRanking && rankingData.length > 0 && (
-        <div className="space-y-6">
+        <div className="space-y-1">
           <h3 className="text-2xl font-bold text-center text-gray-800">学習への取り組みランキング</h3>
 
           <div className="space-y-4">

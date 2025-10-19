@@ -17,16 +17,15 @@ export const NormalTemplate = ({
     <div className="max-w-4xl mx-auto p-8">
       {/* スライドタイトル */}
       {slide?.title && <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">{slide.title}</h1>}
-
+      gsa'jgas'
       {/* ブロック表示 */}
-      <div className="space-y-6">
+      <div className="space-y-1">
         {blocks
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .map(block => (
             <SlideBlock key={block.id || block.tempId} block={block} isPreview={isPreview} />
           ))}
       </div>
-
       {/* 教師用コントロール */}
       {isTeacher && !isPreview && (
         <div className="mt-8 p-4 bg-gray-100 rounded-lg">

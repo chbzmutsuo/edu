@@ -118,7 +118,7 @@ export const PsychologyTemplate = ({
           <div key={categoryIndex} className="bg-white border border-gray-200 rounded-lg p-6">
             <h3 className="text-xl font-semibold mb-6 text-gray-800">{category.category}に関する質問</h3>
 
-            <div className="space-y-6">
+            <div className="space-y-1">
               {category.questions.map((question, questionIndex) => (
                 <div key={question.type} className="border-b border-gray-100 pb-6 last:border-b-0 last:pb-0">
                   <div className="mb-4">

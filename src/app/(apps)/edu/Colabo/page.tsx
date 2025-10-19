@@ -57,14 +57,6 @@ const Page = async props => {
     orderBy: [{grade: 'asc'}, {class: 'asc'}],
   })
 
-  console.log({
-    myGames,
-    schools,
-    teachers,
-    subjects,
-    classrooms,
-  }) //logs
-
   return (
     <ColaboMainPage
       myGames={JSON.parse(JSON.stringify(myGames))}

@@ -120,7 +120,7 @@ export default function StudentView({
 
         {/* スライド内容 */}
         {currentSlide ? (
-          <div className="space-y-6">
+          <div className="space-y-1">
             {/* ブロック表示 */}
             <div className="space-y-4">
               {currentSlide.contentData?.blocks?.map((block: any, index: number) => (
@@ -132,7 +132,7 @@ export default function StudentView({
             {currentMode === 'answer' && !hasSubmitted && (
               <div className="border-t pt-6">
                 {currentSlide.templateType === 'choice' && (
-                  <div className="space-y-3">
+                  <div className="space-y-1">
                     <h3 className="font-semibold text-lg mb-4">回答を選択してください</h3>
                     {currentSlide.contentData?.blocks
                       ?.filter((b: any) => b.blockType === 'choice_option')
@@ -166,7 +166,7 @@ export default function StudentView({
                 )}
 
                 {currentSlide.templateType === 'freetext' && (
-                  <div className="space-y-3">
+                  <div className="space-y-1">
                     <h3 className="font-semibold text-lg mb-2">回答を入力してください</h3>
                     <textarea
                       value={answerData?.text || ''}

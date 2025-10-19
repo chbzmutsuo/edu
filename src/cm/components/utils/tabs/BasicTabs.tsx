@@ -97,7 +97,7 @@ const renderShowAll = ({filteredTabComponentArray}) => {
             key={idx}
             className={cl('rounded-lg border bg-white p-4 shadow-sm transition-shadow hover:shadow-md', containerClass)}
           >
-            <div className="space-y-3">
+            <div className="space-y-1">
               {label && <h3 className="text-lg font-medium text-gray-900">{label}</h3>}
 
               {description && (

@@ -5,7 +5,8 @@ import {Button} from '@cm/components/styles/common-components/Button'
 import {Alert} from '@cm/components/styles/common-components/Alert'
 import {toast} from 'react-toastify'
 import {createColaboGame} from '../colabo-server-actions'
-import {useRouter} from 'next/navigation'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {HREF} from '@cm/lib/methods/urls'
 
 interface GameCreateFormProps {
   schools: any[]
@@ -26,7 +27,7 @@ export default function GameCreateForm({
   defaultSchoolId,
   defaultTeacherId,
 }: GameCreateFormProps) {
-  const router = useRouter()
+  const {router, query} = useGlobal()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
@@ -74,7 +75,7 @@ export default function GameCreateForm({
 
       if (result.success && result.game) {
         toast.success(`Game「${result.game.name}」を作成しました`)
-        router.push(`/edu/Colabo/games/${result.game.id}/slides`)
+        router.push(HREF(`/edu/Colabo/games/${result.game.id}/slides`, {}, query))
         onClose?.()
       } else {
         toast.error(result.error || 'Game作成に失敗しました')

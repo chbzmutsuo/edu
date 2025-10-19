@@ -102,7 +102,7 @@ export const FreeTextQuizTemplate = ({
       {isTeacher && showResults && responses.length > 0 && (
         <div className="space-y-4 mb-8">
           <h3 className="text-lg font-semibold text-gray-800">生徒の回答一覧</h3>
-          <div className="space-y-3">
+          <div className="space-y-1">
             {responses.map((response, index) => (
               <div key={response.id || index} className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="flex items-start justify-between">

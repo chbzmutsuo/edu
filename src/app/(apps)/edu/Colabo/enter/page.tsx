@@ -1,13 +1,15 @@
 'use client'
 
 import {useState, useEffect} from 'react'
-import {useRouter, useSearchParams} from 'next/navigation'
+import {useSearchParams} from 'next/navigation'
 import {toast} from 'react-toastify'
 import {findGameBySecretKey} from '../colabo-server-actions'
 import {Button} from '@cm/components/styles/common-components/Button'
+import useGlobal from '@cm/hooks/globalHooks/useGlobal'
+import {HREF} from '@cm/lib/methods/urls'
 
 export default function ColaboEnterPage() {
-  const router = useRouter()
+  const {router, query} = useGlobal()
   const searchParams = useSearchParams()
   const [key, setKey] = useState('')
   const [game, setGame] = useState<any>(null)
@@ -56,7 +58,7 @@ export default function ColaboEnterPage() {
     }
 
     // 授業参加ページへ遷移
-    router.push(`/edu/Colabo/games/${game.id}/play?as=student&sid=${selectedStudentId}`)
+    router.push(HREF(`/edu/Colabo/games/${game.id}/play`, {as: 'student', sid: selectedStudentId}, query))
   }
 
   return (
@@ -99,7 +101,7 @@ export default function ColaboEnterPage() {
 
         {/* Game情報と生徒選択 */}
         {game && (
-          <div className="space-y-6">
+          <div className="space-y-1">
             {/* Game情報 */}
             <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
               <h2 className="text-xl font-bold text-gray-800 mb-4">授業情報</h2>
