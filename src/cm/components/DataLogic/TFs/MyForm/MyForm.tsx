@@ -90,7 +90,7 @@ const MyForm = React.memo<DetailPagePropType>(props => {
             onSubmit={wrappedHandleOnSubmit}
             ControlOptions={myForm?.basicFormControlOptions}
           >
-            <div className="fixed bottom-4 right-4  w-fit pt-2 text-center">
+            <div className="flex justify-end w-full pt-2 text-center">
               <Button color="blue" disabled={uploading} size="lg" className=" max-w-[80vw] " type="submit">
                 {buttonText}
               </Button>

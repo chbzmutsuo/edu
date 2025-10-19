@@ -16,10 +16,11 @@ export default function TeacherDetailPage(props: DetailPagePropType) {
   const {data: classroom, isLoading} = useDoStandardPrisma('classroom', 'findMany', {where: {schoolId}}, {deps: []})
 
   return (
-    <div className={`mx-auto w-fit`}>
+    <div className={`mx-auto `}>
       <BasicTabs
         {...{
           id: 'TeacherDetailPage',
+          className: 'min-w-[1000px]',
           TabComponentArray: [
             {
               label: '基本情報',

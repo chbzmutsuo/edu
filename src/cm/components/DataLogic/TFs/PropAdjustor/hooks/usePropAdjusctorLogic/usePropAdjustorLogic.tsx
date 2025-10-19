@@ -28,7 +28,7 @@ export const usePropAdjustorLogic = ({
 
   const {prismaDataExtractionQuery, easySearchPrismaDataOnServer} = UseRecordsReturn
   const modelData = useMemo(() => UseRecordsReturn?.records?.[0], [UseRecordsReturn?.records])
-  const {formData, setformData} = useInitFormState(null, [modelData])
+  const {formData, setformData} = useInitFormState(null, [modelData], false, ClientProps.dataModelName)
 
   const columns = useColumns({
     useGlobalProps,

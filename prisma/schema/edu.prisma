@@ -83,6 +83,7 @@ model Student {
   UnfitFellow UnfitFellow[] @relation("StudentToUnfitFellow")
   GameStudent GameStudent[]
   StudentRole StudentRole[]
+  SlideAnswer SlideAnswer[]
 
   @@unique([schoolId, classroomId, attendanceNumber], name: "unique_schoolId_classroomId_attendanceNumber")
 }
@@ -156,6 +157,8 @@ model Game {
   randomTargetStudentIds Int[]
   learningContent        String?
   task                   String?
+  currentSlideId         Int?
+  slideMode              String?
   Answer                 Answer[]
 
   School                   School                     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -166,6 +169,8 @@ model Game {
   GameStudent              GameStudent[]
   LearningRoleMasterOnGame LearningRoleMasterOnGame[]
   GroupCreateConfig        GroupCreateConfig?
+  Slide                    Slide[]
+  SlideAnswer              SlideAnswer[]
 }
 
 model GroupCreateConfig {
@@ -272,4 +277,33 @@ model Answer {
   Student            Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@unique([gameId, studentId, questionPromptId], name: "unique_gameId_studentId_questionPromptId")
+}
+
+model Slide {
+  id           Int           @id @default(autoincrement())
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime?     @updatedAt()
+  active       Boolean       @default(true)
+  sortOrder    Float         @default(0)
+  gameId       Int
+  templateType String
+  contentData  Json
+  Game         Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  SlideAnswer  SlideAnswer[]
+}
+
+model SlideAnswer {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime? @updatedAt()
+  active     Boolean   @default(true)
+  slideId    Int
+  studentId  Int
+  gameId     Int
+  answerData Json
+  Slide      Slide     @relation(fields: [slideId], references: [id], onDelete: Cascade)
+  Student    Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  Game       Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([slideId, studentId, gameId])
 }

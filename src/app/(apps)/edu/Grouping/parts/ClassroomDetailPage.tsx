@@ -33,7 +33,7 @@ const ClassroomDetailPage = (props: DetailPagePropType) => {
 
             {
               exclusiveTo: hasData,
-              label: 'クラス',
+              label: '生徒一覧',
               component: (
                 <div>
                   <ChildCreator
@@ -51,9 +51,7 @@ const ClassroomDetailPage = (props: DetailPagePropType) => {
                         },
                       }),
                       additional: {
-                        include: {
-                          Classroom: {},
-                        },
+                        include: {Classroom: {}},
                         payload: {
                           schoolId: useGlobalProps.accessScopes().getGroupieScopes().schoolId,
                         },

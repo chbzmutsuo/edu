@@ -1,0 +1,259 @@
+'use client'
+
+import {useState, useEffect} from 'react'
+import {Button} from '@cm/components/styles/common-components/Button'
+import {SlideBlock} from '../../../(components)/SlideBlock'
+import {saveSlideAnswer} from '../../../colabo-server-actions'
+import {toast} from 'react-toastify'
+
+interface StudentViewProps {
+  game: any
+  currentSlide: any
+  currentMode: 'view' | 'answer' | 'result' | null
+  student: any
+  socket: any
+  sharedAnswers: any[]
+  isCorrectRevealed: boolean
+}
+
+export default function StudentView({
+  game,
+  currentSlide,
+  currentMode,
+  student,
+  socket,
+  sharedAnswers,
+  isCorrectRevealed,
+}: StudentViewProps) {
+  const [answerData, setAnswerData] = useState<any>(null)
+  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // スライドが変わったらリセット
+  useEffect(() => {
+    setAnswerData(null)
+    setHasSubmitted(false)
+  }, [currentSlide?.id])
+
+  // 回答を送信
+  const handleSubmitAnswer = async () => {
+    if (!currentSlide || !answerData) {
+      toast.error('回答を入力してください')
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      // DBに保存
+      const result = await saveSlideAnswer({
+        gameId: game.id,
+        slideId: currentSlide.id,
+        studentId: student.id,
+        answerData,
+      })
+
+      if (result.success) {
+        // Socket.ioで教師に通知
+        socket.submitAnswer(currentSlide.id, answerData)
+        setHasSubmitted(true)
+        toast.success('回答を送信しました')
+      } else {
+        toast.error(result.error || '回答の送信に失敗しました')
+      }
+    } catch (error) {
+      console.error('回答送信エラー:', error)
+      toast.error('予期しないエラーが発生しました')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // 選択クイズの回答
+  const handleChoiceAnswer = (choiceIndex: number) => {
+    if (hasSubmitted) return
+    setAnswerData({type: 'choice', choiceIndex, timestamp: new Date().toISOString()})
+  }
+
+  // 自由記述の回答
+  const handleTextAnswer = (text: string) => {
+    setAnswerData({type: 'freetext', text, timestamp: new Date().toISOString()})
+  }
+
+  // 待機画面
+  if (hasSubmitted && currentMode === 'answer') {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md">
+          <div className="text-6xl mb-4">✅</div>
+          <h2 className="text-2xl font-bold mb-2">回答を送信しました</h2>
+          <p className="text-gray-600 mb-4">他の人の回答を待っています...</p>
+          <div className="animate-pulse text-blue-600">⏳</div>
+        </div>
+      </div>
+    )
+  }
+
+  // 表示モード or 結果モード
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        {/* ヘッダー */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-2xl font-bold">{currentSlide?.contentData?.title || 'スライド'}</h2>
+            <div className="text-sm text-gray-600">
+              {student.name} ({student.attendanceNumber ? `出席番号: ${student.attendanceNumber}` : ''})
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            {currentMode === 'view' && (
+              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">📺 表示中</span>
+            )}
+            {currentMode === 'answer' && (
+              <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">✍️ 回答してください</span>
+            )}
+            {currentMode === 'result' && (
+              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">📊 結果表示</span>
+            )}
+          </div>
+        </div>
+
+        {/* スライド内容 */}
+        {currentSlide ? (
+          <div className="space-y-6">
+            {/* ブロック表示 */}
+            <div className="space-y-4">
+              {currentSlide.contentData?.blocks?.map((block: any, index: number) => (
+                <SlideBlock key={index} block={block} isPreview={true} />
+              ))}
+            </div>
+
+            {/* 回答フォーム（回答モード時） */}
+            {currentMode === 'answer' && !hasSubmitted && (
+              <div className="border-t pt-6">
+                {currentSlide.templateType === 'choice' && (
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-lg mb-4">回答を選択してください</h3>
+                    {currentSlide.contentData?.blocks
+                      ?.filter((b: any) => b.blockType === 'choice_option')
+                      .map((block: any, index: number) => (
+                        <button
+                          key={index}
+                          onClick={() => handleChoiceAnswer(index)}
+                          className={`
+                          w-full text-left border-2 rounded-lg p-4 transition-all
+                          ${answerData?.choiceIndex === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'}
+                        `}
+                        >
+                          <div className="flex items-center">
+                            <div
+                              className={`w-6 h-6 rounded-full border-2 mr-3 flex items-center justify-center ${answerData?.choiceIndex === index ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}
+                            >
+                              {answerData?.choiceIndex === index && <span className="text-white text-sm">✓</span>}
+                            </div>
+                            <span>{block.content}</span>
+                          </div>
+                        </button>
+                      ))}
+                    <Button
+                      onClick={handleSubmitAnswer}
+                      disabled={!answerData || isSubmitting}
+                      className="w-full bg-green-600 hover:bg-green-700 mt-4 py-3 text-lg"
+                    >
+                      {isSubmitting ? '送信中...' : '回答を送信'}
+                    </Button>
+                  </div>
+                )}
+
+                {currentSlide.templateType === 'freetext' && (
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-lg mb-2">回答を入力してください</h3>
+                    <textarea
+                      value={answerData?.text || ''}
+                      onChange={e => handleTextAnswer(e.target.value)}
+                      className="w-full border-2 border-gray-300 rounded-lg p-4 min-h-32 focus:border-blue-500 focus:outline-none"
+                      placeholder="ここに回答を入力してください..."
+                    />
+                    <Button
+                      onClick={handleSubmitAnswer}
+                      disabled={!answerData?.text || isSubmitting}
+                      className="w-full bg-green-600 hover:bg-green-700 py-3 text-lg"
+                    >
+                      {isSubmitting ? '送信中...' : '回答を送信'}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* 結果表示（結果モード時） */}
+            {currentMode === 'result' && (
+              <div className="border-t pt-6">
+                <h3 className="font-semibold text-lg mb-4">結果</h3>
+
+                {/* 正答表示（選択クイズの場合） */}
+                {currentSlide.templateType === 'choice' && isCorrectRevealed && (
+                  <div className="mb-4">
+                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                      <h4 className="font-semibold text-green-800 mb-2">✅ 正解</h4>
+                      <div className="space-y-2">
+                        {currentSlide.contentData?.blocks
+                          ?.filter((b: any) => b.blockType === 'choice_option' && b.isCorrectAnswer)
+                          .map((block: any, index: number) => (
+                            <div key={index} className="bg-white rounded p-2 border border-green-300">
+                              {block.content}
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+
+                    {/* 自分の回答の正誤 */}
+                    {answerData && (
+                      <div className="mt-4">
+                        {currentSlide.contentData?.blocks?.filter((b: any) => b.blockType === 'choice_option')[
+                          answerData.choiceIndex
+                        ]?.isCorrectAnswer ? (
+                          <div className="bg-green-50 border border-green-300 rounded-lg p-4 text-center">
+                            <div className="text-4xl mb-2">🎉</div>
+                            <div className="font-bold text-green-800">正解です！</div>
+                          </div>
+                        ) : (
+                          <div className="bg-red-50 border border-red-300 rounded-lg p-4 text-center">
+                            <div className="text-4xl mb-2">💭</div>
+                            <div className="font-bold text-red-800">不正解です</div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* 共有された回答（自由記述の場合） */}
+                {currentSlide.templateType === 'freetext' && sharedAnswers.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold">共有された回答</h4>
+                    {sharedAnswers.map((shared, index) => (
+                      <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                        {shared.isAnonymous ? (
+                          <div className="text-sm text-gray-600 mb-1">匿名</div>
+                        ) : (
+                          <div className="text-sm text-gray-600 mb-1">生徒の回答</div>
+                        )}
+                        <div className="text-gray-800">{shared.content}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            <div className="text-6xl mb-4">📺</div>
+            <p className="text-lg">先生が授業を開始するのを待っています...</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

@@ -9,6 +9,34 @@ import {stock_PAGES} from 'src/non-common/getPages/stock_PAGES'
 
 import {training_PAGES} from 'src/non-common/getPages/training_PAGES'
 
+const getEduCommonMenus = ({isSchoolLeader, admin}) => {
+  return {
+    appSelector: {
+      ROOT: ['edu'],
+      tabId: '',
+      label: 'アプリ',
+      children: [
+        {tabId: 'Grouping', label: 'Grouping'},
+        {tabId: 'Colabo', label: 'Colabo'},
+      ],
+    },
+    config: {
+      tabId: '',
+      ROOT: ['edu'],
+      label: '各種設定',
+      exclusiveTo: isSchoolLeader,
+      children: [
+        {tabId: 'school', label: '学校', exclusiveTo: admin},
+        {tabId: 'teacher', label: '教員', exclusiveTo: isSchoolLeader},
+        {tabId: 'classroom', label: 'クラス', exclusiveTo: isSchoolLeader},
+        {tabId: 'student', label: '児童・生徒', exclusiveTo: isSchoolLeader},
+        {tabId: 'subjectNameMaster', label: '教科', exclusiveTo: isSchoolLeader},
+        {tabId: 'csv-import', label: 'CSV取り込み', exclusiveTo: isSchoolLeader},
+      ],
+    },
+  }
+}
+
 export const PAGES: any = {
   tbm_PAGES,
   KM_PAGES,
@@ -19,21 +47,15 @@ export const PAGES: any = {
 
     const scopes = getScopes(session, {query, roles})
     const {isSchoolLeader} = scopes.getGroupieScopes()
-
     const {admin} = scopes
     const configROOTS = [rootPath]
 
+    const {appSelector, config} = getEduCommonMenus({isSchoolLeader, admin})
     const normalPaths: pathItemType[] = [
+      //
       {ROOT: [rootPath], tabId: '', label: 'TOP', exclusiveTo: 'always'},
-      {
-        ROOT: [rootPath],
-        tabId: '',
-        label: 'アプリ',
-        children: [
-          {tabId: 'Grouping', label: 'Grouping'},
-          {tabId: 'Colabo', label: 'Colabo'},
-        ],
-      },
+      appSelector,
+      config,
     ]
 
     const adminPaths: pathItemType[] = [
