@@ -120,41 +120,53 @@ export default function StudentView({
 
         {/* スライド内容 */}
         {currentSlide ? (
-          <div className="space-y-1">
-            {/* ブロック表示 */}
-            <div className="space-y-4">
-              {currentSlide.contentData?.blocks?.map((block: any, index: number) => (
-                <SlideBlock key={index} block={block} isPreview={true} />
-              ))}
-            </div>
+          <div className="space-y-6">
+            {/* ノーマルスライドのブロック表示 */}
+            {currentSlide.templateType === 'normal' && (
+              <div className="space-y-4">
+                {currentSlide.contentData?.blocks?.map((block: any, index: number) => (
+                  <SlideBlock key={index} block={block} isPreview={true} />
+                ))}
+              </div>
+            )}
+
+            {/* 選択クイズ・自由記述の問題文表示 */}
+            {(currentSlide.templateType === 'choice' || currentSlide.templateType === 'freetext') &&
+              currentSlide.contentData?.question && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="text-lg font-medium text-gray-800 whitespace-pre-wrap">{currentSlide.contentData.question}</p>
+                </div>
+              )}
 
             {/* 回答フォーム（回答モード時） */}
             {currentMode === 'answer' && !hasSubmitted && (
               <div className="border-t pt-6">
                 {currentSlide.templateType === 'choice' && (
-                  <div className="space-y-1">
+                  <div className="space-y-3">
                     <h3 className="font-semibold text-lg mb-4">回答を選択してください</h3>
-                    {currentSlide.contentData?.blocks
-                      ?.filter((b: any) => b.blockType === 'choice_option')
-                      .map((block: any, index: number) => (
-                        <button
-                          key={index}
-                          onClick={() => handleChoiceAnswer(index)}
-                          className={`
+                    {currentSlide.contentData?.choices?.map((choice: any, index: number) => (
+                      <button
+                        key={choice.id}
+                        onClick={() => handleChoiceAnswer(index)}
+                        className={`
                           w-full text-left border-2 rounded-lg p-4 transition-all
                           ${answerData?.choiceIndex === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'}
                         `}
-                        >
-                          <div className="flex items-center">
-                            <div
-                              className={`w-6 h-6 rounded-full border-2 mr-3 flex items-center justify-center ${answerData?.choiceIndex === index ? 'border-blue-500 bg-blue-500' : 'border-gray-300'}`}
-                            >
-                              {answerData?.choiceIndex === index && <span className="text-white text-sm">✓</span>}
-                            </div>
-                            <span>{block.content}</span>
+                      >
+                        <div className="flex items-center">
+                          <div
+                            className={`w-8 h-8 rounded-full border-2 mr-3 flex items-center justify-center font-bold ${
+                              answerData?.choiceIndex === index
+                                ? 'border-blue-500 bg-blue-500 text-white'
+                                : 'border-gray-300 text-gray-600'
+                            }`}
+                          >
+                            {answerData?.choiceIndex === index ? '✓' : index + 1}
                           </div>
-                        </button>
-                      ))}
+                          <span className="text-lg">{choice.text}</span>
+                        </div>
+                      </button>
+                    ))}
                     <Button
                       onClick={handleSubmitAnswer}
                       disabled={!answerData || isSubmitting}
@@ -195,32 +207,39 @@ export default function StudentView({
                 {currentSlide.templateType === 'choice' && isCorrectRevealed && (
                   <div className="mb-4">
                     <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-                      <h4 className="font-semibold text-green-800 mb-2">✅ 正解</h4>
+                      <h4 className="font-semibold text-green-800 mb-3">✅ 正解</h4>
                       <div className="space-y-2">
-                        {currentSlide.contentData?.blocks
-                          ?.filter((b: any) => b.blockType === 'choice_option' && b.isCorrectAnswer)
-                          .map((block: any, index: number) => (
-                            <div key={index} className="bg-white rounded p-2 border border-green-300">
-                              {block.content}
+                        {currentSlide.contentData?.choices
+                          ?.filter((choice: any) => choice.isCorrect)
+                          .map((choice: any, index: number) => (
+                            <div
+                              key={choice.id}
+                              className="bg-white rounded-lg p-3 border-2 border-green-500 flex items-center space-x-3"
+                            >
+                              <div className="w-8 h-8 rounded-full bg-green-500 text-white flex items-center justify-center font-bold">
+                                {currentSlide.contentData.choices.indexOf(choice) + 1}
+                              </div>
+                              <div className="flex-1">{choice.text}</div>
                             </div>
                           ))}
                       </div>
                     </div>
 
                     {/* 自分の回答の正誤 */}
-                    {answerData && (
+                    {answerData && currentSlide.contentData?.choices && (
                       <div className="mt-4">
-                        {currentSlide.contentData?.blocks?.filter((b: any) => b.blockType === 'choice_option')[
-                          answerData.choiceIndex
-                        ]?.isCorrectAnswer ? (
+                        {currentSlide.contentData.choices[answerData.choiceIndex]?.isCorrect ? (
                           <div className="bg-green-50 border border-green-300 rounded-lg p-4 text-center">
                             <div className="text-4xl mb-2">🎉</div>
-                            <div className="font-bold text-green-800">正解です！</div>
+                            <div className="font-bold text-green-800 text-xl">正解です！</div>
                           </div>
                         ) : (
                           <div className="bg-red-50 border border-red-300 rounded-lg p-4 text-center">
                             <div className="text-4xl mb-2">💭</div>
-                            <div className="font-bold text-red-800">不正解です</div>
+                            <div className="font-bold text-red-800 text-xl">不正解です</div>
+                            <div className="text-sm text-red-600 mt-2">
+                              あなたの回答: {currentSlide.contentData.choices[answerData.choiceIndex]?.text}
+                            </div>
                           </div>
                         )}
                       </div>

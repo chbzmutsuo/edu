@@ -161,7 +161,7 @@ export default function SlideManagementPage({game}: SlideManagementPageProps) {
               <Button onClick={() => QRModalReturn.handleOpen()} className="bg-green-600 hover:bg-green-700">
                 📱 QRコード
               </Button>
-              <Link href={HREF(`/edu/Colabo/games/${game.id}/play?as=teacher`, {}, query)}>
+              <Link href={HREF(`/edu/Colabo/games/${game.id}/play`, {as: 'teacher'}, query)}>
                 <Button className="bg-purple-600 hover:bg-purple-700">▶️ 授業開始</Button>
               </Link>
             </div>

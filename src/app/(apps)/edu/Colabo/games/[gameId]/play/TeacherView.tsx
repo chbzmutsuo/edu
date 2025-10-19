@@ -157,9 +157,45 @@ export default function TeacherView({
           <div className="bg-white rounded-lg shadow p-6">
             <h3 className="text-lg font-semibold mb-4">{currentSlide.contentData?.title || 'スライドプレビュー'}</h3>
             <div className="space-y-4 min-h-96">
-              {currentSlide.contentData?.blocks?.map((block: any, index: number) => (
-                <SlideBlock key={index} block={block} isPreview={true} />
-              ))}
+              {/* ノーマルスライド */}
+              {currentSlide.templateType === 'normal' &&
+                currentSlide.contentData?.blocks?.map((block: any, index: number) => (
+                  <SlideBlock key={index} block={block} isPreview={true} />
+                ))}
+
+              {/* 選択クイズ */}
+              {currentSlide.templateType === 'choice' && (
+                <div className="space-y-4">
+                  {currentSlide.contentData?.question && (
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <p className="text-lg font-medium">{currentSlide.contentData.question}</p>
+                    </div>
+                  )}
+                  {currentSlide.contentData?.choices && currentSlide.contentData.choices.length > 0 && (
+                    <div className="space-y-2">
+                      {currentSlide.contentData.choices.map((choice: any, index: number) => (
+                        <div
+                          key={choice.id}
+                          className={`flex items-center space-x-3 p-3 rounded-lg border-2 ${choice.isCorrect ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-white'}`}
+                        >
+                          <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+                            {index + 1}
+                          </div>
+                          <div className="flex-1">{choice.text}</div>
+                          {choice.isCorrect && <span className="text-green-600 font-bold">✓ 正解</span>}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* 自由記述 */}
+              {currentSlide.templateType === 'freetext' && currentSlide.contentData?.question && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <p className="text-lg font-medium whitespace-pre-wrap">{currentSlide.contentData.question}</p>
+                </div>
+              )}
             </div>
           </div>
         ) : (

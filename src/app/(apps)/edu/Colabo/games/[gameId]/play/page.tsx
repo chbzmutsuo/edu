@@ -72,7 +72,7 @@ const Page = async props => {
   }
 
   // 生徒の情報を取得
-  let student = null
+  let student: any | null = null
   if (role === 'student' && studentId) {
     const gameStudent = game.GameStudent.find(gs => gs.Student.id === studentId)
     if (gameStudent) {
