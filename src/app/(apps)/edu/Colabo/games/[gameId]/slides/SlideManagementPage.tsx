@@ -13,6 +13,8 @@ import LeftSidebar from '../../../components/slides/LeftSidebar'
 import CenterPreview from '../../../components/slides/CenterPreview'
 import RightSidebar from '../../../components/slides/RightSidebar'
 import useModal from '@cm/components/utils/modal/useModal'
+import useSlideHandlers from './useSlideHandlers'
+import {useJotaiByKey} from '@cm/hooks/useJotai'
 
 interface SlideManagementPageProps {
   game: any
@@ -20,9 +22,12 @@ interface SlideManagementPageProps {
 
 export default function SlideManagementPage({game}: SlideManagementPageProps) {
   const {query, router} = useGlobal()
-  const [slides, setSlides] = useState(game.Slide || [])
-  const [selectedSlideId, setSelectedSlideId] = useState<number | null>(slides[0]?.id || null)
+
+  const [slides, setSlides] = useJotaiByKey<any[]>(`slides_${game.id}`, game.Slide || [])
+  const [selectedSlideId, setSelectedSlideId] = useJotaiByKey<number | null>(`selectedSlideId_${game.id}`, slides[0]?.id || null)
   const QRModalReturn = useModal()
+
+  console.log(selectedSlideId) //logs
 
   // 選択中のスライドを取得
   const selectedSlide = slides.find((s: any) => s.id === selectedSlideId) || null
@@ -34,113 +39,14 @@ export default function SlideManagementPage({game}: SlideManagementPageProps) {
     }
   }, [slides, selectedSlideId])
 
-  // スライド追加
-  const handleAddSlide = async (templateType: string) => {
-    try {
-      const sortOrder = selectedSlide ? selectedSlide.sortOrder + 1 : slides.length
-
-      const result = await createSlide({
-        gameId: game.id,
-        templateType,
-        contentData: {
-          title: '',
-          blocks: [],
-        },
-        sortOrder,
-      })
-
-      if (result.success && result.slide) {
-        toast.success('スライドを追加しました')
-
-        // 新しいスライドを配列に挿入
-        const newSlides = [...slides]
-        newSlides.splice(sortOrder, 0, result.slide)
-
-        // sortOrderを再計算
-        newSlides.forEach((slide: any, index) => {
-          slide.sortOrder = index
-        })
-
-        setSlides(newSlides)
-        setSelectedSlideId(result.slide.id)
-        router.refresh()
-      } else {
-        toast.error(result.error || 'スライド追加に失敗しました')
-      }
-    } catch (error) {
-      console.error('スライド追加エラー:', error)
-      toast.error('予期しないエラーが発生しました')
-    }
-  }
-
-  // スライド更新
-  const handleUpdateSlide = async (slideId: number, updates: any) => {
-    try {
-      const result = await updateSlide(slideId, updates)
-
-      if (result.success && result.slide) {
-        // ローカル状態を更新
-        setSlides(slides.map((s: any) => (s.id === slideId ? {...s, ...result.slide} : s)))
-        toast.success('スライドを更新しました')
-      } else {
-        toast.error(result.error || 'スライド更新に失敗しました')
-      }
-    } catch (error) {
-      console.error('スライド更新エラー:', error)
-      toast.error('予期しないエラーが発生しました')
-    }
-  }
-
-  // スライド削除
-  const handleDeleteSlide = async (slideId: number) => {
-    try {
-      const result = await deleteSlide(slideId)
-
-      if (result.success) {
-        toast.success('スライドを削除しました')
-        const newSlides = slides.filter((s: any) => s.id !== slideId)
-        setSlides(newSlides)
-
-        // 選択中のスライドを削除した場合、次のスライドを選択
-        if (slideId === selectedSlideId) {
-          setSelectedSlideId(newSlides[0]?.id || null)
-        }
-
-        router.refresh()
-      } else {
-        toast.error(result.error || 'スライド削除に失敗しました')
-      }
-    } catch (error) {
-      console.error('スライド削除エラー:', error)
-      toast.error('予期しないエラーが発生しました')
-    }
-  }
-
-  // スライド並び替え
-  const handleReorderSlides = async (oldIndex: number, newIndex: number) => {
-    const newSlides = arrayMove(slides, oldIndex, newIndex)
-
-    // sortOrderを更新
-    newSlides.forEach((slide: any, index) => {
-      slide.sortOrder = index
-    })
-
-    setSlides(newSlides)
-
-    try {
-      const result = await updateSlideOrder(newSlides.map((s: any) => s.id))
-      if (result.success) {
-        toast.success('スライドの順序を更新しました')
-      } else {
-        toast.error('順序の更新に失敗しました')
-        setSlides(slides) // 元に戻す
-      }
-    } catch (error) {
-      console.error('順序更新エラー:', error)
-      toast.error('予期しないエラーが発生しました')
-      setSlides(slides) // 元に戻す
-    }
-  }
+  const {handleAddSlide, handleUpdateSlide, handleDeleteSlide, handleReorderSlides} = useSlideHandlers({
+    game,
+    slides,
+    selectedSlideId,
+    setSlides,
+    setSelectedSlideId,
+    router,
+  })
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -189,7 +95,7 @@ export default function SlideManagementPage({game}: SlideManagementPageProps) {
         <CenterPreview slides={slides} selectedSlideId={selectedSlideId} onSelectSlide={setSelectedSlideId} />
 
         {/* 右サイドバー: 編集パネル */}
-        <RightSidebar selectedSlide={selectedSlide} onUpdateSlide={handleUpdateSlide} onDeleteSlide={handleDeleteSlide} />
+        <RightSidebar selectedSlide={selectedSlide} handleUpdateSlide={handleUpdateSlide} handleDeleteSlide={handleDeleteSlide} />
       </div>
     </div>
   )

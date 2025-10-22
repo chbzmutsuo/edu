@@ -1,10 +1,11 @@
 'use client'
 
-import {useState, useEffect} from 'react'
+import {useState} from 'react'
 import {useColaboSocket} from '../../../hooks/useColaboSocket'
-import TeacherView from './TeacherView'
+
 import StudentView from './StudentView'
 import {Button} from '@cm/components/styles/common-components/Button'
+import NewTeacherView from '@app/(apps)/edu/Colabo/games/[gameId]/play/NewTeacherView'
 
 interface ColaboGamePlayPageProps {
   game: any
@@ -14,11 +15,22 @@ interface ColaboGamePlayPageProps {
 }
 
 export default function ColaboGamePlayPage({game, role, userId, student}: ColaboGamePlayPageProps) {
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0)
-  const [currentMode, setCurrentMode] = useState<'view' | 'answer' | 'result' | null>(null)
+  // DBから取得した初期状態を設定
+  const initialSlideIndex = game.currentSlideId ? game.Slide.findIndex((s: any) => s.id === game.currentSlideId) : 0
+  const initialMode = game.slideMode as 'view' | 'answer' | 'result' | null
+
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(initialSlideIndex >= 0 ? initialSlideIndex : 0)
+  const [currentMode, setCurrentMode] = useState<'view' | 'answer' | 'result' | null>(initialMode)
   const [answerStats, setAnswerStats] = useState<any>(null)
   const [sharedAnswers, setSharedAnswers] = useState<any[]>([])
   const [isCorrectRevealed, setIsCorrectRevealed] = useState(false)
+
+  console.log('初期状態:', {
+    currentSlideId: game.currentSlideId,
+    slideMode: game.slideMode,
+    initialSlideIndex,
+    initialMode,
+  })
 
   // Socket.io接続
   const socket = useColaboSocket({
@@ -26,13 +38,15 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     role,
     userId,
     userName: role === 'student' ? student?.name : game.Teacher?.name,
-    onSlideChange: slideIndex => {
+    onSlideChange: (slideId, slideIndex) => {
+      console.log('スライド変更:', {slideId, slideIndex})
       setCurrentSlideIndex(slideIndex)
       // スライドが変わったらリセット
       setIsCorrectRevealed(false)
       setSharedAnswers([])
     },
     onModeChange: mode => {
+      console.log('モード変更:', mode)
       setCurrentMode(mode)
       if (mode === 'view') {
         // 表示モードに戻ったらリセット
@@ -41,14 +55,19 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     },
 
     onGameStateSync: state => {
-      // 初期状態の同期
-      if (state.currentSlideId) {
+      console.log('状態同期:', state)
+      // サーバーから状態同期があった場合は更新
+      if (state.currentSlideId !== null) {
         const index = game.Slide.findIndex((s: any) => s.id === state.currentSlideId)
-        if (index >= 0) {
+        if (index >= 0 && index !== currentSlideIndex) {
+          console.log('スライドインデックス更新:', index)
           setCurrentSlideIndex(index)
         }
       }
-      setCurrentMode(state.mode)
+      if (state.mode !== currentMode) {
+        console.log('モード更新:', state.mode)
+        setCurrentMode(state.mode)
+      }
     },
     onAnswerUpdate: data => {
       // 教師のみ：回答状況の更新
@@ -63,7 +82,6 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     onSharedAnswer: data => {
       // 共有された回答を追加
 
-      console.log(data) //logs
       setSharedAnswers(prev => [...prev, data])
     },
     onRevealCorrect: data => {
@@ -131,7 +149,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
         ) : (
           <>
             {role === 'teacher' ? (
-              <TeacherView
+              <NewTeacherView
                 game={game}
                 currentSlide={currentSlide}
                 currentSlideIndex={currentSlideIndex}

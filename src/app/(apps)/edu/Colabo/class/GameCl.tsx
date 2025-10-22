@@ -1,4 +1,3 @@
-import {Game} from '@prisma/client'
 import prisma from 'src/lib/prisma'
 
 export type gameDataType = NonNullable<Awaited<ReturnType<typeof GameCl.getCurrentSlideAnswers>>>
@@ -45,6 +44,7 @@ export class GameCl {
         },
       },
     })
+
     return game
   }
 }

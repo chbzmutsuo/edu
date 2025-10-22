@@ -476,3 +476,104 @@ export async function findGameBySecretKey(secretKey: string) {
     }
   }
 }
+
+/**
+ * 回答の共有状態を更新
+ */
+export async function updateAnswerShareStatus(answerId: number, isShared: boolean, isAnonymous: boolean = false) {
+  try {
+    const answer = await prisma.slideAnswer.update({
+      where: {id: answerId},
+      data: {
+        isShared,
+        isAnonymous: isShared ? isAnonymous : false, // 共有解除時は匿名も解除
+      },
+      include: {
+        Student: {
+          select: {
+            id: true,
+            name: true,
+            attendanceNumber: true,
+          },
+        },
+      },
+    })
+
+    return {
+      success: true,
+      answer,
+    }
+  } catch (error) {
+    console.error('[updateAnswerShareStatus] エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '共有状態の更新に失敗しました',
+    }
+  }
+}
+
+/**
+ * スライドの共有された回答を取得
+ */
+export async function getSharedAnswers(slideId: number) {
+  try {
+    const answers = await prisma.slideAnswer.findMany({
+      where: {
+        slideId,
+        active: true,
+        isShared: true,
+      },
+      include: {
+        Student: {
+          select: {
+            id: true,
+            name: true,
+            attendanceNumber: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    })
+
+    return {
+      success: true,
+      answers,
+    }
+  } catch (error) {
+    console.error('[getSharedAnswers] エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '共有回答の取得に失敗しました',
+    }
+  }
+}
+
+/**
+ * スライドの全ての回答の共有状態をリセット
+ */
+export async function resetSlideShareStatus(slideId: number) {
+  try {
+    await prisma.slideAnswer.updateMany({
+      where: {
+        slideId,
+        isShared: true,
+      },
+      data: {
+        isShared: false,
+        isAnonymous: false,
+      },
+    })
+
+    return {
+      success: true,
+    }
+  } catch (error) {
+    console.error('[resetSlideShareStatus] エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '共有状態のリセットに失敗しました',
+    }
+  }
+}

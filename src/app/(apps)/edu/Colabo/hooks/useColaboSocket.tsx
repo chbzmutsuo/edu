@@ -118,6 +118,7 @@ export function useColaboSocket({
         userId,
         userName,
       }
+      console.log('JOIN_GAMEイベント送信:', joinPayload)
       socket.emit(SOCKET_EVENTS.JOIN_GAME, joinPayload)
     })
 
@@ -126,6 +127,7 @@ export function useColaboSocket({
       console.log({接続確認: data})
       if (data.currentState) {
         setCurrentState(data.currentState)
+
         onGameStateSync?.(data.currentState)
       }
     })
@@ -138,7 +140,7 @@ export function useColaboSocket({
 
       // 個別のコールバックも呼び出し
       if (data.currentSlideId !== currentState?.currentSlideId) {
-        onSlideChange?.(data.currentSlideId!, 0) // slideIndexは別途管理
+        // onSlideChange?.(data.currentSlideId!, 0) // slideIndexは別途管理
       }
       if (data.mode !== currentState?.mode) {
         onModeChange?.(data.mode)
@@ -236,6 +238,7 @@ export function useColaboSocket({
         userId,
         userName,
       }
+      console.log('再接続後のJOIN_GAMEイベント送信:', joinPayload)
       socket.emit(SOCKET_EVENTS.JOIN_GAME, joinPayload)
     })
 

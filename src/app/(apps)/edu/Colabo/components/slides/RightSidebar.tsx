@@ -11,11 +11,11 @@ import {PlusIcon} from 'lucide-react'
 interface RightSidebarProps {
   selectedSlide: any | null
 
-  onUpdateSlide: (slideId: number, updates: any) => void
-  onDeleteSlide: (slideId: number) => void
+  handleUpdateSlide: (slideId: number, updates: any) => void
+  handleDeleteSlide: (slideId: number) => void
 }
 
-export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlide}: RightSidebarProps) {
+export default function RightSidebar({selectedSlide, handleUpdateSlide, handleDeleteSlide}: RightSidebarProps) {
   const [editingBlock, setEditingBlock] = useState<any | null>(null)
 
   // ローカル編集状態
@@ -34,7 +34,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
   const handleTitleBlur = () => {
     if (!selectedSlide) return
     if (localTitle !== selectedSlide.contentData?.title) {
-      onUpdateSlide(selectedSlide.id, {
+      handleUpdateSlide(selectedSlide.id, {
         contentData: {
           ...selectedSlide.contentData,
           title: localTitle,
@@ -47,7 +47,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
   const handleQuestionBlur = () => {
     if (!selectedSlide) return
     if (localQuestion !== selectedSlide.contentData?.question) {
-      onUpdateSlide(selectedSlide.id, {
+      handleUpdateSlide(selectedSlide.id, {
         contentData: {
           ...selectedSlide.contentData,
           question: localQuestion,
@@ -109,7 +109,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
   // 選択肢をサーバーに保存
   const saveChoices = (choices: any[]) => {
     if (!selectedSlide) return
-    onUpdateSlide(selectedSlide.id, {
+    handleUpdateSlide(selectedSlide.id, {
       contentData: {
         ...selectedSlide.contentData,
         choices,
@@ -127,7 +127,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
       sortOrder: selectedSlide.contentData?.blocks?.length || 0,
     }
     const updatedBlocks = [...(selectedSlide.contentData?.blocks || []), newBlock]
-    onUpdateSlide(selectedSlide.id, {
+    handleUpdateSlide(selectedSlide.id, {
       contentData: {
         ...selectedSlide.contentData,
         blocks: updatedBlocks,
@@ -140,7 +140,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
   const handleUpdateBlock = (blockId: string, updates: any) => {
     if (!selectedSlide) return
     const updatedBlocks = selectedSlide.contentData?.blocks?.map((b: any) => (b.id === blockId ? {...b, ...updates} : b))
-    onUpdateSlide(selectedSlide.id, {
+    handleUpdateSlide(selectedSlide.id, {
       contentData: {
         ...selectedSlide.contentData,
         blocks: updatedBlocks,
@@ -152,7 +152,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
   const handleDeleteBlock = (blockId: string) => {
     if (!selectedSlide) return
     const updatedBlocks = selectedSlide.contentData?.blocks?.filter((b: any) => b.id !== blockId)
-    onUpdateSlide(selectedSlide.id, {
+    handleUpdateSlide(selectedSlide.id, {
       contentData: {
         ...selectedSlide.contentData,
         blocks: updatedBlocks,
@@ -178,7 +178,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
       block.sortOrder = i
     })
 
-    onUpdateSlide(selectedSlide.id, {
+    handleUpdateSlide(selectedSlide.id, {
       contentData: {
         ...selectedSlide.contentData,
         blocks: newBlocks,
@@ -411,7 +411,7 @@ export default function RightSidebar({selectedSlide, onUpdateSlide, onDeleteSlid
               <Button
                 onClick={() => {
                   if (confirm('このスライドを削除してもよろしいですか？')) {
-                    onDeleteSlide(selectedSlide.id)
+                    handleDeleteSlide(selectedSlide.id)
                   }
                 }}
                 className="w-full bg-red-600 hover:bg-red-700"

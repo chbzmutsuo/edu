@@ -54,7 +54,7 @@ const ShadModal = React.memo((props: ShadModalProps) => {
     title,
     description,
     footer,
-    className = '',
+    className = 'p-2',
     style,
   } = props
   const mobile = useIsMobile()

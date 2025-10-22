@@ -16,7 +16,6 @@ export type basicModalPropType = {
   childrenProps?: {
     className?: string
   }
-
   open?: any
   setopen?: any
 }

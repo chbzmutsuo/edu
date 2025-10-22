@@ -1,8 +1,7 @@
 import {initServerComopnent} from 'src/non-common/serverSideFunction'
-import prisma from 'src/lib/prisma'
 import Redirector from '@cm/components/utils/Redirector'
 import ColaboGamePlayPage from './ColaboGamePlayPage'
-import {GameCl, gameDataType} from '@app/(apps)/edu/Colabo/class/GameCl'
+import {GameCl} from '@app/(apps)/edu/Colabo/class/GameCl'
 
 const Page = async props => {
   const params = await props.params

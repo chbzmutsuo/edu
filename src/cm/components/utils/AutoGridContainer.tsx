@@ -46,6 +46,12 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
       else if (adjustedCols === 4) classes.push('sm:grid-cols-[repeat(4,auto)]')
       else if (adjustedCols === 5) classes.push('sm:grid-cols-[repeat(5,auto)]')
       else if (adjustedCols === 6) classes.push('sm:grid-cols-[repeat(6,auto)]')
+      else if (adjustedCols === 7) classes.push('sm:grid-cols-[repeat(7,auto)]')
+      else if (adjustedCols === 8) classes.push('sm:grid-cols-[repeat(8,auto)]')
+      else if (adjustedCols === 9) classes.push('sm:grid-cols-[repeat(9,auto)]')
+      else if (adjustedCols === 10) classes.push('sm:grid-cols-[repeat(10,auto)]')
+      else if (adjustedCols === 11) classes.push('sm:grid-cols-[repeat(11,auto)]')
+      else if (adjustedCols === 12) classes.push('sm:grid-cols-[repeat(12,auto)]')
     }
 
     // mdブレークポイント（指定されている場合）
@@ -57,6 +63,12 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
       else if (adjustedCols === 4) classes.push('md:grid-cols-[repeat(4,auto)]')
       else if (adjustedCols === 5) classes.push('md:grid-cols-[repeat(5,auto)]')
       else if (adjustedCols === 6) classes.push('md:grid-cols-[repeat(6,auto)]')
+      else if (adjustedCols === 7) classes.push('md:grid-cols-[repeat(7,auto)]')
+      else if (adjustedCols === 8) classes.push('md:grid-cols-[repeat(8,auto)]')
+      else if (adjustedCols === 9) classes.push('md:grid-cols-[repeat(9,auto)]')
+      else if (adjustedCols === 10) classes.push('md:grid-cols-[repeat(10,auto)]')
+      else if (adjustedCols === 11) classes.push('md:grid-cols-[repeat(11,auto)]')
+      else if (adjustedCols === 12) classes.push('md:grid-cols-[repeat(12,auto)]')
     }
 
     // lgブレークポイント
@@ -68,6 +80,12 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
       else if (adjustedCols === 4) classes.push('lg:grid-cols-[repeat(4,auto)]')
       else if (adjustedCols === 5) classes.push('lg:grid-cols-[repeat(5,auto)]')
       else if (adjustedCols === 6) classes.push('lg:grid-cols-[repeat(6,auto)]')
+      else if (adjustedCols === 7) classes.push('lg:grid-cols-[repeat(7,auto)]')
+      else if (adjustedCols === 8) classes.push('lg:grid-cols-[repeat(8,auto)]')
+      else if (adjustedCols === 9) classes.push('lg:grid-cols-[repeat(9,auto)]')
+      else if (adjustedCols === 10) classes.push('lg:grid-cols-[repeat(10,auto)]')
+      else if (adjustedCols === 11) classes.push('lg:grid-cols-[repeat(11,auto)]')
+      else if (adjustedCols === 12) classes.push('lg:grid-cols-[repeat(12,auto)]')
     }
 
     // xlブレークポイント
@@ -79,6 +97,12 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
       else if (adjustedCols === 4) classes.push('xl:grid-cols-[repeat(4,auto)]')
       else if (adjustedCols === 5) classes.push('xl:grid-cols-[repeat(5,auto)]')
       else if (adjustedCols === 6) classes.push('xl:grid-cols-[repeat(6,auto)]')
+      else if (adjustedCols === 7) classes.push('xl:grid-cols-[repeat(7,auto)]')
+      else if (adjustedCols === 8) classes.push('xl:grid-cols-[repeat(8,auto)]')
+      else if (adjustedCols === 9) classes.push('xl:grid-cols-[repeat(9,auto)]')
+      else if (adjustedCols === 10) classes.push('xl:grid-cols-[repeat(10,auto)]')
+      else if (adjustedCols === 11) classes.push('xl:grid-cols-[repeat(11,auto)]')
+      else if (adjustedCols === 12) classes.push('xl:grid-cols-[repeat(12,auto)]')
     }
 
     // 2xlブレークポイント
@@ -90,6 +114,12 @@ export const AutoGridContainer: React.FC<AutoGridContainerProps> = ({
       else if (adjustedCols === 4) classes.push('2xl:grid-cols-[repeat(4,auto)]')
       else if (adjustedCols === 5) classes.push('2xl:grid-cols-[repeat(5,auto)]')
       else if (adjustedCols === 6) classes.push('2xl:grid-cols-[repeat(6,auto)]')
+      else if (adjustedCols === 7) classes.push('2xl:grid-cols-[repeat(7,auto)]')
+      else if (adjustedCols === 8) classes.push('2xl:grid-cols-[repeat(8,auto)]')
+      else if (adjustedCols === 9) classes.push('2xl:grid-cols-[repeat(9,auto)]')
+      else if (adjustedCols === 10) classes.push('2xl:grid-cols-[repeat(10,auto)]')
+      else if (adjustedCols === 11) classes.push('2xl:grid-cols-[repeat(11,auto)]')
+      else if (adjustedCols === 12) classes.push('2xl:grid-cols-[repeat(12,auto)]')
     }
 
     return classes.join(' ')

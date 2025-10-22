@@ -16,6 +16,7 @@ import {
   type SocketErrorPayload,
   type SocketRole,
 } from '@app/(apps)/edu/Colabo/lib/socket-config'
+import prisma from 'src/lib/prisma'
 
 // Socket.ioの設定を無効化（Next.jsのbodyParser）
 export const config = {
@@ -53,15 +54,39 @@ const socketInfo = new Map<
 >()
 
 /**
- * Gameの状態を初期化または取得
+ * Gameの状態を初期化または取得（DBから読み込み）
  */
-function getOrCreateGameState(gameId: number): GameState {
+async function getOrCreateGameState(gameId: number): Promise<GameState> {
   if (!gameStates.has(gameId)) {
-    gameStates.set(gameId, {
-      currentSlideId: null,
-      mode: null,
-      participants: new Map(),
-    })
+    // DBからゲーム状態を取得
+    try {
+      const game = await prisma.game.findUnique({
+        where: {id: gameId},
+        select: {
+          currentSlideId: true,
+          slideMode: true,
+        },
+      })
+
+      gameStates.set(gameId, {
+        currentSlideId: game?.currentSlideId ?? null,
+        mode: (game?.slideMode as 'view' | 'answer' | 'result' | null) ?? null,
+        participants: new Map(),
+      })
+
+      console.log(`[Colabo Socket.io] Game ${gameId} の状態をDBから読み込み:`, {
+        currentSlideId: game?.currentSlideId,
+        slideMode: game?.slideMode,
+      })
+    } catch (error) {
+      console.error(`[Colabo Socket.io] Game ${gameId} の状態読み込みエラー:`, error)
+      // エラー時はデフォルト状態を設定
+      gameStates.set(gameId, {
+        currentSlideId: null,
+        mode: null,
+        participants: new Map(),
+      })
+    }
   }
   return gameStates.get(gameId)!
 }
@@ -109,7 +134,7 @@ function setupSocketIO(io: SocketIOServer) {
     /**
      * Gameへの参加
      */
-    socket.on(SOCKET_EVENTS.JOIN_GAME, (payload: JoinGamePayload) => {
+    socket.on(SOCKET_EVENTS.JOIN_GAME, async (payload: JoinGamePayload) => {
       try {
         const {gameId, role, userId, userName} = payload
 
@@ -127,8 +152,8 @@ function setupSocketIO(io: SocketIOServer) {
         const roomName = `game-${gameId}`
         socket.join(roomName)
 
-        // Game状態を取得または作成
-        const gameState = getOrCreateGameState(gameId)
+        // Game状態を取得または作成（DBから読み込み）
+        const gameState = await getOrCreateGameState(gameId)
 
         // 参加者情報を追加
         gameState.participants.set(socket.id, {
@@ -142,6 +167,10 @@ function setupSocketIO(io: SocketIOServer) {
         socketInfo.set(socket.id, {gameId, role, userId})
 
         console.log(`[Colabo Socket.io] ${role} (userId: ${userId}) が Game ${gameId} に参加`)
+        console.log(`[Colabo Socket.io] 現在の状態:`, {
+          currentSlideId: gameState.currentSlideId,
+          mode: gameState.mode,
+        })
 
         // 接続確認応答を送信
         const ackPayload: ConnectionAckPayload = {
@@ -185,7 +214,7 @@ function setupSocketIO(io: SocketIOServer) {
     /**
      * スライド切り替え（教師のみ）
      */
-    socket.on(SOCKET_EVENTS.TEACHER_CHANGE_SLIDE, (payload: ChangeSlidePayload) => {
+    socket.on(SOCKET_EVENTS.TEACHER_CHANGE_SLIDE, async (payload: ChangeSlidePayload) => {
       try {
         const {gameId, slideId, slideIndex} = payload
         const info = socketInfo.get(socket.id)
@@ -201,7 +230,7 @@ function setupSocketIO(io: SocketIOServer) {
         }
 
         // Game状態を更新
-        const gameState = getOrCreateGameState(gameId)
+        const gameState = await getOrCreateGameState(gameId)
         gameState.currentSlideId = slideId
 
         console.log(`[Colabo Socket.io] Game ${gameId}: スライド変更 -> ${slideId}`)
@@ -231,7 +260,7 @@ function setupSocketIO(io: SocketIOServer) {
     /**
      * モード変更（教師のみ）
      */
-    socket.on(SOCKET_EVENTS.TEACHER_CHANGE_MODE, (payload: ChangeModePayload) => {
+    socket.on(SOCKET_EVENTS.TEACHER_CHANGE_MODE, async (payload: ChangeModePayload) => {
       try {
         const {gameId, slideId, mode} = payload
         const info = socketInfo.get(socket.id)
@@ -247,7 +276,7 @@ function setupSocketIO(io: SocketIOServer) {
         }
 
         // Game状態を更新
-        const gameState = getOrCreateGameState(gameId)
+        const gameState = await getOrCreateGameState(gameId)
         gameState.mode = mode
 
         console.log(`[Colabo Socket.io] Game ${gameId}: モード変更 -> ${mode}`)
@@ -277,7 +306,7 @@ function setupSocketIO(io: SocketIOServer) {
     /**
      * 回答締切（教師のみ）
      */
-    socket.on(SOCKET_EVENTS.TEACHER_CLOSE_ANSWER, (payload: CloseAnswerPayload) => {
+    socket.on(SOCKET_EVENTS.TEACHER_CLOSE_ANSWER, async (payload: CloseAnswerPayload) => {
       try {
         const {gameId, slideId} = payload
         const info = socketInfo.get(socket.id)
@@ -295,7 +324,7 @@ function setupSocketIO(io: SocketIOServer) {
         console.log(`[Colabo Socket.io] Game ${gameId}: 回答締切 (スライド ${slideId})`)
 
         // 全員に締切を通知（モードを結果表示に変更）
-        const gameState = getOrCreateGameState(gameId)
+        const gameState = await getOrCreateGameState(gameId)
         gameState.mode = 'result'
 
         const roomName = `game-${gameId}`

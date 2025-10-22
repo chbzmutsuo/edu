@@ -350,9 +350,10 @@ model Game {
   randomTargetStudentIds Int[]
   learningContent        String?
   task                   String?
-  currentSlideId         Int?
-  slideMode              String?
-  Answer                 Answer[]
+
+  currentSlideId Int?
+  slideMode      String?
+  Answer         Answer[]
 
   School                   School                     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   SubjectNameMaster        SubjectNameMaster?         @relation(fields: [subjectNameMasterId], references: [id], onDelete: Cascade)
@@ -486,17 +487,19 @@ model Slide {
 }
 
 model SlideAnswer {
-  id         Int       @id @default(autoincrement())
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime? @updatedAt()
-  active     Boolean   @default(true)
-  slideId    Int
-  studentId  Int
-  gameId     Int
-  answerData Json
-  Slide      Slide     @relation(fields: [slideId], references: [id], onDelete: Cascade)
-  Student    Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  Game       Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime? @updatedAt()
+  active      Boolean   @default(true)
+  slideId     Int
+  studentId   Int
+  gameId      Int
+  answerData  Json
+  isShared    Boolean   @default(false) // 共有されているか
+  isAnonymous Boolean   @default(false) // 匿名で共有されているか
+  Slide       Slide     @relation(fields: [slideId], references: [id], onDelete: Cascade)
+  Student     Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  Game        Game      @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@unique([slideId, studentId, gameId])
 }
@@ -8051,6 +8054,36 @@ export const prismaDMMF = {
           "hasDefaultValue": false,
           "type": "Json",
           "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "isShared",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "Boolean",
+          "nativeType": null,
+          "default": false,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "isAnonymous",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "Boolean",
+          "nativeType": null,
+          "default": false,
           "isGenerated": false,
           "isUpdatedAt": false
         },

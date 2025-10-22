@@ -69,7 +69,7 @@ export class ColBuilder {
               onClick={async () => {
                 await doStandardPrisma('slide', 'update', {
                   where: {id: row.id},
-                  data: {isActive: !row.isActive},
+                  data: {active: !row.active},
                 })
                 router.refresh()
               }}

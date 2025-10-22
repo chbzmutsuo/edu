@@ -18,7 +18,7 @@ export default function ColaboEnterPage() {
 
   // URLパラメータからkeyを取得
   useEffect(() => {
-    const keyFromUrl = searchParams.get('key')
+    const keyFromUrl = searchParams?.get('key')
     if (keyFromUrl) {
       setKey(keyFromUrl)
       handleSearchGame(keyFromUrl)
