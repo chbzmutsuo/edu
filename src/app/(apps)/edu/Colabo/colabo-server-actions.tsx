@@ -33,8 +33,6 @@ export async function createColaboGame(data: {
         absentStudentIds: [],
         randomTargetStudentIds: [],
         status: 'preparing', // 準備中
-        currentSlideId: null,
-        slideMode: null,
       },
       include: {
         School: true,
@@ -140,6 +138,18 @@ export async function createSlide(data: {gameId: number; templateType: string; c
       },
     })
 
+    // 最初のスライドの場合、ゲームのcurrentSlideIdを設定
+    const existingSlides = await prisma.slide.count({
+      where: {gameId, active: true},
+    })
+
+    if (existingSlides === 1) {
+      await prisma.game.update({
+        where: {id: gameId},
+        data: {currentSlideId: slide.id},
+      })
+    }
+
     return {
       success: true,
       slide,
@@ -240,18 +250,37 @@ export async function updateSlideOrder(slideIds: number[]) {
 /**
  * Game状態を更新
  */
-export async function updateGameState(
-  gameId: number,
-  data: {
-    currentSlideId?: number | null
-    slideMode?: string | null
-    status?: string
+/**
+ * スライドのモードを更新
+ */
+export async function updateSlideMode(slideId: number, mode: 'view' | 'answer' | 'result' | null) {
+  try {
+    const slide = await prisma.slide.update({
+      where: {id: slideId},
+      data: {mode},
+    })
+
+    return {
+      success: true,
+      slide,
+    }
+  } catch (error) {
+    console.error('[updateSlideMode] エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'スライドモードの更新に失敗しました',
+    }
   }
-) {
+}
+
+/**
+ * 教師の現在のスライドを更新
+ */
+export async function updateCurrentSlide(gameId: number, slideId: number) {
   try {
     const game = await prisma.game.update({
       where: {id: gameId},
-      data,
+      data: {currentSlideId: slideId},
     })
 
     return {
@@ -259,10 +288,35 @@ export async function updateGameState(
       game,
     }
   } catch (error) {
-    console.error('[updateGameState] エラー:', error)
+    console.error('[updateCurrentSlide] エラー:', error)
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Game状態の更新に失敗しました',
+      error: error instanceof Error ? error.message : '現在のスライドの更新に失敗しました',
+    }
+  }
+}
+
+/**
+ * 生徒回答を削除
+ */
+export async function deleteSlideAnswer(slideId: number, studentId: number) {
+  try {
+    const deletedAnswer = await prisma.slideAnswer.deleteMany({
+      where: {
+        slideId,
+        studentId,
+      },
+    })
+
+    return {
+      success: true,
+      deletedCount: deletedAnswer.count,
+    }
+  } catch (error) {
+    console.error('[deleteSlideAnswer] エラー:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : '回答の削除に失敗しました',
     }
   }
 }

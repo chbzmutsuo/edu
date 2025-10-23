@@ -283,14 +283,7 @@ export default function TeacherView({
               <div className="text-center py-4 text-gray-500">まだ回答がありません</div>
             )}
 
-            {/* 正答公開ボタン（選択クイズの場合）
-            {currentSlide?.templateType === 'choice' && (
-              <div className="mt-4">
-                <Button onClick={handleRevealCorrect} className="w-full bg-green-600 hover:bg-green-700">
-                  ✅ 正答を公開
-                </Button>
-              </div>
-            )} */}
+
           </div>
         )}
       </div>

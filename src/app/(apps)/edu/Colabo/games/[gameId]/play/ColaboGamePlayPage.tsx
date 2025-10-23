@@ -1,7 +1,8 @@
 'use client'
 
 import {useState} from 'react'
-import {useColaboSocket} from '../../../hooks/useColaboSocket'
+import {useColaboSocket, type SlideStates} from '../../../hooks/useColaboSocket'
+import {type SlideMode} from '../../../lib/socket-config'
 
 import StudentView from './StudentView'
 import {Button} from '@cm/components/styles/common-components/Button'
@@ -15,21 +16,31 @@ interface ColaboGamePlayPageProps {
 }
 
 export default function ColaboGamePlayPage({game, role, userId, student}: ColaboGamePlayPageProps) {
-  // DBから取得した初期状態を設定
-  const initialSlideIndex = game.currentSlideId ? game.Slide.findIndex((s: any) => s.id === game.currentSlideId) : 0
-  const initialMode = game.slideMode as 'view' | 'answer' | 'result' | null
+  // DBから取得した初期スライドモード状態を設定
+  const initialSlideStates: SlideStates = {}
+  game.Slide.forEach((slide: any) => {
+    initialSlideStates[slide.id] = (slide.mode as SlideMode) || null
+  })
 
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(initialSlideIndex >= 0 ? initialSlideIndex : 0)
-  const [currentMode, setCurrentMode] = useState<'view' | 'answer' | 'result' | null>(initialMode)
+  // DBから取得したcurrentSlideIdを初期インデックスに設定（教師・生徒共通）
+  const initialSlideIndex = (() => {
+    if (game.currentSlideId) {
+      const index = game.Slide.findIndex((slide: any) => slide.id === game.currentSlideId)
+      return index >= 0 ? index : 0
+    }
+    return 0
+  })()
+
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(initialSlideIndex)
+  const [slideStates, setSlideStates] = useState<SlideStates>(initialSlideStates)
   const [answerStats, setAnswerStats] = useState<any>(null)
   const [sharedAnswers, setSharedAnswers] = useState<any[]>([])
   const [isCorrectRevealed, setIsCorrectRevealed] = useState(false)
 
   console.log('初期状態:', {
     currentSlideId: game.currentSlideId,
-    slideMode: game.slideMode,
     initialSlideIndex,
-    initialMode,
+    initialSlideStates,
   })
 
   // Socket.io接続
@@ -45,28 +56,26 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
       setIsCorrectRevealed(false)
       setSharedAnswers([])
     },
-    onModeChange: mode => {
-      console.log('モード変更:', mode)
-      setCurrentMode(mode)
+    onSlideModeChange: (slideId, mode) => {
+      console.log('スライドモード変更:', {slideId, mode})
+      setSlideStates(prev => ({...prev, [slideId]: mode}))
       if (mode === 'view') {
         // 表示モードに戻ったらリセット
         setIsCorrectRevealed(false)
       }
     },
-
-    onGameStateSync: state => {
-      console.log('状態同期:', state)
-      // サーバーから状態同期があった場合は更新
-      if (state.currentSlideId !== null) {
-        const index = game.Slide.findIndex((s: any) => s.id === state.currentSlideId)
+    onSlideStatesSync: states => {
+      console.log('スライド状態同期:', states)
+      setSlideStates(states)
+    },
+    onCurrentSlideSync: currentSlideId => {
+      console.log('現在スライド同期:', currentSlideId)
+      if (currentSlideId !== null) {
+        const index = game.Slide.findIndex((slide: any) => slide.id === currentSlideId)
         if (index >= 0 && index !== currentSlideIndex) {
-          console.log('スライドインデックス更新:', index)
+          console.log('Socket.ioからスライドインデックス更新:', index)
           setCurrentSlideIndex(index)
         }
-      }
-      if (state.mode !== currentMode) {
-        console.log('モード更新:', state.mode)
-        setCurrentMode(state.mode)
       }
     },
     onAnswerUpdate: data => {
@@ -81,7 +90,6 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
     },
     onSharedAnswer: data => {
       // 共有された回答を追加
-
       setSharedAnswers(prev => [...prev, data])
     },
     onRevealCorrect: data => {
@@ -91,6 +99,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
   })
 
   const currentSlide = game.Slide[currentSlideIndex ?? 0] || null
+  const currentSlideMode = currentSlide ? slideStates[currentSlide.id] : null
 
   // 接続状態の表示
   const connectionStatusBadge = () => {
@@ -126,6 +135,11 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
               {currentSlide && (
                 <div className="text-sm text-gray-600">
                   スライド {currentSlideIndex + 1} / {game.Slide.length}
+                  {role === 'student' && (
+                    <span className="ml-2 text-xs">
+                      (ID: {currentSlide.id}, Mode: {currentSlideMode || 'なし'})
+                    </span>
+                  )}
                 </div>
               )}
             </div>
@@ -153,7 +167,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
                 game={game}
                 currentSlide={currentSlide}
                 currentSlideIndex={currentSlideIndex}
-                currentMode={currentMode}
+                currentSlideMode={currentSlideMode}
                 answerStats={answerStats}
                 socket={socket}
                 onSlideChange={setCurrentSlideIndex}
@@ -162,7 +176,7 @@ export default function ColaboGamePlayPage({game, role, userId, student}: Colabo
               <StudentView
                 game={game}
                 currentSlide={currentSlide}
-                currentMode={currentMode}
+                currentSlideMode={currentSlideMode}
                 student={student}
                 socket={socket}
                 sharedAnswers={sharedAnswers}

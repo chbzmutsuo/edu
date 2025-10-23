@@ -350,10 +350,8 @@ model Game {
   randomTargetStudentIds Int[]
   learningContent        String?
   task                   String?
-
-  currentSlideId Int?
-  slideMode      String?
-  Answer         Answer[]
+  currentSlideId         Int? // 教師が最後に表示していたスライドID
+  Answer                 Answer[]
 
   School                   School                     @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   SubjectNameMaster        SubjectNameMaster?         @relation(fields: [subjectNameMasterId], references: [id], onDelete: Cascade)
@@ -482,6 +480,7 @@ model Slide {
   gameId       Int
   templateType String
   contentData  Json
+  mode         String?       @default("view") // スライドごとのモード: 'view' | 'answer' | 'result' | null
   Game         Game          @relation(fields: [gameId], references: [id], onDelete: Cascade)
   SlideAnswer  SlideAnswer[]
 }
@@ -6166,20 +6165,6 @@ export const prismaDMMF = {
           "isUpdatedAt": false
         },
         {
-          "name": "slideMode",
-          "kind": "scalar",
-          "isList": false,
-          "isRequired": false,
-          "isUnique": false,
-          "isId": false,
-          "isReadOnly": false,
-          "hasDefaultValue": false,
-          "type": "String",
-          "nativeType": null,
-          "isGenerated": false,
-          "isUpdatedAt": false
-        },
-        {
           "name": "Answer",
           "kind": "object",
           "isList": true,
@@ -7883,6 +7868,21 @@ export const prismaDMMF = {
           "hasDefaultValue": false,
           "type": "Json",
           "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "mode",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "String",
+          "nativeType": null,
+          "default": "view",
           "isGenerated": false,
           "isUpdatedAt": false
         },

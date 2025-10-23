@@ -73,7 +73,6 @@ export default function useSlideHandlers({
       if (result.success && result.slide) {
         // ローカル状態を更新
         setSlides(slides.map((s: any) => (s.id === slideId ? {...s, ...result.slide} : s)))
-        toast.success('スライドを更新しました')
       } else {
         toast.error(result.error || 'スライド更新に失敗しました')
       }
@@ -93,13 +92,9 @@ export default function useSlideHandlers({
         const newSlides = slides.filter((s: any) => s.id !== slideId)
         setSlides(newSlides)
 
-        // 選択中のスライドを削除した場合、次のスライドを選択
-        if (slideId === selectedSlideId) {
-          const currentSlideIndex = slides.findIndex((s: any) => s.id === slideId)
-          const previousSlideId = newSlides[currentSlideIndex - 1]?.id
-          setSelectedSlideId(previousSlideId)
-          // router.refresh()
-        }
+        const currentSlideIndex = slides.findIndex((s: any) => s.id === slideId)
+        const previousSlideId = newSlides[currentSlideIndex - 1]?.id
+        setSelectedSlideId(previousSlideId)
       } else {
         toast.error(result.error || 'スライド削除に失敗しました')
       }

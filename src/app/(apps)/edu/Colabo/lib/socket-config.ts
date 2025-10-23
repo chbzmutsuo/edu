@@ -72,7 +72,7 @@ export interface ChangeSlidePayload {
   slideIndex: number
 }
 
-// モード変更ペイロード
+// モード変更ペイロード（スライドごと）
 export interface ChangeModePayload {
   gameId: number
   slideId: number

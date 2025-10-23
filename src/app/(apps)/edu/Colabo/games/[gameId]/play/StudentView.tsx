@@ -3,14 +3,15 @@
 import {useState, useEffect} from 'react'
 import {Button} from '@cm/components/styles/common-components/Button'
 import {SlideBlock} from '../../../(components)/SlideBlock'
-import {saveSlideAnswer} from '../../../colabo-server-actions'
+import {saveSlideAnswer, deleteSlideAnswer} from '../../../colabo-server-actions'
 import {toast} from 'react-toastify'
 import {gameDataType} from '@app/(apps)/edu/Colabo/class/GameCl'
+import PsychoAnswerForm from '../../../components/psycho/PsychoAnswerForm'
 
 interface StudentViewProps {
   game: gameDataType
   currentSlide: any
-  currentMode: 'view' | 'answer' | 'result' | null
+  currentSlideMode: 'view' | 'answer' | 'result' | null
   student: any
   socket: any
   sharedAnswers: any[]
@@ -20,7 +21,7 @@ interface StudentViewProps {
 export default function StudentView({
   game,
   currentSlide,
-  currentMode,
+  currentSlideMode,
   student,
   socket,
   sharedAnswers,
@@ -91,15 +92,75 @@ export default function StudentView({
     setAnswerData({type: 'freetext', text, timestamp: new Date().toISOString()})
   }
 
+  // 心理アンケートの回答送信
+  const handlePsychoSubmit = async (psychoAnswerData: any) => {
+    if (!currentSlide) {
+      toast.error('スライドが選択されていません')
+      return
+    }
+
+    setIsSubmitting(true)
+    try {
+      // DBに保存
+      const result = await saveSlideAnswer({
+        gameId: game.id,
+        slideId: currentSlide.id,
+        studentId: student.id,
+        answerData: {type: 'psycho', ...psychoAnswerData, timestamp: new Date().toISOString()},
+      })
+
+      if (result.success) {
+        // Socket.ioで教師に通知
+        socket.submitAnswer(currentSlide.id, psychoAnswerData)
+        setHasSubmitted(true)
+        setAnswerData({type: 'psycho', ...psychoAnswerData})
+        toast.success('回答を送信しました')
+      } else {
+        toast.error(result.error || '回答の送信に失敗しました')
+      }
+    } catch (error) {
+      console.error('心理アンケート回答送信エラー:', error)
+      toast.error('予期しないエラーが発生しました')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // 回答をやり直し
+  const handleRetryAnswer = async () => {
+    if (!currentSlide) return
+
+    const confirmed = window.confirm('回答をやり直しますか？現在の回答が削除されます。')
+    if (!confirmed) return
+
+    try {
+      const result = await deleteSlideAnswer(currentSlide.id, student.id)
+
+      if (result.success) {
+        setAnswerData(null)
+        setHasSubmitted(false)
+        toast.success('回答を削除しました。やり直してください。')
+      } else {
+        toast.error('回答の削除に失敗しました')
+      }
+    } catch (error) {
+      console.error('回答削除エラー:', error)
+      toast.error('予期しないエラーが発生しました')
+    }
+  }
+
   // 待機画面
-  if (hasSubmitted && currentMode === 'answer') {
+  if (hasSubmitted && currentSlideMode === 'answer') {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="bg-white rounded-lg shadow-lg p-8 text-center max-w-md">
           <div className="text-6xl mb-4">✅</div>
           <h2 className="text-2xl font-bold mb-2">回答を送信しました</h2>
           <p className="text-gray-600 mb-4">他の人の回答を待っています...</p>
-          <div className="animate-pulse text-blue-600">⏳</div>
+          <div className="animate-pulse text-blue-600 mb-6">⏳</div>
+          <Button onClick={handleRetryAnswer} className="bg-orange-600 hover:bg-orange-700">
+            回答をやり直す
+          </Button>
         </div>
       </div>
     )
@@ -118,13 +179,13 @@ export default function StudentView({
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            {currentMode === 'view' && (
+            {currentSlideMode === 'view' && (
               <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">📺 表示中</span>
             )}
-            {currentMode === 'answer' && (
+            {currentSlideMode === 'answer' && (
               <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">✍️ 回答してください</span>
             )}
-            {currentMode === 'result' && (
+            {currentSlideMode === 'result' && (
               <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">📊 結果表示</span>
             )}
           </div>
@@ -150,8 +211,25 @@ export default function StudentView({
                 </div>
               )}
 
-            {/* 回答フォーム（回答モード時） */}
-            {currentMode === 'answer' && !hasSubmitted && (
+            {/* 心理アンケートの表示・回答（全モード） */}
+            {currentSlide.templateType === 'psycho' && (
+              <div>
+                <PsychoAnswerForm
+                  gameId={game.id}
+                  slideId={currentSlide.id}
+                  studentId={student.id}
+                  existingAnswer={game.Slide.find((s: any) => s.id === currentSlide.id)?.SlideAnswer?.find(
+                    (a: any) => a.studentId === student.id
+                  )}
+                  onSubmit={handlePsychoSubmit}
+                  isReadOnly={hasSubmitted || currentSlideMode === 'view'}
+                  currentMode={currentSlideMode}
+                />
+              </div>
+            )}
+
+            {/* 回答フォーム（回答モード時、心理アンケート以外） */}
+            {currentSlideMode === 'answer' && !hasSubmitted && currentSlide.templateType !== 'psycho' && (
               <div className="border-t pt-6">
                 {currentSlide.templateType === 'choice' && (
                   <div className="space-y-3">
@@ -211,11 +289,11 @@ export default function StudentView({
             )}
 
             {/* 結果表示（結果モード時） */}
-            {currentMode === 'result' && (
+            {currentSlideMode === 'result' && (
               <div className="border-t pt-6">
                 <h3 className="font-semibold text-lg mb-4">結果</h3>
-                {/* 正答表示（選択クイズの場合） */}
-                {currentSlide.templateType === 'choice' && isCorrectRevealed && (
+                {/* 正答表示（選択クイズの場合）- 結果モードで自動表示 */}
+                {currentSlide.templateType === 'choice' && (
                   <div className="mb-4">
                     <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                       <h4 className="font-semibold text-green-800 mb-3">✅ 正解</h4>

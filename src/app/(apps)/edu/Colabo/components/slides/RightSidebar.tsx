@@ -7,6 +7,7 @@ import BlockItem from './BlockItem'
 import {C_Stack, Circle, R_Stack} from '@cm/components/styles/common-components/common-components'
 import {IconBtn} from '@cm/components/styles/common-components/IconBtn'
 import {PlusIcon} from 'lucide-react'
+import {PSYCHO_QUESTIONS, RATING_LABELS} from '../../lib/psycho-questions'
 
 interface RightSidebarProps {
   selectedSlide: any | null
@@ -398,11 +399,62 @@ export default function RightSidebar({selectedSlide, handleUpdateSlide, handleDe
                 </section>
               )}
 
-              {/* 心理アンケート/まとめスライドの場合 */}
-              {(selectedSlide.templateType === 'psycho' || selectedSlide.templateType === 'summary') && (
+              {/* 心理アンケートスライドの場合 */}
+              {selectedSlide.templateType === 'psycho' && (
+                <section>
+                  <C_Stack className="gap-4">
+                    {/* 説明 */}
+                    <div className="bg-blue-50 p-3 rounded-lg text-sm">
+                      <p className="font-medium text-blue-900 mb-1">心理アンケートについて</p>
+                      <p className="text-blue-700 text-xs">
+                        生徒は以下の10個の質問に1〜5の5段階で回答します。
+                        <br />
+                        質問はランダムな順序で表示されます。
+                      </p>
+                    </div>
+
+                    {/* 評価スケール表 */}
+                    <div className="border border-gray-300 rounded-lg overflow-hidden">
+                      <div className="bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700">評価スケール</div>
+                      <div className="grid grid-cols-5 text-xs">
+                        {RATING_LABELS.map((label, i) => (
+                          <div key={i} className="border-t border-gray-200 p-2 text-center">
+                            <div className="font-bold text-gray-900">{i + 1}</div>
+                            <div className="text-gray-600 mt-1">{label}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* 質問カテゴリー */}
+                    {PSYCHO_QUESTIONS.map((category, catIdx) => (
+                      <div key={catIdx} className="border border-gray-200 rounded-lg overflow-hidden">
+                        <div className="bg-purple-50 px-3 py-2 font-semibold text-sm text-purple-900">{category.label}</div>
+                        <div className="p-3 space-y-2">
+                          {category.questions.map((q, qIdx) => (
+                            <div key={qIdx} className="text-xs text-gray-700 bg-white border border-gray-200 rounded p-2">
+                              <span className="font-semibold text-purple-600">{qIdx + 1}. </span>
+                              {q.label}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* 感想入力フィールド */}
+                    <div className="border border-gray-200 rounded-lg p-3 bg-pink-50">
+                      <p className="text-sm font-semibold text-gray-800 mb-1">📝 自由記述</p>
+                      <p className="text-xs text-gray-600">グループで取り組みたいこと、抱負などを書いてもらいます。</p>
+                    </div>
+                  </C_Stack>
+                </section>
+              )}
+
+              {/* まとめスライドの場合 */}
+              {selectedSlide.templateType === 'summary' && (
                 <section className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
-                  <p className="font-medium mb-2">このテンプレートについて</p>
-                  <p>このテンプレートはGroupingアプリの質問項目を使用します。質問内容はシステムで管理されています。</p>
+                  <p className="font-medium mb-2">まとめアンケートについて</p>
+                  <p>このテンプレートは活動後の振り返りアンケートです。授業の満足度を評価してもらいます。</p>
                 </section>
               )}
             </section>

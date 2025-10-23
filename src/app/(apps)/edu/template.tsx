@@ -12,7 +12,7 @@ export const metadata: Metadata = {title: 'Grouping   |Colabo'}
 
 export default function ColaboTemplate(props) {
   const {session, pathname, accessScopes} = useGlobal()
-  const {schoolId} = accessScopes().getGroupieScopes()
+  const {schoolId, teacherId} = accessScopes().getGroupieScopes()
 
   const secondRootPath = pathname.split('/')[2]
   let PagesMethod, appName
@@ -28,6 +28,18 @@ export default function ColaboTemplate(props) {
     appName = ''
   }
 
+  const excludePaths = [
+    //
+    '/config/school',
+    '/game/main',
+    'config/user',
+    //
+
+    'enter',
+    'play',
+  ]
+  const exclude = excludePaths.some(path => pathname.includes(path))
+
   return (
     <Admin
       {...{
@@ -39,12 +51,12 @@ export default function ColaboTemplate(props) {
       }}
     >
       <div className={`relative `}>
-        {session && !schoolId ? (
-          <CenterScreen>
-            <Alert>学校を選択してください</Alert>
-          </CenterScreen>
-        ) : (
+        {exclude || teacherId ? (
           props.children
+        ) : (
+          <CenterScreen>
+            <Alert>アカウントが設定されていません。</Alert>
+          </CenterScreen>
         )}
       </div>
     </Admin>

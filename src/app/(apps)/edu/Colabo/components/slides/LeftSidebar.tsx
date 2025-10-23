@@ -5,11 +5,48 @@ import {SortableContext, verticalListSortingStrategy} from '@dnd-kit/sortable'
 import SlideThumbnail from './SlideThumbnail'
 import AutoGridContainer from '@cm/components/utils/AutoGridContainer'
 const templates = [
-  {type: 'normal', icon: '📝', label: 'ノーマル'},
-  {type: 'choice', icon: '☑️', label: '選択クイズ'},
-  {type: 'freetext', icon: '✍️', label: '自由記述'},
-  {type: 'psycho', icon: '🧠', label: '心理アンケート'},
-  {type: 'summary', icon: '📊', label: 'まとめ'},
+  {
+    type: 'normal',
+    icon: '📝',
+    label: 'ノーマル',
+    modeList: [{value: 'veiw', label: '表示', default: true}],
+  },
+  {
+    type: 'choice',
+    icon: '☑️',
+    label: '選択クイズ',
+    modeList: [
+      {value: 'answer', label: '回答', default: true},
+      {value: 'result', label: '結果'},
+    ],
+  },
+  {
+    type: 'freetext',
+    icon: '✍️',
+    label: '自由記述',
+    modeList: [
+      {value: 'answer', label: '回答', default: true},
+      {value: 'result', label: '結果'},
+    ],
+  },
+  {
+    type: 'psycho',
+    icon: '🧠',
+    label: '心理アンケート',
+    modeList: [
+      {value: 'answer', label: '回答', default: true},
+      {value: 'result', label: '結果'},
+    ],
+  },
+  {
+    type: 'summary',
+    icon: '📊',
+    label: 'まとめ',
+    modeList: [
+      {value: 'answer', label: '回答', default: true},
+      {value: 'result', label: '結果'},
+    ],
+  },
 ]
 
 interface LeftSidebarProps {
@@ -36,18 +73,18 @@ export default function LeftSidebar({slides, selectedSlideId, onSelectSlide, onR
   }
 
   return (
-    <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
-      <div className="p-4 border-b border-gray-200">
+    <div className="w-64 bg-gray-50 border-r border-gray-200 flex flex-col">
+      <div className="p-2 border-b border-gray-200">
         <h3 className="font-semibold text-sm text-gray-700 mb-3">スライドを追加</h3>
         <AutoGridContainer {...{maxCols: {md: 3}}} className="gap-2">
           {templates.map(template => (
             <button
               key={template.type}
               onClick={() => onAddSlide(template.type)}
-              className="w-full flex items-center space-x-2 p-1 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors text-left"
+              className="w-full flex items-center gap-0.5 p-1 rounded-lg border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors text-left"
             >
-              <span className="text-xl">{template.icon}</span>
-              <span className="text-xs font-medium">{template.label}</span>
+              <span className="text-xs">{template.icon}</span>
+              <span className="text-[10px] font-bold">{template.label}</span>
             </button>
           ))}
         </AutoGridContainer>

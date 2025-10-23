@@ -7,9 +7,10 @@ interface CenterPreviewProps {
   slides: any[]
   selectedSlideId: number | null
   onSelectSlide: (slideId: number) => void
+  handleDeleteSlide: (slideId: number) => void
 }
 
-export default function CenterPreview({slides, selectedSlideId, onSelectSlide}: CenterPreviewProps) {
+export default function CenterPreview({slides, selectedSlideId, onSelectSlide, handleDeleteSlide}: CenterPreviewProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const slideRefs = useRef<Map<number, HTMLDivElement>>(new Map())
 
@@ -45,6 +46,7 @@ export default function CenterPreview({slides, selectedSlideId, onSelectSlide}: 
                   index={index}
                   isSelected={slide.id === selectedSlideId}
                   onSelect={() => onSelectSlide(slide.id)}
+                  handleDeleteSlide={handleDeleteSlide}
                 />
               </div>
             ))}

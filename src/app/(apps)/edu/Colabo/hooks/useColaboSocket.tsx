@@ -23,6 +23,11 @@ import {
 // 接続状態の型
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
 
+// スライドごとの状態型
+export interface SlideStates {
+  [slideId: number]: SlideMode | null
+}
+
 // フックのプロパティ型
 export interface UseColaboSocketProps {
   gameId: number
@@ -30,8 +35,9 @@ export interface UseColaboSocketProps {
   userId: number
   userName?: string
   onSlideChange?: (slideId: number, slideIndex: number) => void
-  onModeChange?: (mode: SlideMode | null) => void
-  onGameStateSync?: (state: GameStateSyncPayload) => void
+  onSlideModeChange?: (slideId: number, mode: SlideMode | null) => void // スライドごとのモード変更
+  onSlideStatesSync?: (slideStates: SlideStates) => void // 全スライドの状態同期
+  onCurrentSlideSync?: (currentSlideId: number | null) => void // 現在のスライド同期
   onAnswerUpdate?: (data: AnswerUpdatedPayload) => void
   onAnswerSaved?: (data: any) => void
   onSharedAnswer?: (data: any) => void
@@ -50,8 +56,9 @@ export function useColaboSocket({
   userId,
   userName,
   onSlideChange,
-  onModeChange,
-  onGameStateSync,
+  onSlideModeChange,
+  onSlideStatesSync,
+  onCurrentSlideSync,
   onAnswerUpdate,
   onAnswerSaved,
   onSharedAnswer,
@@ -61,7 +68,7 @@ export function useColaboSocket({
 }: UseColaboSocketProps) {
   const socketRef = useRef<Socket | null>(null)
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('disconnected')
-  const [currentState, setCurrentState] = useState<GameStateSyncPayload | null>(null)
+  const [slideStates, setSlideStates] = useState<SlideStates>({})
 
   /**
    * Socket.io接続を確立
@@ -123,28 +130,37 @@ export function useColaboSocket({
     })
 
     // 接続確認応答
-    socket.on(SOCKET_EVENTS.CONNECTION_ACK, (data: ConnectionAckPayload) => {
+    socket.on(SOCKET_EVENTS.CONNECTION_ACK, (data: any) => {
       console.log({接続確認: data})
-      if (data.currentState) {
-        setCurrentState(data.currentState)
-
-        onGameStateSync?.(data.currentState)
+      if (data.slideStates) {
+        setSlideStates(data.slideStates)
+        onSlideStatesSync?.(data.slideStates)
+      }
+      if (data.currentSlideId !== undefined) {
+        onCurrentSlideSync?.(data.currentSlideId)
       }
     })
 
-    // 状態同期
-    socket.on(SOCKET_EVENTS.GAME_STATE_SYNC, (data: GameStateSyncPayload) => {
+    // 状態同期（参加者数更新など）
+    socket.on(SOCKET_EVENTS.GAME_STATE_SYNC, (data: any) => {
       console.log({状態同期: data})
-      setCurrentState(data)
-      onGameStateSync?.(data)
+      if (data.slideStates) {
+        setSlideStates(data.slideStates)
+        onSlideStatesSync?.(data.slideStates)
+      }
+    })
 
-      // 個別のコールバックも呼び出し
-      if (data.currentSlideId !== currentState?.currentSlideId) {
-        // onSlideChange?.(data.currentSlideId!, 0) // slideIndexは別途管理
-      }
-      if (data.mode !== currentState?.mode) {
-        onModeChange?.(data.mode)
-      }
+    // スライド切り替え
+    socket.on(SOCKET_EVENTS.TEACHER_CHANGE_SLIDE, (data: ChangeSlidePayload) => {
+      console.log({スライド切り替え: data})
+      onSlideChange?.(data.slideId, data.slideIndex)
+    })
+
+    // スライドモード変更
+    socket.on(SOCKET_EVENTS.TEACHER_CHANGE_MODE, (data: ChangeModePayload) => {
+      console.log({モード変更: data})
+      setSlideStates(prev => ({...prev, [data.slideId]: data.mode}))
+      onSlideModeChange?.(data.slideId, data.mode)
     })
 
     // 回答状況更新（教師のみ）
@@ -430,7 +446,7 @@ export function useColaboSocket({
     // 状態
     connectionStatus,
     isConnected: connectionStatus === 'connected',
-    currentState,
+    slideStates, // スライドごとのモード状態
 
     // メソッド
     connect,

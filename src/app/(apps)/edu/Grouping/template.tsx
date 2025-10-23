@@ -15,48 +15,11 @@ const GroupingTemplate = props => {
   const excludePaths = ['/config/school', '/game/main', 'config/user', 'enter']
   const exclude = excludePaths.some(path => pathname.includes(path))
 
-  const AppName = 'Grouping'
-
   if (!exclude && !session?.id) {
     return <Redirector {...{redirectPath: `/login?rootPath=${rootPath}`}}></Redirector>
   }
 
-  return (
-    <div className={`relative `}>
-      {session && !schoolId && !exclude ? (
-        <CenterScreen>
-          <Alert>学校を選択してください</Alert>
-        </CenterScreen>
-      ) : (
-        <>{props.children}</>
-      )}
-    </div>
-  )
-
-  return (
-    <>
-      <Admin
-        {...{
-          navBarPosition: `left`,
-          AppName: AppName,
-          PagesMethod: 'Grouping_PAGES',
-          additionalHeaders: [],
-          PageBuilderGetter: {class: PageBuilder, getter: 'getGlobalIdSelector'},
-        }}
-      >
-        <div className={`relative `}>
-          {session && !schoolId && !exclude ? (
-            <CenterScreen>
-              <Alert>学校を選択してください</Alert>
-            </CenterScreen>
-          ) : (
-            <>{props.children}</>
-          )}
-        </div>
-      </Admin>
-    </>
-  )
-  return <></>
+  return <>{props.children}</>
 }
 
 export default GroupingTemplate

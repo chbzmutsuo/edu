@@ -3,9 +3,10 @@
 import {Button} from '@cm/components/styles/common-components/Button'
 import {SlideBlock} from '../../../(components)/SlideBlock'
 import {useState, useEffect} from 'react'
-import {getSlideAnswers, updateAnswerShareStatus, updateGameState} from '../../../colabo-server-actions'
+import {getSlideAnswers, updateSlideMode, updateCurrentSlide, deleteSlideAnswer} from '../../../colabo-server-actions'
 import {toast} from 'react-toastify'
 import type {GameData, SlideData, SlideMode, SlideAnswer, AnswerStats} from '../../../types/game-types'
+import {calculateScores} from '../../../lib/psycho-questions'
 
 interface SocketActions {
   changeSlide: (slideId: number, slideIndex: number) => void
@@ -19,7 +20,7 @@ interface TeacherViewProps {
   game: GameData
   currentSlide: SlideData | null
   currentSlideIndex: number
-  currentMode: SlideMode | null
+  currentSlideMode: SlideMode | null
   answerStats: AnswerStats | null
   socket: SocketActions
   onSlideChange: (slideId: number, index: number) => void
@@ -29,14 +30,13 @@ export default function NewTeacherView({
   game,
   currentSlide,
   currentSlideIndex,
-  currentMode,
+  currentSlideMode,
   answerStats,
   socket,
   onSlideChange,
 }: TeacherViewProps) {
   const [answers, setAnswers] = useState<SlideAnswer[]>([])
   const [isLoadingAnswers, setIsLoadingAnswers] = useState(false)
-  const [sharedAnswerIds, setSharedAnswerIds] = useState<Set<number>>(new Set())
 
   const totalSlides = game.Slide?.length || 0
   const totalStudents = game.GameStudent?.length || 0
@@ -47,12 +47,10 @@ export default function NewTeacherView({
 
     const newSlide = game.Slide?.[newIndex]
     if (newSlide) {
-      // // DBにゲーム状態を保存
-      await updateGameState(game.id, {
-        currentSlideId: newSlide.id,
-        slideMode: 'view', // スライド切り替え時はviewモードに
-      })
+      // DBに教師の現在のスライドを保存
+      await updateCurrentSlide(game.id, newSlide.id)
 
+      // Socket.io経由で全員に通知
       socket.changeSlide(newSlide.id, newIndex)
       onSlideChange(newSlide.id, newIndex)
     }
@@ -63,11 +61,9 @@ export default function NewTeacherView({
     if (!currentSlide) return
 
     // DBにモードを保存
-    await updateGameState(game.id, {
-      currentSlideId: currentSlide.id,
-      slideMode: mode,
-    })
+    await updateSlideMode(currentSlide.id, mode)
 
+    // Socket.io経由で全員に通知
     socket.changeMode(currentSlide.id, mode)
   }
 
@@ -99,59 +95,42 @@ export default function NewTeacherView({
     }
   }
 
-  // 回答を共有
-  const handleShareAnswer = async (answerId: number, isAnonymous: boolean = false) => {
+  // 回答を削除
+  const handleDeleteAnswer = async (answerId: number, studentName: string) => {
     if (!currentSlide) return
 
-    try {
-      // 既に共有済みかチェック
-      const isCurrentlyShared = sharedAnswerIds.has(answerId)
+    const confirmed = window.confirm(`${studentName}の回答を削除しますか？`)
+    if (!confirmed) return
 
-      // DBに共有状態を保存
-      const result = await updateAnswerShareStatus(answerId, !isCurrentlyShared, isAnonymous)
+    try {
+      const answer = answers.find(a => a.id === answerId)
+      if (!answer) return
+
+      const result = await deleteSlideAnswer(currentSlide.id, answer.studentId)
 
       if (result.success) {
-        // ローカル状態を更新
-        const newSharedIds = new Set(sharedAnswerIds)
-        if (isCurrentlyShared) {
-          newSharedIds.delete(answerId)
-          toast.success('共有を解除しました')
-        } else {
-          newSharedIds.add(answerId)
-          toast.success(isAnonymous ? '匿名で共有しました' : '共有しました')
-        }
-        setSharedAnswerIds(newSharedIds)
-
-        // Socket.ioで他の参加者に通知
-        socket.shareAnswer(currentSlide.id, answerId, isAnonymous)
-
+        toast.success('回答を削除しました')
         // 回答リストを再取得
         await loadAnswers()
       } else {
-        toast.error('共有状態の更新に失敗しました')
+        toast.error('回答の削除に失敗しました')
       }
     } catch (error) {
-      console.error('共有エラー:', error)
+      console.error('削除エラー:', error)
       toast.error('予期しないエラーが発生しました')
     }
   }
 
-  // 正答を公開
-  const handleRevealCorrect = () => {
-    if (!currentSlide) return
-    socket.revealCorrect(currentSlide.id)
-  }
-
-  // 結果モードになったら回答を取得
+  // スライドが変わったら回答を取得（常に表示）
   useEffect(() => {
-    if (currentMode === 'result') {
+    if (currentSlide?.id) {
       loadAnswers()
     }
-  }, [currentMode, currentSlide?.id])
+  }, [currentSlide?.id])
 
-  // 回答更新を監視
+  // 回答更新を監視（常に更新）
   useEffect(() => {
-    if (currentMode === 'result' && answerStats) {
+    if (answerStats && currentSlide?.id) {
       loadAnswers()
     }
   }, [answerStats?.answerCount])
@@ -191,19 +170,22 @@ export default function NewTeacherView({
 
           {/* モード切り替え */}
           <div className="grid grid-cols-3 gap-2">
-            <Button onClick={() => handleChangeMode('view')} className={currentMode === 'view' ? 'bg-blue-600' : 'bg-gray-400'}>
+            <Button
+              onClick={() => handleChangeMode('view')}
+              className={currentSlideMode === 'view' ? 'bg-blue-600' : 'bg-gray-400'}
+            >
               📺 表示
             </Button>
             <Button
               onClick={() => handleChangeMode('answer')}
-              className={currentMode === 'answer' ? 'bg-green-600' : 'bg-gray-400'}
+              className={currentSlideMode === 'answer' ? 'bg-green-600' : 'bg-gray-400'}
               disabled={currentSlide?.templateType === 'normal'}
             >
               ✍️ 回答
             </Button>
             <Button
               onClick={() => handleChangeMode('result')}
-              className={currentMode === 'result' ? 'bg-purple-600' : 'bg-gray-400'}
+              className={currentSlideMode === 'result' ? 'bg-purple-600' : 'bg-gray-400'}
               disabled={currentSlide?.templateType === 'normal'}
             >
               📊 結果
@@ -211,7 +193,7 @@ export default function NewTeacherView({
           </div>
 
           {/* 回答締切ボタン */}
-          {currentMode === 'answer' && (
+          {currentSlideMode === 'answer' && (
             <div className="mt-4">
               <Button onClick={handleCloseAnswer} className="w-full bg-red-600 hover:bg-red-700">
                 ⏱️ 回答を締め切る
@@ -298,85 +280,110 @@ export default function NewTeacherView({
         <div className="bg-white rounded-lg shadow p-4">
           <h3 className="font-semibold mb-2">現在のモード</h3>
           <div className="text-center py-2">
-            {currentMode === 'view' && <div className="text-blue-600 font-bold">📺 表示モード</div>}
-            {currentMode === 'answer' && <div className="text-green-600 font-bold">✍️ 回答モード</div>}
-            {currentMode === 'result' && <div className="text-purple-600 font-bold">📊 結果モード</div>}
-            {!currentMode && <div className="text-gray-400">モードが選択されていません</div>}
+            {currentSlideMode === 'view' && <div className="text-blue-600 font-bold">📺 表示モード</div>}
+            {currentSlideMode === 'answer' && <div className="text-green-600 font-bold">✍️ 回答モード</div>}
+            {currentSlideMode === 'result' && <div className="text-purple-600 font-bold">📊 結果モード</div>}
+            {!currentSlideMode && <div className="text-gray-400">モードが選択されていません</div>}
           </div>
         </div>
 
-        {/* 回答一覧（結果モード時） */}
-        {currentMode === 'result' && (
-          <div className="bg-white rounded-lg shadow p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="font-semibold">回答一覧</h3>
-              <Button size="sm" onClick={loadAnswers} disabled={isLoadingAnswers}>
-                🔄 更新
-              </Button>
-            </div>
-
-            {isLoadingAnswers ? (
-              <div className="text-center py-4 text-gray-500">読み込み中...</div>
-            ) : answers.length > 0 ? (
-              <div className="space-y-2 max-h-96 overflow-y-auto">
-                {answers.map(answer => {
-                  const answerDataParsed =
-                    typeof answer.answerData === 'string' ? JSON.parse(answer.answerData) : answer.answerData
-                  const isShared = sharedAnswerIds.has(answer.id)
-
-                  return (
-                    <div
-                      key={answer.id}
-                      className={`border rounded p-3 text-sm ${isShared ? 'bg-blue-50 border-blue-300' : 'bg-white border-gray-200'}`}
-                    >
-                      <div className="font-medium mb-1">{answer.Student?.name}</div>
-                      <div className="text-xs text-gray-600 mb-2">
-                        {answerDataParsed.type === 'choice' && currentSlide?.contentData?.choices && (
-                          <div>選択: {currentSlide.contentData.choices[answerDataParsed.choiceIndex]?.text}</div>
-                        )}
-                        {answerDataParsed.type === 'freetext' && (
-                          <div className="whitespace-pre-wrap">{answerDataParsed.textAnswer}</div>
-                        )}
-                      </div>
-                      <div className="flex space-x-1">
-                        {!isShared ? (
-                          <>
-                            <Button size="sm" onClick={() => handleShareAnswer(answer.id, false)} className="bg-blue-600 text-xs">
-                              共有
-                            </Button>
-                            <Button size="sm" onClick={() => handleShareAnswer(answer.id, true)} className="bg-gray-600 text-xs">
-                              匿名で共有
-                            </Button>
-                          </>
-                        ) : (
-                          <>
-                            <Button size="sm" onClick={() => handleShareAnswer(answer.id, false)} className="bg-red-600 text-xs">
-                              共有解除
-                            </Button>
-                            <span className="text-xs text-blue-600 ml-2 flex items-center">
-                              {answer.isAnonymous ? '🔒 匿名' : '👤 実名'}
-                            </span>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-4 text-gray-500">回答がまだありません</div>
-            )}
-
-            {/* 正答公開ボタン */}
-            {currentSlide?.templateType === 'choice' && (
-              <div className="mt-4">
-                <Button onClick={handleRevealCorrect} className="w-full bg-green-600 hover:bg-green-700">
-                  ✅ 正答を公開
-                </Button>
-              </div>
-            )}
+        {/* 回答一覧（常に表示） */}
+        <div className="bg-white rounded-lg shadow p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold">回答一覧</h3>
+            <Button size="sm" onClick={loadAnswers} disabled={isLoadingAnswers}>
+              🔄 更新
+            </Button>
           </div>
-        )}
+
+          {isLoadingAnswers ? (
+            <div className="text-center py-4 text-gray-500">読み込み中...</div>
+          ) : answers.length > 0 ? (
+            <div className="space-y-2 max-h-96 overflow-y-auto">
+              {answers.map(answer => {
+                const answerDataParsed = typeof answer.answerData === 'string' ? JSON.parse(answer.answerData) : answer.answerData
+
+                return (
+                  <div key={answer.id} className="bg-white border border-gray-200 rounded p-3 text-sm">
+                    <div className="flex justify-between items-start mb-2">
+                      <div className="font-medium">{answer.Student?.name}</div>
+                      <Button
+                        size="sm"
+                        onClick={() => handleDeleteAnswer(answer.id, answer.Student?.name || '生徒')}
+                        className="bg-red-600 hover:bg-red-700 text-xs"
+                      >
+                        削除
+                      </Button>
+                    </div>
+                    <div className="text-xs text-gray-600 mb-2">
+                      {answerDataParsed.type === 'choice' && currentSlide?.contentData?.choices && (
+                        <div>
+                          <div className="mb-1">選択: {currentSlide.contentData.choices[answerDataParsed.choiceIndex]?.text}</div>
+                          {/* 結果モードの場合、正答を自動表示 */}
+                          {currentSlideMode === 'result' && (
+                            <div className="mt-2 p-2 bg-green-50 rounded">
+                              <div className="font-semibold text-green-700 mb-1">正答:</div>
+                              {currentSlide.contentData.choices
+                                ?.filter((choice: any) => choice.isCorrect)
+                                .map((correctChoice: any, index: number) => (
+                                  <div key={index} className="text-green-600">
+                                    ✓ {correctChoice.text}
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {answerDataParsed.type === 'freetext' && (
+                        <div className="whitespace-pre-wrap">{answerDataParsed.textAnswer}</div>
+                      )}
+                      {answerDataParsed.type === 'psycho' && (
+                        <div className="space-y-1">
+                          {(() => {
+                            const {curiocity, efficacy} = calculateScores(answerDataParsed)
+                            return (
+                              <>
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-semibold text-purple-600">好奇心:</span>
+                                  <span className="font-bold">{curiocity}/25</span>
+                                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-purple-500 h-2 rounded-full"
+                                      style={{width: `${(curiocity / 25) * 100}%`}}
+                                    ></div>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                  <span className="font-semibold text-blue-600">効力感:</span>
+                                  <span className="font-bold">{efficacy}/25</span>
+                                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                                    <div
+                                      className="bg-blue-500 h-2 rounded-full"
+                                      style={{width: `${(efficacy / 25) * 100}%`}}
+                                    ></div>
+                                  </div>
+                                </div>
+                                {answerDataParsed.impression && (
+                                  <div className="mt-2 p-2 bg-pink-50 rounded text-gray-700">
+                                    <div className="font-semibold text-pink-700 mb-1">感想:</div>
+                                    <div className="whitespace-pre-wrap">{answerDataParsed.impression}</div>
+                                  </div>
+                                )}
+                              </>
+                            )
+                          })()}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-gray-500">回答がまだありません</div>
+          )}
+
+        </div>
       </div>
     </div>
   )

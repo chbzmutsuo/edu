@@ -29,11 +29,11 @@ export default function useWindowSize() {
   const device = {SP, TB, PC}
   const useWindowSizeDeps = [width]
 
-  const bodyHeihgt = height - appbarHeight - headerMargin
+  const bodyHeight = height - appbarHeight - headerMargin
   return {
     appbarHeight,
     footerHeight,
-    bodyHeihgt,
+    bodyHeight,
     headerMargin,
     useWindowSizeDeps,
     currentDevice,
